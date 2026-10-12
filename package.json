@@ -8,11 +8,15 @@
     "build": "vite build",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit -p . && tsc --noEmit -p tsconfig.scripts.json",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest run"
   },
   "dependencies": {
+    "@noble/ed25519": "^3.2.0",
+    "@noble/hashes": "^2.4.0",
     "canvas-confetti": "^1.9.4",
     "framer-motion": "^12.34.3",
+    "hash-wasm": "^4.12.0",
     "lucide-react": "^0.575.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
@@ -35,6 +39,7 @@
     "tsx": "^4.23.15",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.71.1",
-    "vite": "^7.3.1"
+    "vite": "^7.3.1",
+    "vitest": "^5.0.3"
   }
 }
