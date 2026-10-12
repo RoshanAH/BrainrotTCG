@@ -1,6 +1,7 @@
 /**
  * Booster pack wrapper for a set, built from the set itself: its colours, the
- * logo and its three rarest cards. Written to `src/content/sets/<set>/pack.webp`.
+ * logo and its three rarest cards. Written to `src/content/sets/<set>/pack.webp`, with a small
+ * `pack-thumb.webp` for the pack picker.
  *
  * Layout (768x1376, same shape as the pack opener): crimped foil edges, the
  * flap above the tear line (19%) is left clear for the set ribbon the app
@@ -136,13 +137,26 @@ const inputHash = (set: SetDefinition, cardFiles: string[]) => {
   return h.digest('hex');
 };
 
-/** Build a set's pack wrapper. Returns false when it was already up to date. */
+/**
+ * The pack picker's thumbnail: the wrapper cropped to the pack and its shadow, 300px wide (a quarter
+ * of the full image's bytes, since the picker shows every pack at once).
+ */
+const buildPackThumb = async (setId: string) => {
+  const crop = { left: BODY.x - 8, top: BODY.y - 8, width: BODY.w + 24, height: H - BODY.y + 8 };
+  await sharp(`${SETS_DIR}/${setId}/pack.webp`).extract(crop).resize(300).webp({ quality: 70, alphaQuality: 80 }).toFile(`${SETS_DIR}/${setId}/pack-thumb.webp`);
+};
+
+/** Build a set's pack wrapper (and its thumbnail). Returns false when it was already up to date. */
 export const buildSetPack = async (set: SetDefinition, manifest: Record<string, string>, force = false): Promise<boolean> => {
   const outPath = `${SETS_DIR}/${set.id}/pack.webp`;
   const cards = packCards(set).map((c) => `${SETS_DIR}/${set.id}/cards/${c.id}.webp`);
   if (cards.some((f) => !existsSync(f))) throw new Error(`${set.id}: build the cards before the pack`);
   const hash = inputHash(set, cards);
-  if (!force && manifest['(pack)'] === hash && existsSync(outPath)) return false;
+  if (!force && manifest['(pack)'] === hash && existsSync(outPath)) {
+    if (existsSync(`${SETS_DIR}/${set.id}/pack-thumb.webp`)) return false;
+    await buildPackThumb(set.id);
+    return true;
+  }
 
   const layers: OverlayOptions[] = [];
   const logo = await sharp(LOGO).resize(280, 280).png().toBuffer();
@@ -176,6 +190,7 @@ export const buildSetPack = async (set: SetDefinition, manifest: Record<string, 
     .composite([{ input: await sharp(shadow).blur(12).png().toBuffer() }, { input: face, left: BODY.x, top: BODY.y }])
     .webp({ quality: 82, alphaQuality: 90 })
     .toFile(outPath);
+  await buildPackThumb(set.id);
   manifest['(pack)'] = hash;
   return true;
 };
