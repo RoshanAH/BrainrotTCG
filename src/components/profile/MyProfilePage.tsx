@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { ChevronRight, Link2, Share2 } from 'lucide-react';
+import { ChevronRight, Link2 } from 'lucide-react';
 import type { CardWithMeta } from '../cards/Card';
 import PackCardViewer from '../ui/PackCardViewer';
 import Sheet from '../ui/Sheet';
@@ -9,7 +9,7 @@ import { getLatestSet, setCode } from '../../content/sets';
 import { getHistory, type HistoryEntry } from '../../game/history';
 import { getPlayer } from '../../game/player';
 import { myProfileInfo, myProfileProof, myStats, profileUrl } from '../../game/profiles';
-import { shareLink } from '../../game/shareActions';
+import { copyText } from '../../game/shareActions';
 import '../../styles/Pulls.css';
 
 interface LegacyBest {
@@ -51,11 +51,12 @@ const MyProfilePage = ({ stats, onClose, onSharePull }: MyProfilePageProps) => {
   const [shown, setShown] = useState(PAGE);
   const [copied, setCopied] = useState(false);
   const [preparing, setPreparing] = useState<string | null>(null);
-  /** A link that took a while to prepare; the tap that started it can no longer open the share sheet. */
+  /** A link that took a while to prepare; the tap that started it may no longer be allowed to copy. */
   const [readyUrl, setReadyUrl] = useState<string | null>(null);
 
   const send = async (url: string) => {
-    if ((await shareLink(url, `${player.name} on Brainrot TCG`, `${player.name}'s Brainrot TCG profile`)) === 'copied') {
+    if (await copyText(url)) {
+      setReadyUrl(null);
       setCopied(true);
       setTimeout(() => setCopied(false), 1800);
     }
@@ -100,8 +101,8 @@ const MyProfilePage = ({ stats, onClose, onSharePull }: MyProfilePageProps) => {
           onOpenPack={(pack) => openEntry(history.find((e) => e.nonce === pack.nonce && player.publicKeyHex.startsWith(e.key)))}
           actions={
             <button type="button" className="btn btn--secondary btn--sm" onClick={share} disabled={!!preparing}>
-              {typeof navigator.share === 'function' ? <Share2 aria-hidden="true" /> : <Link2 aria-hidden="true" />}
-              {preparing ?? (copied ? 'Link copied' : readyUrl ? 'Share now' : 'Share profile')}
+              <Link2 aria-hidden="true" />
+              {preparing ?? (copied ? 'Link copied' : readyUrl ? 'Copy link now' : 'Copy profile link')}
             </button>
           }
         />

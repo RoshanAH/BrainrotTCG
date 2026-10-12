@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { Copy, Download, ImageUp, Link2, Share2 } from 'lucide-react';
-import { canShareFiles, canShareLinks, copyText, shareImage, shareLink } from '../../game/shareActions';
+import { Copy, Download, Image as ImageIcon, Link2, Share2 } from 'lucide-react';
+import { canCopyImage, canShareTo, copyImage, copyText, saveImage, shareTo } from '../../game/shareActions';
 import Sheet from '../ui/Sheet';
 import '../../styles/Share.css';
 
@@ -19,7 +19,7 @@ interface SharePreviewSheetProps {
   children?: ReactNode;
 }
 
-/** What you see is what you send: the image first, then share it or the link. */
+/** What you see is what you send: the image first, then copy the link or the image. */
 const SharePreviewSheet = ({ title, subtitle, makeImage, imageName, url, text, onClose, children }: SharePreviewSheetProps) => {
   const [image, setImage] = useState<{ blob: Blob; src: string } | null>(null);
   const [failed, setFailed] = useState(false);
@@ -51,16 +51,24 @@ const SharePreviewSheet = ({ title, subtitle, makeImage, imageName, url, text, o
     setTimeout(() => setDone(null), 1800);
   };
 
-  const filesOk = canShareFiles();
-  const onShareImage = async () => {
-    if (!image) return;
-    const result = await shareImage(image.blob, imageName, url ?? text);
-    if (result === 'saved') flash('Image saved');
+  const imageCopies = canCopyImage();
+  const onCopyLink = async () => {
+    if (url && (await copyText(url))) flash('Link copied');
   };
-  const onShareLink = async () => {
-    if (!url) return;
-    const result = await shareLink(url, title, text);
-    if (result === 'copied') flash('Link copied');
+  const onImage = async () => {
+    if (!image) return;
+    if (imageCopies && (await copyImage(image.blob))) return flash('Image copied');
+    saveImage(image.blob, imageName);
+    flash('Image saved');
+  };
+  const onSave = () => {
+    if (!image) return;
+    saveImage(image.blob, imageName);
+    flash('Image saved');
+  };
+  const onShareTo = async () => {
+    const result = await shareTo({ url, text, title, image: image ? { blob: image.blob, filename: imageName } : undefined });
+    if (result === 'failed' && url && (await copyText(url))) flash('Link copied');
   };
 
   return (
@@ -78,25 +86,30 @@ const SharePreviewSheet = ({ title, subtitle, makeImage, imageName, url, text, o
 
         <div className="share-side">
           <div className="share-actions-main">
-            <button type="button" className="btn btn--primary btn--block" onClick={onShareImage} disabled={!image}>
-              {filesOk ? <ImageUp aria-hidden="true" /> : <Download aria-hidden="true" />} {filesOk ? 'Share image' : 'Save image'}
-            </button>
             {url && (
-              <button type="button" className="btn btn--secondary btn--block" onClick={onShareLink}>
-                {canShareLinks() ? <Share2 aria-hidden="true" /> : <Link2 aria-hidden="true" />} {canShareLinks() ? 'Share link' : 'Copy link'}
+              <button type="button" className="btn btn--primary btn--block" onClick={onCopyLink}>
+                <Link2 aria-hidden="true" /> Copy link
               </button>
             )}
+            <button type="button" className={`btn ${url ? 'btn--secondary' : 'btn--primary'} btn--block`} onClick={onImage} disabled={!image}>
+              {imageCopies ? <ImageIcon aria-hidden="true" /> : <Download aria-hidden="true" />} {imageCopies ? 'Copy image' : 'Save image'}
+            </button>
           </div>
 
           <p className="share-more">
-            {url && canShareLinks() && (
-              <button type="button" className="link-btn" onClick={async () => (await copyText(url)) && flash('Link copied')}>
-                <Link2 aria-hidden="true" /> Copy link
+            {imageCopies && (
+              <button type="button" className="link-btn" onClick={onSave} disabled={!image}>
+                <Download aria-hidden="true" /> Save image
               </button>
             )}
             <button type="button" className="link-btn" onClick={async () => (await copyText(text)) && flash('Text copied')}>
               <Copy aria-hidden="true" /> Copy text
             </button>
+            {canShareTo() && (
+              <button type="button" className="link-btn" onClick={onShareTo}>
+                <Share2 aria-hidden="true" /> Share to…
+              </button>
+            )}
           </p>
           <p className="share-done" role="status">
             {done}
