@@ -5,7 +5,6 @@
   "era": "2013–2019",
   "tagline": "6 seconds. Infinite dank.",
   "releasedAt": "2026-10-12",
-  "draft": true,
   "palette": [
     "#00BF8F",
     "#FF6A00",
@@ -29,7 +28,7 @@
       "caption": "Spin to win (nothing)",
       "flavor": "2017: in every pocket and every classroom. Teachers still have nightmares.",
       "year": 2017,
-      "art": "Three-lobed fidget spinner with a cheeky face on the center bearing, motion-blur arcs around it, one sweat drop. Background: bright yellow. Colors: electric blue, yellow, white, black."
+      "art": "Photo of a red three-lobed fidget spinner with black bearings on a pale grey background (Wikimedia Commons, CC0)."
     },
     {
       "id": "ok-boomer",
@@ -38,7 +37,7 @@
       "caption": "OK boomer",
       "flavor": "2019's two-word comeback, dropped mid-speech in NZ Parliament. Heckle deflected.",
       "year": 2019,
-      "art": "Retro wood-panelled TV set glowing on a sideboard, a steaming mug and a folded newspaper beside it, warm 1980s living-room light, no people. Background: orange-to-pink sunset through a window. Colors: wood tan, orange, pink, cream."
+      "art": "Parliament TV still of NZ Green MP Chlöe Swarbrick smiling at her desk mid-speech on 5 Nov 2019, the moment she answered a heckler with \"OK boomer\"."
     },
     {
       "id": "dancing-hot-dog",
@@ -47,16 +46,16 @@
       "caption": "Look at him go",
       "flavor": "2017: a dancing hot dog lens crashed every selfie. Still the best dancer online.",
       "year": 2017,
-      "art": "Hot dog in a bun with a mustard zigzag, tiny headphones, stubby arms in a disco pose, one leg kicked high. Background: pastel blue with sparkles. Colors: bun tan, sausage red, mustard yellow, sky blue."
+      "art": "Screenshot of Snapchat's 3D dancing hot dog lens (green headphones, ketchup and mustard zigzags) mid-dance on a living-room floor."
     },
     {
-      "id": "dropped-my-croissant",
-      "name": "Dropped My Croissant",
+      "id": "all-those-chickens",
+      "name": "All Those Chickens",
       "rarity": "COMMON",
-      "caption": "I could've dropped it!!",
-      "flavor": "Vine, 2014: one jump scare, one croissant on a plate, one legendary meltdown.",
-      "year": 2014,
-      "art": "Golden flaky croissant on a small white plate, tilted mid-wobble as if it is about to slide off, crumbs flying, motion blur, hallway corner behind it, no people. Background: warm beige hallway. Colors: golden yellow, cream, white, beige."
+      "caption": "Look at all those chickens",
+      "flavor": "A Vine classic: one confident narrator, a field full of geese, and zero chickens.",
+      "year": 2016,
+      "art": "Frame from the Vine: a flock of white snow geese grazing on a suburban field in front of a big house. The girl filming is not in this frame."
     },
     {
       "id": "moth-lamp",
@@ -65,16 +64,16 @@
       "caption": "Brother, may I have lamp",
       "flavor": "2018: one fuzzy moth at a window started the internet's purest obsession: lamp.",
       "year": 2018,
-      "art": "Fluffy cream moth with huge round black eyes and feathery antennae hugging a glowing table lamp, little hearts floating. Background: dark navy night. Colors: cream, warm yellow, navy, black."
+      "art": "The original July 2018 Reddit photo: a fuzzy brown moth with glowing eyes and long antennae at a window at night."
     },
     {
-      "id": "all-those-chickens",
-      "name": "All Those Chickens",
+      "id": "mocking-spongebob",
+      "name": "Mocking SpongeBob",
       "rarity": "UNCOMMON",
-      "caption": "Look at all those chickens",
-      "flavor": "A Vine classic: one confident narrator, a field full of geese, and zero chickens.",
-      "year": 2016,
-      "art": "Huge flock of white snow geese grazing on a green suburban field, a few looking at the viewer, soft overcast evening light. Background: green grass and a row of hedges. Colors: white, gray, orange, green."
+      "caption": "sUrE, wHaTeVeR yOu SaY",
+      "flavor": "2017: a chicken-posing SpongeBob still from 2012 became the internet's sarcasm font.",
+      "year": 2017,
+      "art": "SpongeBob hunched in his chicken pose from the 2012 episode \"Little Yellow Book\", cut out on white (Know Your Meme's main image)."
     },
     {
       "id": "mr-skeltal",
@@ -83,7 +82,7 @@
       "caption": "Doot doot",
       "flavor": "Good bones and calcium will come to you: a 1999 trumpet skull, still dooting.",
       "year": 2014,
-      "art": "Grinning cartoon skeleton in a tiny top hat blowing a brass trumpet, 'doot' music notes, a milk carton at its feet. Background: purple. Colors: bone white, brass gold, purple, black."
+      "art": "The 1999 \"jazzskull\" GIF: a gold 3D skull blowing a brass trumpet held by bony hands, on black."
     },
     {
       "id": "galaxy-brain",
@@ -92,7 +91,7 @@
       "caption": "Big brain time",
       "flavor": "2017's expanding-brain chart: each idea dumber, each brain glowier.",
       "year": 2017,
-      "art": "Pink brain filled with stars and a swirling galaxy, radiating cosmic light rays, tiny smug face. Background: deep space nebula. Colors: pink, cyan, purple, white."
+      "art": "Last panel of the 2017 Expanding Brain template: a glowing blue-white brain in a translucent head, radiating beams of light."
     },
     {
       "id": "area-51-raid",
@@ -101,7 +100,7 @@
       "caption": "They can't stop all of us",
       "flavor": "2019: two million RSVP'd to storm Area 51 arms-back. A tiny crowd actually went.",
       "year": 2019,
-      "art": "Desert road leading to a closed yellow barrier gate with red stop signs and blank white warning signs, cacti and scrub, a faint UFO glow in the sky. Background: deep blue desert sky. Colors: yellow, red, sand, blue."
+      "art": "Photo of the Area 51 main gate in Nevada two days after the 2019 raid date: a yellow barrier with stop signs across a desert road."
     },
     {
       "id": "road-work-ahead",
@@ -110,7 +109,7 @@
       "caption": "I sure hope it does",
       "flavor": "2016 Vine: a driver reads a road sign and delivers the decade's greatest pun.",
       "year": 2016,
-      "art": "Blank orange diamond road-work sign on a folding stand at the edge of a sunny desert road, traffic cones beside it, seen through a car windshield. Background: bright blue sky. Colors: safety orange, black, asphalt gray, sky blue."
+      "art": "Photo of an orange diamond ROAD WORK AHEAD sign on a folding stand, on grass in front of a school (Wikimedia Commons)."
     },
     {
       "id": "dat-boi",
@@ -119,16 +118,16 @@
       "caption": "Here come dat boi!",
       "flavor": "2016: a frog on a unicycle. Nobody knows why. Everybody knows the greeting.",
       "year": 2016,
-      "art": "Cheerful green frog riding a red unicycle, one webbed hand waving, big grin, pedaling motion lines. Background: sunny yellow. Colors: frog green, red, yellow, white."
+      "art": "The Animation Factory 3D clip-art frog riding an orange unicycle on white, one arm out (frame of the classic GIF)."
     },
     {
-      "id": "doge",
-      "name": "Doge",
+      "id": "woman-yelling-at-a-cat",
+      "name": "Woman Yelling at a Cat",
       "rarity": "BRAINROT",
-      "caption": "Much wow. Very pack.",
-      "flavor": "2013's Doge: a side-eyeing Shiba plus floating thoughts. Wow. To the moon.",
-      "year": 2013,
-      "art": "Photoreal tan-and-cream Shiba Inu lying on a cream sofa, body turned, paws crossed, giving a nervous side-eye with raised brows, soft warm indoor light, no text. Background: blurry cream living room. Colors: shiba orange, cream, warm beige."
+      "caption": "Smudge did nothing wrong",
+      "flavor": "2019: a sobbing Real Housewife meets Smudge, a salad-hating Ottawa cat. Meme of the year.",
+      "year": 2019,
+      "art": "Smudge the white cat at a dinner table behind a plate of salad, grimacing: his owner's 2018 photo, the meme's cat panel."
     }
   ]
 }
