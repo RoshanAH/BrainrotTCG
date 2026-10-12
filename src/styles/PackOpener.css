@@ -126,6 +126,26 @@
     opacity: 0.84;
 }
 
+/* Things stuck on the top strip: the same size as the pack and moved exactly like the top half. */
+.pack-top-piece {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    pointer-events: none;
+    transform-origin: 50% var(--tear-y);
+    transition: transform 0.46s cubic-bezier(0.25, 0.9, 0.3, 1), opacity 0.2s ease;
+}
+
+/* Once torn, the top flies up past the pack's edge (the stage still clips it). */
+.pack-shell.is-cut {
+    overflow: visible;
+}
+
+.pack-shell.is-cut .pack-top-piece {
+    transform: translateY(-18%) rotate(-4deg);
+    opacity: 0.84;
+}
+
 .tear-guide {
     position: absolute;
     left: 5%;

@@ -47,12 +47,15 @@ const PackCuttingUI = ({
             aria-hidden="true"
             draggable="false"
           />
-          <div
-            className="pack-set-ribbon"
-            style={{ '--set-a': set.palette?.[0] ?? '#ff3df2', '--set-b': set.palette?.[1] ?? '#29f0ff' } as React.CSSProperties}
-          >
-            <span className="pack-set-name">{set.name}</span>
-            <span className="pack-set-era">{set.era}</span>
+          {/* The set tag is stuck on the top strip, so it tears away with it. */}
+          <div className="pack-top-piece">
+            <div
+              className="pack-set-ribbon"
+              style={{ '--set-a': set.palette?.[0] ?? '#ff3df2', '--set-b': set.palette?.[1] ?? '#29f0ff' } as React.CSSProperties}
+            >
+              <span className="pack-set-name">{set.name}</span>
+              <span className="pack-set-era">{set.era}</span>
+            </div>
           </div>
           <div className="tear-guide" />
           <div className="swipe-hint">
