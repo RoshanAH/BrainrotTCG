@@ -7,7 +7,7 @@ transparent art window.
 
 A card is then built from three layers:
 
-1. **Art**: a real image (or an SVG placeholder) cover-fitted into the art window
+1. **Art**: the meme's real image, cover-fitted into the art window
 2. **The Genesis frame** on top
 3. **Title and caption** set by code: the title curves along the banner, the caption sits in the box.
    Text comes from `set.json`, so it's always spelled right, and editing a caption never means
@@ -19,9 +19,27 @@ Put files in `src/content/sets/<set>/art/`, named by card id. The first match wi
 
 | File | Meaning |
 | --- | --- |
-| `<card>.png` / `.jpg` / `.webp` | **The normal case.** A real image (e.g. from the free Gemini app), framed by code |
+| `<card>.png` / `.jpg` / `.webp` | **The normal case.** The meme's real image, framed by code |
 | `<card>.card.png` / `.jpg` / `.webp` | A complete card that already has its frame, used as-is (how Genesis was made) |
-| `<card>.svg` | Placeholder illustration, framed by code. Used until a real image exists |
+| `<card>.svg` | Placeholder only. Not allowed in a released set |
+
+## Real images only
+
+Every card shows **the real meme**: the canonical image people know (Know Your Meme's main image,
+the top image search result, Wikimedia Commons, official stills), saved as `art/<card-id>.png`, with
+its source recorded in the set's `CREDITS.md`.
+
+If a meme can't use its real image, **swap the card for a different meme** from the same era (same
+rarity slot) rather than drawing a lookalike. A meme can't use its real image when:
+- its owner actively enforces takedowns or has sued (e.g. Nyan Cat, Trollface, Keyboard Cat, Grumpy Cat,
+  Rickroll, Moo Deng, Socially Awkward Penguin);
+- the only images centre on a private individual or a minor;
+- it's NSFW, gore or hate-associated.
+
+The rarest slots go to the most iconic memes in the set.
+
+Downloaded files are untrusted: download each into its own empty folder, then validate and re-encode it
+with Pillow (`python3 -I`, which also strips metadata) before it goes into `art/`.
 
 Then run `npm run cards`. To preview one set (registered or not) as a contact sheet:
 
@@ -29,7 +47,9 @@ Then run `npm run cards`. To preview one set (registered or not) as a contact sh
 npx tsx scripts/cards/preview.ts <set-id> /tmp/<set-id>.png
 ```
 
-## Making real images for free (Gemini app)
+## Optional: original art with the free Gemini app
+
+Only for original content (e.g. a friend-group set), not for existing memes.
 
 1. Open a new chat in the Gemini app and attach a Genesis card as the style reference,
    e.g. `src/content/sets/genesis/art/tralalero-tralala.card.png`.

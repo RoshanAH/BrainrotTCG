@@ -45,14 +45,11 @@ Rules (see also `docs/ART_STYLE.md`):
 - `draft: true` hides the set unless a player turns on **Settings → Preview upcoming sets**.
   Remove it when the art is final.
 
-## 3. Make the art
+## 3. Get the real images
 
-```bash
-npm run prompts -- my-set     # writes src/content/sets/my-set/PROMPTS.md
-```
-
-Follow `PROMPTS.md` in the free Gemini app and save images as `art/<card-id>.png`. SVG
-placeholders (`art/<card-id>.svg`) work too while you wait. Preview the whole set:
+Save each meme's real image as `art/<card-id>.png` and record its source in `CREDITS.md` (see "Real
+images only" in `docs/ART_STYLE.md`). If a meme can't use its real image, swap the card for another meme
+from the same era. Preview the whole set:
 
 ```bash
 npx tsx scripts/cards/preview.ts my-set /tmp/my-set.png

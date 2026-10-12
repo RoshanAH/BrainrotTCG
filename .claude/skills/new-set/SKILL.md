@@ -28,14 +28,17 @@ hate-associated or tragedy memes, PG-13. Flag anything risky in the PR descripti
 ## 3. Files
 
 1. `src/content/sets/<id>/set.json` with `"draft": true` (template in `docs/ADDING_A_SET.md`).
-2. SVG placeholders in `src/content/sets/<id>/art/<card-id>.svg` (`viewBox="0 0 444 519"`).
-   Delegate one subagent per set and have it review its own contact sheet:
-   `npx tsx scripts/cards/preview.ts <id> /tmp/<id>.png` (then Read the PNG).
-3. `npm run prompts -- <id>` for the free Gemini-app prompt sheet.
+2. Real images: for every card, the meme's canonical image from the web saved as
+   `src/content/sets/<id>/art/<card-id>.png`, following "Real images only" in `docs/ART_STYLE.md`
+   (download into an empty folder, validate and re-encode with `python3 -I` + Pillow, crop to 6:7).
+   If a meme can't use its real image, replace the card with another meme from the same era. No
+   placeholders or lookalikes. Record every source in `CREDITS.md`. Delegate one subagent per set and
+   have it review its own contact sheet: `npx tsx scripts/cards/preview.ts <id> /tmp/<id>.png`.
+3. Make sure the rarest slots hold the most iconic memes.
 4. Register the set in `src/content/sets/index.ts`, then run `npm run cards`,
    `npm run check:sets -- --update` and `npm run check`.
 
 ## 4. Pull request
 
-Open a **draft** PR with the contact sheet image, the research summary with sources, and the
-risk notes. A human approves tone, IP and art before removing `"draft": true`.
+Open a **draft** PR with the contact sheet image, the research summary with sources, `CREDITS.md`,
+and notes on any replaced cards. A human approves tone, IP and art before removing `"draft": true`.
