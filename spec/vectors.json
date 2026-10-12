@@ -1,0 +1,739 @@
+{
+  "spec": "spec/PULL_SPEC.md",
+  "version": 1,
+  "tickets": [
+    {
+      "setKey": "test-set@1",
+      "publicKey": "0000000000000000000000000000000000000000000000000000000000000000",
+      "nonce": 0,
+      "ticket": "bac88a9a2bc2ccf35d6a9a2521cb7acf33a8ff99ac1d13546a675b8d21b07b35"
+    },
+    {
+      "setKey": "right-now@1",
+      "publicKey": "c8249453a694778588f6755c850846bdc0468ebb0536c8366b53c069d52aa8d2",
+      "nonce": 7,
+      "ticket": "0ac87fc9d8a9d67ec502b888108810caf7bc78f67f9cd1454cbb77e1c0be6735"
+    },
+    {
+      "setKey": "web-ancients@1",
+      "publicKey": "4d3fff7ae3b28bdd47d4fb223b7934013d77c215aa9007d0df321c5eb98e551c",
+      "nonce": 1099511627779,
+      "ticket": "991c3a4658a0717968eecd80fda45723fb80c17dcfd87a97e532dc869f2c24db"
+    }
+  ],
+  "rng": [
+    {
+      "seed": "71149807822c7ace038db84c1a8e67bf6fe6b1dc76aad4d369e620a7d2957a10",
+      "outputs": [
+        1916504016,
+        3438320661,
+        4158917633,
+        425428747,
+        563120945,
+        1173031037,
+        1412632523,
+        118897921
+      ]
+    },
+    {
+      "seed": "9b414b50efc6baed44416b17adbb6cf74d7b110320858ce9cd8790cda28d2fc7",
+      "outputs": [
+        3602802279,
+        2090338910,
+        1373889680,
+        112814210,
+        857596999,
+        915244042,
+        701640996,
+        1299515910
+      ]
+    }
+  ],
+  "packs": [
+    {
+      "set": "genesis@1",
+      "seed": "c86d370a0c6ba2907585c1193bd46899b5408171f002045ffc6fc9edc8ed4bf3",
+      "cards": [
+        {
+          "cardId": "ballerina-cappuccina",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "skibidi-toilet",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "gigachad",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "gigachad",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "brr-brr-patapim",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        }
+      ]
+    },
+    {
+      "set": "genesis@1",
+      "seed": "a3c4a6a3883f223b78ac4599e1ae176d5a386f5095719b9217903887b2364f82",
+      "cards": [
+        {
+          "cardId": "amogus",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "tung-tung-tung-sahur",
+          "rarity": "RARE",
+          "isHolo": false
+        },
+        {
+          "cardId": "brr-brr-patapim",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "locked-in-alien",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "amogus",
+          "rarity": "COMMON",
+          "isHolo": false
+        }
+      ]
+    },
+    {
+      "set": "genesis@1",
+      "seed": "9f82bfce4dc54ce4628be1637f4b4ea495642ca2e3a9fd8a936989eeb648b6aa",
+      "cards": [
+        {
+          "cardId": "clavicular",
+          "rarity": "RARE",
+          "isHolo": false
+        },
+        {
+          "cardId": "amogus",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "brr-brr-patapim",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "boneca-ambalabu",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "locked-in-alien",
+          "rarity": "COMMON",
+          "isHolo": false
+        }
+      ]
+    },
+    {
+      "set": "right-now@1",
+      "seed": "b8731fc74a3c9d390b653f2e64c7f5180b5970eab5ab4269de42e095613ace05",
+      "cards": [
+        {
+          "cardId": "ai-rumpelstiltskin",
+          "rarity": "LEGENDARY",
+          "isHolo": false
+        },
+        {
+          "cardId": "mbappe-special",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "la-peace",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "la-peace",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "la-peace",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        }
+      ]
+    },
+    {
+      "set": "right-now@1",
+      "seed": "d520c3d141aff4a2c65dddf8c3c225a9dcd3c76d07496f3e4d1cd2510cff9884",
+      "cards": [
+        {
+          "cardId": "steal-an-egg",
+          "rarity": "RARE",
+          "isHolo": false
+        },
+        {
+          "cardId": "remember-november",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "verity",
+          "rarity": "EPIC",
+          "isHolo": false
+        },
+        {
+          "cardId": "niu-lai",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "steal-an-egg",
+          "rarity": "RARE",
+          "isHolo": false
+        }
+      ]
+    },
+    {
+      "set": "right-now@1",
+      "seed": "643065f1367cdedbf7c9a6a3866278896dad2987cbd6b1b03e3693c836aa1b21",
+      "cards": [
+        {
+          "cardId": "huss-valley",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "mbappe-special",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "huss-valley",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "huss-valley",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "verity",
+          "rarity": "EPIC",
+          "isHolo": false
+        }
+      ]
+    },
+    {
+      "set": "lockdown-lore@1",
+      "seed": "2a060e460701383dde435122661808a01b6642ac5031e06d9255df66ad6fde9d",
+      "cards": [
+        {
+          "cardId": "toilet-paper-panic",
+          "rarity": "RARE",
+          "isHolo": false
+        },
+        {
+          "cardId": "sourdough-starter",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "dalgona-coffee",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "sourdough-starter",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "stick-bug",
+          "rarity": "COMMON",
+          "isHolo": false
+        }
+      ]
+    },
+    {
+      "set": "lockdown-lore@1",
+      "seed": "15f7843d341028c50fb6a2af2dfaf8d607e723cf13a13997be1443c0aff5a50d",
+      "cards": [
+        {
+          "cardId": "stick-bug",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "polish-cow",
+          "rarity": "COMMON",
+          "isHolo": true
+        },
+        {
+          "cardId": "sourdough-starter",
+          "rarity": "COMMON",
+          "isHolo": true
+        },
+        {
+          "cardId": "toilet-paper-panic",
+          "rarity": "RARE",
+          "isHolo": false
+        },
+        {
+          "cardId": "im-not-a-cat",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        }
+      ]
+    },
+    {
+      "set": "lockdown-lore@1",
+      "seed": "9aeb2b8322c2ee2204bc6c94f625b6d1898b180ff595aaffb0c3495d13d501bf",
+      "cards": [
+        {
+          "cardId": "im-not-a-cat",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "bing-chilling",
+          "rarity": "EPIC",
+          "isHolo": false
+        },
+        {
+          "cardId": "ever-given",
+          "rarity": "RARE",
+          "isHolo": false
+        },
+        {
+          "cardId": "toilet-paper-panic",
+          "rarity": "RARE",
+          "isHolo": false
+        },
+        {
+          "cardId": "bing-chilling",
+          "rarity": "EPIC",
+          "isHolo": false
+        }
+      ]
+    }
+  ],
+  "valid": [
+    {
+      "note": "simple",
+      "proof": "AQlyaWdodC1ub3cAAcgklFOmlHeFiPZ1XIUIRr3ARo67BTbINmtTwGnVKqjSAARFdmFupuiqK5UTV-TOyEltcEJm_zCpPBDvRUGcytbDnBIlIgcB_JU4cA3xd4UJm2rGfIcw-gI8M-UZZPUcvQHIzxu0DA",
+      "set": "right-now@1",
+      "publicKey": "c8249453a694778588f6755c850846bdc0468ebb0536c8366b53c069d52aa8d2",
+      "nonce": 0,
+      "name": "Evan",
+      "fingerprint": "CD2A-WMBX",
+      "cards": [
+        {
+          "cardId": "bukangi",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "bukangi",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "chile-memes",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "mbappe-special",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "niu-lai",
+          "rarity": "COMMON",
+          "isHolo": false
+        }
+      ],
+      "points": 60,
+      "hand": "Pair",
+      "multiplier": 2,
+      "score": 120,
+      "hallOfFame": false
+    },
+    {
+      "note": "non-ASCII name",
+      "proof": "AQx3ZWItYW5jaWVudHMAAcgklFOmlHeFiPZ1XIUIRr3ARo67BTbINmtTwGnVKqjSARJab8OrIPCfp6AgQnJhaW5yb3SGoZIzmo1PTU57xVWJFalZAdm3tn_P_f22CrNXGT4TORw3kuDhPVnUIk-vpdyJL8I4zVQ2UP3N0CaPnSsOwdsG",
+      "set": "web-ancients@1",
+      "publicKey": "c8249453a694778588f6755c850846bdc0468ebb0536c8366b53c069d52aa8d2",
+      "nonce": 1,
+      "name": "Zoë 🧠 Brainrot",
+      "fingerprint": "CD2A-WMBX",
+      "cards": [
+        {
+          "cardId": "y-u-no-guy",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "arrow-to-the-knee",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "trololo-guy",
+          "rarity": "RARE",
+          "isHolo": false
+        },
+        {
+          "cardId": "y-u-no-guy",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "longcat",
+          "rarity": "UNCOMMON",
+          "isHolo": true
+        }
+      ],
+      "points": 475,
+      "hand": "Pair",
+      "multiplier": 2,
+      "score": 950,
+      "hallOfFame": false
+    },
+    {
+      "note": "empty name, archived set",
+      "proof": "AQdnZW5lc2lzAAFNP_9647KL3UfU-yI7eTQBPXfCFaqQB9DfMhxeuY5VHKwCANEileIcH4yb4o1ySvrgl-ZXQ9wF5uLl39nxuD-YozmuQPGvLEuhsFsR99aoaK5kNJXqAS3Ov1q0I3j-1Cxq6AY",
+      "set": "genesis@1",
+      "publicKey": "4d3fff7ae3b28bdd47d4fb223b7934013d77c215aa9007d0df321c5eb98e551c",
+      "nonce": 300,
+      "name": "",
+      "fingerprint": "KF80-V34K",
+      "cards": [
+        {
+          "cardId": "boneca-ambalabu",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "skibidi-toilet",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "ballerina-cappuccina",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "boneca-ambalabu",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "bombardino-crocodilo",
+          "rarity": "EPIC",
+          "isHolo": false
+        }
+      ],
+      "points": 130,
+      "hand": "Pair",
+      "multiplier": 2,
+      "score": 260,
+      "hallOfFame": false
+    },
+    {
+      "note": "multi-byte varint",
+      "proof": "AQ12aW5lLWFuZC1kYW5rAAFNP_9647KL3UfU-yI7eTQBPXfCFaqQB9DfMhxeuY5VHIOAgICAIAlCaWcgTm9uY2UNu0srqIvauSeZSdj1qUliKCSCD0JRQ0CIBDkOYjm0u6PhZl_Sd3bdlZzSCgvnu1Ww1V-i9WJqKjDnIVLZ3lsK",
+      "set": "vine-and-dank@1",
+      "publicKey": "4d3fff7ae3b28bdd47d4fb223b7934013d77c215aa9007d0df321c5eb98e551c",
+      "nonce": 1099511627779,
+      "name": "Big Nonce",
+      "fingerprint": "KF80-V34K",
+      "cards": [
+        {
+          "cardId": "dancing-hot-dog",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "mocking-spongebob",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "mocking-spongebob",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "all-those-chickens",
+          "rarity": "COMMON",
+          "isHolo": true
+        },
+        {
+          "cardId": "fidget-spinner",
+          "rarity": "COMMON",
+          "isHolo": false
+        }
+      ],
+      "points": 260,
+      "hand": "Pair",
+      "multiplier": 2,
+      "score": 520,
+      "hallOfFame": false
+    },
+    {
+      "note": "mined Two Pair",
+      "proof": "AQ1sb2NrZG93bi1sb3JlAAHIJJRTppR3hYj2dVyFCEa9wEaOuwU2yDZrU8Bp1Sqo0gYLQ29tYm8gTWluZXLCkWdiD3MyHAs9l5QWeRzeUNM9o3UnWWC6h1_c44KLL-huMOr-4xWGWbJLBncknvhLMdwysB5YibdLP2D8jAkN",
+      "set": "lockdown-lore@1",
+      "publicKey": "c8249453a694778588f6755c850846bdc0468ebb0536c8366b53c069d52aa8d2",
+      "nonce": 6,
+      "name": "Combo Miner",
+      "fingerprint": "CD2A-WMBX",
+      "cards": [
+        {
+          "cardId": "stick-bug",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "polish-cow",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "polish-cow",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "sourdough-starter",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "sourdough-starter",
+          "rarity": "COMMON",
+          "isHolo": false
+        }
+      ],
+      "points": 50,
+      "hand": "Two Pair",
+      "multiplier": 10,
+      "score": 500,
+      "hallOfFame": false
+    },
+    {
+      "note": "mined 3 of a Kind",
+      "proof": "AQ1sb2NrZG93bi1sb3JlAAHIJJRTppR3hYj2dVyFCEa9wEaOuwU2yDZrU8Bp1Sqo0g4LQ29tYm8gTWluZXJhY5hoVUEiXiZ8IKAdvxlh5zhfXCEC5j_q198lRovjyOOccLKPO81MLjDpyaWMrXatbbtSF_54oXkwoKwUlFEC",
+      "set": "lockdown-lore@1",
+      "publicKey": "c8249453a694778588f6755c850846bdc0468ebb0536c8366b53c069d52aa8d2",
+      "nonce": 14,
+      "name": "Combo Miner",
+      "fingerprint": "CD2A-WMBX",
+      "cards": [
+        {
+          "cardId": "big-floppa",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "toilet-paper-panic",
+          "rarity": "RARE",
+          "isHolo": false
+        },
+        {
+          "cardId": "big-floppa",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "big-floppa",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "vibing-cat",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        }
+      ],
+      "points": 115,
+      "hand": "3 of a Kind",
+      "multiplier": 15,
+      "score": 1725,
+      "hallOfFame": false
+    },
+    {
+      "note": "mined 4 of a Kind",
+      "proof": "AQ1sb2NrZG93bi1sb3JlAAHIJJRTppR3hYj2dVyFCEa9wEaOuwU2yDZrU8Bp1Sqo0ioLQ29tYm8gTWluZXJVfucUcoYJ6MT-3ZnuvnVXFXazzbGSWsn1xirwIcKtPfHToVuy8SOhUpbwfIxf__MAaWPjnXz0rGyVKWvsJKsE",
+      "set": "lockdown-lore@1",
+      "publicKey": "c8249453a694778588f6755c850846bdc0468ebb0536c8366b53c069d52aa8d2",
+      "nonce": 42,
+      "name": "Combo Miner",
+      "fingerprint": "CD2A-WMBX",
+      "cards": [
+        {
+          "cardId": "dalgona-coffee",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "dalgona-coffee",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "dalgona-coffee",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "dalgona-coffee",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "im-not-a-cat",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        }
+      ],
+      "points": 60,
+      "hand": "4 of a Kind",
+      "multiplier": 250,
+      "score": 15000,
+      "hallOfFame": true
+    }
+  ],
+  "invalid": [
+    {
+      "note": "signature byte flipped",
+      "rule": "signature",
+      "proof": "AQlyaWdodC1ub3cAAcgklFOmlHeFiPZ1XIUIRr3ARo67BTbINmtTwGnVKqjSBQRFdmFuPzPFPSzmzJ4Ay-dr-q_nwhIW3J8yvbKdtpuyaAczTzDzglquAb5B5amAlqPfXIz_mt1-IgnhaXR5iZfLP7zaDA"
+    },
+    {
+      "note": "nonce changed after signing",
+      "rule": "signature",
+      "proof": "AQlyaWdodC1ub3cAAcgklFOmlHeFiPZ1XIUIRr3ARo67BTbINmtTwGnVKqjSBgRFdmFuPzPFPSzmzJ4Ay-dr-q_nwhIW3J8yvbKdtpuyaAczTzDzglquAb5B5amAlqPfXIz_mt1-IgnhaXR5iZfLP7zaDQ"
+    },
+    {
+      "note": "trailing byte",
+      "rule": "decode",
+      "proof": "AQlyaWdodC1ub3cAAcgklFOmlHeFiPZ1XIUIRr3ARo67BTbINmtTwGnVKqjSBQRFdmFuPzPFPSzmzJ4Ay-dr-q_nwhIW3J8yvbKdtpuyaAczTzDzglquAb5B5amAlqPfXIz_mt1-IgnhaXR5iZfLP7zaDQA"
+    },
+    {
+      "note": "truncated",
+      "rule": "decode",
+      "proof": "AQlyaWdodC1ub3cAAcgklFOmlHeFiPZ1XIUIRr3ARo67BTbINmtTwGnVKqjSBQRFdmFuPzPFPSzmzJ4Ay-dr-q_nwhIW3J8yvbKdtpuyaAczTzDzglquAb5B5amAlqPfXIz_mt1-IgnhaXR5iZfLP7za"
+    },
+    {
+      "note": "unsupported proof version",
+      "rule": "decode",
+      "proof": "AglyaWdodC1ub3cAAcgklFOmlHeFiPZ1XIUIRr3ARo67BTbINmtTwGnVKqjSBQRFdmFu7t4z2pRCDiqTzC5gzqNCF6T5nR4Uj6LbgmayQYYHoPGZtpfw80rJAFBLAhzd-LLrfDwx2aD808PQODeotAStBA"
+    },
+    {
+      "note": "empty set id",
+      "rule": "decode",
+      "proof": "AQAAAcgklFOmlHeFiPZ1XIUIRr3ARo67BTbINmtTwGnVKqjSBQRFdmFum6iZBN_PpRYUjal45s9HHHek9-Bjt2Sm43lUQfPQ_-BITk097lGec6JKbqLRoU52Pfy5Yr34jOjloXoMoNOxAA"
+    },
+    {
+      "note": "non-minimal varint (signed as sent)",
+      "rule": "decode",
+      "proof": "AQlyaWdodC1ub3cAAcgklFOmlHeFiPZ1XIUIRr3ARo67BTbINmtTwGnVKqjShQAERXZhbsz_N4_DUesPi7xtCCrGMX57yki6OVF-6qGVrtoXZ4TEcTKbfrSO9j2O8p-5bhtjbVKLUe1CoQQdPddB_wsQzg0"
+    },
+    {
+      "note": "non-minimal varint (re-encoded copy of a valid pull)",
+      "rule": "decode",
+      "proof": "AQlyaWdodC1ub3cAAcgklFOmlHeFiPZ1XIUIRr3ARo67BTbINmtTwGnVKqjShQAERXZhbj8zxT0s5syeAMvna_qv58ISFtyfMr2ynbabsmgHM08w84JargG-QeWpgJaj31yM_5rdfiIJ4Wl0eYmXyz-82g0"
+    },
+    {
+      "note": "varint above 2^53-1",
+      "rule": "decode",
+      "proof": "AQlyaWdodC1ub3cAAcgklFOmlHeFiPZ1XIUIRr3ARo67BTbINmtTwGnVKqjS__________8BBEV2YW4TShIrkit0JGXY4l-vEdLgJt9aTpr7c_wU_pSHgqLhZIjZ2gBJ6-EirXdqqEyw7staaxzQFGCoyqKIIC0IgWkG"
+    },
+    {
+      "note": "base64url with non-zero unused bits",
+      "rule": "decode",
+      "proof": "AQlyaWdodC1ub3cAAcgklFOmlHeFiPZ1XIUIRr3ARo67BTbINmtTwGnVKqjSBQVFdmFuIbUFRFC7kseYF1H9iLQDaUbILpSk_QsNuiBA-W-zipErwob9SaIVyw51fF-jdrZvK8zW_PeCldBroXIiYre7Lgx"
+    },
+    {
+      "note": "base64url padding",
+      "rule": "decode",
+      "proof": "AQlyaWdodC1ub3cAAcgklFOmlHeFiPZ1XIUIRr3ARo67BTbINmtTwGnVKqjSBQRFdmFuPzPFPSzmzJ4Ay-dr-q_nwhIW3J8yvbKdtpuyaAczTzDzglquAb5B5amAlqPfXIz_mt1-IgnhaXR5iZfLP7zaDQ="
+    },
+    {
+      "note": "invalid UTF-8 in name",
+      "rule": "decode",
+      "proof": "AQlyaWdodC1ub3cAAcgklFOmlHeFiPZ1XIUIRr3ARo67BTbINmtTwGnVKqjSBQNFwyjRSbMu1gm2aXTvXP1msmCACMOKbwA11nbbrXYTixbgxCaiO8jEbT8OTFrIFXDpF7GF58vD7LJi_GGqutSnGWQD"
+    },
+    {
+      "note": "name not normalised (double space)",
+      "rule": "name",
+      "proof": "AQlyaWdodC1ub3cAAcgklFOmlHeFiPZ1XIUIRr3ARo67BTbINmtTwGnVKqjSBQlFdmFuICBMaW71ZNr-CzeNkuLduIAg5LCNrAqfpkmcrAKDM46fB3qCKVU5n6JVqKGeTvCPSYBBAfIvgXtujP-qrQMW8wuma8IH"
+    },
+    {
+      "note": "name with right-to-left override",
+      "rule": "name",
+      "proof": "AQlyaWdodC1ub3cAAcgklFOmlHeFiPZ1XIUIRr3ARo67BTbINmtTwGnVKqjSBQ5FdmFu4oCuZ25wLmV4ZRap-FxQhJsKnc_TjqHcPJdNQ2RFR9oaotO32zSJMDSN2w0MZ-q5VEoWmCv13H7do0rb7e7yYzr5iUEmXV4xmwc"
+    },
+    {
+      "note": "name not NFC",
+      "rule": "name",
+      "proof": "AQlyaWdodC1ub3cAAcgklFOmlHeFiPZ1XIUIRr3ARo67BTbINmtTwGnVKqjSBQVab2XMiFLSnrRLrmjKRD-OcaokLgd0fxOE93lYaECxw64eBQ1c5Kl50XnGMCDID_LfFu2VRgK8gtt8RjnJy6DwL9xw7wA"
+    },
+    {
+      "note": "name over 24 code points",
+      "rule": "name",
+      "proof": "AQlyaWdodC1ub3cAAcgklFOmlHeFiPZ1XIUIRr3ARo67BTbINmtTwGnVKqjSBRl4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4a8lSe1OUQdoCt141pb69dmMfGYIz5fhpapJhK6B40q26AsAshPB_Yvi47r7znc3DAbDV1QYUCtlJ73koYpxyAg"
+    },
+    {
+      "note": "small-order public key with a forged signature",
+      "rule": "publicKey",
+      "proof": "AQlyaWdodC1ub3cAAQEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABQRFdmFuAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    },
+    {
+      "note": "non-canonical public key encoding",
+      "rule": "publicKey",
+      "proof": "AQlyaWdodC1ub3cAAe7_______________________________________9_BQRFdmFumk01q4-NRUufWO5_dh9yCZtc-41ll9kYwWySp8LjIjyNgb-jstGMUNRMfjZjFPAhuGJ2eIN70jTTkuS_QJ5QAg"
+    },
+    {
+      "note": "signature with S + L (malleated)",
+      "rule": "signature",
+      "proof": "AQlyaWdodC1ub3cAAcgklFOmlHeFiPZ1XIUIRr3ARo67BTbINmtTwGnVKqjSBQRFdmFuPzPFPSzmzJ4Ay-dr-q_nwhIW3J8yvbKdtpuyaAczTzDgVlALHCFUPYAdjka-VmsUm91-IgnhaXR5iZfLP7zaHQ"
+    },
+    {
+      "note": "unknown set",
+      "rule": "set",
+      "proof": "AQtuby1zdWNoLXNldAAByCSUU6aUd4WI9nVchQhGvcBGjrsFNsg2a1PAadUqqNIFBEV2YW5PxanAf21V535WOwufUZ3kTKIy4fYzLUvbU_3iLL8t4xVuhGv5pmwXkOHlJxPiuyedL3awoIQkfeXMggASvJkA"
+    },
+    {
+      "note": "unknown set version",
+      "rule": "set",
+      "proof": "AQlyaWdodC1ub3cAY8gklFOmlHeFiPZ1XIUIRr3ARo67BTbINmtTwGnVKqjSBQRFdmFuc0gHrAv4wz2WXKO5ObON1J7-H6MGpEBwo5EzoqCZnOMQ-zXqueR3LxMGT47di7vzfzbNI6aoNiPrL3Rbrm8TBA"
+    }
+  ],
+  "samePull": [
+    {
+      "note": "same set, key and nonce: one pull for leaderboards",
+      "proofs": [
+        "AQlyaWdodC1ub3cAAcgklFOmlHeFiPZ1XIUIRr3ARo67BTbINmtTwGnVKqjSCQVGaXJzdLTYgos07MzGrZDM0L7071zy4-YdfnqL19WRCTc5rD242m5TCj1xDAVXxKeJ7eJg1ElPk912dwDTJD5FkRNISwo",
+        "AQlyaWdodC1ub3cAAcgklFOmlHeFiPZ1XIUIRr3ARo67BTbINmtTwGnVKqjSCQZTZWNvbmSQFp2JNS6zzEliHfWLonU5KfP4jGiK_lF7TX8DXgIxdmGiPHo29LeMcvWMAARDzJVygf08-SrZ0Tq8RTiuKfYL"
+      ],
+      "pullId": "right-now@1/c8249453a694778588f6755c850846bdc0468ebb0536c8366b53c069d52aa8d2/9"
+    }
+  ]
+}
