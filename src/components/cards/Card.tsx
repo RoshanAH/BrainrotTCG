@@ -99,6 +99,7 @@ const Card = ({ card, isFlipped, onFlip, slowFlip = false, tell = false }: CardP
                 {/* Card Front */}
                 <div className={`card-face card-front ${modifierClasses(card)}`}>
                     <img src={card.image} alt={card.name} className="card-full-image" draggable="false" />
+                    {card.misprint && <img src={card.image} alt="" aria-hidden="true" className="misprint-ghost" draggable="false" />}
                     {card.isHolo && <div className="holo-shine-overlay"></div>}
                     <div className="holo-overlay"></div>
                     {card.isNew && <span className="new-sticker">New</span>}
