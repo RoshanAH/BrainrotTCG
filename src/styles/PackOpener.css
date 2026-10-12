@@ -71,8 +71,67 @@
     isolation: isolate;
 }
 
-.pack-shell::after {
-    content: none;
+/* Pack foils unlocked by level (game/progression.ts): a sheen over the wrapper, cut to its shape. */
+.pack-shell::after,
+.foil-swatch::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background: var(--pack-foil, none);
+    background-size: 300% 100%;
+    mix-blend-mode: var(--pack-foil-blend, normal);
+    opacity: var(--pack-foil-opacity, 1);
+    -webkit-mask: var(--pack-mask) center / 100% 100% no-repeat;
+    mask: var(--pack-mask) center / 100% 100% no-repeat;
+    animation: pack-foil 4.5s ease-in-out infinite alternate;
+    transition: opacity 0.2s ease;
+}
+
+.pack-shell.is-cut::after {
+    opacity: 0;
+}
+
+.foil-standard {
+    --pack-foil: none;
+}
+
+:root[data-pack-foil='shimmer'],
+.foil-shimmer {
+    --pack-foil: linear-gradient(110deg, transparent 36%, rgba(255, 255, 255, 0.85) 50%, transparent 64%);
+    --pack-foil-blend: overlay;
+}
+
+:root[data-pack-foil='gold'],
+.foil-gold {
+    --pack-foil: linear-gradient(110deg, #8a5d00, #ffd76a 22%, #fff3c4 36%, #c8961e 52%, #8a5d00 68%, #ffd76a 84%, #fff3c4);
+    --pack-foil-blend: overlay;
+    --pack-foil-opacity: 0.8;
+}
+
+:root[data-pack-foil='prism'],
+.foil-prism {
+    --pack-foil: linear-gradient(110deg, #ff7ac8, #ffd23f 20%, #6ff2c6 40%, #7ab8ff 60%, #d38bff 80%, #ff7ac8);
+    --pack-foil-blend: overlay;
+    --pack-foil-opacity: 0.7;
+}
+
+@keyframes pack-foil {
+    from {
+        background-position: 0% 50%;
+    }
+
+    to {
+        background-position: 100% 50%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pack-shell::after,
+    .foil-swatch::after {
+        animation: none;
+    }
 }
 
 .pack-shell::before {

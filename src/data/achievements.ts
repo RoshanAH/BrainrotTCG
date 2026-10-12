@@ -1,9 +1,14 @@
+import { isOpenable, SETS } from '../content/sets';
+
 export interface Achievement {
   id: string;
   name: string;
   description: string;
   icon: string;
 }
+
+export const setCompleteId = (setId: string) => `set_complete:${setId}`;
+export const setMasterId = (setId: string) => `set_master:${setId}`;
 
 export const ACHIEVEMENTS: Achievement[] = [
   // Pack milestones
@@ -95,6 +100,11 @@ export const ACHIEVEMENTS: Achievement[] = [
   { id: 'pack_value_9000', name: 'Ninety Grand', description: 'Open a pack with a Brainrot Score of 90,000+', icon: '🏰' },
   { id: 'pack_value_10000', name: 'Six Figure Pack', description: 'Open a pack with a Brainrot Score of 100,000+', icon: '🌌' },
   { id: 'pack_value_max', name: 'Literally Impossible', description: 'Open a pack with a Brainrot Score of 100,000,000+', icon: '🤯' },
+  // Every set you can open: complete it (every card), then master it (every card as a holo)
+  ...SETS.filter(isOpenable).flatMap((set) => [
+    { id: setCompleteId(set.id), name: `${set.name}: Complete`, description: `Collect every card in ${set.name}`, icon: '📗' },
+    { id: setMasterId(set.id), name: `${set.name}: Master`, description: `Collect every card in ${set.name} as a holo`, icon: '🌈' },
+  ]),
 ];
 
 export const getAchievementById = (id: string): Achievement | undefined => ACHIEVEMENTS.find(a => a.id === id);

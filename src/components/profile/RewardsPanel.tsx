@@ -1,0 +1,99 @@
+import type { ReactNode } from 'react';
+import { Lock } from 'lucide-react';
+import cardBackImage from '../../assets/images/card_back.webp';
+import { CARD_BACKS, PACK_FOILS, nextReward, usable, type Reward } from '../../game/progression';
+import type { Settings } from '../../types';
+
+interface RewardsPanelProps {
+  level: number;
+  settings: Settings;
+  onSettingsChange: (settings: Settings) => void;
+  /** A pack wrapper to show the foils on. */
+  packImage: string;
+}
+
+/** What your level has unlocked: pick a card back and a pack foil; the next unlock is named. */
+const RewardsPanel = ({ level, settings, onSettingsChange, packImage }: RewardsPanelProps) => {
+  const next = nextReward(level);
+  return (
+    <section className="rewards" aria-labelledby="rewards-title">
+      <h3 id="rewards-title" className="section-title profile-heading">
+        Level rewards
+      </h3>
+      <p className="rewards-next">
+        {next ? (
+          <>
+            Next: <strong>{next.name}</strong> ({next.kind}) at level {next.level}
+          </>
+        ) : (
+          'Every reward unlocked.'
+        )}
+      </p>
+      <RewardPicker
+        label="Card back"
+        rewards={CARD_BACKS}
+        chosen={usable(CARD_BACKS, settings.cardBack, level)}
+        level={level}
+        onChoose={(cardBack) => onSettingsChange({ ...settings, cardBack })}
+        preview={(r) => (
+          <span className={`back-swatch back-${r.id}`}>
+            <img src={cardBackImage} alt="" className="card-back-image" draggable="false" />
+          </span>
+        )}
+      />
+      <RewardPicker
+        label="Pack foil"
+        rewards={PACK_FOILS}
+        chosen={usable(PACK_FOILS, settings.packFoil, level)}
+        level={level}
+        onChoose={(packFoil) => onSettingsChange({ ...settings, packFoil })}
+        preview={(r) => (
+          <span className={`foil-swatch foil-${r.id}`} style={{ '--pack-mask': `url("${packImage}")` } as React.CSSProperties}>
+            <img src={packImage} alt="" draggable="false" />
+          </span>
+        )}
+      />
+    </section>
+  );
+};
+
+interface RewardPickerProps {
+  label: string;
+  rewards: readonly Reward[];
+  chosen: string;
+  level: number;
+  onChoose: (id: string) => void;
+  preview: (reward: Reward) => ReactNode;
+}
+
+/** One kind of reward as a row of choices; locked ones show the level that unlocks them. */
+const RewardPicker = ({ label, rewards, chosen, level, onChoose, preview }: RewardPickerProps) => (
+  <div className="reward-picker" role="radiogroup" aria-label={label}>
+    <span className="reward-picker-label">{label}</span>
+    <div className="reward-options">
+      {rewards.map((r) => {
+        const locked = r.level > level;
+        return (
+          <button
+            key={r.id}
+            type="button"
+            role="radio"
+            aria-checked={r.id === chosen}
+            className={`reward-option ${locked ? 'is-locked' : ''}`}
+            disabled={locked}
+            onClick={() => onChoose(r.id)}
+            aria-label={locked ? `${r.name}, unlocks at level ${r.level}` : r.name}
+          >
+            {preview(r)}
+            <span className="reward-option-name">
+              {locked && <Lock aria-hidden="true" />}
+              {locked ? `Lv ${r.level}` : r.name}
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  </div>
+);
+
+export default RewardsPanel;

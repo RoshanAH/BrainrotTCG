@@ -253,5 +253,9 @@ describe('levels', () => {
     expect(stats.hands).toEqual({ FULL_HOUSE: 1, NO_MATCH: 1 });
     expect(stats.xp).toBe(2 * XP_PER_PACK + 6 * XP_PER_NEW_CARD + 50);
     expect(stats.best[0].nonce).toBe(0);
+    // Every card's points (all commons here, the first of pack 1 a holo), and holos by set.
+    expect(stats.points).toBe(9 * 10 + 10 * 20);
+    expect(stats.holoUniqueBySet).toEqual({ 'set-a': 1 });
+    expect(profileStats([...packs, pack(2, ['c1', 'c1', 'c1', 'c1', 'c1'], true)]).holoUniqueBySet).toEqual({ 'set-a': 1 }); // the same card again
   });
 });

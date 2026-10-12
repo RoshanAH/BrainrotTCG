@@ -2,6 +2,8 @@ import { useEffect, useRef } from 'react';
 import type { SetDefinition } from '../../engine';
 import { isNewSet, setCode } from '../../content/sets';
 import type { CollectionItem } from '../../types';
+import { setProgress } from '../../game/progression';
+import SetBadge from './SetBadge';
 import '../../styles/Sets.css';
 
 interface SetPickerProps {
@@ -32,6 +34,8 @@ const SetPicker = ({ sets, selectedId, onSelect, collection, disabled = false }:
       <div className="set-picker-list" ref={listRef}>
         {sets.map((set) => {
           const owned = set.cards.filter((c) => collection[`${set.id}/${c.id}`]).length;
+          const holoOwned = set.cards.filter((c) => (collection[`${set.id}/${c.id}`]?.holoCount ?? 0) > 0).length;
+          const done = setProgress(owned, holoOwned, set.cards.length);
           const [a = '#ff3df2', b = '#29f0ff'] = set.palette ?? [];
           const selected = set.id === selectedId;
           return (
@@ -58,6 +62,7 @@ const SetPicker = ({ sets, selectedId, onSelect, collection, disabled = false }:
                   {' '}
                   · {owned}/{set.cards.length}
                 </span>
+                {done && <SetBadge done={done} />}
                 {isNewSet(set) && <span className="set-chip-new">New</span>}
               </span>
             </button>

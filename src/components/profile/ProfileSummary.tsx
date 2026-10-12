@@ -4,7 +4,9 @@ import { POKER_HANDS, xpForLevel, type HandKey, type ProfilePack, type ProfileSt
 import { COLLECTIBLE_CARDS, getSetCards } from '../../data/cards';
 import { SETS, setCode } from '../../content/sets';
 import { toCardsWithMeta } from '../../game/pulls';
+import { collectionMilestone, setProgress, titleFor } from '../../game/progression';
 import PackCardViewer from '../ui/PackCardViewer';
+import SetBadge from '../sets/SetBadge';
 import Sheet from '../ui/Sheet';
 import '../../styles/Profile.css';
 
@@ -33,6 +35,8 @@ const ProfileSummary = ({ stats, actions, levelNote, partial = false, onOpenPack
   const best = stats.best.filter((p) => p.cards.length > 0).slice(0, 3);
   const hands = SHOWN_HANDS.filter((h) => stats.hands[h]);
   const sets = SETS.filter((s) => stats.uniqueBySet[s.id]);
+  const { current: milestone, next: nextMilestone } = collectionMilestone(stats.points);
+  const milestoneFloor = milestone?.points ?? 0;
 
   return (
     <div className={`profile-summary ${partial ? 'is-partial' : ''}`}>
@@ -40,6 +44,7 @@ const ProfileSummary = ({ stats, actions, levelNote, partial = false, onOpenPack
         <span className="profile-level-head">
           <span className="profile-level-label">
             Level <span className="tabular">{stats.level}</span>
+            <span className="profile-title"> · {titleFor(stats.level)}</span>
             {levelNote && <span className="profile-so-far"> {levelNote}</span>}
           </span>
           <span className="profile-level-next tabular">
@@ -86,6 +91,22 @@ const ProfileSummary = ({ stats, actions, levelNote, partial = false, onOpenPack
       )}
       {partial && <p className="profile-footnote">* so far, while the rest of the packs are re-opened</p>}
 
+      <section className="profile-collection" aria-label="Collection Brainrot Score">
+        <span className="profile-collection-head">
+          <span>
+            <span className="profile-collection-label">Collection score{partial && '*'}</span>{' '}
+            <span className="profile-collection-tier">{milestone ? milestone.name : 'No milestone yet'}</span>
+          </span>
+          <span className="profile-level-next tabular">
+            {stats.points.toLocaleString()}
+            {nextMilestone && ` / ${nextMilestone.points.toLocaleString()} for ${nextMilestone.name}`}
+          </span>
+        </span>
+        <span className="progress" aria-hidden="true">
+          <span style={{ width: `${nextMilestone ? ((stats.points - milestoneFloor) / (nextMilestone.points - milestoneFloor)) * 100 : 100}%` }} />
+        </span>
+      </section>
+
       {best.length > 0 && (
         <section>
           <h3 className="section-title profile-heading">Best pulls</h3>
@@ -131,11 +152,13 @@ const ProfileSummary = ({ stats, actions, levelNote, partial = false, onOpenPack
             {sets.map((set) => {
               const have = stats.uniqueBySet[set.id] ?? 0;
               const size = getSetCards(set.id).length;
+              const done = setProgress(have, stats.holoUniqueBySet[set.id] ?? 0, size);
               const [a = '#ff3df2', b = '#29f0ff'] = set.palette ?? [];
               return (
                 <li key={set.id} style={{ '--set-a': a, '--set-b': b } as React.CSSProperties}>
                   <span className="profile-set-name">{set.name}</span>
                   <span className="profile-set-count tabular">
+                    {done && <SetBadge done={done} />}
                     {have}/{size}
                   </span>
                   <span className="profile-set-bar" aria-hidden="true">

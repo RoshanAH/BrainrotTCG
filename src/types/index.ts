@@ -69,6 +69,9 @@ export interface Settings {
   /** Sound effects volume slider (cards, the pack, voices), 0 (off) to 1. */
   effectsVolume: number;
   particlesEnabled: boolean;
+  /** Chosen level rewards (game/progression.ts); a locked choice falls back to the first. */
+  cardBack?: string;
+  packFoil?: string;
   /** Show draft sets (placeholder art) in the set picker. */
   showDraftSets?: boolean;
 }

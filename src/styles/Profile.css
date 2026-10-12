@@ -50,6 +50,37 @@
   margin-top: var(--space-2);
 }
 
+.profile-title {
+  color: var(--brand);
+  font-size: var(--text-lg);
+}
+
+.profile-collection {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.profile-collection-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-3);
+}
+
+.profile-collection-label {
+  font-weight: 700;
+}
+
+.profile-collection-tier {
+  color: var(--brand);
+  font-family: var(--font-display);
+}
+
+.profile-collection .progress {
+  height: 6px;
+}
+
 /* Four numbers on one line, no boxes. */
 .profile-stats {
   display: flex;
@@ -106,6 +137,9 @@
 }
 
 .profile-set-count {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
   color: var(--text-muted);
   font-size: var(--text-sm);
 }
@@ -206,4 +240,113 @@
 .profile-verify-sub {
   color: var(--text-muted);
   font-size: var(--text-xs);
+}
+
+/* Level rewards (RewardsPanel.tsx) */
+
+.rewards {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.rewards .profile-heading {
+  margin-bottom: 0;
+}
+
+.rewards-next {
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
+
+.rewards-next strong {
+  color: var(--text);
+}
+
+.reward-picker {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.reward-picker-label {
+  font-size: var(--text-sm);
+  font-weight: 700;
+}
+
+.reward-options {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  padding-bottom: var(--space-1);
+}
+
+.reward-option {
+  display: grid;
+  flex: none;
+  justify-items: center;
+  gap: 6px;
+  width: 4.75rem;
+  padding: var(--space-2) var(--space-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: none;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.reward-option[aria-checked='true'] {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 1px var(--brand);
+}
+
+.reward-option.is-locked {
+  cursor: default;
+  opacity: 0.55;
+}
+
+.reward-option.is-locked .back-swatch,
+.reward-option.is-locked .foil-swatch {
+  filter: grayscale(0.6);
+}
+
+.reward-option-name {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.reward-option-name svg {
+  width: 11px;
+  height: 11px;
+}
+
+.back-swatch,
+.foil-swatch {
+  position: relative;
+  display: block;
+  isolation: isolate;
+}
+
+.back-swatch {
+  width: 2.6rem;
+  aspect-ratio: 687 / 1024;
+}
+
+.back-swatch .card-back-image {
+  border-radius: 3px;
+}
+
+.foil-swatch {
+  width: 2.2rem;
+  aspect-ratio: 1536 / 2752;
+}
+
+.foil-swatch img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }

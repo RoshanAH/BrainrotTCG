@@ -33,6 +33,7 @@ const PackCuttingUI = ({
         <div
           ref={packRef}
           className={`pack-shell ${isCutting ? 'is-cutting' : ''} ${isPackCut ? 'is-cut' : ''}`}
+          style={{ '--pack-mask': `url("${packDesign}")` } as React.CSSProperties}
         >
           <img
             className="pack-half pack-half-bottom"

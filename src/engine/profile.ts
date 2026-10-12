@@ -411,9 +411,13 @@ export interface ProfileStats {
   level: number;
   /** Distinct cards (holo or not counts once), by set id. */
   uniqueBySet: Record<string, number>;
+  /** Distinct cards pulled as a holo at least once, by set id (a set's "master set"). */
+  holoUniqueBySet: Record<string, number>;
   unique: number;
   holos: number;
   totalScore: number;
+  /** Collection Brainrot Score: the points of every card pulled, holo copies at holo points (no combo multipliers). */
+  points: number;
   hands: Partial<Record<HandKey, number>>;
   /** Highest score first; ties go to the earlier ticket. */
   best: ProfilePack[];
@@ -422,20 +426,30 @@ export interface ProfileStats {
 /** Stats for packs in ticket order (they can be a prefix while verification is still running). */
 export const profileStats = (packs: readonly ProfilePack[], bestCount = 5): ProfileStats => {
   const seen = new Set<string>();
+  const seenHolo = new Set<string>();
   const uniqueBySet: Record<string, number> = {};
+  const holoUniqueBySet: Record<string, number> = {};
   const hands: Partial<Record<HandKey, number>> = {};
   let xp = 0;
   let holos = 0;
   let totalScore = 0;
+  let points = 0;
   for (const pack of packs) {
     xp += XP_PER_PACK;
     const hand = handKeyOf(pack.score);
     xp += XP_PER_HAND[hand];
     hands[hand] = (hands[hand] ?? 0) + 1;
     totalScore += pack.score.score;
+    points += pack.score.points;
     for (const card of pack.cards) {
-      if (card.isHolo) holos++;
       const key = `${card.setId}/${card.cardId}`;
+      if (card.isHolo) {
+        holos++;
+        if (!seenHolo.has(key)) {
+          seenHolo.add(key);
+          holoUniqueBySet[card.setId] = (holoUniqueBySet[card.setId] ?? 0) + 1;
+        }
+      }
       if (seen.has(key)) continue;
       seen.add(key);
       uniqueBySet[card.setId] = (uniqueBySet[card.setId] ?? 0) + 1;
@@ -443,5 +457,5 @@ export const profileStats = (packs: readonly ProfilePack[], bestCount = 5): Prof
     }
   }
   const best = [...packs].sort((a, b) => b.score.score - a.score.score || a.nonce - b.nonce).slice(0, bestCount);
-  return { packs: packs.length, xp, level: levelForXp(xp), uniqueBySet, unique: seen.size, holos, totalScore, hands, best };
+  return { packs: packs.length, xp, level: levelForXp(xp), uniqueBySet, holoUniqueBySet, unique: seen.size, holos, totalScore, points, hands, best };
 };

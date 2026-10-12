@@ -37,6 +37,57 @@
     object-fit: cover;
     display: block;
     border-radius: 8px;
+    filter: var(--card-back-filter, none);
+    animation: var(--card-back-anim, none);
+}
+
+/* Card backs unlocked by level (game/progression.ts): chosen on <html>, or on a swatch. */
+.back-classic {
+    --card-back-filter: none;
+    --card-back-anim: none;
+}
+
+:root[data-card-back='midnight'],
+.back-midnight {
+    --card-back-filter: grayscale(1) sepia(1) hue-rotate(185deg) saturate(2.5) brightness(0.62) contrast(1.2);
+}
+
+:root[data-card-back='vapor'],
+.back-vapor {
+    --card-back-filter: grayscale(1) sepia(1) hue-rotate(255deg) saturate(3.2) brightness(0.95) contrast(1.05);
+}
+
+:root[data-card-back='gold'],
+.back-gold {
+    --card-back-filter: sepia(1) saturate(3) hue-rotate(-8deg) brightness(1.05) contrast(1.1);
+}
+
+:root[data-card-back='void'],
+.back-void {
+    --card-back-filter: grayscale(1) invert(1) contrast(1.2) brightness(0.6);
+}
+
+:root[data-card-back='prism'],
+.back-prism {
+    /* Still (reduced motion): one turn of the colours; otherwise they cycle. */
+    --card-back-filter: hue-rotate(90deg) saturate(1.6);
+    --card-back-anim: card-back-prism 6s linear infinite;
+}
+
+@keyframes card-back-prism {
+    from {
+        filter: hue-rotate(0deg) saturate(1.5);
+    }
+
+    to {
+        filter: hue-rotate(360deg) saturate(1.5);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .card-back-image {
+        animation: none;
+    }
 }
 
 /* Card Front */

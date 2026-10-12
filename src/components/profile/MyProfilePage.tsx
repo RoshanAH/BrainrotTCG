@@ -1,13 +1,18 @@
 import { useId, useMemo, useState } from 'react';
-import { ChevronRight, Link2, Trophy } from 'lucide-react';
+import { ChevronRight, IdCard, Link2, Trophy } from 'lucide-react';
 import type { CardWithMeta } from '../cards/Card';
 import PackCardViewer from '../ui/PackCardViewer';
 import Sheet from '../ui/Sheet';
 import Tabs from '../ui/Tabs';
 import { tabPanelProps } from '../ui/tabPanel';
 import ProfileSummary from './ProfileSummary';
+import RewardsPanel from './RewardsPanel';
+import SharePreviewSheet from '../share/SharePreviewSheet';
+import { renderPlayerCard } from '../../game/playerCard';
+import type { Settings } from '../../types';
+import { packImageUrl } from '../../content/art';
 import { getCard } from '../../data/cards';
-import { getLatestSet, setCode } from '../../content/sets';
+import { DEFAULT_SET_ID, getLatestSet, setCode } from '../../content/sets';
 import { byBest, getHistory, isHallOfFameWorthy, type HistoryEntry } from '../../game/history';
 import { HALL_OF_FAME_MIN_SCORE } from '../../engine';
 import { getPlayer } from '../../game/player';
@@ -22,6 +27,8 @@ interface LegacyBest {
 
 interface MyProfilePageProps {
   stats: LegacyBest;
+  settings: Settings;
+  onSettingsChange: (settings: Settings) => void;
   onClose: () => void;
   onSharePull: (entry: HistoryEntry, cards: CardWithMeta[]) => void;
 }
@@ -50,7 +57,7 @@ const cardsOf = (entry: HistoryEntry): CardWithMeta[] | null =>
     .filter((c): c is CardWithMeta => c !== null) ?? null;
 
 /** Your level and stats, a link that proves them, and every pack you've opened (newest first). */
-const MyProfilePage = ({ stats, onClose, onSharePull }: MyProfilePageProps) => {
+const MyProfilePage = ({ stats, settings, onSettingsChange, onClose, onSharePull }: MyProfilePageProps) => {
   const player = getPlayer();
   const history = useMemo(() => getHistory(), []);
   const summary = useMemo(() => myStats(), []);
@@ -78,9 +85,8 @@ const MyProfilePage = ({ stats, onClose, onSharePull }: MyProfilePageProps) => {
     }
   };
 
-  const share = async () => {
-    if (readyUrl) return send(readyUrl);
-    // Usually instant; tickets this device has no cards for are re-opened once, first.
+  /** The profile link. Usually instant; tickets this device has no cards for are re-opened once, first. */
+  const makeLink = async (): Promise<{ url: string; slow: boolean } | null> => {
     const slow = !!mine?.missing;
     setPreparing(slow ? 'Preparing…' : null);
     let proof: string | null;
@@ -89,9 +95,22 @@ const MyProfilePage = ({ stats, onClose, onSharePull }: MyProfilePageProps) => {
     } finally {
       setPreparing(null);
     }
-    if (!proof) return;
-    if (slow) setReadyUrl(profileUrl(proof));
-    else await send(profileUrl(proof));
+    return proof ? { url: profileUrl(proof), slow } : null;
+  };
+
+  const share = async () => {
+    if (readyUrl) return send(readyUrl);
+    const link = await makeLink();
+    if (!link) return;
+    if (link.slow) setReadyUrl(link.url);
+    else await send(link.url);
+  };
+
+  /** The player card: an image with the profile link's QR code, then copy the image or the link. */
+  const [cardUrl, setCardUrl] = useState<string | null>(null);
+  const shareCard = async () => {
+    const link = readyUrl ? { url: readyUrl } : await makeLink();
+    if (link) setCardUrl(link.url);
   };
 
   const openEntry = (entry: HistoryEntry | undefined) => {
@@ -100,126 +119,150 @@ const MyProfilePage = ({ stats, onClose, onSharePull }: MyProfilePageProps) => {
   };
 
   return (
-    <Sheet
-      title="Profile"
-      subtitle={
-        <>
-          {player.name} <span className="share-fp">#{player.fingerprint}</span>
-        </>
-      }
-      onClose={onClose}
-      size="lg"
-      className="pulls-page"
-    >
-      {mine ? (
-        <ProfileSummary
-          stats={summary}
-          onOpenPack={(pack) => openEntry(history.find((e) => e.nonce === pack.nonce && player.publicKeyHex.startsWith(e.key)))}
-          actions={
-            <button type="button" className="btn btn--secondary btn--sm" onClick={share} disabled={!!preparing}>
-              <Link2 aria-hidden="true" />
-              {preparing ?? (copied ? 'Link copied' : readyUrl ? 'Copy link now' : 'Copy profile link')}
-            </button>
-          }
-        />
-      ) : (
-        <div className="pulls-empty">
-          <p>No packs yet. Your level, stats and best pulls show up here.</p>
-          <button type="button" className="btn btn--primary" onClick={onClose}>
-            Open your first pack
-          </button>
-        </div>
-      )}
-
-      {mine && mine.filled > 0 && (
-        <p className="pulls-note">
-          {mine.filled.toLocaleString()} early pack{mine.filled === 1 ? " wasn't" : "s weren't"} recorded on this device. A profile
-          can't skip tickets, so yours counts {mine.filled === 1 ? 'it' : 'them'} as whatever those tickets hold.
-        </p>
-      )}
-
-      {stats.highestPackLegacy && stats.highestPackCards?.length ? (
-        <section className="pulls-legacy">
-          <h3 className="section-title pulls-history-title">Best before verifiable pulls</h3>
-          <PackCardViewer cards={stats.highestPackCards} displayMode="grid" canShareCards />
-        </section>
-      ) : null}
-
-      {history.length > 0 && (
-        <section aria-labelledby="pulls-history-title" className="pulls-history">
-          <h3 id="pulls-history-title" className="section-title pulls-history-title">
-            All packs · {history.length.toLocaleString()}
-          </h3>
-          <Tabs
-            idBase={tabsId}
-            label="Sort packs"
-            value={view}
-            onChange={changeView}
-            tabs={[
-              { id: 'newest', label: 'Newest' },
-              { id: 'best', label: 'Best' },
-              { id: 'hof', label: <>Hall of Fame · {worthy.length.toLocaleString()}</> },
-            ]}
+    <>
+      <Sheet
+        title="Profile"
+        subtitle={
+          <>
+            {player.name} <span className="share-fp">#{player.fingerprint}</span>
+          </>
+        }
+        onClose={onClose}
+        size="lg"
+        className="pulls-page"
+      >
+        {mine ? (
+          <ProfileSummary
+            stats={summary}
+            onOpenPack={(pack) => openEntry(history.find((e) => e.nonce === pack.nonce && player.publicKeyHex.startsWith(e.key)))}
+            actions={
+              <>
+                <button type="button" className="btn btn--secondary btn--sm" onClick={share} disabled={!!preparing}>
+                  <Link2 aria-hidden="true" />
+                  {preparing ?? (copied ? 'Link copied' : readyUrl ? 'Copy link now' : 'Copy profile link')}
+                </button>
+                <button type="button" className="btn btn--secondary btn--sm" onClick={shareCard} disabled={!!preparing}>
+                  <IdCard aria-hidden="true" /> Player card
+                </button>
+              </>
+            }
           />
-          <div className="pulls-panel" {...tabPanelProps(tabsId, view)}>
-            {view === 'hof' && (
-              <p className="pulls-note">
-                {worthy.length
-                  ? 'Good enough for the Hall of Fame. Open one to share it or submit it.'
-                  : `None yet: a Full House or better, or a Brainrot Score of ${HALL_OF_FAME_MIN_SCORE.toLocaleString()}+, gets in.`}
-              </p>
-            )}
-            <ul className="pulls-list">
-              {listed.slice(0, shown).map((entry) => {
-                const cards = cardsOf(entry);
-                const set = getLatestSet(entry.setId);
-                const [a = '#ff3df2', b = '#29f0ff'] = set?.palette ?? [];
-                return (
-                  <li key={`${entry.key}-${entry.nonce}`}>
-                    <button
-                      type="button"
-                      className="pull-row"
-                      style={{ '--set-a': a, '--set-b': b } as React.CSSProperties}
-                      onClick={() => openEntry(entry)}
-                      disabled={!cards}
-                    >
-                      <span className="pull-row-thumbs" aria-hidden="true">
-                        {cards
-                          ? cards.map((c, i) => <img key={i} src={c.image} alt="" loading="lazy" className={c.isHolo ? 'holo' : ''} />)
-                          : Array.from({ length: 5 }, (_, i) => <span key={i} className="pull-row-blank" />)}
-                      </span>
-                      <span className="pull-row-main">
-                        <span className="pull-row-hand">
-                          {entry.hand}
-                          {isHallOfFameWorthy(entry) && (
-                            <>
-                              <Trophy className="pull-row-hof" aria-hidden="true" />
-                              <span className="sr-only">, good enough for the Hall of Fame</span>
-                            </>
-                          )}
-                        </span>
-                        <span className="pull-row-meta">
-                          {set && <span className="set-code">{setCode(set)}</span>}
-                          <span className="pull-row-setname">{set?.name ?? entry.setId} · </span>
-                          {timeAgo(entry.openedAt)}
-                        </span>
-                      </span>
-                      <span className="pull-row-score tabular">{entry.score.toLocaleString()}</span>
-                      {cards && <ChevronRight className="pull-row-chevron" aria-hidden="true" />}
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-            {shown < listed.length && (
-              <button type="button" className="btn btn--ghost btn--block" onClick={() => setShown((n) => n + PAGE)}>
-                Show more
-              </button>
-            )}
+        ) : (
+          <div className="pulls-empty">
+            <p>No packs yet. Your level, stats and best pulls show up here.</p>
+            <button type="button" className="btn btn--primary" onClick={onClose}>
+              Open your first pack
+            </button>
           </div>
-        </section>
+        )}
+
+        {mine && (
+          <div className="pulls-rewards">
+            <RewardsPanel level={summary.level} settings={settings} onSettingsChange={onSettingsChange} packImage={packImageUrl(DEFAULT_SET_ID)} />
+          </div>
+        )}
+
+        {mine && mine.filled > 0 && (
+          <p className="pulls-note">
+            {mine.filled.toLocaleString()} early pack{mine.filled === 1 ? " wasn't" : "s weren't"} recorded on this device. A profile
+            can't skip tickets, so yours counts {mine.filled === 1 ? 'it' : 'them'} as whatever those tickets hold.
+          </p>
+        )}
+
+        {stats.highestPackLegacy && stats.highestPackCards?.length ? (
+          <section className="pulls-legacy">
+            <h3 className="section-title pulls-history-title">Best before verifiable pulls</h3>
+            <PackCardViewer cards={stats.highestPackCards} displayMode="grid" canShareCards />
+          </section>
+        ) : null}
+
+        {history.length > 0 && (
+          <section aria-labelledby="pulls-history-title" className="pulls-history">
+            <h3 id="pulls-history-title" className="section-title pulls-history-title">
+              All packs · {history.length.toLocaleString()}
+            </h3>
+            <Tabs
+              idBase={tabsId}
+              label="Sort packs"
+              value={view}
+              onChange={changeView}
+              tabs={[
+                { id: 'newest', label: 'Newest' },
+                { id: 'best', label: 'Best' },
+                { id: 'hof', label: <>Hall of Fame · {worthy.length.toLocaleString()}</> },
+              ]}
+            />
+            <div className="pulls-panel" {...tabPanelProps(tabsId, view)}>
+              {view === 'hof' && (
+                <p className="pulls-note">
+                  {worthy.length
+                    ? 'Good enough for the Hall of Fame. Open one to share it or submit it.'
+                    : `None yet: a Full House or better, or a Brainrot Score of ${HALL_OF_FAME_MIN_SCORE.toLocaleString()}+, gets in.`}
+                </p>
+              )}
+              <ul className="pulls-list">
+                {listed.slice(0, shown).map((entry) => {
+                  const cards = cardsOf(entry);
+                  const set = getLatestSet(entry.setId);
+                  const [a = '#ff3df2', b = '#29f0ff'] = set?.palette ?? [];
+                  return (
+                    <li key={`${entry.key}-${entry.nonce}`}>
+                      <button
+                        type="button"
+                        className="pull-row"
+                        style={{ '--set-a': a, '--set-b': b } as React.CSSProperties}
+                        onClick={() => openEntry(entry)}
+                        disabled={!cards}
+                      >
+                        <span className="pull-row-thumbs" aria-hidden="true">
+                          {cards
+                            ? cards.map((c, i) => <img key={i} src={c.image} alt="" loading="lazy" className={c.isHolo ? 'holo' : ''} />)
+                            : Array.from({ length: 5 }, (_, i) => <span key={i} className="pull-row-blank" />)}
+                        </span>
+                        <span className="pull-row-main">
+                          <span className="pull-row-hand">
+                            {entry.hand}
+                            {isHallOfFameWorthy(entry) && (
+                              <>
+                                <Trophy className="pull-row-hof" aria-hidden="true" />
+                                <span className="sr-only">, good enough for the Hall of Fame</span>
+                              </>
+                            )}
+                          </span>
+                          <span className="pull-row-meta">
+                            {set && <span className="set-code">{setCode(set)}</span>}
+                            <span className="pull-row-setname">{set?.name ?? entry.setId} · </span>
+                            {timeAgo(entry.openedAt)}
+                          </span>
+                        </span>
+                        <span className="pull-row-score tabular">{entry.score.toLocaleString()}</span>
+                        {cards && <ChevronRight className="pull-row-chevron" aria-hidden="true" />}
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+              {shown < listed.length && (
+                <button type="button" className="btn btn--ghost btn--block" onClick={() => setShown((n) => n + PAGE)}>
+                  Show more
+                </button>
+              )}
+            </div>
+          </section>
+        )}
+      </Sheet>
+      {cardUrl && (
+        <SharePreviewSheet
+          title="Your player card"
+          subtitle="Level, title, sets and best pull, with a QR code that re-checks every pack."
+          makeImage={() => renderPlayerCard(summary, player, cardUrl)}
+          imageName="brainrot-player-card.png"
+          url={cardUrl}
+          text={`${player.name}'s Brainrot TCG player card`}
+          onClose={() => setCardUrl(null)}
+        />
       )}
-    </Sheet>
+    </>
   );
 };
 
