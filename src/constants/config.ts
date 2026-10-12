@@ -1,3 +1,6 @@
+/** GitHub repo that hosts the game and its Hall of Fame issues. */
+export const REPO = 'evanlin23/BrainrotTCG';
+
 // Storage keys
 export const STORAGE_KEYS = {
   COLLECTION: 'brainrot-found-collection-v1',
@@ -5,12 +8,8 @@ export const STORAGE_KEYS = {
   STATS: 'brainrot-stats-v1',
   HALL_OF_FAME: 'brainrot-hall-of-fame-v1',
   SETTINGS: 'brainrot-settings-v1',
-} as const;
-
-// Pack configuration
-export const PACK_CONFIG = {
-  SIZE: 5,
-  HOLO_CHANCE: 0.05,
+  SELECTED_SET: 'brainrot-selected-set-v1',
+  PULLS: 'brainrot-pulls-v1',
 } as const;
 
 // Achievement milestone thresholds
@@ -22,14 +21,4 @@ export const MILESTONES = {
   DUPLICATES: [10, 25, 100],
   ACCOUNT_VALUE: [10000, 100000, 1000000],
   HOLOS_IN_PACK: [2, 3, 4, 5],
-} as const;
-
-// Rarity thresholds for pack generation (cumulative percentages)
-export const RARITY_THRESHOLDS = {
-  BRAINROT: 0.5,
-  LEGENDARY: 3,
-  EPIC: 10,
-  RARE: 25,
-  UNCOMMON: 50,
-  // COMMON is the fallback (50-100%)
 } as const;
