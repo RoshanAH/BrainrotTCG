@@ -80,6 +80,8 @@ const PackSummaryUI = ({ openedCards, set, onClose, onShare }: PackSummaryUIProp
           hasNormal={!selected.isHolo}
           hasHolo={selected.isHolo}
           initialHolo={selected.isHolo}
+          finish={selected.finish}
+          misprint={selected.misprint}
           onClose={() => setSelected(null)}
           canShare
         />

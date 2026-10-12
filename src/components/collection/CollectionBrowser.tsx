@@ -168,6 +168,7 @@ const CollectionBrowser = ({ collection, onClose }: CollectionBrowserProps) => {
           hasNormal={selected.normalCount > 0}
           hasHolo={selected.holoCount > 0}
           initialHolo={selected.holoCount > 0 && selected.normalCount === 0}
+          owned={{ finishes: selected.finishes, misprints: selected.misprints }}
           onClose={() => setSelected(null)}
           canShare
         />

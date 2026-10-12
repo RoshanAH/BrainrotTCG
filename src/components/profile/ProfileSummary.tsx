@@ -149,6 +149,9 @@ const ProfileSummary = ({ stats, actions, levelNote, partial = false, onOpenPack
       {sets.length > 0 && (
         <section>
           <h3 className="section-title profile-heading">Collection by era{partial && '*'}</h3>
+          <p className="profile-footnote profile-sets-key">
+            <strong>Complete</strong>: every card in the set. <strong>Master</strong>: every card in the set as a holo.
+          </p>
           <ul className="profile-sets">
             {sets.map((set) => {
               const have = stats.uniqueBySet[set.id] ?? 0;

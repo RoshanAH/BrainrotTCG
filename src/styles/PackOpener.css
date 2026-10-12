@@ -496,6 +496,15 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    /* The chosen card back (Card.css), like the card being flipped. */
+    filter: var(--card-back-filter, none);
+    animation: var(--card-back-anim, none);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .reveal-stack-card img {
+        animation: none;
+    }
 }
 
 /* A big pull dims everything around it for a moment. */

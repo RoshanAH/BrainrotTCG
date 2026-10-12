@@ -286,7 +286,8 @@
     }
 }
 /* Card modifiers (game/modifiers.ts): a metallic frame per finish, a misprinted image, and a sticker. */
-.card-front[class*='finish-']::after {
+.card-front[class*='finish-']::after,
+.card-viewer-card[class*='finish-']::after {
     content: '';
     position: absolute;
     inset: 0;
@@ -302,20 +303,24 @@
     animation: finish-sheen 3.5s ease-in-out infinite alternate;
 }
 
-.card-front.finish-silver {
+.card-front.finish-silver,
+.card-viewer-card.finish-silver {
     --finish-frame: linear-gradient(130deg, #f4f7fa, #8e98a2 28%, #ffffff 48%, #7f8992 70%, #e3e8ec);
 }
 
-.card-front.finish-gold {
+.card-front.finish-gold,
+.card-viewer-card.finish-gold {
     --finish-frame: linear-gradient(130deg, #fff3c4, #c8961e 28%, #ffeaa0 48%, #a5700c 70%, #ffd76a);
 }
 
-.card-front.finish-platinum {
+.card-front.finish-platinum,
+.card-viewer-card.finish-platinum {
     --finish-frame: linear-gradient(130deg, #eefaff, #7fb4cc 28%, #ffffff 48%, #6c9fb8 70%, #d6f3ff);
     box-shadow: 0 0 18px rgba(168, 230, 255, 0.45);
 }
 
-.card-front.finish-diamond {
+.card-front.finish-diamond,
+.card-viewer-card.finish-diamond {
     --finish-frame: linear-gradient(130deg, #b9f2ff, #ffffff 20%, #c9b6ff 40%, #ffffff 60%, #7ee7ff 80%, #ffd6f5);
     box-shadow: 0 0 26px rgba(201, 182, 255, 0.65), 0 0 60px rgba(126, 231, 255, 0.35);
 }
@@ -331,7 +336,8 @@
 }
 
 /* A misprint: the colour plates landed off register. */
-.card-front.misprint .card-full-image {
+.card-front.misprint .card-full-image,
+.card-viewer-card.misprint > img:first-child {
     transform: rotate(-1.5deg) scale(1.03);
 }
 
@@ -391,7 +397,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .card-front[class*='finish-']::after {
+    .card-front[class*='finish-']::after,
+.card-viewer-card[class*='finish-']::after {
         animation: none;
     }
 }
