@@ -1,4 +1,4 @@
-import { useEffect, useId, useMemo, useState } from 'react';
+import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { Crown, ShieldAlert, ShieldCheck } from 'lucide-react';
 import Sheet from '../ui/Sheet';
 import Tabs from '../ui/Tabs';
@@ -67,14 +67,27 @@ const HallOfFamePage = ({ onClose }: HallOfFamePageProps) => {
   // World firsts go by when GitHub verified them, so only filed entries can be one.
   const firsts = useMemo(() => firstPulls(entries ?? []), [entries]);
 
-  // Don't trust the JSON either: re-derive each pack here, one at a time.
+  // Don't trust the JSON either: re-derive each pack here, one at a time. One queue for the whole
+  // visit: entries arriving later (just-submitted ones reorder the list) join it, and nothing already
+  // checked is checked again, since each check mines a ticket.
+  const rankedRef = useRef(ranked);
+  const startedRef = useRef(new Set<number>());
+  const runningRef = useRef(false);
+  const goneRef = useRef(false);
+  useEffect(() => () => {
+    goneRef.current = true;
+  }, []);
   useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      for (const entry of ranked.slice(0, VERIFY_LIMIT)) {
-        if (cancelled) return;
-        if (entry.pending) continue; // checked on this device already, to be listed at all
-        setChecks((prev) => ({ ...prev, [entry.issue]: 'checking' }));
+    rankedRef.current = ranked;
+    const next = () => rankedRef.current.slice(0, VERIFY_LIMIT).find((e) => !e.pending && !startedRef.current.has(e.issue));
+    const run = async () => {
+      if (runningRef.current) return;
+      runningRef.current = true;
+      for (let entry = next(); entry && !goneRef.current; entry = next()) {
+        const { issue } = entry;
+        startedRef.current.add(issue);
+        setChecks((prev) => ({ ...prev, [issue]: 'checking' }));
+        let result: Check = 'failed';
         try {
           const pull = await checkPull(entry.proof);
           // Every field we display must be exactly what the proof produces.
@@ -92,15 +105,17 @@ const HallOfFamePage = ({ onClose }: HallOfFamePageProps) => {
                 (c.finish ?? null) === (entry.cards[i]?.finish ?? null) &&
                 !!c.misprint === !!entry.cards[i]?.misprint,
             );
-          if (!cancelled) setChecks((prev) => ({ ...prev, [entry.issue]: matches ? 'verified' : 'failed' }));
+          result = matches ? 'verified' : 'failed';
         } catch {
-          if (!cancelled) setChecks((prev) => ({ ...prev, [entry.issue]: 'failed' }));
+          result = 'failed';
         }
+        if (!goneRef.current) setChecks((prev) => ({ ...prev, [issue]: result }));
       }
-    })();
-    return () => {
-      cancelled = true;
+      runningRef.current = false;
+      // Entries that arrived while the last check was finishing.
+      if (!goneRef.current && next()) void run();
     };
+    void run();
   }, [ranked]);
 
   const renderEntry = (entry: HallOfFameEntry, rank?: number) => {
@@ -127,9 +142,9 @@ const HallOfFamePage = ({ onClose }: HallOfFamePageProps) => {
             </span>
             <span className="hof-meta">
               {entry.pending && <span className="hof-pending">Just submitted · </span>}
+              {/* On world firsts, when matters, so it goes first where a long set name can't push it off. */}
+              {rank === undefined && `${formatDate(entry.submittedAt)} · `}
               {entry.setName}
-              {/* On world firsts, when matters. */}
-              {rank === undefined && ` · ${formatDate(entry.submittedAt)}`}
             </span>
           </span>
           <span className="hof-side">
@@ -145,7 +160,7 @@ const HallOfFamePage = ({ onClose }: HallOfFamePageProps) => {
     <div className="hof-empty">
       <Crown aria-hidden="true" />
       <p>
-        <strong>No verified entries yet.</strong> Pull a Full House or better (or a Brainrot Score of {HALL_OF_FAME_MIN_SCORE.toLocaleString()}+),
+        <strong>Nothing filed here yet.</strong> Pull a Full House or better (or a Brainrot Score of {HALL_OF_FAME_MIN_SCORE.toLocaleString()}+),
         share it, and submit it from the share sheet. You could be first.
       </p>
     </div>

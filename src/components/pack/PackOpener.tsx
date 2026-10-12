@@ -121,6 +121,7 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
     isOpening,
     isPackCut,
     volume: effectsVolume,
+    disabled,
   });
 
   const finishPack = useCallback(() => {
@@ -185,11 +186,14 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
 
     // A short buzz on phones: a tick for any card, a double for big pulls.
     if (typeof navigator.vibrate === 'function' && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      navigator.vibrate(isBigPull(currentCard.rarity) ? [18, 60, 30] : 8);
+      navigator.vibrate(isBigPull(currentCard) ? [18, 60, 30] : 8);
     }
 
     if (settings.particlesEnabled) {
-      triggerRarityConfetti(currentCard.rarity);
+      // A finish or misprint gets at least an Epic's confetti.
+      const modified = !!currentCard.finish || !!currentCard.misprint;
+      const plainish = currentCard.rarity === 'COMMON' || currentCard.rarity === 'UNCOMMON' || currentCard.rarity === 'RARE';
+      triggerRarityConfetti(modified && plainish ? 'EPIC' : currentCard.rarity);
       if (currentCard.isHolo) {
         triggerHoloSparkles();
       }
@@ -219,6 +223,7 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
     disabled,
     onCloseSummary: closeSummary,
     onToggleAutoMode: () => setAutoMode(prev => !prev),
+    onOpenPack: () => !isPackCut && completeCut(),
     handleInteractionRef,
   });
 

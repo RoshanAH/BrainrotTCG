@@ -612,3 +612,9 @@
     font-size: var(--text-sm);
     font-weight: 600;
 }
+
+/* The pack is also a button for the keyboard. */
+.pack-shell:focus-visible {
+    outline: 3px solid var(--brand);
+    outline-offset: 6px;
+}

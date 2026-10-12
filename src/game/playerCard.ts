@@ -4,7 +4,7 @@
  * proves all of it.
  */
 import { xpForLevel, type ProfileStats } from '../engine';
-import { COLLECTIBLE_CARDS, getSetCards } from '../data/cards';
+import { COLLECTIBLE_CARDS, collectibleOwned, getSetCards } from '../data/cards';
 import { SETS, isOpenable, setCode } from '../content/sets';
 import { renderProfilePoster, type ProfilePosterInput } from './bragImage';
 import { collectionMilestone, setProgress, titleFor } from './progression';
@@ -22,7 +22,7 @@ export const playerCardInput = (stats: ProfileStats, player: { name: string; fin
     levelXp: xpForLevel(stats.level),
     nextLevelXp: xpForLevel(stats.level + 1),
     packs: stats.packs,
-    unique: stats.unique,
+    unique: collectibleOwned(stats.uniqueBySet),
     totalCards: COLLECTIBLE_CARDS.length,
     holos: stats.holos,
     bestScore: best?.score.score ?? 0,

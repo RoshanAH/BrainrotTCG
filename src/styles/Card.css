@@ -156,6 +156,9 @@
 .card-wrapper.tell-epic { --tell: var(--rarity-epic); }
 .card-wrapper.tell-legendary { --tell: var(--rarity-legendary); }
 .card-wrapper.tell-brainrot { --tell: #ffd23f; }
+/* A finish or misprint tells in its own colour, whatever the rarity. */
+.card-wrapper.tell-finish { --tell: var(--finish-tell); }
+.card-wrapper.tell-misprint { --tell: #ff3d8a; }
 
 /* Legendary and Brainrot backs breathe, so you know something big is under there. */
 .card-wrapper:is(.tell-legendary, .tell-brainrot) .card-back {

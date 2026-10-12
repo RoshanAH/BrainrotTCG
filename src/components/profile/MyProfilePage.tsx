@@ -272,7 +272,7 @@ const MyProfilePage = ({ stats, settings, onSettingsChange, onClose, onSharePull
           makeImage={() => renderPlayerCard(summary, player, cardUrl)}
           imageName="brainrot-player-card.png"
           url={cardUrl}
-          text={`${player.name}'s Brainrot TCG player card`}
+          text={`${player.name}'s Brainrot TCG player card\n${cardUrl}`}
           onClose={() => setCardUrl(null)}
         />
       )}

@@ -32,7 +32,7 @@ const CardRevealUI = ({ currentCard, currentIndex, totalCards, hasMovedMouse, on
   const touch = useCoarsePointer();
   const revealed = currentCard?.isRevealed;
   const remaining = totalCards - currentIndex - 1;
-  const big = !!currentCard && isBigPull(currentCard.rarity);
+  const big = !!currentCard && isBigPull(currentCard);
   const slow = !!currentCard && (currentCard.rarity === 'LEGENDARY' || currentCard.rarity === 'BRAINROT');
   const hint = touch
     ? revealed
@@ -92,7 +92,8 @@ const CardRevealUI = ({ currentCard, currentIndex, totalCards, hasMovedMouse, on
         </AnimatePresence>
       </div>
 
-      <div className="reveal-rarity" aria-live="polite">
+      {/* Waits for the flip to land (longer for the slow Legendary and Brainrot flips), so it can't spoil it. */}
+      <div className={`reveal-rarity ${slow ? 'is-slow' : ''}`} aria-live="polite">
         {revealed && <RarityBadge rarity={currentCard.rarity} isHolo={currentCard.isHolo} finish={currentCard.finish} misprint={currentCard.misprint} />}
         {revealed && currentCard.isNew && <span className="reveal-new">New</span>}
       </div>

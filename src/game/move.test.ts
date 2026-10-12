@@ -77,6 +77,15 @@ describe('bringing a save over', () => {
     expect(backup['brainrot-stats-v1']).toBe('{"packsOpened":4}');
   });
 
+  it("doesn't ask when this browser only visited (a player key with no packs)", () => {
+    store.set('brainrot-player-v1', JSON.stringify({ secretKey: 'cc', name: 'Visitor', nextNonce: 0, createdAt: 2 }));
+    store.set('brainrot-stats-v1', '{"packsOpened":0,"holoCards":{}}');
+    store.set('brainrot-achievements-v1', '{}');
+    expect(importSave(OLD)).toBe('saved');
+    expect(store.get('brainrot-player-v1')).toBe(player('aa'));
+    expect(confirm).not.toHaveBeenCalled();
+  });
+
   it('lets the caller decide instead of asking (Settings asks in the page)', () => {
     store.set('brainrot-player-v1', player('bb'));
     expect(importSave(OLD, () => false)).toBe('kept');

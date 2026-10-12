@@ -35,9 +35,11 @@ img.misprint {
   font-size: 10px;
   font-weight: 800;
   letter-spacing: 0.03em;
-  text-overflow: ellipsis;
+  line-height: 1.25;
+  text-align: center;
   text-transform: uppercase;
-  white-space: nowrap;
+  /* "Silver · Misprint" takes two lines on a phone rather than losing half. */
+  width: max-content;
   transform: translateX(-50%);
 }
 

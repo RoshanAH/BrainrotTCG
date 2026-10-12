@@ -4,7 +4,7 @@ import '../../styles/Card.css';
 import cardBackImage from '../../assets/images/card_back.webp';
 import type { Card as CardType } from '../../data/cards';
 import type { Finish } from '../../engine';
-import { modifierClasses, modifierLabel } from '../../game/modifiers';
+import { FINISH_INFO, modifierClasses, modifierLabel } from '../../game/modifiers';
 
 export interface CardWithMeta extends CardType {
     uniqueId: number;
@@ -66,6 +66,8 @@ const Card = ({ card, isFlipped, onFlip, slowFlip = false, tell = false }: CardP
         isFlipped ? card.rarity.toLowerCase() : '',
         !isFlipped && tell ? `tell tell-${card.rarity.toLowerCase()}` : '',
         !isFlipped && tell && card.isHolo ? 'tell-holo' : '',
+        !isFlipped && tell && card.finish ? 'tell-finish' : '',
+        !isFlipped && tell && !card.finish && card.misprint ? 'tell-misprint' : '',
         card.isHolo ? 'holo' : '',
         hasShined ? 'shine-played' : ''
     ].filter(Boolean).join(' ');
@@ -77,6 +79,7 @@ const Card = ({ card, isFlipped, onFlip, slowFlip = false, tell = false }: CardP
             onContextMenu={(e) => e.preventDefault()}
             style={{
                 transform: `perspective(1000px) rotateX(${tilt.rotateX}deg) rotateY(${tilt.rotateY}deg)`,
+                ...(card.finish ? { '--finish-tell': FINISH_INFO[card.finish].color } : {}),
                 transition: 'transform 0.15s ease-out'
             }}
         >

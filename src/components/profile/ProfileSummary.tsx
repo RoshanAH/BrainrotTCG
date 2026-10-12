@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import { ChevronRight } from 'lucide-react';
 import { POKER_HANDS, xpForLevel, type HandKey, type ProfilePack, type ProfileStats } from '../../engine';
-import { COLLECTIBLE_CARDS, getSetCards } from '../../data/cards';
+import { COLLECTIBLE_CARDS, collectibleOwned, getSetCards } from '../../data/cards';
 import { SETS, setCode } from '../../content/sets';
 import { toCardsWithMeta } from '../../game/pulls';
 import { collectionMilestone, setProgress, titleFor } from '../../game/progression';
@@ -65,7 +65,7 @@ const ProfileSummary = ({ stats, actions, levelNote, partial = false, onOpenPack
         </div>
         <div>
           <dd className="tabular">
-            {stats.unique}/{COLLECTIBLE_CARDS.length}
+            {collectibleOwned(stats.uniqueBySet)}/{COLLECTIBLE_CARDS.length}
           </dd>
           <dt>cards{partial && '*'}</dt>
         </div>

@@ -142,6 +142,13 @@
 
 .hof-who {
   color: var(--text-muted);
+  /* A long name wraps rather than hiding the fingerprint that tells players apart. */
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.hof-who .share-fp {
+  white-space: nowrap;
 }
 
 .hof-meta {

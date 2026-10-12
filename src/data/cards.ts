@@ -53,6 +53,13 @@ export const ALL_CARDS: Card[] = SETS.flatMap((set) => set.cards.map((def) => to
 /** Cards you can still pull (released, non-archived sets): what completion achievements count. */
 export const COLLECTIBLE_CARDS: Card[] = ALL_CARDS.filter((card) => isOpenable(SETS.find((s) => s.id === card.setId)!));
 
+/**
+ * How many of COLLECTIBLE_CARDS a profile has, from its distinct cards per set: archived sets (like
+ * Genesis) and drafts are left out of both sides, so it never reads more than the total.
+ */
+export const collectibleOwned = (uniqueBySet: Record<string, number>): number =>
+  SETS.filter(isOpenable).reduce((n, set) => n + Math.min(uniqueBySet[set.id] ?? 0, set.cards.length), 0);
+
 const BY_KEY = new Map(ALL_CARDS.map((c) => [c.key, c]));
 // Cards dropped in a newer version of their set still resolve, so players who own them keep them.
 for (const set of ALL_SET_VERSIONS) {

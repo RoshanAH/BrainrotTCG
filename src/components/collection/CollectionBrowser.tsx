@@ -124,7 +124,7 @@ const CollectionBrowser = ({ collection, onClose }: CollectionBrowserProps) => {
                           aria-label={`${card.name}, ${number}, ${CARD_RARITIES[card.rarity].name}, ${total} owned${counts.holoCount ? `, ${counts.holoCount} holo` : ''}${extras ? `, ${extras}` : ''}`}
                         >
                           <img src={card.image} alt="" loading="lazy" />
-                          {(finish || counts.misprints) && (
+                          {(finish || (counts.misprints ?? 0) > 0) && (
                             <span className="collection-mods" aria-hidden="true">
                               {finish && FINISH_INFO[finish].name}
                               {finish && counts.misprints ? ' · ' : ''}

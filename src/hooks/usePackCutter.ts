@@ -29,9 +29,11 @@ interface UsePackCutterOptions {
   isPackCut: boolean;
   /** Sound effects volume, 0 (silent) to 1. */
   volume?: number;
+  /** A sheet is open over the pack: drags belong to it, even after it closes mid-drag. */
+  disabled?: boolean;
 }
 
-export const usePackCutter = ({ onCutComplete, isOpening, isPackCut, volume = 1 }: UsePackCutterOptions) => {
+export const usePackCutter = ({ onCutComplete, isOpening, isPackCut, volume = 1, disabled = false }: UsePackCutterOptions) => {
   const [isCutting, setIsCutting] = useState(false);
   const [cutPoints, setCutPoints] = useState<CutPoint[]>([]);
 
@@ -41,6 +43,8 @@ export const usePackCutter = ({ onCutComplete, isOpening, isPackCut, volume = 1 
   const cutSpanRef = useRef<CutSpan>({ ...EMPTY_CUT_SPAN });
   const cutCompletedRef = useRef(false);
   const isPointerDownRef = useRef(false);
+  /** This press started over something else (an open sheet), so it can't cut until it's released. */
+  const blockedRef = useRef(false);
   const fairyDustRef = useRef<HTMLAudioElement | null>(null);
 
   const resetCutState = useCallback(() => {
@@ -159,18 +163,23 @@ export const usePackCutter = ({ onCutComplete, isOpening, isPackCut, volume = 1 
 
   const handlePointerDown = useCallback((event: PointerEvent) => {
     if (event.button !== 0) return;
+    if (disabled || (event.target as Element | null)?.closest?.('[role="dialog"], .sheet-backdrop')) {
+      blockedRef.current = true;
+      return;
+    }
     isPointerDownRef.current = true;
     beginOrContinueCut(event.clientX, event.clientY);
-  }, [beginOrContinueCut]);
+  }, [beginOrContinueCut, disabled]);
 
   const handlePointerMove = useCallback((event: PointerEvent) => {
-    if (cutCompletedRef.current || isOpening || isPackCut) return;
+    if (blockedRef.current || disabled || cutCompletedRef.current || isOpening || isPackCut) return;
     const isPressed = isPointerDownRef.current || event.buttons === 1 || event.pressure > 0;
     if (!isPressed) return;
     beginOrContinueCut(event.clientX, event.clientY);
-  }, [beginOrContinueCut, isOpening, isPackCut]);
+  }, [beginOrContinueCut, disabled, isOpening, isPackCut]);
 
   const handlePointerEnd = useCallback(() => {
+    blockedRef.current = false;
     if (!isPointerDownRef.current && !isCutting) return;
     endCutAttempt();
   }, [isCutting, endCutAttempt]);

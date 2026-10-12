@@ -9,7 +9,8 @@
   border-top: 1px solid var(--border);
   transition:
     transform var(--dur-slow) var(--ease-out),
-    opacity var(--dur) var(--ease-out);
+    opacity var(--dur) var(--ease-out),
+    visibility 0s;
 }
 
 .app-nav ul {
@@ -79,11 +80,13 @@
   text-align: center;
 }
 
-/* Focus mode (a pack is being opened): get out of the way. */
+/* Focus mode (a pack is being opened): get out of the way, for the keyboard too (hidden after the fade). */
 .app.is-focus .app-nav {
   transform: translateY(110%);
   opacity: 0;
+  visibility: hidden;
   pointer-events: none;
+  transition-delay: 0s, 0s, var(--dur);
 }
 
 @media (min-width: 900px) {

@@ -11,6 +11,7 @@ import SettingsPage from './components/pages/SettingsPage';
 import CollectionBrowser from './components/collection/CollectionBrowser';
 import SetPicker from './components/sets/SetPicker';
 import ShareSheet, { type ShareTarget } from './components/share/ShareSheet';
+import Sheet from './components/ui/Sheet';
 import PullViewerPage from './components/share/PullViewerPage';
 import { cardPoints, scoreCards } from './data/cards';
 import { getAchievementById, Achievement } from './data/achievements';
@@ -23,11 +24,13 @@ import { getStoredData } from './utils/storage';
 import { musicLevel, readSettings } from './utils/settings';
 import { CARD_BACKS, PACK_FOILS, usable } from './game/progression';
 import { myStats } from './game/profiles';
+import { getHistory } from './game/history';
 import { CURRENT_DATA_VERSION, hydrateCollection, setDataVersion } from './utils/migrations';
 import { STORAGE_KEYS } from './constants';
 import {
   checkPackMilestones,
   checkCollectionAchievements,
+  checkModifierAchievements,
   checkPackAchievements,
 } from './utils/achievementChecks';
 import type { CollectionItem, Stats, HallOfFameData, Settings, AchievementData } from './types';
@@ -43,6 +46,9 @@ const SAVE_FIELDS = [
   ['history', STORAGE_KEYS.HISTORY],
   ['settings', STORAGE_KEYS.SETTINGS],
 ] as const;
+
+/** A pull or profile link that got cut off or mangled on the way (chat apps do that). */
+const isBrokenLink = (hash: string) => /^#\/(pull|profile)\//.test(hash) && !extractProof(hash) && !extractProfile(hash);
 
 function App() {
   const [collection, setCollection] = useState<Record<string, CollectionItem>>(() => hydrateCollection(getStoredData(STORAGE_KEYS.COLLECTION, {})));
@@ -62,6 +68,7 @@ function App() {
   const [packBusy, setPackBusy] = useState(false);
   const [viewProof, setViewProof] = useState<string | null>(() => extractProof(window.location.hash));
   const [viewProfile, setViewProfile] = useState<string | null>(() => extractProfile(window.location.hash));
+  const [brokenLink, setBrokenLink] = useState(() => isBrokenLink(window.location.hash));
 
   const playableSets = SETS.filter((s) => !s.archivedAt && (!s.draft || settings.showDraftSets));
   const [selectedSetId, setSelectedSetId] = useState<string>(() => localStorage.getItem(STORAGE_KEYS.SELECTED_SET) ?? DEFAULT_SET_ID);
@@ -76,6 +83,7 @@ function App() {
     const onHashChange = () => {
       setViewProof(extractProof(window.location.hash));
       setViewProfile(extractProfile(window.location.hash));
+      setBrokenLink(isBrokenLink(window.location.hash));
     };
     window.addEventListener('hashchange', onHashChange);
     return () => window.removeEventListener('hashchange', onHashChange);
@@ -84,6 +92,7 @@ function App() {
     history.replaceState(null, '', window.location.pathname + window.location.search);
     setViewProof(null);
     setViewProfile(null);
+    setBrokenLink(false);
   }, []);
 
   const bgMusicRef = useRef<HTMLAudioElement | null>(null);
@@ -128,8 +137,16 @@ function App() {
     // Use shared achievement checking functions
     const packAchievements = checkPackMilestones(stats.packsOpened || 0, achievements);
     const collectionAchievements = checkCollectionAchievements(collection, stats, achievements);
+    // Finishes and misprints pulled before their achievements existed: from the pack history, and
+    // from the collection's tallies for packs the history has no cards for.
+    const pulled = getHistory().flatMap((e) => (e.cards ?? []).map((c) => ({ isHolo: c.holo, finish: c.finish, misprint: c.misprint })));
+    const tallied = Object.values(collection).flatMap((item) => [
+      ...Object.entries(item?.finishes ?? {}).filter(([, n]) => (n ?? 0) > 0).map(([finish]) => ({ isHolo: false, finish })),
+      ...((item?.misprints ?? 0) > 0 ? [{ isHolo: false, misprint: true }] : []),
+    ]);
+    const modifierAchievements = checkModifierAchievements([...pulled, ...tallied], achievements);
 
-    const retroactiveAchievements = [...packAchievements, ...collectionAchievements];
+    const retroactiveAchievements = [...packAchievements, ...collectionAchievements, ...modifierAchievements];
 
     // Apply retroactive achievements (without notifications to avoid spam on load)
     if (retroactiveAchievements.length > 0) {
@@ -487,6 +504,14 @@ function App() {
       {viewProof && <PullViewerPage proof={viewProof} onClose={closePullViewer} />}
 
       {viewProfile && <ProfileViewerPage proof={viewProfile} onClose={closePullViewer} />}
+
+      {brokenLink && (
+        <Sheet title="This link doesn't work" onClose={closePullViewer} size="sm">
+          <p className="share-note">
+            It looks cut off or changed, maybe when it was copied or pasted. Ask for the link again, or open a pack yourself.
+          </p>
+        </Sheet>
+      )}
 
       {/* Settings Page */}
       {isSettingsOpen && (

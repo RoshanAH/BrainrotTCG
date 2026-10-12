@@ -30,10 +30,14 @@ const PackCuttingUI = ({
   return (
     <>
       <div className="pack-shell-wrap">
+        {/* Also a button for the keyboard: Enter or Space opens it, same as the swipe. */}
         <div
           ref={packRef}
           className={`pack-shell ${isCutting ? 'is-cutting' : ''} ${isPackCut ? 'is-cut' : ''}`}
           style={{ '--pack-mask': `url("${packDesign}")` } as React.CSSProperties}
+          role="button"
+          tabIndex={isPackCut ? -1 : 0}
+          aria-label={`Open a ${set.name} pack`}
         >
           <img
             className="pack-half pack-half-bottom"
