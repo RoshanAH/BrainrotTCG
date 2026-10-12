@@ -28,10 +28,20 @@ jobs:
 
       - run: npm ci
       - run: npm run check
-      # Re-verify every Hall of Fame issue and bake the results into the site.
+      # Verify Hall of Fame issues and bake the list into the site. Results for issues unchanged
+      # since the last deploy are cached; the key covers everything that decides a result.
+      - uses: actions/cache/restore@v4
+        with:
+          path: hof-build-cache.json
+          key: hof-build-${{ hashFiles('src/engine/**', 'src/content/sets/**/*.json', 'src/content/sets/index.ts', 'scripts/hall-of-fame.ts') }}-${{ github.run_id }}
+          restore-keys: hof-build-${{ hashFiles('src/engine/**', 'src/content/sets/**/*.json', 'src/content/sets/index.ts', 'scripts/hall-of-fame.ts') }}-
       - run: npx tsx scripts/hall-of-fame.ts build
         env:
           GITHUB_TOKEN: ${{ github.token }}
+      - uses: actions/cache/save@v4
+        with:
+          path: hof-build-cache.json
+          key: hof-build-${{ hashFiles('src/engine/**', 'src/content/sets/**/*.json', 'src/content/sets/index.ts', 'scripts/hall-of-fame.ts') }}-${{ github.run_id }}
       - run: npm run build
 
       - uses: actions/upload-pages-artifact@v3

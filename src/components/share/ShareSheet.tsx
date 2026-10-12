@@ -1,8 +1,9 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Crown, ShieldCheck } from 'lucide-react';
 import type { CardWithMeta } from '../cards/Card';
 import type { PackScore } from '../../engine';
-import { decodeProof, pullId, qualifiesForHallOfFame } from '../../engine';
+import { decodeProof, pullId, qualifiesForHallOfFame, wouldJoinHallOfFame } from '../../engine';
+import { loadHallOfFame, type HallOfFameEntry } from '../../game/hallOfFameList';
 import { getLatestSet, setCode } from '../../content/sets';
 import { getPlayer } from '../../game/player';
 import { canShare, proofFor, pullUrl, type PullRef } from '../../game/pulls';
@@ -31,6 +32,14 @@ const ShareSheet = ({ target, onClose }: ShareSheetProps) => {
   const shareable = canShare(target.ref);
   const proof = useMemo(() => (shareable ? proofFor(target.ref) : ''), [shareable, target.ref]);
   const url = proof ? pullUrl(proof) : '';
+  const id = useMemo(() => (proof ? pullId(decodeProof(proof)) : ''), [proof]);
+  // Submit only what would make the list (the top pulls, or a first); until it loads, anything that qualifies.
+  const [list, setList] = useState<HallOfFameEntry[] | null>(null);
+  useEffect(() => {
+    if (qualifiesForHallOfFame(target.score)) loadHallOfFame().then(setList);
+  }, [target.score]);
+  const listed = !!list?.some((e) => e.id === id);
+  const joins = qualifiesForHallOfFame(target.score) && (!list || wouldJoinHallOfFame({ id, setId: target.ref.setId, score: target.score }, list));
 
   if (!shareable) {
     return (
@@ -68,8 +77,12 @@ const ShareSheet = ({ target, onClose }: ShareSheetProps) => {
       text={bragText(target.cards, target.score, setName, url)}
       onClose={onClose}
     >
-      {qualifiesForHallOfFame(target.score) && (
-        <HallOfFameSubmit proof={proof} githubUrl={hallOfFameSubmitUrl(url, `${target.score.hand.name} in ${setName}`)} />
+      {listed ? (
+        <p className="share-note">
+          <Crown aria-hidden="true" /> This pull is in the Hall of Fame.
+        </p>
+      ) : (
+        joins && <HallOfFameSubmit proof={proof} id={id} githubUrl={hallOfFameSubmitUrl(url, `${target.score.hand.name} in ${setName}`)} />
       )}
       <p className="share-note">
         <ShieldCheck aria-hidden="true" /> Anyone who opens the link or scans the code re-checks this exact pack on their own
@@ -85,8 +98,7 @@ type SubmitState = 'idle' | 'sending' | 'sent' | 'failed';
  * One tap, no account: the pull goes to public relays and a GitHub Action adds it within about 15
  * minutes. The GitHub issue form stays as a fallback.
  */
-const HallOfFameSubmit = ({ proof, githubUrl }: { proof: string; githubUrl: string }) => {
-  const id = useMemo(() => pullId(decodeProof(proof)), [proof]);
+const HallOfFameSubmit = ({ proof, id, githubUrl }: { proof: string; id: string; githubUrl: string }) => {
   const [state, setState] = useState<SubmitState>(() => (wasSubmitted(id) ? 'sent' : 'idle'));
   const [detail, setDetail] = useState('');
 
@@ -112,7 +124,7 @@ const HallOfFameSubmit = ({ proof, githubUrl }: { proof: string; githubUrl: stri
     <div className="share-hof">
       <Crown aria-hidden="true" />
       <span>
-        <strong>This qualifies for the Hall of Fame</strong>
+        <strong>This makes the Hall of Fame</strong>
         <span role="status">{note}</span>
         <a href={githubUrl} target="_blank" rel="noreferrer">
           Or submit on GitHub instead

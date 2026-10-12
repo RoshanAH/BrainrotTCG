@@ -66,6 +66,16 @@ describe('Hall of Fame inbox', () => {
     expect(filedProofs).toEqual([fourOfAKind]);
   });
 
+  it("skips a real, qualifying pull that wouldn't make the list, and doesn't check it again", async () => {
+    let asked = 0;
+    const { ctx, filedProofs } = context({ accepts: () => (asked++, false) });
+    const events = [hallOfFameEvent(fourOfAKind, idOf(fourOfAKind))];
+    expect((await processInbox(events, ctx)).added).toBe(0);
+    expect((await processInbox(events, ctx)).added).toBe(0);
+    expect(filedProofs).toEqual([]);
+    expect(asked).toBe(1);
+  });
+
   it('retries next run when filing on GitHub fails', async () => {
     let fail = true;
     const { ctx } = context({

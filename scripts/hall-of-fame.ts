@@ -16,9 +16,15 @@
  *     (cached between runs) so junk isn't re-checked every time.
  *
  *   npx tsx scripts/hall-of-fame.ts build           (deploy, before vite build)
- *     Lists verified Hall of Fame issues, re-verifies each proof, and writes
- *     public/hall-of-fame.json. Without a token, or if GitHub is down, it keeps
- *     the existing file.
+ *     Lists verified Hall of Fame issues, verifies each proof, and writes the
+ *     list (the top pulls and each set's firsts, src/engine/hallOfFame.ts) to
+ *     public/hall-of-fame.json. Results are kept in hof-build-cache.json (cached
+ *     between deploys): an issue unchanged since the last deploy isn't checked
+ *     again, so a deploy's cost grows with new submissions, not with all of them.
+ *     Without a token, or if GitHub is down, it keeps the existing file.
+ *
+ * The inbox and the issue verifier only add a pull that would join the list, so
+ * the number of entries stays about the same however many people play.
  *
  * "World first" order uses the time the bot first verified that exact pull on
  * the issue (its marker comment), not the issue's creation date: otherwise
@@ -30,7 +36,21 @@
 import { appendFileSync, existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { getSet } from '../src/content/sets/index.ts';
-import { decodeProof, extractProof, HALL_OF_FAME_MIN_SCORE, pullId, qualifiesForHallOfFame, verifyProof, type VerifiedPull } from '../src/engine/index.ts';
+import {
+  decodeProof,
+  extractProof,
+  HALL_OF_FAME_MIN_MULTIPLIER,
+  HALL_OF_FAME_MIN_SCORE,
+  HALL_OF_FAME_TOP,
+  hallOfFameList,
+  pullId,
+  qualifiesForHallOfFame,
+  topPulls,
+  verifyProof,
+  wouldJoinHallOfFame,
+  type RankableEntry,
+  type VerifiedPull,
+} from '../src/engine/index.ts';
 import { fetchEvents, HOF_KIND, HOF_RELAYS, HOF_TAG, probeEvent, publishEvent } from '../src/game/nostrInbox.ts';
 import { processInbox } from './hof-inbox.ts';
 
@@ -41,7 +61,7 @@ const BOT = 'github-actions[bot]';
 const API = 'https://api.github.com';
 const markerFor = (id: string) => `<!-- hof-verified ${id} -->`;
 
-export interface HallOfFameEntry {
+export interface HallOfFameEntry extends RankableEntry {
   proof: string;
   name: string;
   fingerprint: string;
@@ -63,6 +83,7 @@ interface Issue {
   title: string;
   body: string | null;
   created_at: string;
+  updated_at: string;
   user: { login: string } | null;
   labels: ({ name?: string } | string)[];
   pull_request?: unknown;
@@ -80,6 +101,7 @@ const safe = (text: string) =>
     .replace(/[\r\n]+/g, ' ');
 
 const toEntry = (pull: VerifiedPull, proof: string, issue: Issue, verifiedAt: string): HallOfFameEntry => ({
+  id: pullId(pull.proof),
   proof,
   name: pull.proof.name,
   fingerprint: pull.fingerprint,
@@ -146,9 +168,44 @@ const FOOTER = '\n\n---\n_Verified automatically by re-deriving the pack from it
 const verifiedComment = (entry: HallOfFameEntry, pull: VerifiedPull) =>
   `✅ **Verified!** ${safe(entry.name)} \\#${entry.fingerprint} pulled a **${entry.hand}** in ${safe(entry.setName)} with a Brainrot Score of **${entry.score.toLocaleString('en-US')}**.\n\nIt will appear in the Hall of Fame after the next deploy (started automatically).${FOOTER}\n${markerFor(pullId(pull.proof))}`;
 
+/** Where GitHub Pages serves the site; it always carries hall-of-fame.json, even once the site moves. */
+const pagesUrl = () => {
+  const [owner, name] = REPO.split('/');
+  return `https://${owner}.github.io/${name}/`;
+};
+
+/** The list as deployed now, or null if it can't be read (then nothing is held back). */
+const publishedList = async (): Promise<RankableEntry[] | null> => {
+  try {
+    const res = await fetch(`${pagesUrl()}hall-of-fame.json`, { cache: 'no-store' });
+    if (!res.ok) return null;
+    const data = (await res.json()) as (Partial<RankableEntry> & { proof?: string })[];
+    if (!Array.isArray(data)) return null;
+    return data.flatMap((e) => {
+      try {
+        return [{ ...e, id: e.id ?? pullId(decodeProof(e.proof ?? '')) } as RankableEntry];
+      } catch {
+        return [];
+      }
+    });
+  } catch {
+    return null;
+  }
+};
+
+/** Why a verified pull doesn't join the list, or null if it does. */
+const joinRefusal = (pull: VerifiedPull, list: readonly RankableEntry[]): string | null => {
+  const candidate = { id: pullId(pull.proof), setId: pull.set.id, score: pull.score };
+  if (wouldJoinHallOfFame(candidate, list)) return null;
+  if (list.some((e) => e.id === candidate.id)) return 'This pull is already in the Hall of Fame.';
+  const lowest = topPulls(list).at(-1)?.score ?? 0;
+  const first = pull.score.hand.multiplier >= HALL_OF_FAME_MIN_MULTIPLIER ? `, or be the first ${pull.score.hand.name} in ${safe(pull.set.name)}` : '';
+  return `The pull is real, but the Hall of Fame keeps the top ${HALL_OF_FAME_TOP} and the first of each hand in each set. To join, it needs a Brainrot Score above ${lowest.toLocaleString('en-US')}${first}.`;
+};
+
 const verifyIssue = async () => {
   const event = JSON.parse(readFileSync(process.env.GITHUB_EVENT_PATH ?? '', 'utf8')) as { issue: Issue };
-  const result = await checkIssue(event.issue);
+  let result = await checkIssue(event.issue);
   const token = process.env.GITHUB_TOKEN;
   // An edit that keeps the same verified pull needs no new comment or redeploy.
   let already = false;
@@ -158,6 +215,12 @@ const verifyIssue = async () => {
     } catch (error) {
       console.warn(`Could not read earlier comments; treating this as a new verification. ${error}`);
     }
+  }
+  // A new verification only goes in if it would join the list (the top pulls, or a first).
+  if (result.ok && !already) {
+    const list = await publishedList();
+    const reason = list && joinRefusal(result.pull, list);
+    if (reason) result = { ok: false, reason };
   }
   const body = result.ok ? verifiedComment(result.entry, result.pull) : `❌ **Not added.** ${result.reason}${FOOTER}`;
   writeFileSync('hof-comment.md', body);
@@ -176,6 +239,10 @@ const listVerifiedIssues = async (token: string): Promise<Issue[]> => {
   return issues;
 };
 
+/** Each verified issue's result as of its last change (see `build`). */
+const BUILD_CACHE = 'hof-build-cache.json';
+type BuildCache = Record<string, { updatedAt: string; entry: HallOfFameEntry | null; reason?: string }>;
+
 const build = async () => {
   const token = process.env.GITHUB_TOKEN;
   if (!token) {
@@ -192,34 +259,43 @@ const build = async () => {
     console.warn(`Could not list Hall of Fame issues; keeping the existing hall-of-fame.json. ${error}`);
     return;
   }
+  // A pull's pack can't change, so an issue untouched since the last deploy (same updated_at: no
+  // edit, comment or label since) keeps its result. The cache's key covers the engine, the sets and
+  // this script, so a change to any of them checks everything again.
+  const cache: BuildCache = existsSync(BUILD_CACHE) ? (JSON.parse(readFileSync(BUILD_CACHE, 'utf8')) as BuildCache) : {};
+  const next: BuildCache = {};
   const verified: HallOfFameEntry[] = [];
+  let reused = 0;
   for (const issue of issues) {
+    const hit = cache[issue.number];
+    if (hit && hit.updatedAt === issue.updated_at) {
+      next[issue.number] = hit;
+      reused++;
+      if (hit.entry) verified.push(hit.entry);
+      continue;
+    }
     const result = await checkIssue(issue);
     if (!result.ok) {
+      next[issue.number] = { updatedAt: issue.updated_at, entry: null, reason: result.reason };
       console.log(`#${issue.number}: skipped (${result.reason})`);
       continue;
     }
-    const id = pullId(result.pull.proof);
-    const verifiedAt = await firstVerifiedAt(issue.number, id, token);
+    const verifiedAt = await firstVerifiedAt(issue.number, result.entry.id, token);
     if (!verifiedAt) {
+      next[issue.number] = { updatedAt: issue.updated_at, entry: null, reason: 'not verified on the issue yet' };
       console.log(`#${issue.number}: skipped (the bot hasn't verified this pull on the issue yet)`);
       continue;
     }
-    verified.push({ ...result.entry, submittedAt: verifiedAt });
+    const entry = { ...result.entry, submittedAt: verifiedAt };
+    next[issue.number] = { updatedAt: issue.updated_at, entry };
+    verified.push(entry);
   }
-  // The first verification of a pull keeps the credit; later copies of it are dropped.
-  const seen = new Set<string>();
-  const entries = verified
-    .sort((a, b) => a.submittedAt.localeCompare(b.submittedAt) || a.issue - b.issue)
-    .filter((e) => {
-      const id = pullId(decodeProof(e.proof));
-      if (seen.has(id)) return false;
-      seen.add(id);
-      return true;
-    });
+  writeFileSync(BUILD_CACHE, JSON.stringify(next));
+  // The top pulls and each set's firsts; the first verification of a pull keeps the credit.
+  const entries = hallOfFameList(verified);
   for (const e of entries) console.log(`#${e.issue}: ${e.hand} (${e.score}), verified ${e.submittedAt}`);
   writeFileSync(OUTPUT, JSON.stringify(entries, null, 1) + '\n');
-  console.log(`${entries.length} verified entries -> public/hall-of-fame.json`);
+  console.log(`${issues.length} verified issues (${reused} unchanged since the last deploy) -> ${entries.length} entries in public/hall-of-fame.json`);
 };
 
 const SEEN_PATH = 'hof-inbox-seen.json';
@@ -237,10 +313,8 @@ const INBOX_PAGE_SIZE = 100;
 /** Requests per relay for older events, so a burst of junk can't push real submissions out of reach. */
 const INBOX_PAGES = 50;
 
-const siteUrl = () => {
-  const [owner, name] = REPO.split('/');
-  return `https://${owner}.github.io/${name}/`;
-};
+/** Where players open the site (SITE_URL once it moves off GitHub Pages; the old address redirects). */
+const siteUrl = () => process.env.SITE_URL ?? pagesUrl();
 
 const inbox = async () => {
   const token = process.env.GITHUB_TOKEN;
@@ -273,9 +347,14 @@ const inbox = async () => {
     if (batch.length < 100) break;
   }
 
+  // Only pulls that would join the list are filed; each one filed raises the bar for the next.
+  const list = await publishedList();
+  if (!list) console.log("Couldn't read the published list; filing every qualifying pull");
+
   const { added, deferred } = await processInbox(events, {
     seen,
     filed,
+    accepts: (pull) => (list ? joinRefusal(pull, list) === null : qualifiesForHallOfFame(pull.score)),
     budget: INBOX_BUDGET,
     maxFiled: INBOX_MAX_FILED,
     lookup: getSet,
@@ -300,6 +379,7 @@ const inbox = async () => {
       }
       await github(`/repos/${REPO}/issues/${issue.number}/labels`, token, { labels: ['verified'] });
       unfinished.delete(id);
+      list?.push(entry);
       console.log(`#${issue.number}: ${entry.hand} (${entry.score}) from Nostr event ${event.id}`);
     },
   });
