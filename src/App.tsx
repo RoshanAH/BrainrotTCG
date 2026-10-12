@@ -52,7 +52,7 @@ function App() {
   const [shareTarget, setShareTarget] = useState<ShareTarget | null>(null);
   const [viewProof, setViewProof] = useState<string | null>(() => extractProof(window.location.hash));
 
-  const playableSets = SETS.filter((s) => !s.draft || settings.showDraftSets);
+  const playableSets = SETS.filter((s) => !s.archivedAt && (!s.draft || settings.showDraftSets));
   const [selectedSetId, setSelectedSetId] = useState<string>(() => localStorage.getItem(STORAGE_KEYS.SELECTED_SET) ?? DEFAULT_SET_ID);
   const selectedSet = playableSets.find((s) => s.id === selectedSetId) ?? playableSets.find((s) => s.id === DEFAULT_SET_ID) ?? playableSets[0];
   const selectSet = useCallback((setId: string) => {

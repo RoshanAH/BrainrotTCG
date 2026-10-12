@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import CardViewerModal from '../cards/CardViewerModal';
 import { cardPoints, getSetCards, type Card } from '../../data/cards';
-import { SETS } from '../../content/sets';
+import { isOpenable, SETS } from '../../content/sets';
 import type { CollectionItem } from '../../types';
 
 interface CollectionBrowserProps {
@@ -22,7 +22,7 @@ const CollectionBrowser = ({ collection, onClose }: CollectionBrowserProps) => {
     [collection],
   );
 
-  /** One section per set the player owns cards from (released sets always shown), in timeline order. */
+  /** One section per set the player owns cards from (openable sets always shown), in timeline order. */
   const sections = useMemo(
     () =>
       SETS.map((set) => {
@@ -35,7 +35,7 @@ const CollectionBrowser = ({ collection, onClose }: CollectionBrowserProps) => {
               a.card.name.localeCompare(b.card.name),
           );
         return { set, owned, total: getSetCards(set.id).length };
-      }).filter((s) => s.owned.length > 0 || !s.set.draft),
+      }).filter((s) => s.owned.length > 0 || isOpenable(s.set)),
     [items],
   );
 
@@ -72,6 +72,11 @@ const CollectionBrowser = ({ collection, onClose }: CollectionBrowserProps) => {
               <div className="collection-set-header">
                 <h3>{set.name}</h3>
                 <span className="collection-set-era">{set.era}</span>
+                {set.archivedAt && (
+                  <span className="collection-set-archived" title="No new packs. Your cards and pull links still work.">
+                    Archived
+                  </span>
+                )}
                 <span className="collection-set-progress">
                   {owned.length}/{total} · {Math.round((owned.length / total) * 100)}%
                 </span>

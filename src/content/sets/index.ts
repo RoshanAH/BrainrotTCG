@@ -26,7 +26,11 @@ export const SETS: SetDefinition[] = [...new Map(ALL_SET_VERSIONS.map((s) => [s.
   (s) => ALL_SET_VERSIONS.filter((v) => v.id === s.id).sort((a, b) => b.version - a.version)[0],
 );
 
-export const DEFAULT_SET_ID = 'genesis';
+/** Sets you can open packs from: released and not archived (drafts are opt-in previews). */
+export const isOpenable = (set: SetDefinition): boolean => !set.draft && !set.archivedAt;
+
+/** The pack new players land on: the newest openable set. */
+export const DEFAULT_SET_ID = [...SETS].reverse().find(isOpenable)!.id;
 
 export const getSet = (id: string, version: number): SetDefinition | undefined => byKey.get(`${id}@${version}`);
 

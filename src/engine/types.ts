@@ -29,6 +29,11 @@ export interface SetDefinition {
   releasedAt: string;
   /** Draft sets (e.g. placeholder art) are hidden unless the player opts into previews. */
   draft?: boolean;
+  /**
+   * ISO date the set stopped being openable. Archived sets stay in the registry, so old pulls
+   * still verify and owned cards still show, but nobody can open new packs.
+   */
+  archivedAt?: string;
   palette?: string[];
   packSize: number;
   /** Weight per rarity, summing to ODDS_TOTAL. */
@@ -63,6 +68,7 @@ export const validateSet = (input: unknown): SetDefinition => {
   if (!SLUG.test(set.id) || set.id.length > 40) fail('id must be a short kebab-case slug');
   if (!Number.isInteger(set.version) || set.version < 1 || set.version > 65535) fail('version must be an integer 1..65535');
   if (!Number.isInteger(set.packSize) || set.packSize < 1 || set.packSize > 15) fail('packSize must be 1..15');
+  if (set.archivedAt !== undefined && !/^\d{4}-\d{2}-\d{2}$/.test(set.archivedAt)) fail('archivedAt must be an ISO date (YYYY-MM-DD)');
   if (!Number.isInteger(set.holoOdds) || set.holoOdds < 0 || set.holoOdds > ODDS_TOTAL) fail('holoOdds out of range');
   const total = RARITIES_RAREST_FIRST.reduce((sum, r) => {
     const w = set.odds?.[r];

@@ -608,6 +608,16 @@ main {
     font-size: 0.85rem;
 }
 
+.collection-set-archived {
+    border: 1px solid #888;
+    border-radius: 999px;
+    color: #bbb;
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    padding: 0.1rem 0.5rem;
+    text-transform: uppercase;
+}
+
 .collection-set-progress {
     margin-left: auto;
     color: #ffd700;

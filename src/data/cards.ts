@@ -2,7 +2,7 @@
  * UI-facing card data: set definitions from the registry + built image URLs.
  * Card definitions live in `src/content/sets/<set>/set.json`.
  */
-import { SETS } from '../content/sets';
+import { isOpenable, SETS } from '../content/sets';
 import { cardImageUrl } from '../content/art';
 import { cardPoints as engineCardPoints, scorePack, type CardDefinition, type PackScore, type Rarity } from '../engine';
 
@@ -48,8 +48,8 @@ export const toCard = (setId: string, def: CardDefinition): Card => ({
 /** Every card in every current set (including drafts, so preview pulls still resolve). */
 export const ALL_CARDS: Card[] = SETS.flatMap((set) => set.cards.map((def) => toCard(set.id, def)));
 
-/** Cards in released (non-draft) sets: what collection totals and completion achievements count. */
-export const COLLECTIBLE_CARDS: Card[] = ALL_CARDS.filter((card) => !SETS.find((s) => s.id === card.setId)?.draft);
+/** Cards you can still pull (released, non-archived sets): what completion achievements count. */
+export const COLLECTIBLE_CARDS: Card[] = ALL_CARDS.filter((card) => isOpenable(SETS.find((s) => s.id === card.setId)!));
 
 const BY_KEY = new Map(ALL_CARDS.map((c) => [c.key, c]));
 
