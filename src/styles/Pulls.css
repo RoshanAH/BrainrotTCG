@@ -1,17 +1,6 @@
-.pulls-section-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-  margin-bottom: var(--space-3);
-}
-
-.pulls-best {
-  padding: var(--space-4);
-  margin-bottom: var(--space-5);
-  border-radius: var(--radius-lg);
-  background: var(--surface);
-  border: 1px solid var(--border);
+.pulls-legacy,
+.pulls-history {
+  margin-top: var(--space-6);
 }
 
 .pulls-note {

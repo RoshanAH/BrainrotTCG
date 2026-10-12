@@ -45,6 +45,7 @@ We would love to expand the card selection to include more brainrot characters a
 - **Verifiable pulls** - Every pack is derived from a proof-of-work ticket tied to your player key, so pulls can't be faked or edited, with no server
 - **Show it off** - Share any pull as a link that anyone can verify, copy a Wordle-style brag line, or save a 9:16 poster with a QR code
 - **Global Hall of Fame** - Submit a Full House or better; GitHub Actions verifies it and the page re-checks every entry on your device
+- **Verifiable profiles and levels** - Share one link with every pack you've ever opened; anyone's browser re-opens them all to confirm your level, best pulls and collection
 - **Interactive Pack Tearing** - Drag across the tear line to open packs with sparks and sound effects
 - **Pack Opening Experience** - Cards revealed with smooth animations and confetti effects for rare pulls
 - **Collection Browser** - Track your found cards with counts and rarity-colored borders

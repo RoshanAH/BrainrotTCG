@@ -3,7 +3,8 @@ import './styles/index.css';
 import PackOpener from './components/pack/PackOpener';
 import AchievementToasts from './components/achievements/AchievementToasts';
 import AppNav, { type NavTarget } from './components/ui/AppNav';
-import PullsPage from './components/pages/PullsPage';
+import MyProfilePage from './components/profile/MyProfilePage';
+import ProfileViewerPage from './components/profile/ProfileViewerPage';
 import AchievementsPage from './components/achievements/AchievementsPage';
 import HallOfFamePage from './components/pages/HallOfFamePage';
 import SettingsPage from './components/pages/SettingsPage';
@@ -15,9 +16,8 @@ import { scoreCards } from './data/cards';
 import { getAchievementById, Achievement } from './data/achievements';
 import { CardWithMeta } from './components/cards/Card';
 import { DEFAULT_SET_ID, SETS } from './content/sets';
-import { extractProof } from './engine';
+import { extractProfile, extractProof } from './engine';
 import type { OpenedPack } from './game/pulls';
-import { recordPack } from './game/history';
 import { importPlayer } from './game/player';
 import { getStoredData } from './utils/storage';
 import { CURRENT_DATA_VERSION, hydrateCollection, setDataVersion } from './utils/migrations';
@@ -57,12 +57,13 @@ function App() {
   const [isCollectionOpen, setIsCollectionOpen] = useState(false);
   const [isAchievementsOpen, setIsAchievementsOpen] = useState(false);
   const [isHallOfFameOpen, setIsHallOfFameOpen] = useState(false);
-  const [isBestPackOpen, setIsBestPackOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [notificationQueue, setNotificationQueue] = useState<Achievement[]>([]);
   const [shareTarget, setShareTarget] = useState<ShareTarget | null>(null);
   const [packBusy, setPackBusy] = useState(false);
   const [viewProof, setViewProof] = useState<string | null>(() => extractProof(window.location.hash));
+  const [viewProfile, setViewProfile] = useState<string | null>(() => extractProfile(window.location.hash));
 
   const playableSets = SETS.filter((s) => !s.archivedAt && (!s.draft || settings.showDraftSets));
   const [selectedSetId, setSelectedSetId] = useState<string>(() => localStorage.getItem(STORAGE_KEYS.SELECTED_SET) ?? DEFAULT_SET_ID);
@@ -74,13 +75,17 @@ function App() {
 
   // Shared pull links: #/pull/<proof>
   useEffect(() => {
-    const onHashChange = () => setViewProof(extractProof(window.location.hash));
+    const onHashChange = () => {
+      setViewProof(extractProof(window.location.hash));
+      setViewProfile(extractProfile(window.location.hash));
+    };
     window.addEventListener('hashchange', onHashChange);
     return () => window.removeEventListener('hashchange', onHashChange);
   }, []);
   const closePullViewer = useCallback(() => {
     history.replaceState(null, '', window.location.pathname + window.location.search);
     setViewProof(null);
+    setViewProfile(null);
   }, []);
 
   const bgMusicRef = useRef<HTMLAudioElement | null>(null);
@@ -177,7 +182,7 @@ function App() {
       collection: setIsCollectionOpen,
       achievements: setIsAchievementsOpen,
       hallOfFame: setIsHallOfFameOpen,
-      bestPack: setIsBestPackOpen,
+      profile: setIsProfileOpen,
       settings: setIsSettingsOpen,
     })[target](true);
   }, []);
@@ -232,7 +237,6 @@ function App() {
     const newCards = pack.cards;
     const pullRef = { setId: pack.setId, setVersion: pack.setVersion, nonce: pack.nonce, publicKeyHex: pack.publicKeyHex };
     const { points: packValue, hand: pokerHand, score } = scoreCards(newCards);
-    recordPack(pack);
 
     // Update stats using functional update to avoid stale closure
     let updatedStats: Stats = stats;
@@ -361,12 +365,7 @@ function App() {
     setShareTarget({ ref: { setId: pack.setId, setVersion: pack.setVersion, nonce: pack.nonce, publicKeyHex: pack.publicKeyHex }, cards: pack.cards, score: pack.score });
   }, []);
 
-  const shareBestPack = useCallback(() => {
-    if (!stats.highestPackRef || !stats.highestPackCards) return;
-    setShareTarget({ ref: stats.highestPackRef, cards: stats.highestPackCards, score: scoreCards(stats.highestPackCards) });
-  }, [stats]);
-
-  const isAnyModalOpen = isCollectionOpen || isAchievementsOpen || isHallOfFameOpen || isBestPackOpen || isSettingsOpen || !!shareTarget || !!viewProof;
+  const isAnyModalOpen = isCollectionOpen || isAchievementsOpen || isHallOfFameOpen || isProfileOpen || isSettingsOpen || !!shareTarget || !!viewProof || !!viewProfile;
 
   return (
     <div className={`app ${packBusy ? 'is-focus' : ''}`}>
@@ -415,11 +414,10 @@ function App() {
         />
       )}
 
-      {isBestPackOpen && (
-        <PullsPage
+      {isProfileOpen && (
+        <MyProfilePage
           stats={stats}
-          onClose={() => setIsBestPackOpen(false)}
-          onShareBest={stats.highestPackRef ? shareBestPack : undefined}
+          onClose={() => setIsProfileOpen(false)}
           onSharePull={(entry, cards) =>
             setShareTarget({
               ref: { setId: entry.setId, setVersion: entry.setVersion, nonce: entry.nonce, publicKeyHex: entry.key },
@@ -441,6 +439,8 @@ function App() {
       {shareTarget && <ShareSheet target={shareTarget} onClose={() => setShareTarget(null)} />}
 
       {viewProof && <PullViewerPage proof={viewProof} onClose={closePullViewer} />}
+
+      {viewProfile && <ProfileViewerPage proof={viewProfile} onClose={closePullViewer} />}
 
       {/* Settings Page */}
       {isSettingsOpen && (

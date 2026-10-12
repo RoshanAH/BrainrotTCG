@@ -111,6 +111,17 @@ export const recordPack = (pack: OpenedPack) => {
   write([entry, ...read().filter((e) => !sameTicket(e, entry))]);
 };
 
+/**
+ * Add packs worked out after the fact (tickets this device had no cards for), keeping newest first.
+ * Entries for tickets already in the history are replaced.
+ */
+export const addDerivedPacks = (entries: HistoryEntry[]) => {
+  if (entries.length === 0) return;
+  const added = entries.map(encode);
+  const rest = read().filter((e) => !added.some((a) => sameTicket(a, e)));
+  write([...rest, ...added].sort((a, b) => b.t - a.t));
+};
+
 /** This key's packs in ticket order (what a profile is built from). */
 export const historyForKey = (publicKeyHex: string): HistoryEntry[] =>
   getHistory()

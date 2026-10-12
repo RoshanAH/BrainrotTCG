@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Independent verifier for Brainrot TCG pull proofs.
+"""Independent verifier for Brainrot TCG pull proofs and profiles.
 
 Written only from spec/PULL_SPEC.md (v1); section numbers in the comments ("§5.3") refer to it.
 Standard library plus the `cryptography` package (Argon2id and Ed25519). Single file, no local
@@ -9,6 +9,8 @@ Usage:
   python3 spec/verify_pull.py <proof or share link>            human summary; exit 0 valid, 1 invalid
                                                                (2 bad set data, 3 internal error)
   python3 spec/verify_pull.py --json <proof or share link>     same, as JSON
+  python3 spec/verify_pull.py <profile link>                   verify a profile (§11): re-opens every pack
+  python3 spec/verify_pull.py --profile <profile>              same, for a bare profile
   python3 spec/verify_pull.py --vectors FILE [FILE ...]        check test vectors files
   --sets DIR  use DIR instead of src/content/sets for set lookup
 """
@@ -557,7 +559,7 @@ def check_public_key(public_key: bytes) -> EdPoint:
     return a_point
 
 
-def check_signature(proof: Proof, a_point: EdPoint) -> None:
+def check_signature(proof: Proof | Profile, a_point: EdPoint) -> None:
     """§7.4 Cofactorless Ed25519, exactly as the spec states it: S < L, k = SHA-512(R || A || M)
     mod L, and encode([S]B - [k]A) == R byte for byte. R is not checked in any other way.
 
@@ -707,6 +709,267 @@ def verify(text: str, sets: dict[str, SetDef]) -> VerifiedPull:
 
 
 # ---------------------------------------------------------------------------------------------
+# §11 Profiles
+# ---------------------------------------------------------------------------------------------
+
+PROFILE_VERSION = 0x01
+PROFILE_SIGNED_PREFIX = b"brainrot-tcg/profile/v1"
+PROFILE_LINK_MARKER = "#/profile/"
+PROFILE_MAX_SETS = 64
+PROFILE_MAX_TICKETS = 100_000
+PROFILE_HIGHLIGHTS = 5
+
+
+@dataclass(frozen=True)
+class Profile:
+    public_key: bytes
+    name: str
+    runs: list[tuple[str, int]]  # (set key, ticket count), in ticket order
+    xp: int  # claimed
+    highlights: list[int]  # claimed: ticket numbers of the best packs, best first
+    signature: bytes
+    signed_message: bytes
+
+    @property
+    def tickets(self) -> list[str]:
+        """§11.1: ticket n's set key, for n = 0 ... N-1."""
+        return [set_key for set_key, count in self.runs for _ in range(count)]
+
+
+def profile_text_from_input(text: str) -> str:
+    """Accept a bare profile or a link `https://.../#/profile/<profile>` (§11)."""
+    text = text.strip()
+    if "#" in text:
+        fragment = "#" + text.split("#", 1)[1]
+        if not fragment.startswith(PROFILE_LINK_MARKER):
+            raise ProofError("decode", "link does not have a #/profile/<profile> fragment")
+        return fragment[len(PROFILE_LINK_MARKER):]
+    return text
+
+
+def parse_profile(text: str) -> Profile:
+    """§11.1 layout with the §11.2.1 strict and canonical decoding rules."""
+    data = b64url_decode(text)
+    pos = 0
+
+    def take(count: int, field: str) -> bytes:
+        nonlocal pos
+        if pos + count > len(data):
+            raise ProofError("decode", f"truncated: {field} needs {count} byte(s) at offset {pos}, {len(data) - pos} left")
+        chunk = data[pos:pos + count]
+        pos += count
+        return chunk
+
+    def varint(field: str) -> int:
+        nonlocal pos
+        if pos >= len(data):
+            raise ProofError("decode", f"truncated: {field} missing at offset {pos}")
+        value, pos = read_varint(data, pos)
+        return value
+
+    version = take(1, "profile version")[0]
+    if version != PROFILE_VERSION:
+        raise ProofError("decode", f"unsupported profile version {version} (expected {PROFILE_VERSION})")
+    public_key = take(32, "public key")
+    name = utf8_decode(take(take(1, "name length")[0], "name"), "name")
+
+    table_size = take(1, "set table size")[0]
+    if not 1 <= table_size <= PROFILE_MAX_SETS:
+        raise ProofError("decode", f"set table size {table_size} is not in 1 ... {PROFILE_MAX_SETS}")
+    table: list[str] = []
+    for i in range(table_size):
+        id_len = take(1, f"set {i} id length")[0]
+        if not 1 <= id_len <= 64:
+            raise ProofError("decode", f"set {i} id length {id_len} is not in 1 ... 64")
+        set_id = utf8_decode(take(id_len, f"set {i} id"), "set id")
+        set_key = f"{set_id}@{int.from_bytes(take(2, f'set {i} version'), 'big')}"
+        if set_key in table:
+            raise ProofError("decode", f"set {set_key} is listed twice")
+        table.append(set_key)
+
+    run_count = varint("run count")
+    if run_count < 1:
+        raise ProofError("decode", "a profile needs at least one run")
+    runs: list[tuple[str, int]] = []
+    seen = 0  # distinct indexes so far: the next new one must be exactly this (order of first use)
+    total = 0
+    previous = None
+    for i in range(run_count):
+        index = varint(f"run {i} set index")
+        count = varint(f"run {i} count")
+        if index >= table_size:
+            raise ProofError("decode", f"run {i} set index {index} is out of range")
+        if index > seen:
+            raise ProofError("decode", f"run {i} uses set {index} before set {seen}: sets must be in order of first use")
+        if index == seen:
+            seen += 1
+        if count < 1:
+            raise ProofError("decode", f"run {i} is empty")
+        if index == previous:
+            raise ProofError("decode", f"runs {i - 1} and {i} are in the same set (they should be one run)")
+        previous = index
+        total += count
+        if total > PROFILE_MAX_TICKETS:
+            raise ProofError("decode", f"more than {PROFILE_MAX_TICKETS} tickets")
+        runs.append((table[index], count))
+    if seen != table_size:
+        raise ProofError("decode", f"{table_size - seen} listed set(s) never used")
+
+    xp = varint("claimed XP")
+    highlight_count = take(1, "highlight count")[0]
+    if highlight_count != min(PROFILE_HIGHLIGHTS, total):
+        raise ProofError("decode", f"{highlight_count} highlights; must be min(5, {total})")
+    highlights: list[int] = []
+    for i in range(highlight_count):
+        nonce = varint(f"highlight {i}")
+        if nonce >= total:
+            raise ProofError("decode", f"highlight {i} is ticket {nonce}, but the profile ends at {total - 1}")
+        if nonce in highlights:
+            raise ProofError("decode", f"ticket {nonce} is highlighted twice")
+        highlights.append(nonce)
+
+    body_end = pos
+    signature = take(64, "signature")
+    if pos != len(data):
+        raise ProofError("decode", f"{len(data) - pos} unexpected byte(s) after the signature")
+    return Profile(public_key, name, runs, xp, highlights, signature, PROFILE_SIGNED_PREFIX + data[:body_end])
+
+
+# §11.3 Level
+XP_PER_PACK = 10
+XP_PER_NEW_CARD = 25
+XP_HAND_BONUS = {"Two Pair": 5, "3 of a Kind": 5, "Full House": 50, "4 of a Kind": 100, "5 of a Kind": 1000}
+
+
+def level_for_xp(xp: int) -> int:
+    """The largest L >= 1 with 50 * L * (L - 1) <= xp."""
+    level = 1
+    while 50 * (level + 1) * level <= xp:
+        level += 1
+    return level
+
+
+@dataclass(frozen=True)
+class ProfilePack:
+    set_key: str
+    cards: list[Card]
+    score: Score
+
+
+@dataclass(frozen=True)
+class VerifiedProfile:
+    profile: Profile
+    packs: list[ProfilePack]
+
+    @property
+    def xp(self) -> int:
+        xp = 0
+        collected: set[tuple[str, str]] = set()
+        for pack in self.packs:
+            xp += XP_PER_PACK + XP_HAND_BONUS.get(pack.score.hand, 0)
+            set_id = pack.set_key.rsplit("@", 1)[0]
+            for card in pack.cards:
+                if (set_id, card.card_id) not in collected:
+                    collected.add((set_id, card.card_id))
+                    xp += XP_PER_NEW_CARD
+        return xp
+
+    @property
+    def level(self) -> int:
+        return level_for_xp(self.xp)
+
+    @property
+    def best(self) -> list[int]:
+        """§11.2 step 6: ticket numbers of the min(5, N) best packs, highest score first, ties by ticket."""
+        order = sorted(range(len(self.packs)), key=lambda n: (-self.packs[n].score.score, n))
+        return order[:PROFILE_HIGHLIGHTS]
+
+    def as_json(self) -> dict:
+        p = self.profile
+        return {
+            "valid": True,
+            "name": p.name,
+            "displayName": display_name(p.name),
+            "fingerprint": fingerprint(p.public_key),
+            "publicKey": p.public_key.hex(),
+            "tickets": p.tickets,
+            "packs": [{"cards": [c.as_json() for c in pk.cards], "hand": pk.score.hand, "score": pk.score.score} for pk in self.packs],
+            "xp": self.xp,
+            "level": self.level,
+            "highlights": self.best,
+        }
+
+
+def check_profile(text: str, sets: dict[str, SetDef]) -> Profile:
+    """§11.2 steps 1-5 (everything except re-opening the packs)."""
+    profile = parse_profile(profile_text_from_input(text))  # 1. decode
+    check_name(profile.name)  # 2.
+    a_point = check_public_key(profile.public_key)  # 3.
+    check_signature(profile, a_point)  # 4. (same check, this section's signed message)
+    for set_key, _count in profile.runs:  # 5.
+        if set_key not in sets:
+            raise ProofError("set", f"unknown set {set_key}")
+    return profile
+
+
+def derive_profile(profile: Profile, sets: dict[str, SetDef]) -> VerifiedProfile:
+    """Re-open every pack (§4-§5) and score it (§8). Doesn't look at the claims."""
+    packs = []
+    for nonce, set_key in enumerate(profile.tickets):
+        cards = generate_pack(sets[set_key], pack_seed(compute_ticket(set_key, profile.public_key, nonce)))
+        packs.append(ProfilePack(set_key, cards, score_pack(cards)))
+    return VerifiedProfile(profile, packs)
+
+
+def verify_profile(text: str, sets: dict[str, SetDef]) -> VerifiedProfile:
+    verified = derive_profile(check_profile(text, sets), sets)
+    profile = verified.profile
+    if profile.xp != verified.xp:  # §11.2 step 6
+        raise ProofError("claims", f"claims {profile.xp} XP, but its packs earn {verified.xp}")
+    if profile.highlights != verified.best:
+        raise ProofError("claims", f"claims tickets {profile.highlights} are its best, but they are {verified.best}")
+    return verified
+
+
+def print_profile_summary(verified: VerifiedProfile) -> None:
+    p = verified.profile
+    shown = display_name(p.name) or "(no name)"
+    print("VALID profile")
+    print(f"  Player   {shown} #{fingerprint(p.public_key)}")
+    print(f"  Packs    {len(verified.packs)} (tickets 0 ... {len(verified.packs) - 1})")
+    for set_key, count in p.runs:
+        print(f"    {count:>6} x {set_key}")
+    hands = Counter(pack.score.hand for pack in verified.packs)
+    print("  Hands    " + ", ".join(f"{n} {hand}" for hand, n in hands.most_common()))
+    best = max(verified.packs, key=lambda pack: pack.score.score)
+    print(f"  Best     {best.score.hand}, score {best.score.score}")
+    print(f"  Level    {verified.level} ({verified.xp} XP)")
+
+
+def run_profile(text: str, sets_dir: Path, as_json: bool) -> int:
+    try:
+        sets = load_sets(sets_dir)
+        verified = verify_profile(text, sets)
+    except ProofError as err:
+        if as_json:
+            print(json.dumps({"valid": False, "rule": err.rule, "reason": err.reason}, ensure_ascii=False, indent=2))
+        else:
+            print(f"INVALID profile ({err.rule}): {err.reason}")
+        return 1
+    except SetDataError as err:
+        print(f"error: set data: {err}", file=sys.stderr)
+        return 2
+    except RuntimeError as err:
+        print(f"error: {err}", file=sys.stderr)
+        return 3
+    if as_json:
+        print(json.dumps(verified.as_json(), ensure_ascii=False, indent=2))
+    else:
+        print_profile_summary(verified)
+    return 0
+
+
+# ---------------------------------------------------------------------------------------------
 # CLI: single proof
 # ---------------------------------------------------------------------------------------------
 
@@ -836,6 +1099,30 @@ def check_same_pull(v: dict, sets: dict[str, SetDef]) -> list[str]:
     return problems
 
 
+PROFILE_FIELDS = ("publicKey", "name", "fingerprint", "tickets", "packs", "xp", "level", "highlights")
+
+
+def check_profile_vector(v: dict, sets: dict[str, SetDef]) -> list[str]:
+    try:
+        got = verify_profile(v["profile"], sets).as_json()
+    except ProofError as err:
+        return [f"rejected ({err.rule}): {err.reason}"]
+    return [problem for field in PROFILE_FIELDS if field in v for problem in _mismatch(field, got[field], v[field])]
+
+
+def check_invalid_profile(v: dict, sets: dict[str, SetDef]) -> list[str]:
+    try:
+        if v["rule"] == "claims":
+            verify_profile(v["profile"], sets)  # claims need every pack re-opened
+        else:
+            check_profile(v["profile"], sets)  # everything else fails before any pack is re-opened
+    except ProofError as err:
+        if err.rule != v["rule"]:
+            return [f"rejected by rule {err.rule!r} ({err.reason}), but the vector says {v['rule']!r}"]
+        return []
+    return [f"accepted, but the vector says reject ({v['rule']})"]
+
+
 SECTIONS = {
     "tickets": check_ticket,
     "rng": check_rng,
@@ -843,6 +1130,8 @@ SECTIONS = {
     "valid": check_valid,
     "invalid": check_invalid,
     "samePull": check_same_pull,
+    "profiles": check_profile_vector,
+    "invalidProfiles": check_invalid_profile,
 }
 
 
@@ -895,11 +1184,12 @@ def run_vectors(paths: list[Path], sets_dir: Path) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Verify a Brainrot TCG pull proof (spec/PULL_SPEC.md v1).")
+    parser = argparse.ArgumentParser(description="Verify a Brainrot TCG pull proof or profile (spec/PULL_SPEC.md v1).")
     parser.add_argument("proof", nargs="?", help="a proof, or a share link ending in #/pull/<proof>")
     parser.add_argument("--vectors", type=Path, nargs="+", metavar="FILE", help="check one or more vectors files instead")
     parser.add_argument("--sets", type=Path, default=DEFAULT_SETS_DIR, metavar="DIR", help=f"set directory (default: {DEFAULT_SETS_DIR})")
     parser.add_argument("--json", action="store_true", help="machine-readable output for a single proof")
+    parser.add_argument("--profile", action="store_true", help="the argument is a bare profile (§11); links ending in #/profile/... are detected")
     args = parser.parse_args(argv)
     if args.vectors is not None:
         if args.proof is not None:
@@ -907,6 +1197,8 @@ def main(argv: list[str] | None = None) -> int:
         return run_vectors(args.vectors, args.sets)
     if args.proof is None:
         parser.error("give a proof or share link, or --vectors FILE")
+    if args.profile or PROFILE_LINK_MARKER in args.proof:
+        return run_profile(args.proof, args.sets, args.json)
     return run_single(args.proof, args.sets, args.json)
 
 

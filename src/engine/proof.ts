@@ -41,8 +41,8 @@ export interface PullProof {
 
 export type UnsignedProof = Omit<PullProof, 'signature'>;
 
-/** Which verification rule a proof broke (spec section 7), checked in this order. */
-export type ProofRule = 'decode' | 'name' | 'publicKey' | 'signature' | 'set';
+/** Which verification rule a proof broke (spec sections 7 and 11.2), checked in this order. `claims` is profiles only. */
+export type ProofRule = 'decode' | 'name' | 'publicKey' | 'signature' | 'set' | 'claims';
 
 export class ProofError extends Error {
   constructor(

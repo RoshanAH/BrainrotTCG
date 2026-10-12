@@ -91,6 +91,25 @@ the issue's creation date, so a placeholder issue edited later can't claim an ea
 counts once, however many times it's submitted or re-signed. A maintainer can drop an entry by adding
 the `rejected` label to its issue.
 
+## Profiles and levels (no server)
+
+A profile link (`#/profile/<proof>`, spec section 11) is the player's signed list of which set every
+ticket went to, from ticket #0 with no gaps, plus two claims: their XP and their five best tickets.
+It carries no cards; the viewer re-opens every pack (`src/game/profiles.ts`), so nothing in it can be
+edited, and bad packs can't be left out (a ticket's pack is fixed, and every ticket is listed).
+
+Speed, for a profile of N packs (each pack is one ~0.1 s ticket):
+
+- the signature and the claimed level: instant;
+- the best pulls: about a second (re-opened first);
+- everything: N tickets across a pool of workers (`src/game/ticketPool.ts`, up to 8). If the packs
+  don't match the claims, the profile is marked fake;
+- a second view, or the same profile with more packs: only the new packs (`src/game/reopenCache.ts`).
+
+The game records every pack the moment it's derived (`src/game/history.ts`), and signs profiles from
+that history, so sharing one is instant. Levels come from the packs alone (spec section 11.3), so a
+level is exactly as trustworthy as the packs.
+
 ## Invariants (CI enforces these)
 
 1. **Released sets never change.** Card ids, order, rarities, odds or pack size of a released

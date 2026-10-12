@@ -1,11 +1,11 @@
-import { Award, Crown, History, Layers, Settings, type LucideIcon } from 'lucide-react';
+import { Award, Crown, Layers, Settings, UserRound, type LucideIcon } from 'lucide-react';
 import '../../styles/AppNav.css';
 
-export type NavTarget = 'collection' | 'achievements' | 'hallOfFame' | 'bestPack' | 'settings';
+export type NavTarget = 'collection' | 'achievements' | 'hallOfFame' | 'profile' | 'settings';
 
 const ITEMS: { id: NavTarget; label: string; Icon: LucideIcon }[] = [
   { id: 'collection', label: 'Collection', Icon: Layers },
-  { id: 'bestPack', label: 'Pulls', Icon: History },
+  { id: 'profile', label: 'Profile', Icon: UserRound },
   { id: 'hallOfFame', label: 'Hall of Fame', Icon: Crown },
   { id: 'achievements', label: 'Achievements', Icon: Award },
   { id: 'settings', label: 'Settings', Icon: Settings },

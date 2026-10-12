@@ -15,6 +15,7 @@ import {
 } from '../engine';
 import { getSet } from '../content/sets';
 import { allocateNonce, getPlayer, peekNonce } from './player';
+import { recordPack } from './history';
 import { getTicket, prefetchTicket } from './ticketMiner';
 import type { CardWithMeta } from '../components/cards/Card';
 
@@ -33,7 +34,7 @@ export interface OpenedPack extends PullRef {
   openedAt: number;
 }
 
-const toCardsWithMeta = (pulled: { setId: string; cardId: string; isHolo: boolean }[]): CardWithMeta[] =>
+export const toCardsWithMeta = (pulled: { setId: string; cardId: string; isHolo: boolean }[]): CardWithMeta[] =>
   pulled.map((p) => {
     const card: Card | undefined = getCard(`${p.setId}/${p.cardId}`);
     if (!card) throw new Error(`Unknown card ${p.setId}/${p.cardId}`);
@@ -51,7 +52,7 @@ export const openPack = async (set: SetDefinition): Promise<OpenedPack> => {
   const ticket = await getTicket(setKey(set), player.publicKey, nonce);
   const cards = toCardsWithMeta(generatePack(set, packSeedFromTicket(ticket)));
   prefetchTicket(setKey(set), player.publicKey, nonce + 1);
-  return {
+  const pack: OpenedPack = {
     setId: set.id,
     setVersion: set.version,
     nonce,
@@ -60,6 +61,9 @@ export const openPack = async (set: SetDefinition): Promise<OpenedPack> => {
     score: scoreCards(cards),
     openedAt: Date.now(),
   };
+  // Recorded now, not after the reveal: the ticket is spent either way, and a profile needs every one.
+  recordPack(pack);
+  return pack;
 };
 
 /** Can this player share this pull? (False after importing a different player's key.) */
