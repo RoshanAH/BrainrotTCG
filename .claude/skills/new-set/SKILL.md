@@ -1,6 +1,6 @@
 ---
 name: new-set
-description: Research current meme trends and draft a new Brainrot TCG card set end to end (card list, set.json, SVG placeholder art, Gemini prompt sheet, previews), ready for a draft PR. Use when asked to add, draft or update a card set, era, or monthly "Right Now" drop.
+description: Research current meme trends and draft a new Brainrot TCG card set end to end (card list, set.json, real meme images with credits, previews), ready for a draft PR. Use when asked to add, draft or update a card set, era, or monthly "Right Now" drop.
 ---
 
 # Drafting a new Brainrot TCG set
@@ -21,9 +21,9 @@ Read `docs/ADDING_A_SET.md` and `docs/ART_STYLE.md` first; they are the source o
 12 cards: 4 COMMON, 3 UNCOMMON, 2 RARE, 1 EPIC, 1 LEGENDARY, 1 BRAINROT. Names max 22 chars,
 captions max ~26 chars and genuinely funny, flavor max 90 chars, plus an `art` brief.
 
-Hard rules: no identifiable real people (turn person-memes into objects, animals or faceless
-silhouettes), copyrighted characters only as renamed parodies with original art, no
-hate-associated or tragedy memes, PG-13. Flag anything risky in the PR description.
+Hard rules: every card is the real meme with its real name. Skip any meme whose owner enforces
+takedowns, whose only images centre on a private individual or a minor, or that is NSFW, gore or
+hate-associated, and pick another from the same era. PG-13. Flag anything risky in the PR description.
 
 ## 3. Files
 

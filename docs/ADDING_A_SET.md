@@ -7,10 +7,11 @@ A set is data: a `set.json` plus art. No code changes are needed apart from one 
 12 cards is a good size: 4 Common, 3 Uncommon, 2 Rare, 1 Epic, 1 Legendary, 1 Brainrot. The
 rarest slot goes to the most iconic or funniest meme of the era.
 
-Rules (see also `docs/ART_STYLE.md`):
-- **No real, identifiable people.** Person-memes become objects, animals or silhouettes.
-- **Copyrighted characters become parodies** with a riffed name and original art.
-- **No hate-associated or tragedy memes.** Keep it PG-13 and readable for a global audience.
+Rules (see "Real images only" in `docs/ART_STYLE.md`):
+- **Every card is a real meme with its real name and real image.** No parodies or lookalikes.
+- **Skip memes you can't show for real:** the owner enforces takedowns, the only images centre on a
+  private individual or a minor, or it's NSFW, gore or hate-associated. Pick another meme from the era.
+- Public figures in their meme moment, animals, objects, and film, TV, game or AI-character stills are fine.
 
 ## 2. Write `src/content/sets/<set-id>/set.json`
 
@@ -65,7 +66,15 @@ npx tsx scripts/cards/preview.ts my-set /tmp/my-set.png
    npm run check:sets -- --update   # locks my-set@1
    npm run check
    ```
-3. Commit `set.json`, `art/`, `cards/`, `PROMPTS.md` and `sets.lock.json`, then open a PR.
+3. Commit `set.json`, `art/`, `cards/`, `CREDITS.md` and `sets.lock.json`, then open a PR.
+4. Optionally run `npm run og-image` so link previews show the newest sets.
+
+## Archiving a set
+
+If a set can't stay on sale (say a rights holder starts enforcing), add `"archivedAt": "YYYY-MM-DD"`
+to its `set.json`. Nobody can open new packs from it, and its cards stop counting toward completion
+achievements. It stays in the registry, so every old pull link and Hall of Fame entry still verifies,
+and players keep the cards they own (marked Archived in their collection). Genesis is archived this way.
 
 ## Changing a released set
 

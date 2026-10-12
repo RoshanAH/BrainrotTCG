@@ -41,7 +41,7 @@ We would love to expand the card selection to include more brainrot characters a
 
 ## Features
 
-- **Timeline packs** - Each meme era is its own set (Genesis, Web Ancients, Vine & Dank, ...). Pick an era and open its packs
+- **Timeline packs** - Each meme era is its own set, from Web Ancients (2007–2012) and Vine & Dank to Lockdown Lore, Gen Alpha Uprising, Italian Brainrot and Right Now. Every card shows the real meme. The original hackathon set, Genesis, is archived: its pulls still verify
 - **Verifiable pulls** - Every pack is derived from a proof-of-work ticket tied to your player key, so pulls can't be faked or edited, with no server
 - **Show it off** - Share any pull as a link that anyone can verify, copy a Wordle-style brag line, or save a 9:16 poster with a QR code
 - **Global Hall of Fame** - Submit a Full House or better; GitHub Actions verifies it and the page re-checks every entry on your device
@@ -76,6 +76,7 @@ npm run dev
 | `npm run cards` | build card images into `src/content/sets/<set>/cards/` |
 | `npm run prompts` | write free Gemini-app prompt sheets for each set's art |
 | `npm run check:sets -- --update` | lock a new set version |
+| `npm run og-image` | rebuild the link preview image from the newest sets |
 
 ## Adding cards and sets
 

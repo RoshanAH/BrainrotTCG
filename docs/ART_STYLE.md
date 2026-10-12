@@ -73,10 +73,11 @@ API has no free tier for images; at about $0.03 per image it's an option for bul
 - **Shape:** portrait, about 6:7 (the art window is 444×519 px). Anything else is cover-cropped.
 - **Edges:** frame decorations overlap the window's edges (a heart and star at the top, starbursts at
   the sides), so keep faces and key props away from the outer ~30 px.
-- **No text:** no letters, numbers, logos or brand marks.
-- **No real people:** person-memes become objects, animals or faceless silhouettes. Copyrighted
-  characters become original parody designs. Team self-portraits (like Genesis's Buh67) need the
-  person's OK.
+- **Text:** crop out caption text the frame already supplies. Text that is part of the meme itself
+  (a road sign, a map label) can stay.
+- **People:** public figures in their meme moment are fine. Crop out bystanders where you can. Skip
+  memes whose only images centre on a private individual or a minor. Team self-portraits (like
+  Genesis's Buh67) need the person's OK.
 - **Keep it PG-13:** no hate symbols, gore or sexual content.
 
 ## SVG placeholders

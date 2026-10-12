@@ -19,7 +19,7 @@ src/content/       Data. Adding content never needs code changes.
   sets/<set>/set.json  cards (id, name, rarity, caption, flavor, art brief), odds, holo odds
   sets/<set>/art/      source art (real images, full cards, or SVG placeholders)
   sets/<set>/cards/    built card images (npm run cards); committed
-  sets/index.ts        the registry: every version of every set (old versions stay for old proofs)
+  sets/index.ts        the registry: every version of every set (old versions and archived sets stay for old proofs)
   sets.lock.json       hash of each released set@version (npm run check:sets)
 
 src/game/          Browser glue around the engine.

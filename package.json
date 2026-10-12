@@ -13,7 +13,8 @@
     "cards": "tsx scripts/cards/build.ts",
     "check:sets": "tsx scripts/check-sets.ts",
     "check": "npm run lint && npm run typecheck && npm test && npm run check:sets",
-    "prompts": "tsx scripts/cards/prompts.ts"
+    "prompts": "tsx scripts/cards/prompts.ts",
+    "og-image": "tsx scripts/og-image.ts"
   },
   "dependencies": {
     "@noble/ed25519": "^3.2.0",
