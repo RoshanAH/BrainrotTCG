@@ -43,12 +43,11 @@ const script = `(function () {
   } catch (e) {}
   var markMoved = function () { try { localStorage.setItem(MOVED, new Date().toISOString()); } catch (e) {} };
 
-  // Asked by the new address's Settings: send the save to the window that opened this one.
+  // Asked by the new address's Settings: send the save to the window that opened this one (which
+  // closes this one straight away). Old links then go straight through.
   if (location.hash === '#/send' && window.opener) {
-    window.addEventListener('message', function (e) {
-      if (e.origin === NEW_ORIGIN && e.source === window.opener && e.data && e.data.type === 'brainrot-move-result' && e.data.result === 'saved') markMoved();
-    });
     window.opener.postMessage(has ? { type: 'brainrot-save', save: save } : { type: 'brainrot-no-save' }, NEW_ORIGIN);
+    if (has) markMoved();
     status.textContent = has ? 'Sent to ' + ${JSON.stringify(shortName)} + '. You can close this window.' : 'There is no save here.';
     return;
   }
@@ -68,7 +67,7 @@ const script = `(function () {
       if (e.origin !== NEW_ORIGIN || e.source !== popup || !e.data) return;
       if (e.data.type === 'brainrot-ready') popup.postMessage({ type: 'brainrot-save', save: save }, NEW_ORIGIN);
       if (e.data.type === 'brainrot-move-result') {
-        if (e.data.result === 'saved') markMoved();
+        if (e.data.result === 'saved' || e.data.result === 'same') markMoved();
         go();
       }
     });

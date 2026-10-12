@@ -8,7 +8,9 @@
  * - The old address (scripts/redirect-site.ts) offers "Bring my save". That opens this site at
  *   `#/receive`; it says it's ready, gets the save and reports back (`receiveSave`).
  * - From here, Settings can fetch it instead: it opens the old address at `#/send`, which sends the
- *   save back (`fetchOldSave`), for players who arrive through a new link.
+ *   save back (`fetchOldSave`), for players who arrive through a new link. Settings asks in the page
+ *   before replacing a different save, not with a browser dialog: one can open behind the old
+ *   address's window, and then it looks as if nothing happened.
  *
  * Only builds with VITE_OLD_ORIGIN (set by the deploy once the site has moved) do any of this.
  */
@@ -19,7 +21,8 @@ const BACKUP_KEY = 'brainrot-before-move-v1';
 /** What makes a save worth keeping: replacing any of these asks first. */
 const PROGRESS_KEYS = [PLAYER_KEY, 'brainrot-found-collection-v1', 'brainrot-history-v1', 'brainrot-stats-v1', 'brainrot-achievements-v1'];
 
-export type MoveResult = 'saved' | 'kept' | 'invalid';
+/** 'same': this player's save is already here, so nothing was written. */
+export type MoveResult = 'saved' | 'same' | 'kept' | 'invalid';
 
 export const canBringOldSave = (): boolean => !!OLD_ORIGIN && !!OLD_SITE_URL && OLD_ORIGIN !== window.location.origin;
 
@@ -33,19 +36,22 @@ const secretOf = (player: string | null | undefined): string | undefined => {
 
 const brainrotKeys = () => Array.from({ length: localStorage.length }, (_, i) => localStorage.key(i)).filter((k): k is string => !!k?.startsWith('brainrot-'));
 
+const askToReplace = () =>
+  window.confirm('Bring over your save from the old Brainrot TCG address? It replaces the save in this browser now (that one is kept as a backup).');
+
 /**
  * Write a handed-over save into this address's storage. If there's already progress here that isn't
- * the same player, the player is asked first and the replaced save is kept under BACKUP_KEY.
+ * the same player, `replace` decides (by asking, unless told otherwise) and the replaced save is kept
+ * under BACKUP_KEY.
  */
-export const importSave = (save: unknown): MoveResult => {
+export const importSave = (save: unknown, replace: () => boolean = askToReplace): MoveResult => {
   if (!save || typeof save !== 'object') return 'invalid';
   const incoming = Object.fromEntries(Object.entries(save).filter(([k, v]) => k.startsWith('brainrot-') && k !== BACKUP_KEY && typeof v === 'string')) as Record<string, string>;
   if (!PROGRESS_KEYS.some((k) => k in incoming)) return 'invalid';
   if (PROGRESS_KEYS.some((k) => localStorage.getItem(k) !== null)) {
     const here = secretOf(localStorage.getItem(PLAYER_KEY));
-    if (here && here === secretOf(incoming[PLAYER_KEY])) return 'saved'; // already here
-    const ok = window.confirm('Bring over your save from the old Brainrot TCG address? It replaces the save on this one (which is kept as a backup).');
-    if (!ok) return 'kept';
+    if (here && here === secretOf(incoming[PLAYER_KEY])) return 'same';
+    if (!replace()) return 'kept';
     const backup = Object.fromEntries(brainrotKeys().filter((k) => k !== BACKUP_KEY).map((k) => [k, localStorage.getItem(k)]));
     for (const k of brainrotKeys()) if (k !== BACKUP_KEY) localStorage.removeItem(k);
     localStorage.setItem(BACKUP_KEY, JSON.stringify(backup));
@@ -78,7 +84,7 @@ export const receiveSave = (): Promise<boolean> => {
       if (event.origin !== OLD_ORIGIN || event.source !== opener || event.data?.type !== 'brainrot-save') return;
       const result = importSave(event.data.save);
       opener.postMessage({ type: 'brainrot-move-result', result }, OLD_ORIGIN);
-      if (root) root.textContent = result === 'saved' ? 'Your save is here. You can close this window.' : 'Nothing was changed. You can close this window.';
+      if (root) root.textContent = result === 'saved' || result === 'same' ? 'Your save is here. You can close this window.' : 'Nothing was changed. You can close this window.';
       finish(true);
       window.close();
     };
@@ -87,26 +93,30 @@ export const receiveSave = (): Promise<boolean> => {
   });
 };
 
-/** From here: open the old address, which sends its save back (Settings). */
-export const fetchOldSave = (): Promise<MoveResult | 'none' | 'blocked'> => {
+/**
+ * From here: open the old address, which sends its save back (Settings). The small window is closed
+ * as soon as it answers, and the save is handed to the caller to import. 'timeout' when it never
+ * answered (it didn't load, or was closed first).
+ */
+export const fetchOldSave = (): Promise<{ save: unknown } | 'none' | 'blocked' | 'timeout'> => {
   const popup = window.open(`${OLD_SITE_URL}#/send`, 'brainrot-send', 'popup,width=440,height=360');
   if (!popup) return Promise.resolve('blocked');
   return new Promise((resolve) => {
-    const finish = (result: MoveResult | 'none') => {
+    const finish = (result: { save: unknown } | 'none' | 'timeout') => {
       clearTimeout(timer);
       window.removeEventListener('message', onMessage);
       try {
-        popup.postMessage({ type: 'brainrot-move-result', result }, OLD_ORIGIN);
-        setTimeout(() => popup.close(), 300);
+        popup.close();
       } catch {
         // already closed
       }
+      window.focus();
       resolve(result);
     };
-    const timer = setTimeout(() => finish('none'), 20000);
+    const timer = setTimeout(() => finish('timeout'), 20000);
     const onMessage = (event: MessageEvent<Message>) => {
       if (event.origin !== OLD_ORIGIN || event.source !== popup) return;
-      if (event.data?.type === 'brainrot-save') finish(importSave(event.data.save));
+      if (event.data?.type === 'brainrot-save') finish({ save: event.data.save });
       else if (event.data?.type === 'brainrot-no-save') finish('none');
     };
     window.addEventListener('message', onMessage);
