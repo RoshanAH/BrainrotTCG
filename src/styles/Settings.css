@@ -31,6 +31,17 @@
   min-height: 60px;
 }
 
+.settings-row--wrap {
+  flex-wrap: wrap;
+}
+
+/* Two buttons answering a question in the row: they drop below its text when there's no room. */
+.settings-actions {
+  display: flex;
+  gap: var(--space-2);
+  margin-left: auto;
+}
+
 .settings-text,
 .settings-field {
   display: grid;

@@ -1,9 +1,9 @@
-import { useId, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { Download, History, Upload } from 'lucide-react';
 import { STORAGE_KEYS } from '../../constants';
 import { MAX_NAME_LENGTH } from '../../engine';
 import { exportPlayer, getPlayer, renamePlayer } from '../../game/player';
-import { canBringOldSave, fetchOldSave } from '../../game/move';
+import { canBringOldSave, fetchOldSave, importSave, type MoveResult } from '../../game/move';
 import type { Settings } from '../../types';
 import Sheet from '../ui/Sheet';
 import '../../styles/Settings.css';
@@ -54,18 +54,35 @@ const SettingsPage = ({ settings, onSettingsChange, onClose, onImportSave }: Set
         URL.revokeObjectURL(url);
     };
 
-    // After the site moved: fetch the save from the old address (game/move.ts).
+    // After the site moved: fetch the save from the old address (game/move.ts). Replacing a different
+    // save here is asked in this row, not in a browser dialog, which can open behind the old address's
+    // window.
     const [oldSaveNote, setOldSaveNote] = useState('Played at the old address? Bring that save here.');
-    const handleBringOldSave = async () => {
-        setOldSaveNote('Opening the old address…');
-        const result = await fetchOldSave();
+    const [oldSave, setOldSave] = useState<{ save: unknown } | null>(null);
+    const keepRef = useRef<HTMLButtonElement>(null);
+    useEffect(() => {
+        if (oldSave) keepRef.current?.focus();
+    }, [oldSave]);
+    const showBringResult = (result: MoveResult) => {
+        setOldSave(null);
         if (result === 'saved') return window.location.reload();
         setOldSaveNote(
-            result === 'none' ? 'There was no save at the old address.'
-            : result === 'blocked' ? 'Your browser blocked the window. Allow pop-ups for this site, then try again.'
+            result === 'same' ? 'Your save from the old address is already here.'
             : result === 'kept' ? 'Kept the save you have here.'
             : "That didn't look like a save, so nothing changed.",
         );
+    };
+    const handleBringOldSave = async () => {
+        setOldSaveNote('Opening the old address…');
+        const got = await fetchOldSave();
+        if (got === 'blocked') return setOldSaveNote('Your browser blocked the window. Allow pop-ups for this site, then try again.');
+        if (got === 'none') return setOldSaveNote('There was no save at the old address.');
+        if (got === 'timeout') return setOldSaveNote("The old address didn't answer, so nothing changed. Try again.");
+        // Don't replace a different save yet: ask first.
+        const result = importSave(got.save, () => false);
+        if (result !== 'kept') return showBringResult(result);
+        setOldSave(got);
+        setOldSaveNote('This browser has a different save. Replace it with the old one? The one here is kept as a backup.');
     };
 
     const handleImportClick = () => {
@@ -157,14 +174,25 @@ const SettingsPage = ({ settings, onSettingsChange, onClose, onImportSave }: Set
                         <input ref={fileInputRef} type="file" accept=".txt,.json" onChange={handleFileChange} hidden />
                     </div>
                     {canBringOldSave() && (
-                        <div className="settings-row">
+                        <div className={oldSave ? 'settings-row settings-row--wrap' : 'settings-row'}>
                             <span className="settings-text">
                                 <span className="settings-label">From the old address</span>
                                 <span className="settings-desc" role="status">{oldSaveNote}</span>
                             </span>
-                            <button type="button" className="btn btn--secondary btn--sm" onClick={handleBringOldSave}>
-                                <History aria-hidden="true" /> Bring it
-                            </button>
+                            {oldSave ? (
+                                <span className="settings-actions">
+                                    <button type="button" ref={keepRef} className="btn btn--secondary btn--sm" onClick={() => showBringResult('kept')}>
+                                        Keep mine
+                                    </button>
+                                    <button type="button" className="btn btn--primary btn--sm" onClick={() => showBringResult(importSave(oldSave.save, () => true))}>
+                                        Replace
+                                    </button>
+                                </span>
+                            ) : (
+                                <button type="button" className="btn btn--secondary btn--sm" onClick={handleBringOldSave}>
+                                    <History aria-hidden="true" /> Bring it
+                                </button>
+                            )}
                         </div>
                     )}
                 </div>

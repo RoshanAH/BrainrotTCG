@@ -56,7 +56,7 @@ describe('bringing a save over', () => {
   it('does nothing when the same player is already here', () => {
     store.set('brainrot-player-v1', player('aa'));
     store.set('brainrot-found-collection-v1', '{"newer":{"normal":9}}');
-    expect(importSave(OLD)).toBe('saved');
+    expect(importSave(OLD)).toBe('same');
     expect(store.get('brainrot-found-collection-v1')).toBe('{"newer":{"normal":9}}');
     expect(confirm).not.toHaveBeenCalled();
   });
@@ -75,5 +75,14 @@ describe('bringing a save over', () => {
     const backup = JSON.parse(store.get('brainrot-before-move-v1')!) as Record<string, string>;
     expect(backup['brainrot-player-v1']).toBe(player('bb'));
     expect(backup['brainrot-stats-v1']).toBe('{"packsOpened":4}');
+  });
+
+  it('lets the caller decide instead of asking (Settings asks in the page)', () => {
+    store.set('brainrot-player-v1', player('bb'));
+    expect(importSave(OLD, () => false)).toBe('kept');
+    expect(store.get('brainrot-player-v1')).toBe(player('bb'));
+    expect(importSave(OLD, () => true)).toBe('saved');
+    expect(store.get('brainrot-player-v1')).toBe(player('aa'));
+    expect(confirm).not.toHaveBeenCalled();
   });
 });
