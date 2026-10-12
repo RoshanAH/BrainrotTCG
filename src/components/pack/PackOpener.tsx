@@ -12,11 +12,9 @@ import { BRAINROT_VOICES, EFFECT_SOUNDS, CARD_FLIP_SRC } from '../../constants/a
 import PackCuttingUI from './PackCuttingUI';
 import CardRevealUI from './CardRevealUI';
 import PackSummaryUI from './PackSummaryUI';
-import pack1 from '../../assets/packs/pack1.webp';
-import pack2 from '../../assets/packs/pack2.webp';
+import { packImageUrl } from '../../content/art';
 import '../../styles/PackOpener.css';
 
-const PACK_DESIGNS = [pack1, pack2];
 const Motion = motion;
 
 interface PreloadedAssets {
@@ -43,7 +41,7 @@ const PackOpener = ({ onOpen, onShare, set, disabled = false, settings }: PackOp
   const [isPackCut, setIsPackCut] = useState(false);
   const [preloadedAssets, setPreloadedAssets] = useState<PreloadedAssets | null>(null);
   const [showSummary, setShowSummary] = useState(false);
-  const [packDesign, setPackDesign] = useState(() => PACK_DESIGNS[Math.floor(Math.random() * PACK_DESIGNS.length)]);
+  const packDesign = packImageUrl(set.id);
   const [hasMovedMouse, setHasMovedMouse] = useState(false);
   const [autoMode, setAutoMode] = useState(false);
 
@@ -124,7 +122,6 @@ const PackOpener = ({ onOpen, onShare, set, disabled = false, settings }: PackOp
     setIsPackCut(false);
     setShowSummary(false);
     setHasMovedMouse(false);
-    setPackDesign(PACK_DESIGNS[Math.floor(Math.random() * PACK_DESIGNS.length)]);
     resetCutState();
   }, [resetCutState, preloadedAssets, cleanupAudio]);
 

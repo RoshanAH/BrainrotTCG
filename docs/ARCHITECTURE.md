@@ -19,6 +19,7 @@ src/content/       Data. Adding content never needs code changes.
   sets/<set>/set.json  cards (id, name, rarity, caption, flavor, art brief), odds, holo odds
   sets/<set>/art/      source art (real images, full cards, or SVG placeholders)
   sets/<set>/cards/    built card images (npm run cards); committed
+  sets/<set>/pack.webp the set's booster pack wrapper, built from its colours and rarest cards
   sets/index.ts        the registry: every version of every set (old versions and archived sets stay for old proofs)
   sets.lock.json       hash of each released set@version (npm run check:sets)
 
@@ -31,7 +32,7 @@ src/game/          Browser glue around the engine.
 src/components/    React UI (pack opening, collection, set picker, share sheet, pull viewer, pages)
 
 scripts/           Node tools (run with tsx)
-  cards/             card compositor (Genesis frame + art + text), previews, prompt sheets
+  cards/             card compositor (Genesis frame + art + text), pack wrappers, previews, prompt sheets
   check-sets.ts      set lock guard
   hall-of-fame.ts    verifies Hall of Fame issues; builds public/hall-of-fame.json
 ```

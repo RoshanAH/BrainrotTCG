@@ -53,6 +53,9 @@ for (const set of ALL_SET_VERSIONS) {
   } else if (lock[key] !== hash) {
     errors.push(`${key} changed after release (cards, order, rarities, odds or pack size). Bump its version instead; old proofs depend on it.`);
   }
+  if (!set.draft && !set.archivedAt && !existsSync(`${ROOT}src/content/sets/${set.id}/pack.webp`)) {
+    errors.push(`${key}: no pack wrapper. Run: npm run cards`);
+  }
   for (const card of set.cards) {
     if (!existsSync(`${ROOT}src/content/sets/${set.id}/cards/${card.id}.webp`)) {
       errors.push(`${key}: no built image for "${card.id}". Run: npm run cards`);

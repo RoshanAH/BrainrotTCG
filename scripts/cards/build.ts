@@ -1,9 +1,12 @@
 /**
- * Builds every registered card image into `src/content/sets/<set>/cards/<card>.webp`.
+ * Builds every registered card image into `src/content/sets/<set>/cards/<card>.webp`,
+ * then each set's pack wrapper into `src/content/sets/<set>/pack.webp`.
  * Usage: npm run cards [-- --force] [-- --set <id>]
  */
 import { ALL_SET_VERSIONS, SETS } from '../../src/content/sets/index.ts';
-import { buildSetCards } from './lib.ts';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { buildSetCards, SETS_DIR } from './lib.ts';
+import { buildSetPack } from './pack.ts';
 
 const args = process.argv.slice(2);
 const force = args.includes('--force');
@@ -20,6 +23,14 @@ for (const set of SETS) {
   built += result.built.length;
   skipped += result.skipped;
   missing.push(...result.missing);
+  if (result.missing.length) continue;
+  const manifestPath = `${SETS_DIR}/${set.id}/cards/.manifest.json`;
+  const manifest = existsSync(manifestPath) ? JSON.parse(readFileSync(manifestPath, 'utf8')) : {};
+  if (await buildSetPack(set, manifest, force)) {
+    writeFileSync(manifestPath, JSON.stringify(manifest, null, 2) + '\n');
+    console.log(`built ${set.id}/pack`);
+    built++;
+  } else skipped++;
 }
 console.log(`${built} built, ${skipped} up to date`);
 if (missing.length) {

@@ -32,10 +32,9 @@
 
 body {
     background-color: #1a1a2e;
-    background-image: url('../assets/images/background.webp');
+    background-image: url('../assets/images/background.svg');
     background-repeat: repeat;
     background-size: 256px 256px;
-    background-blend-mode: multiply;
     color: var(--text-main);
     min-height: 100vh;
     overflow-x: hidden;

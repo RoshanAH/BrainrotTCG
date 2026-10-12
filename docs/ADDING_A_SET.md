@@ -66,7 +66,7 @@ npx tsx scripts/cards/preview.ts my-set /tmp/my-set.png
    npm run check:sets -- --update   # locks my-set@1
    npm run check
    ```
-3. Commit `set.json`, `art/`, `cards/`, `CREDITS.md` and `sets.lock.json`, then open a PR.
+3. Commit `set.json`, `art/`, `cards/`, `pack.webp`, `CREDITS.md` and `sets.lock.json`, then open a PR.
 4. Optionally run `npm run og-image` so link previews show the newest sets.
 
 ## Archiving a set
