@@ -14,6 +14,7 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { ALL_SET_VERSIONS } from '../src/content/sets/index.ts';
 import { setKey, TICKET_VERSION, type SetDefinition } from '../src/engine/index.ts';
+import { findArt } from './cards/lib.ts';
 
 const ROOT = fileURLToPath(new URL('../', import.meta.url));
 const LOCK_PATH = `${ROOT}src/content/sets.lock.json`;
@@ -55,6 +56,10 @@ for (const set of ALL_SET_VERSIONS) {
   for (const card of set.cards) {
     if (!existsSync(`${ROOT}src/content/sets/${set.id}/cards/${card.id}.webp`)) {
       errors.push(`${key}: no built image for "${card.id}". Run: npm run cards`);
+    }
+    // Released sets show real meme images only (see docs/ART_STYLE.md).
+    if (!set.draft && findArt(set.id, card.id)?.kind === 'svg') {
+      errors.push(`${key}: "${card.id}" still has placeholder SVG art; released sets need the real image (or swap the card).`);
     }
   }
 }
