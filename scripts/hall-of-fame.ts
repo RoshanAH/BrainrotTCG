@@ -135,9 +135,9 @@ const checkIssue = async (issue: Issue): Promise<Checked> => {
   }
 };
 
-const github = async <T>(path: string, token: string, body?: unknown): Promise<T> => {
+const github = async <T>(path: string, token: string, body?: unknown, method = body === undefined ? 'GET' : 'POST'): Promise<T> => {
   const res = await fetch(`${API}${path}`, {
-    method: body === undefined ? 'GET' : 'POST',
+    method,
     headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' },
     body: body === undefined ? undefined : JSON.stringify(body),
   });
@@ -379,6 +379,13 @@ const inbox = async () => {
       }
       await github(`/repos/${REPO}/issues/${issue.number}/labels`, token, { labels: ['verified'] });
       unfinished.delete(id);
+      // Done: closed issues stay in the Hall of Fame (the deploy reads every state); this keeps the
+      // issue list for things that need attention.
+      try {
+        await github(`/repos/${REPO}/issues/${issue.number}`, token, { state: 'closed', state_reason: 'completed' }, 'PATCH');
+      } catch (error) {
+        console.warn(`#${issue.number}: filed, but couldn't close it: ${error}`);
+      }
       list?.push(entry);
       console.log(`#${issue.number}: ${entry.hand} (${entry.score}) from Nostr event ${event.id}`);
     },

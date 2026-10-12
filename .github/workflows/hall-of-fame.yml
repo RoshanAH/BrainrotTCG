@@ -45,6 +45,9 @@ jobs:
           if [ "$VERIFIED" = "true" ]; then
             gh issue edit "$ISSUE" --add-label hall-of-fame,verified
             gh issue edit "$ISSUE" --remove-label not-verified 2>/dev/null || true
+            # Done: closed issues stay in the Hall of Fame (the deploy reads every state). One that
+            # didn't verify stays open, so the submitter can fix the link.
+            gh issue close "$ISSUE" --reason completed 2>/dev/null || true
           else
             gh issue edit "$ISSUE" --add-label hall-of-fame,not-verified
             gh issue edit "$ISSUE" --remove-label verified 2>/dev/null || true
