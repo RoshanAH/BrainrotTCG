@@ -31,6 +31,9 @@ src/game/          Browser glue around the engine.
 
 src/components/    React UI (pack opening, collection, set picker, share sheet, pull viewer, pages)
 
+spec/              The proof spec (PULL_SPEC.md), test vectors, and verify_pull.py: an independent
+                   Python verifier written only from the spec. CI runs both verifiers on both vector files.
+
 scripts/           Node tools (run with tsx)
   cards/             card compositor (Genesis frame + art + text), pack wrappers, previews, prompt sheets
   check-sets.ts      set lock guard
@@ -60,7 +63,12 @@ pack is just opening packs. Argon2id is memory-hard, which keeps the advantage o
 machines small compared to plain hashing.
 
 Known limits: you can't prove how many packs someone opened in total, or that they weren't using a
-bot. Neither matters for "look at my best pull".
+bot. A ticket takes about 0.1 s, so a script finds a Full House in seconds and a 5 of a Kind in
+minutes of CPU. "Verified" means *these cards really came from this player's ticket*, not that a
+person was lucky; the Hall of Fame ranks world firsts by GitHub submission time for that reason.
+
+A security review (Oct 2026) found and fixed a forgery via small-order Ed25519 keys and malleable
+encodings; the rules that close them are in `spec/PULL_SPEC.md` section 7 and covered by the vectors.
 
 ## Hall of Fame (no server)
 
@@ -84,8 +92,9 @@ submitter's GitHub username and the issue date come from GitHub, so they can be 
 
 1. **Released sets never change.** Card ids, order, rarities, odds or pack size of a released
    `set@version` can't change; bump `version` and keep the old file (`npm run check:sets`).
-2. **Engine changes that alter packs need a new ticket or proof version.** The engine tests lock
-   known-answer vectors (`src/engine/engine.test.ts`).
+2. **Engine changes that alter packs need a new ticket or proof version.** The engine and the
+   independent Python verifier must both pass every vector in `spec/` (`src/engine/spec.test.ts` and
+   the `independent-verifier` CI job).
 3. **Every card has a built image** (`npm run cards`).
 
 Run everything with `npm run check`.

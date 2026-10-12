@@ -10,7 +10,7 @@ The keywords MUST, MUST NOT and SHOULD are used as in RFC 2119.
 ## 1. Overview
 
 ```
-proof link  ─► decode (strict) ─► check name ─► check Ed25519 signature ─► look up set@version
+proof link  ─► decode (strict) ─► check name ─► check key ─► check Ed25519 signature ─► look up set@version
                                                                               │
 cards + score ◄─ generate pack ◄─ sfc32 PRNG ◄─ SHA-256 seed ◄─ Argon2id ticket(set, key, nonce)
 ```
@@ -108,13 +108,17 @@ A verifier MUST apply these checks **in this order** and reject the proof at the
 reporting that rule (the `rule` of each invalid test vector):
 
 1. **`decode`.** base64url, varint and UTF-8 are canonical (section 2), the version byte is 1, the
-   set id is 1 … 64 bytes, and there are no bytes after the signature.
+   set id is 1 … 64 bytes, every field is present (the input doesn't run out early), and there are no
+   bytes after the signature.
 2. **`name`.** The name (it's signed, so these rules use only fixed lists, never Unicode tables that
    change between versions):
    - at most 24 code points;
    - no control characters: U+0000–U+001F, U+007F–U+009F;
-   - no invisible or bidirectional format characters: U+00AD, U+061C, U+180E, U+200B–U+200F,
-     U+202A–U+202E, U+2060–U+2064, U+2066–U+206F, U+FEFF, U+FFF9–U+FFFB, U+E0001, U+E0020–U+E007F;
+   - none of these invisible or bidirectional format code points (the list is complete): U+00AD,
+     U+061C, U+180E, U+200B–U+200F, U+202A–U+202E, U+2060–U+2064, U+2066–U+206F, U+FEFF,
+     U+FFF9–U+FFFB, U+E0001, U+E0020–U+E007F. (This includes the zero-width joiner and tag
+     characters, so the game strips them from names before signing: a family or flag emoji becomes
+     its separate parts.)
    - U+0020 is the only space: none of U+00A0, U+1680, U+2000–U+200A, U+2028, U+2029, U+202F, U+205F,
      U+3000;
    - no leading or trailing U+0020, and never two in a row.
@@ -123,8 +127,8 @@ reporting that rule (the `rule` of each invalid test vector):
    identity and A is not the identity. (This rules out the eight small-order points, for which anyone
    can forge signatures, and keys with a hidden small-order component.)
 4. **`signature`.** With `R` = the signature's first 32 bytes and `S` = its last 32 bytes as a
-   little-endian integer: `S < L`; `k = SHA-512(R || A || message) mod L` (A as the 32 key bytes,
-   message as in section 6); and the **cofactorless** equation holds: the encoding of `[S]B − [k]A` is
+   little-endian integer: `S < L`; `k` = SHA-512(R || A || message) read as a little-endian integer,
+   mod L (A as the 32 key bytes, message as in section 6); and the **cofactorless** equation holds: the encoding of `[S]B − [k]A` is
    byte-for-byte equal to `R`. Use exactly this check: a cofactored verifier (`[8][S]B = [8]R + [8][k]A`)
    accepts signatures this rejects. `R` is not otherwise checked.
 5. **`set`.** `set@version` exists.
@@ -135,7 +139,7 @@ Then derive the pack (sections 4–5) and score it (section 8).
 
 **Same pull.** Two valid proofs with the same set key, public key and nonce are the same pull, even if
 their names or signatures differ (an owner can sign many times). Its **pull id** is
-`` `${setKey}/${hex(publicKey)}/${nonce}` ``. Leaderboards MUST deduplicate on the pull id.
+`` `${setKey}/${hex(publicKey)}/${decimal(nonce)}` ``. Leaderboards MUST deduplicate on the pull id.
 
 ## 8. Score
 

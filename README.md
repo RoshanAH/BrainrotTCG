@@ -63,6 +63,17 @@ ticket, so a lucky pack costs exactly as much work as opening packs honestly. A 
 The global Hall of Fame uses GitHub Issues as the database and GitHub Actions as the verifier. Details
 in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
+**Don't trust our code?** The proof format is written down in [spec/PULL_SPEC.md](spec/PULL_SPEC.md),
+and [spec/verify_pull.py](spec/verify_pull.py) is a second verifier written only from that spec
+(Python + OpenSSL). Check any pull yourself:
+
+```bash
+pip install cryptography
+python3 spec/verify_pull.py 'https://evanlin23.github.io/BrainrotTCG/#/pull/...'
+```
+
+CI runs both verifiers against the same test vectors, including forged and malformed proofs.
+
 ## Setup
 
 ```bash

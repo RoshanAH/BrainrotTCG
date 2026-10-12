@@ -716,7 +716,7 @@ def print_summary(pull: VerifiedPull) -> None:
     shown = display_name(p.name)
     name = shown if shown else "(no name)"
     if shown != p.name:
-        name += f"  (as signed: {p.name!r})"
+        name += f"  (as signed: {p.name!a})"
     print("VALID pull proof")
     print(f"  Player       {name} #{fingerprint(p.public_key)}")
     print(f"  Set          {sd.name} ({p.set_key}){' [archived]' if sd.archived else ''}")
@@ -846,13 +846,6 @@ SECTIONS = {
 }
 
 
-# Vectors written before the revised spec that are now known to be wrong. They are reported but
-# not counted as failures. Delete an entry once the file that holds it has been regenerated.
-KNOWN_STALE = {
-    ("invalid", "name not NFC"): "valid under the revised §7.2, which no longer requires NFC",
-}
-
-
 def run_vector_file(path: Path, sets: dict[str, SetDef]) -> bool:
     """Check one vectors file; print a line per section. Returns True if nothing failed."""
     try:
@@ -870,7 +863,7 @@ def run_vector_file(path: Path, sets: dict[str, SetDef]) -> bool:
             all_ok = False
             continue
         started = time.perf_counter()
-        failed, stale = [], []
+        failed = []
         for i, v in enumerate(vectors):
             try:
                 problems = check(v, sets)
@@ -879,18 +872,11 @@ def run_vector_file(path: Path, sets: dict[str, SetDef]) -> bool:
             if not problems:
                 continue
             note = v.get("note", "")
-            line = f"{section}[{i}]{f' ({note})' if note else ''}: " + "; ".join(problems)
-            if (section, note) in KNOWN_STALE:
-                stale.append(f"{line}  [known stale: {KNOWN_STALE[(section, note)]}]")
-            else:
-                failed.append(line)
+            failed.append(f"{section}[{i}]{f' ({note})' if note else ''}: " + "; ".join(problems))
         elapsed = time.perf_counter() - started
-        extra = f", {len(stale)} known stale" if stale else ""
-        print(f"  {'FAIL' if failed else 'PASS'} {section:<9} {len(vectors) - len(failed) - len(stale)}/{len(vectors)}{extra}  ({elapsed:.2f}s)")
+        print(f"  {'FAIL' if failed else 'PASS'} {section:<9} {len(vectors) - len(failed)}/{len(vectors)}  ({elapsed:.2f}s)")
         for line in failed:
             print(f"       - {line}")
-        for line in stale:
-            print(f"       ~ {line}")
         all_ok = all_ok and not failed
     unchecked = set(doc) - set(SECTIONS) - {"spec", "version", "generatedBy", "testKey"}
     if unchecked:

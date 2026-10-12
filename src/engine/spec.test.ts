@@ -1,9 +1,11 @@
 /**
- * The engine against spec/vectors.json, the same vectors spec/verify_pull.py (an independent
- * implementation of spec/PULL_SPEC.md) checks. If both pass, the two agree.
+ * The engine against the spec's test vectors. spec/vectors.json is generated from this engine
+ * (scripts/spec-vectors.ts); spec/vectors-python.json from spec/verify_pull.py, an independent
+ * implementation of spec/PULL_SPEC.md. CI runs both implementations on both files.
  */
 import { describe, expect, it } from 'vitest';
-import vectors from '../../spec/vectors.json';
+import engineVectors from '../../spec/vectors.json';
+import pythonVectors from '../../spec/vectors-python.json';
 import { getSet } from '../content/sets';
 import { fromHex, toHex } from './bytes';
 import { createRng, generatePack } from './pack';
@@ -18,7 +20,10 @@ const setOf = (key: string) => {
   return set;
 };
 
-describe('spec vectors', () => {
+describe.each([
+  ['spec/vectors.json', engineVectors],
+  ['spec/vectors-python.json', pythonVectors],
+])('%s', (_file, vectors) => {
   it('tickets', async () => {
     for (const t of vectors.tickets) {
       expect(toHex(await computeTicket(t.setKey, fromHex(t.publicKey), t.nonce))).toBe(t.ticket);
