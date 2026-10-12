@@ -9,9 +9,10 @@
  */
 import { setKey, validateSet, type CardDefinition, type SetDefinition } from '../../engine';
 import genesis from './genesis/set.json';
+import webAncients from './web-ancients/set.json';
 
 /** Every version of every set. Display order = timeline order (Genesis first). */
-export const ALL_SET_VERSIONS: SetDefinition[] = [genesis].map((s) => validateSet(s));
+export const ALL_SET_VERSIONS: SetDefinition[] = [genesis, webAncients].map((s) => validateSet(s));
 
 const byKey = new Map(ALL_SET_VERSIONS.map((s) => [setKey(s), s]));
 if (byKey.size !== ALL_SET_VERSIONS.length) throw new Error('Duplicate set@version in registry');

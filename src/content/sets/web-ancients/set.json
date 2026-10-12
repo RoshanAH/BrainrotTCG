@@ -5,7 +5,6 @@
   "era": "2007–2012",
   "tagline": "LOL, I can has pack?",
   "releasedAt": "2026-10-12",
-  "draft": true,
   "palette": [
     "#0645AD",
     "#FFDD00",
@@ -32,13 +31,13 @@
       "art": "Ginger-and-white cat head poking down through a ragged square hole in a plain gray ceiling, wide round eyes staring straight at the viewer, whiskers dangling. Background: smooth gray ceiling fading darker. Colors: ginger, white, gray."
     },
     {
-      "id": "keyboard-cat",
-      "name": "Keyboard Cat",
+      "id": "me-gusta",
+      "name": "Me Gusta",
       "rarity": "COMMON",
-      "caption": "Play him off, Keyboard Cat",
-      "flavor": "Taped in 1984, crowned in 2009: a cat in a blue shirt plays every fail video off stage.",
-      "year": 2009,
-      "art": "Ginger-and-white tabby cat in a light blue T-shirt sitting upright behind a vintage electric keyboard, front paws on the keys, deadpan stare at the viewer. Background: plain beige living-room wall, warm 1980s home-video look. Colors: ginger, light blue, beige, black."
+      "caption": "Mmm... me gusta",
+      "flavor": "Rage comics, 2010: May Oswald's bug-eyed face for liking something you really shouldn't.",
+      "year": 2010,
+      "art": "May Oswald's original black-and-white Me Gusta rage face (Know Your Meme's main image): round head, heavy brows, wide bulging eyes and a tight, wavy, satisfied mouth, cropped so the face fills the frame. Background: plain white. Colors: black, white."
     },
     {
       "id": "y-u-no-guy",
@@ -50,13 +49,13 @@
       "art": "Black-and-white rage-comic drawing: huge round white head with furious bulging eyes, gritted teeth and a scrunched nose, small body in a white shirt throwing both hands up in exasperation. Background: flat dark blue. Colors: white, black, slate blue."
     },
     {
-      "id": "planking",
-      "name": "Planking",
+      "id": "double-rainbow",
+      "name": "Double Rainbow",
       "rarity": "COMMON",
-      "caption": "Face down, arms by sides",
-      "flavor": "2011's least athletic sport: lie face-down, stiff as a board, somewhere weird.",
-      "year": 2011,
-      "art": "A faceless person in a green T-shirt and jeans lying perfectly stiff, face-down, across the top of a stack of red and blue storage crates on a store shelf, arms pinned to their sides, face hidden. Background: pegboard store wall. Colors: green, denim blue, red, tan."
+      "caption": "What does it mean?!",
+      "flavor": "Yosemite, 2010: Paul 'Bear' Vasquez films two rainbows and sobs with joy. All the way!",
+      "year": 2010,
+      "art": "Frame from Paul Vasquez's January 2010 YouTube video (Know Your Meme's main image): a bright double rainbow arcing down over a scrubby Yosemite hillside under a gray-blue sky, no people in shot. Colors: rainbow, slate gray, olive."
     },
     {
       "id": "dramatic-chipmunk",
@@ -95,40 +94,40 @@
       "art": "Green velociraptor head in profile drawn in heavy black ink, one claw raised to its chin, eyes narrowed in deep thought. Background: two-tone green diagonal split. Colors: lime green, sage, black."
     },
     {
+      "id": "trololo-guy",
+      "name": "Trololo Guy",
+      "rarity": "RARE",
+      "caption": "Trololo lololo lololo!",
+      "flavor": "Soviet TV, 1976: Eduard Khil grins through a wordless song. In 2010 the web went wild.",
+      "year": 2010,
+      "art": "Still from singer Eduard Khil's 1976 Soviet TV performance of 'I Am Very Glad, as I'm Finally Returning Back Home' (Know Your Meme's main image): close-up of his huge grin and raised brows, side-parted brown hair, dark suit. Background: mustard-yellow studio wall. Colors: mustard, brown, skin tones."
+    },
+    {
+      "id": "forever-alone",
+      "name": "Forever Alone",
+      "rarity": "EPIC",
+      "caption": "Table for one, please",
+      "flavor": "Rage comics, 2010: a lumpy, teary grin for every Valentine's Day spent solo.",
+      "year": 2010,
+      "art": "The original Forever Alone rage face (Know Your Meme's main image): a lumpy black-outlined face with a wide, toothy, trembling grin and blue tears streaming from both eyes, centred with white space around it. Background: plain white. Colors: black, white, blue."
+    },
+    {
       "id": "gangnam-style",
       "name": "Gangnam Style",
-      "rarity": "RARE",
+      "rarity": "LEGENDARY",
       "caption": "Oppa Gangnam Style!",
       "flavor": "2012: the first video to hit 1 billion YouTube views had the whole planet horse-dancing.",
       "year": 2012,
       "art": "Cartoon of a round-faced singer in black sunglasses and a black suit doing the invisible-horse dance, wrists crossed in front of his chest, knees bent. Background: cartoon horse stable with tiled floor. Colors: black, cream, tan, teal."
     },
     {
-      "id": "trollface",
-      "name": "Trollface",
-      "rarity": "EPIC",
-      "caption": "Problem?",
-      "flavor": "Since 2008, the MS Paint grin behind every prank, bait link and 'u mad?'",
-      "year": 2008,
-      "art": "Original black-and-white MS Paint-style line drawing (not a copy) of a wide, smug, lumpy face with an enormous toothy grin stretching ear to ear, squinting mischievous eyes and raised brows. Background: plain white. Colors: black, white, light gray."
-    },
-    {
-      "id": "nyan-cat",
-      "name": "Nyan Cat",
-      "rarity": "LEGENDARY",
-      "caption": "Nyan nyan nyan nyan nyan",
-      "flavor": "2011's 10-hour loop: a pastry-bodied pixel cat zooming through space on a rainbow.",
-      "year": 2011,
-      "art": "Pixel-art gray cat with a rectangular pink-frosted toaster-pastry body with sprinkles, flying to the right, six-stripe rainbow trail behind, twinkling pixel stars. Background: dark navy space. Colors: gray, pink, tan, rainbow stripes, navy."
-    },
-    {
-      "id": "rickroll",
-      "name": "Rickroll",
+      "id": "i-can-has-cheezburger",
+      "name": "I Can Has Cheezburger?",
       "rarity": "BRAINROT",
-      "caption": "Never gonna give you up",
-      "flavor": "Since 2007 every link might be a trap. You know the rules, and so do I.",
+      "caption": "Oh hai! U has cheezburger?",
+      "flavor": "2007: a grinning gray cat begs for a burger in broken English, and LOLcats are born.",
       "year": 2007,
-      "art": "Faceless figure seen in silhouette with a tall swoopy ginger pompadour, oversized beige trench coat over a black turtleneck, mid side-step dance with fists pumping, no face visible. Background: foggy late-80s music-video set with a brick wall. Colors: beige, black, ginger, blue haze."
+      "art": "The uncaptioned original Happy Cat photo (c. 2003): a gray British Shorthair sitting up, mouth open in a hopeful grin, round orange eyes, in front of a blue-gray patterned wall. Colors: blue-gray, orange, pink."
     }
   ]
 }
