@@ -5,6 +5,7 @@
   "era": "2020–2022",
   "tagline": "Stay home. Open packs.",
   "releasedAt": "2026-10-12",
+  "draft": true,
   "palette": [
     "#6EC6CA",
     "#F4D35E",
@@ -22,112 +23,112 @@
   "holoOdds": 500,
   "cards": [
     {
-      "id": "youre-on-mute",
-      "name": "You're On Mute",
-      "rarity": "COMMON",
-      "caption": "You're on mute, Kevin",
-      "flavor": "2020: said more than 'hello.' Unmute yourself. No, the OTHER button.",
-      "year": 2020,
-      "art": "Video-call tile with a cute round blob passionately talking, a big red crossed-out microphone icon in the corner, empty speech bubble. Background: faint lavender grid of other call tiles. Colors: lavender, red, white, peach."
-    },
-    {
-      "id": "lord-yeastington",
-      "name": "Lord Yeastington",
+      "id": "sourdough-starter",
+      "name": "Sourdough Starter",
       "rarity": "COMMON",
       "caption": "Feed me. Every. Day.",
-      "flavor": "2020: everyone adopted a sourdough starter, named it, and became its servant.",
+      "flavor": "2020: stuck at home, everyone grew a bubbly sourdough starter, named it and fed it daily.",
       "year": 2020,
-      "art": "Glass jar of bubbly beige dough with a monocled face and a tiny crown, bubbles popping out the top, wooden spoon beside it. Background: warm kitchen tiles. Colors: beige, glass blue, gold, brown."
+      "art": "Real photo of a homemade sourdough starter: bubbly, risen beige levain in a glass jar (Wikimedia Commons, CC BY-SA 4.0)."
     },
     {
-      "id": "whipped-dalgona",
-      "name": "Whipped Dalgona",
+      "id": "dalgona-coffee",
+      "name": "Dalgona Coffee",
       "rarity": "COMMON",
       "caption": "Whisk 400 times. Worth it",
       "flavor": "Korea to the world, 2020: fluffy whipped coffee on milk, lockdown's first TikTok hit.",
       "year": 2020,
-      "art": "Tall glass of milk topped with a fluffy caramel-brown whipped cloud that has a proud smiling face, a whisk leaning on the glass. Background: soft cream. Colors: caramel, milk white, cream, brown."
+      "art": "Real photo of homemade dalgona coffee: a thick cap of whipped caramel-brown coffee foam on a glass of milk (Wikimedia Commons, CC BY-SA 4.0)."
     },
     {
-      "id": "bing-chilling-cone",
-      "name": "Bing Chilling Cone",
+      "id": "polish-cow",
+      "name": "Polish Cow",
       "rarity": "COMMON",
-      "caption": "Now I have bing chilling",
-      "flavor": "2021: a viral Mandarin clip made 'ice cream' (bīngqílín) an eternal meme.",
-      "year": 2021,
-      "art": "Vanilla ice cream cone in tiny sunglasses giving a calm thumbs-up, frosty sparkles and chilly breath puffs. Background: icy pale blue with snowflakes. Colors: vanilla, waffle tan, ice blue, black."
+      "caption": "*Polish music plays*",
+      "flavor": "July 2020: a low-poly cow dancing to a Polish banger, looped for hours. Peak 3 a.m.",
+      "year": 2020,
+      "art": "The original Polish Cow clip: the pixelated black-and-white 3D cow mid-dance on a white background (KYM gallery GIF frame)."
+    },
+    {
+      "id": "stick-bug",
+      "name": "Stick Bug",
+      "rarity": "COMMON",
+      "caption": "Get stick bugged lol",
+      "flavor": "2020's bait-and-switch: any video could suddenly cut to a swaying stick insect.",
+      "year": 2020,
+      "art": "Frame from the original 2018 stick bug clip: a pale stick insect swaying on a concrete ledge (KYM gallery GIF, no caption)."
     },
     {
       "id": "vibing-cat",
       "name": "Vibing Cat",
       "rarity": "UNCOMMON",
       "caption": "Head bob intensifies",
-      "flavor": "2020: a white cat bobbing to a Finnish polka became the official sound of vibing.",
+      "flavor": "2020: Minette the white cat bobbed her head on TikTok and became the sound of vibing.",
       "year": 2020,
-      "art": "White cat with closed happy eyes bobbing its head (three ghosted head positions), music notes floating. Background: teal. Colors: white, teal, pink, black."
+      "art": "The canonical catJAM frame: close-up of the white cat's face, eyes half closed, head tilted mid-bob (YouTube thumbnail of the clip)."
     },
     {
-      "id": "stick-bug",
-      "name": "Stick Bug",
+      "id": "im-not-a-cat",
+      "name": "I'm Not a Cat",
       "rarity": "UNCOMMON",
-      "caption": "Get stick bugged lol",
-      "flavor": "2020's bait-and-switch: any video could suddenly cut to a swaying stick insect.",
-      "year": 2020,
-      "art": "Lanky brown stick insect on a leaf swaying side to side with a smug face, little 'LOL' sparkles. Background: leafy green. Colors: twig brown, leaf green, yellow, white."
-    },
-    {
-      "id": "polish-cow",
-      "name": "Polish Cow",
-      "rarity": "UNCOMMON",
-      "caption": "*Polish music plays*",
-      "flavor": "2020–21: a cow dancing to a Polish banger, looped for hours. Peak 3 a.m. internet.",
+      "caption": "I'm here live. Not a cat",
+      "flavor": "Feb 2021: a Texas lawyer stuck behind a kitten filter in a Zoom court hearing.",
       "year": 2021,
-      "art": "Black-and-white cow standing on hind legs doing a stiff, wobbly dance, head tilted, tiny music notes. Background: simple red-and-white split. Colors: white, black, red, pink."
-    },
-    {
-      "id": "its-corn",
-      "name": "It's Corn",
-      "rarity": "RARE",
-      "caption": "IT'S CORN! (has the juice)",
-      "flavor": "2022: one kid's pure love for corn became a song. A big lump with knobs!",
-      "year": 2022,
-      "art": "Golden corn cob with a huge joyful open-mouth grin, arms raised in celebration, husk leaves flapping like a cape, juice sparkles. Background: sky blue. Colors: corn yellow, husk green, sky blue, white."
-    },
-    {
-      "id": "not-a-kitten",
-      "name": "I'm Not a Kitten",
-      "rarity": "RARE",
-      "caption": "I'm not a cat.",
-      "flavor": "2021: a court video call, a stuck kitten filter, and the most sincere denial ever.",
-      "year": 2021,
-      "art": "Video-call window showing a fluffy white kitten face with huge glossy worried eyes, a tiny suit collar and tie, a small gavel in the corner. Background: wood paneling. Colors: white, navy, wood brown, red."
-    },
-    {
-      "id": "ever-stuck-ship",
-      "name": "Ever Stuck",
-      "rarity": "EPIC",
-      "caption": "Tiny digger, giant job",
-      "flavor": "2021: one giant ship wedged across the Suez Canal vs. one very brave tiny digger.",
-      "year": 2021,
-      "art": "Huge container ship jammed diagonally between sandy banks, generic multicolor containers, and one tiny yellow excavator scooping bravely with a determined face. Background: blue water strip and sky. Colors: teal hull, red/orange/blue containers, sand, yellow."
+      "art": "The Zoom kitten filter itself: the fluffy white kitten face with big sad green eyes, isolated on white (no person visible)."
     },
     {
       "id": "big-floppa",
       "name": "Big Floppa",
-      "rarity": "LEGENDARY",
+      "rarity": "UNCOMMON",
       "caption": "Floppa is friend",
-      "flavor": "2020–21: a caracal with giant ear tufts became the internet's beloved big cat.",
-      "year": 2021,
-      "art": "Plump caracal with giant black ear tufts and a calm, unimpressed face, sitting like a loaf. Background: warm beige. Colors: tawny orange, black, cream, beige."
+      "flavor": "2020: Gosha the caracal and his giant ear tufts became the internet's beloved big cat.",
+      "year": 2020,
+      "art": "The original Big Floppa photo: Gosha the caracal lying on a window sill, ear tufts up, staring calmly at the camera."
     },
     {
-      "id": "toilet-paper-king",
-      "name": "Toilet Paper King",
-      "rarity": "BRAINROT",
+      "id": "toilet-paper-panic",
+      "name": "Toilet Paper Panic",
+      "rarity": "RARE",
       "caption": "Worth more than gold",
       "flavor": "March 2020: shelves emptied and rolls hoarded. The one true currency of lockdown.",
       "year": 2020,
-      "art": "Toilet paper roll wearing a jeweled crown and red royal cape, seated on a throne of stacked rolls, holding a scepter, smug face. Background: golden rays. Colors: white, gold, royal red, purple."
+      "art": "Real photo of a completely empty toilet-roll aisle at an Australian supermarket, March 2020 (Wikimedia Commons, CC BY-SA 3.0)."
+    },
+    {
+      "id": "ever-given",
+      "name": "Ever Given",
+      "rarity": "RARE",
+      "caption": "Tiny digger, giant job",
+      "flavor": "March 2021: a giant ship wedged across the Suez Canal vs. one very brave tiny digger.",
+      "year": 2021,
+      "art": "The Suez Canal Authority photo: a lone excavator digging at the towering red bulbous bow of the stuck Ever Given."
+    },
+    {
+      "id": "bing-chilling",
+      "name": "Bing Chilling",
+      "rarity": "EPIC",
+      "caption": "Now I have bing chilling",
+      "flavor": "2021: John Cena greets China in Mandarin, ice cream in hand. 'Bīngqílín' lives forever.",
+      "year": 2021,
+      "art": "Still from John Cena's 2021 Weibo clip: Cena in a suit in his car, mid-sentence, holding up a vanilla ice cream cone."
+    },
+    {
+      "id": "bernie-mittens",
+      "name": "Bernie's Mittens",
+      "rarity": "LEGENDARY",
+      "caption": "I am once again sitting",
+      "flavor": "Jan 2021: Bernie Sanders sat at the inauguration in cozy mittens, then sat everywhere.",
+      "year": 2021,
+      "art": "Brendan Smialowski's AFP photo: Bernie Sanders on a folding chair in a parka, face mask and patterned wool mittens at the 2021 inauguration."
+    },
+    {
+      "id": "coffin-dance",
+      "name": "Coffin Dance",
+      "rarity": "BRAINROT",
+      "caption": "Going out in style",
+      "flavor": "Ghana's dancing pallbearers + 'Astronomia' = 2020's ending to every fail video.",
+      "year": 2020,
+      "art": "The famous Coffin Dance frame: Ghana's dancing pallbearers in suits, sunglasses and caps, carrying a coffin on their shoulders."
     }
   ]
 }

@@ -3,8 +3,9 @@
   "version": 1,
   "name": "Gen Alpha Uprising",
   "era": "2023–2024",
-  "tagline": "Rizz, aura & sigma inside",
+  "tagline": "Rizz, sigma & Smurf Cat inside",
   "releasedAt": "2026-10-12",
+  "draft": true,
   "palette": [
     "#B6FF00",
     "#FF2E88",
@@ -26,108 +27,108 @@
       "name": "Sad Hamster",
       "rarity": "COMMON",
       "caption": "*sad violin plays*",
-      "flavor": "2023: a hamster with huge glossy eyes became the face of every tiny heartbreak.",
-      "year": 2023,
-      "art": "Round golden hamster with enormous watery sparkling eyes, tiny paws pressed together, a miniature violin floating beside it. Background: soft blue with raindrops. Colors: golden tan, white, pale blue, pink."
+      "flavor": "Feb 2024: Alto the hamster, edited with huge teary eyes, set to a sad violin song.",
+      "year": 2024,
+      "art": "Real image: KYM's main image, a TikTok frame of the grey big-eyed 'sad hamster' (an edit of Alto, owned by Instagram's monyo_melo) staring at the camera on a white background."
     },
     {
-      "id": "side-eye-pug",
-      "name": "Side-Eye Pug",
+      "id": "side-eye-cat",
+      "name": "Side Eye Cat",
       "rarity": "COMMON",
       "caption": "Bombastic side eye",
-      "flavor": "2023 TikTok audio: 'Bombastic side eye! Criminal offensive side eye!' Judging you.",
+      "flavor": "Late 2023: Mr. Fresh, an orange stray on a Chinese cat-feeder livestream, side-eyes you.",
       "year": 2023,
-      "art": "Fawn pug giving an extreme dramatic side-eye, one brow raised, lips pursed, arms crossed. Background: hot pink with dramatic speed lines. Colors: fawn, black, hot pink, white."
+      "art": "Real image: KYM's main image of Mr. Fresh, the orange tabby from the Hello Street Cat feeder-cam livestream, giving the camera a suspicious side-eye."
     },
     {
-      "id": "mewing-kitten",
-      "name": "Mewing Kitten",
+      "id": "pesto-the-penguin",
+      "name": "Pesto the Penguin",
       "rarity": "COMMON",
-      "caption": "Can't talk. Mewing.",
-      "flavor": "2024: kids went silent mid-sentence to show off a jawline. This kitten is committed.",
+      "caption": "Bigger than his parents",
+      "flavor": "Sept 2024: a giant, fluffy king penguin chick at Sea Life Melbourne outgrew his parents.",
       "year": 2024,
-      "art": "Gray kitten with an absurdly sharp chiseled jawline, one paw doing a 'shh' finger-to-lips gesture, confident half-closed eyes. Background: mint. Colors: gray, white, mint, black."
+      "art": "Real image: KYM's main photo of Pesto, the huge brown fluffy king penguin chick at Sea Life Melbourne Aquarium, beak up, with adult king penguins behind him."
+    },
+    {
+      "id": "ok-i-pull-up",
+      "name": "Ok I Pull Up",
+      "rarity": "COMMON",
+      "caption": "Hop out at the after party",
+      "flavor": "Don Toliver's 'After Party' plays while JoeJoe the capybara rides shotgun. Ok I pull up.",
+      "year": 2023,
+      "art": "Real image: KYM's main image, a video frame of JoeJoe the capybara sitting in a car's passenger seat with the door open (from a Crazy Cody's Creatures clip)."
+    },
+    {
+      "id": "huh-cat",
+      "name": "Huh Cat",
+      "rarity": "UNCOMMON",
+      "caption": "Huh?",
+      "flavor": "2023: Ben, a chubby cat meowing for food, got a 'huh?' dub and became pure confusion.",
+      "year": 2023,
+      "art": "Real image: KYM's main image of Ben the chubby white-and-black cat, eyes wide and mouth open mid-'huh?', cropped above the image's HUH? caption."
+    },
+    {
+      "id": "gegagedigedagedago",
+      "name": "Gegagedigedagedago",
+      "rarity": "UNCOMMON",
+      "caption": "Where did you come from?",
+      "flavor": "2023–24: a Roblox-faced chicken nugget sings a gibberish 'Cotton Eye Joe' on TikTok.",
+      "year": 2024,
+      "art": "Real image: KYM's main image of the Roblox-face chicken nugget in a cowboy hat, standing in the middle of a desert highway."
+    },
+    {
+      "id": "dancing-toothless",
+      "name": "Dancing Toothless",
+      "rarity": "UNCOMMON",
+      "caption": "Vibing to Driftveil City",
+      "flavor": "Dec 2023: animator Cas van de Pol's 2D Toothless danced to a Pokémon song. Forever.",
+      "year": 2023,
+      "art": "Real image: KYM's main image, a frame of Cas van de Pol's 2D animation of Toothless (How to Train Your Dragon) standing upright mid-dance in a jungle clearing."
     },
     {
       "id": "pedro-raccoon",
       "name": "Pedro Raccoon",
-      "rarity": "COMMON",
+      "rarity": "RARE",
       "caption": "Pedro pedro pedro",
-      "flavor": "2024: a raccoon spinning in circles to an Italian dance remix, forever.",
+      "flavor": "Spring 2024: a raccoon spinning in a circle video to Raffaella Carrà's 'Pedro' remix.",
       "year": 2024,
-      "art": "Gray raccoon with a bandit mask spinning on its hind legs, arms out, swirl lines, music notes. Background: disco purple. Colors: gray, black, purple, yellow."
-    },
-    {
-      "id": "pull-up-capybara",
-      "name": "Pull-Up Capybara",
-      "rarity": "UNCOMMON",
-      "caption": "Ok I pull up",
-      "flavor": "2023: the internet's chillest animal got a theme song, and it always pulls up.",
-      "year": 2023,
-      "art": "Capybara in tiny sunglasses with an orange balanced on its head, sitting in a tiny red convertible, totally calm. Background: sunny teal. Colors: capybara brown, orange, red, teal."
+      "art": "Real image: KYM's main image, the baby raccoon waving a paw inside the round TikTok circle video on a black background."
     },
     {
       "id": "low-taper-fade",
       "name": "Low Taper Fade",
-      "rarity": "UNCOMMON",
+      "rarity": "RARE",
       "caption": "The meme is still massive",
-      "flavor": "2024: 'Imagine if he got a low taper fade.' The haircut grew bigger than the joke.",
+      "flavor": "Jan 2024: ericdoa sang 'Imagine if Ninja got a low taper fade.' Then Ninja got one.",
       "year": 2024,
-      "art": "Hair-clipper character with a crisp gradient fade haircut on its own top, smug face, sparkles, a barber pole beside it. Background: black-and-white checker floor. Colors: silver, red/white stripes, black, cyan."
+      "art": "Real image: the viral photoshop from KYM's gallery of streamer Ninja with a curly-top low taper fade, hand on chin, in a grey hoodie."
     },
     {
-      "id": "bouncy-baby-hippo",
-      "name": "Bouncy Baby Hippo",
-      "rarity": "UNCOMMON",
-      "caption": "Bouncy, wet, sassy",
-      "flavor": "2024: a baby pygmy hippo in Thailand bit, bounced and conquered the internet.",
-      "year": 2024,
-      "art": "Tiny shiny pinkish-gray baby pygmy hippo mid-bounce with attitude, mouth open in a tiny chomp, water droplets flying. Background: mint green. Colors: pinkish gray, rose, mint, white."
-    },
-    {
-      "id": "snack-tax-gull",
-      "name": "Snack Tax Gull",
-      "rarity": "RARE",
-      "caption": "Fanum tax. Hand it over.",
-      "flavor": "2023: any snack in reach gets taxed. The collector is always watching your fries.",
-      "year": 2023,
-      "art": "White seagull in a green accountant's visor and tie snatching a french fry from a red carton, holding a tiny receipt. Background: bright red. Colors: white, green, red, yellow."
-    },
-    {
-      "id": "aura-farmer",
-      "name": "Aura Farmer",
-      "rarity": "RARE",
-      "caption": "+1000 aura",
-      "flavor": "2024–25: you don't earn aura, you farm it. Pose calmly. Let the boat do the rest.",
-      "year": 2024,
-      "art": "Faceless, adult-proportioned dark-navy silhouette in sunglasses standing on the tip of a long wooden boat, one arm swung in a cool wave, glowing golden aura outline. Background: river at sunset. Colors: deep navy, gold glow, orange sky, teal water."
-    },
-    {
-      "id": "sigma-wolf",
-      "name": "Sigma Wolf",
+      "id": "smurf-cat",
+      "name": "Smurf Cat",
       "rarity": "EPIC",
-      "caption": "Erm, what the sigma?",
-      "flavor": "2023–24: the lone-wolf 'sigma' grindset, turned into Gen Alpha's favorite word.",
-      "year": 2024,
-      "art": "Gray wolf with an impossibly square jaw, one raised eyebrow, sunglasses pushed down its snout, arms crossed. Background: black-and-white with one red slash. Colors: gray, black, white, red."
+      "caption": "We live, we love, we lie",
+      "flavor": "Aug 2023: Nate Hallinan's 2011 'Smurf Sighting' art went viral on TikTok as шайлушай.",
+      "year": 2023,
+      "art": "Real image: Nate Hallinan's 'Smurf Sighting' concept art in the square TikTok crop: a blue cat-faced creature in a white mushroom cap, carrying a snail on a stick through a mossy forest."
     },
     {
-      "id": "the-rizzard",
-      "name": "The Rizzard",
+      "id": "sigma",
+      "name": "Sigma",
       "rarity": "LEGENDARY",
-      "caption": "Unspoken rizz",
-      "flavor": "Oxford's 2023 Word of the Year. This lizard has rizz and never says a word.",
-      "year": 2023,
-      "art": "Green lizard in a tiny open-collar shirt, one eyebrow raised, hand on chin, sparkle on its smile, floating hearts. Background: hot pink. Colors: lizard green, pink, gold, white."
+      "caption": "Erm, what the sigma?",
+      "flavor": "The 'sigma male' grindset got Patrick Bateman as its face. Gen Alpha made it a word.",
+      "year": 2024,
+      "art": "Real image: film still from American Psycho (2000), Patrick Bateman (Christian Bale) walking into the office in headphones, the frame behind the 'Patrick Bateman Walking' sigma edits."
     },
     {
-      "id": "ohio-final-boss",
-      "name": "Ohio Final Boss",
+      "id": "rizz",
+      "name": "Rizz",
       "rarity": "BRAINROT",
-      "caption": "Only in Ohio",
-      "flavor": "2022–23: anything weird 'only happens in Ohio.' Its final boss is weirder.",
+      "caption": "Unspoken rizz",
+      "flavor": "Oxford's 2023 Word of the Year. Its face: Shrek's knowing smile from Shrek the Third.",
       "year": 2023,
-      "art": "Towering chaos creature: a corn-cob body with a red cardinal-bird head, three mismatched googly eyes, a tiny traffic-cone hat, glowing purple aura. Background: ominous gray cornfield. Colors: corn yellow, cardinal red, purple, gray."
+      "art": "Real image: KYM's main image for 'Shrek Rizz', a still from Shrek the Third (2007) of Shrek looking up with a sly, knowing smile."
     }
   ]
 }

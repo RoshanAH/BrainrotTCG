@@ -1,0 +1,45 @@
+# Gen Alpha Uprising: image credits
+
+These are the real meme images used for card art. Each one was downloaded once, checked with Pillow,
+re-encoded to PNG (which strips metadata) and cropped to the art window's 6:7 portrait shape. Code adds
+the frame, title and caption. All rights stay with the owners listed below. The set is still a draft.
+
+| Card | Source page | Image URL | Creator / owner | Notes |
+| --- | --- | --- | --- | --- |
+| Sad Hamster (`sad-hamster`) | https://knowyourmeme.com/memes/sad-hamster | https://i.kym-cdn.com/entries/icons/original/000/048/516/Screenshot_2024-02-20_at_10.43.43_AM.jpg | The hamster is Alto, owned by Instagram user monyo_melo. The big-eyed edit and the viral video are by TikToker afexix (Feb 8, 2024) | KYM's main image, with no text. It's a screenshot of a soft video frame, so the card is slightly blurry. |
+| Side Eye Cat (`side-eye-cat`) | https://knowyourmeme.com/memes/mr-fresh-side-eye-cat | https://i.kym-cdn.com/entries/icons/original/000/048/010/side_eye_cat.jpg | Mr. Fresh, a stray on the Cat Feeder Camera livestream in the Chinese app Hello Street Cat. The first clip was posted by TikToker @catzoo1 (Oct 2023) | KYM's main image, with no text, taken from a low-res livestream. This card replaces Bombastic Side Eye (see below) and keeps its catchphrase as the caption. |
+| Pesto the Penguin (`pesto-the-penguin`) | https://knowyourmeme.com/memes/pesto-the-penguin | https://i.kym-cdn.com/entries/icons/original/000/051/466/pesto_the_penguin.jpg | Pesto lives at SEA LIFE Melbourne Aquarium. The photographer isn't credited on KYM (probably the aquarium or press) | KYM's main photo, cropped to Pesto's head and body. Searches found no trademark claims or takedowns (unlike Moo Deng). |
+| Ok I Pull Up (`ok-i-pull-up`) | https://knowyourmeme.com/memes/ok-i-pull-up | https://i.kym-cdn.com/entries/icons/original/000/038/124/pullupcover.jpg | JoeJoe the capybara, from a 2014 Crazy Cody's Creatures YouTube video. The song is Don Toliver's "After Party" (2020) | KYM's main image. I cropped inside its white side bars. The source is a low-res video frame, so the crop is only 490×574 and soft. |
+| Huh Cat (`huh-cat`) | https://knowyourmeme.com/memes/huh-cat | https://i.kym-cdn.com/entries/icons/original/000/046/895/huh_cat.jpg | Ben (BenChonkyCat), owned by TikToker @planetvenus500 | KYM's main image. I cropped above its yellow "HUH?" caption, so the card has no text. The source is a soft video frame. |
+| Gegagedigedagedago (`gegagedigedagedago`) | https://knowyourmeme.com/memes/roblox-chicken-nugget-gegagedigedagedago | https://i.kym-cdn.com/entries/icons/original/000/048/253/nug.jpg | The Roblox chicken nugget videos are by TikToker @wenonugget ("Leader Omega Nugget"). The Roblox "Man Face" belongs to Roblox Corporation. The gibberish "Cotton Eye Joe" cover is by TikToker @razioff | KYM's main image, with no text. The crop is 462×541. |
+| Dancing Toothless (`dancing-toothless`) | https://knowyourmeme.com/memes/dancing-toothless | https://i.kym-cdn.com/entries/icons/original/000/047/760/dt.jpg | Animation by Cas van de Pol ("The Ultimate 'How To Train Your Dragon' Recap Cartoon", Dec 9, 2023). Toothless belongs to DreamWorks Animation | KYM's main image, a frame from the animation with no text. I found no lawsuits or takedowns. In Jan 2024, though, van de Pol publicly asked Riot Games to credit or pay him for a traced commercial copy, so credit him in any release. |
+| Pedro Raccoon (`pedro-raccoon`) | https://knowyourmeme.com/memes/raccoon-dancing-in-a-circle-pedro-pedro-pedro | https://i.kym-cdn.com/entries/icons/original/000/049/273/cover11.jpg | The raccoon video is by TikToker @fleksa30 (Sept 2023). The song is an EDM remix of Raffaella Carrà's "Pedro" | KYM's main image: the round TikTok circle video on black, with no text. |
+| Low Taper Fade (`low-taper-fade`) | https://knowyourmeme.com/photos/2735702-imagine-if-ninja-got-a-low-taper-fade (entry: https://knowyourmeme.com/memes/imagine-if-ninja-got-a-low-taper-fade) | https://i.kym-cdn.com/photos/images/original/002/735/702/1e5.jpeg | A viral fan photoshop of streamer Richard Tyler "Ninja" Blevins, by an unknown creator. The audio is ericdoa's Twitch freestyle (Jan 5, 2024) | This is the clean, full-size version of the middle panel in KYM's header. Ninja is a public figure, and this is his meme moment: he reacted to the meme, got the haircut on Jan 13, 2024 and kept calling it "still massive." It is still an edited photo of a real person, so recheck it before release. |
+| Smurf Cat (`smurf-cat`) | https://knowyourmeme.com/photos/2652421-smurf-cat (entry: https://knowyourmeme.com/memes/smurf-cat) | https://i.kym-cdn.com/photos/images/original/002/652/421/280.jpg | Nate Hallinan, concept art "Smurf Sighting" (2011–2014). The meme comes from TikToker @ghojam1's slideshows (Aug 2023). The Smurfs belong to Peyo Company (formerly I.M.P.S.) | This is the square TikTok crop the meme used, with no text. The original from KYM's gallery carries a NATEHALLINAN.COM watermark, so I didn't use it. I found no takedowns or lawsuits over Smurf Cat. I.M.P.S. has said it will take legal action against Smurf misuse on social media, but that statement was about political and AI posts, not this meme. Recheck before release. |
+| Sigma (`sigma`) | https://knowyourmeme.com/memes/patrick-bateman-walking (see also https://knowyourmeme.com/memes/sigma-males and https://knowyourmeme.com/memes/erm-what-the-sigma) | https://i.kym-cdn.com/entries/icons/original/000/036/019/American_Psycho_-_Walking_on_Sunshine_0-18_screenshot.png | Film still from *American Psycho* (2000, Lions Gate Films), with Christian Bale as Patrick Bateman | KYM's main image for "Patrick Bateman Walking," the sigma-edit frame, with no text. The Sigma Males entry's own header has "SIGMA MALES: THE LONE WOLVES" text over John Wick, and "Erm, What the Sigma?" is only a blurry video grab, so I used neither. |
+| Rizz (`rizz`) | https://knowyourmeme.com/memes/shrek-rizz | https://i.kym-cdn.com/entries/icons/original/000/050/187/4541e987-5d55-421f-968d-04f99fb6a68c-1702995843784.jpg | Film still from *Shrek the Third* (2007, DreamWorks Animation) | KYM's main image for "Shrek Rizz," with no text. The meme frame is a tight close-up, so the card is too. The main "Rizz / Unspoken Rizz" entry (https://knowyourmeme.com/memes/rizz) uses a stock-style photo of a man in a suit with caption text. Most other rizz images show streamers or the Rizzler, who is a minor. |
+
+## Renamed cards
+
+| Old card | New card | Why |
+| --- | --- | --- |
+| Pull-Up Capybara (`pull-up-capybara`) | Ok I Pull Up (`ok-i-pull-up`) | The meme's real name |
+| Sigma Wolf (`sigma-wolf`) | Sigma (`sigma`) | The meme's real name. It moved from EPIC to LEGENDARY |
+| The Rizzard (`the-rizzard`) | Rizz (`rizz`) | The meme's real name. It moved from LEGENDARY to BRAINROT as the era's most iconic meme (Oxford's 2023 Word of the Year) |
+
+Rarity also changed for three kept cards: Pedro Raccoon went from COMMON to RARE, Low Taper Fade from
+UNCOMMON to RARE, and Ok I Pull Up from UNCOMMON to COMMON.
+
+## Replaced cards
+
+| Removed card | Replaced by | Why |
+| --- | --- | --- |
+| Bouncy Baby Hippo (`bouncy-baby-hippo`, Moo Deng) | Pesto the Penguin | Moo Deng is on the owner's enforce list: Khao Kheow Open Zoo trademarked the name and image. Pesto was 2024's other viral zoo baby and was often compared to her. |
+| Aura Farmer (`aura-farmer`) | Smurf Cat | The famous "aura farming" image is the Indonesian boat-race kid, a minor (and it's a 2025 meme, after this era). "+1000 aura" memes have no other canonical image. |
+| Bombastic Side Eye (`side-eye-pug`) | Side Eye Cat (Mr. Fresh) | The original sound and clip come from TikToker Cynthia Mmasi, a private individual. KYM's main image (https://knowyourmeme.com/memes/bombastic-side-eye-side-eye-tiktok-trend) is a collage of private TikTokers. Mr. Fresh is the era's famous side-eye image without people. |
+| Mewing (`mewing-kitten`) | Huh Cat | KYM's main image (https://knowyourmeme.com/memes/mewing) is a private person's before/after jaw photos. Other popular mewing images are photos or edits of real people. No famous person-free mewing image exists. |
+| Fanum Tax (`snack-tax-gull`) | Dancing Toothless | The image people use is the streamers themselves. KYM's main image (https://knowyourmeme.com/memes/fanum-tax) is a YouTube-thumbnail collage of Fanum and Kai Cenat with a red arrow. It isn't one famous public moment, and a seagull isn't the meme. |
+| Ohio Final Boss (`ohio-final-boss`) | Gegagedigedagedago | The "Ohio Final Boss" is Japanese TikToker Satoyu0704, a private individual. Ohio memes in general have no single clean image: KYM's main image (https://knowyourmeme.com/memes/cultures/ohio) is the word "OHIO" over a globe, and "Only in Ohio" is captioned TikTok collages. |
+
+I also considered and rejected the Grimace Shake (2023). Its real images are private teenagers faking
+their deaths, and the only alternative is McDonald's own branded product shots.
