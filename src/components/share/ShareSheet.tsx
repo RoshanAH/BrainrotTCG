@@ -6,6 +6,7 @@ import { getLatestSet } from '../../content/sets';
 import { getPlayer } from '../../game/player';
 import { proofFor, pullUrl, type PullRef } from '../../game/pulls';
 import { bragText, hallOfFameSubmitUrl } from '../../game/share';
+import { renderPoster } from '../../game/bragImage';
 import PackCardViewer from '../ui/PackCardViewer';
 import '../../styles/Share.css';
 
@@ -37,6 +38,35 @@ const ShareSheet = ({ target, onClose }: ShareSheetProps) => {
     }
   };
 
+  const [posterBusy, setPosterBusy] = useState(false);
+  const savePoster = async () => {
+    setPosterBusy(true);
+    try {
+      const blob = await renderPoster({
+        cards: target.cards,
+        score: target.score,
+        setName,
+        playerName: player.name,
+        fingerprint: player.fingerprint,
+        url,
+      });
+      const file = new File([blob], `brainrot-pull-${target.ref.setId}-${target.ref.nonce}.png`, { type: 'image/png' });
+      if (navigator.canShare?.({ files: [file] })) {
+        await navigator.share({ files: [file], title: 'My Brainrot TCG pull', text: url });
+      } else {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(file);
+        a.download = file.name;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+      }
+    } catch (error) {
+      console.error('Poster failed', error);
+    } finally {
+      setPosterBusy(false);
+    }
+  };
+
   const nativeShare = async () => {
     try {
       await navigator.share({ title: 'My Brainrot TCG pull', text, url });
@@ -59,6 +89,7 @@ const ShareSheet = ({ target, onClose }: ShareSheetProps) => {
           {'share' in navigator && <button onClick={nativeShare}>Share…</button>}
           <button onClick={() => copy('link', url)}>{copied === 'link' ? 'Copied!' : 'Copy link'}</button>
           <button onClick={() => copy('text', text)}>{copied === 'text' ? 'Copied!' : 'Copy brag text'}</button>
+          <button onClick={savePoster} disabled={posterBusy}>{posterBusy ? 'Making poster…' : 'Save poster (9:16)'}</button>
           {qualifiesForHallOfFame(target.score) && (
             <a className="share-hof" href={hallOfFameSubmitUrl(url, `${target.score.hand.name} in ${setName}`)} target="_blank" rel="noreferrer">
               Submit to the global Hall of Fame
