@@ -1,0 +1,8 @@
+# Deploy from this folder with `npx wrangler deploy`, or paste index.js into the dashboard (README.md).
+name = "brainrot-hall-of-fame-cron"
+main = "index.js"
+compatibility_date = "2025-09-01"
+workers_dev = false
+
+[triggers]
+crons = ["*/15 * * * *"]

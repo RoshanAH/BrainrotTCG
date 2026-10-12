@@ -6,6 +6,10 @@ name: Hall of Fame inbox
 # deploy treats them like any other entry. Free: Actions minutes on public
 # repositories cost nothing, and the relays are public.
 #
+# GitHub's schedule below has never fired for this repository, so a Cloudflare
+# Worker (workers/hall-of-fame-cron/) dispatches this every 15 minutes; the
+# schedule stays as a backup.
+#
 # Relay content is untrusted: it is only parsed by scripts/hall-of-fame.ts,
 # never interpolated into shell commands.
 on:
