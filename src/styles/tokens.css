@@ -120,7 +120,7 @@
   --header-height: 56px;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
-  --content-max: 1120px;
+  --content-max: 76rem;
 
   /* Layers */
   --z-nav: 50;

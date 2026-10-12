@@ -6,30 +6,46 @@
     min-height: 0;
 }
 
-/* The pack fills the space between the era picker and the tab bar, whole and centred. */
+/*
+ * The pack is huge on purpose: too big for the screen, held up from below. Its top (the set ribbon
+ * and the tear line) always shows; the rest runs off the bottom of the space.
+ */
 .pack-display {
     position: relative;
     flex: 1;
     min-height: 0;
     width: 100%;
     container-type: size;
-    display: grid;
-    place-items: center;
-    padding: var(--space-2) var(--gutter) var(--space-4);
+    overflow: hidden;
 }
 
 .pack-shell-wrap {
-    position: relative;
-    /* 1536:2752 is the wrapper image; never wider than the screen or taller than the space. */
-    width: min(100cqw, 100cqh * 1536 / 2752, 420px);
+    /*
+     * 80% of the screen across (wider than it on phones). The wrapper image is 1536:2752 with clear
+     * space above the crimp, so it's pulled up by a tenth of its width to put the set ribbon just
+     * under the picker; the tear line then sits about 0.24 widths down, and on short screens the
+     * pack shrinks to keep it in view. Opening needs a drag from 18% to 82% of the width, so it never
+     * gets wider than 1.5 screens.
+     */
+    --pack-w: min(80vw, 1600px, (100cqh - 7rem) * 4);
+    position: absolute;
+    top: calc(var(--space-4) - var(--pack-w) * 0.1);
+    left: 50%;
+    transform: translateX(-50%);
+    width: var(--pack-w);
+}
+
+@media (max-width: 700px) {
+    .pack-shell-wrap {
+        --pack-w: min(115vw, (100cqh - 7rem) * 4);
+    }
 }
 
 .pack-hint {
     position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    margin-top: var(--space-1);
+    top: 32%;
+    left: var(--gutter);
+    right: var(--gutter);
     color: var(--text-subtle);
     font-size: var(--text-sm);
     text-align: center;
@@ -288,7 +304,7 @@
 
 .active-card-container .card-wrapper {
     /* Leaves room under the card for the stack's edges. */
-    height: min(100cqh - 28px, 620px, (100cqw - 16px) * 1024 / 687);
+    height: min(100cqh - 28px, 46rem, (100cqw - 16px) * 1024 / 687);
     max-height: none;
     aspect-ratio: 687 / 1024;
 }
@@ -318,7 +334,7 @@
     flex-direction: column;
     align-items: center;
     width: 100%;
-    max-width: 960px;
+    max-width: 64rem;
     margin: auto 0;
     padding-bottom: var(--space-4);
 }
@@ -352,7 +368,7 @@
     justify-content: space-between;
     gap: var(--space-4);
     width: 100%;
-    max-width: 420px;
+    max-width: 30rem;
 }
 
 .reveal-skip {
@@ -386,7 +402,7 @@
 }
 
 .reveal-stack-card {
-    height: min(100cqh - 28px, 620px, (100cqw - 16px) * 1024 / 687);
+    height: min(100cqh - 28px, 46rem, (100cqw - 16px) * 1024 / 687);
     aspect-ratio: 687 / 1024;
     border-radius: 8px;
     overflow: hidden;
@@ -444,7 +460,7 @@
     justify-content: center;
     gap: var(--space-4) var(--space-3);
     width: 100%;
-    max-width: 860px;
+    max-width: 62rem;
     list-style: none;
 }
 
@@ -452,12 +468,12 @@
     display: grid;
     gap: 6px;
     /* Three across on phones (then two), five across from tablets. */
-    width: min(132px, calc((100% - 2 * var(--space-3)) / 3));
+    width: min(8.5rem, calc((100% - 2 * var(--space-3)) / 3));
 }
 
 @media (min-width: 640px) {
     .summary-cards li {
-        width: min(150px, calc((100% - 4 * var(--space-3)) / 5));
+        width: min(11rem, calc((100% - 4 * var(--space-3)) / 5));
     }
 }
 

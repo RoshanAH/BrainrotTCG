@@ -25,7 +25,7 @@
   display: grid;
   place-items: center;
   justify-self: center;
-  width: min(100%, calc(46dvh * 9 / 16), 300px);
+  width: min(100%, calc(52dvh * 9 / 16), 20rem);
   aspect-ratio: 9 / 16;
   margin: 0;
   border: 1px solid var(--border);

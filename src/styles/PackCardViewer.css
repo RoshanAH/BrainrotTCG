@@ -11,7 +11,7 @@
 
 /* The fan spans 4.2 card widths, plus a little for the tilt. */
 .pack-viewer-cards {
-  --w: clamp(60px, 22cqw, 190px);
+  --w: clamp(60px, 22cqw, 12rem);
 }
 
 .pack-viewer-carousel {
@@ -24,7 +24,7 @@
 }
 
 .pack-viewer-grid {
-  --w: clamp(44px, calc((100cqw - 4 * var(--space-2)) / 5), 104px);
+  --w: clamp(44px, calc((100cqw - 4 * var(--space-2)) / 5), 6.5rem);
   display: flex;
   flex-wrap: wrap;
   justify-content: center;

@@ -154,7 +154,7 @@
   }
 
   .sheet {
-    max-height: min(88dvh, 920px);
+    max-height: min(88dvh, 58rem);
     border: 1px solid var(--border);
     border-radius: var(--radius-xl);
     animation: sheet-pop var(--dur-slow) var(--ease-out);
@@ -169,15 +169,15 @@
   }
 
   .sheet-root--sm .sheet {
-    max-width: 440px;
+    max-width: 28rem;
   }
 
   .sheet-root--md .sheet {
-    max-width: 640px;
+    max-width: 42rem;
   }
 
   .sheet-root--lg .sheet {
-    max-width: 1000px;
+    max-width: 64rem;
   }
 
   .sheet-root--full {
