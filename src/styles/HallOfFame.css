@@ -208,11 +208,9 @@
   display: block;
   width: 100%;
   aspect-ratio: 4 / 3;
-  object-fit: cover;
-}
-
-.hof-legend img.is-portrait {
-  object-position: center 30%;
+  /* The whole screenshot, letterboxed: cropping cut the cards out of tall ones and left UI scraps. */
+  object-fit: contain;
+  background: var(--bg-elevated);
 }
 
 .hof-legend-info {

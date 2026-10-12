@@ -77,7 +77,8 @@
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding: 0 var(--gutter) calc(var(--space-6) + var(--safe-bottom));
+  /* A little room on top so the first control's focus ring isn't clipped. */
+  padding: 4px var(--gutter) calc(var(--space-6) + var(--safe-bottom));
 }
 
 .sheet-footer {
@@ -124,7 +125,7 @@
 }
 
 .sheet-root--bare .sheet-backdrop {
-  background: rgba(10, 9, 12, 0.95);
+  background: rgba(10, 9, 12, 0.98);
 }
 
 .sheet-root--bare .sheet-header {

@@ -223,6 +223,12 @@ The game records every pack the moment it's derived (`src/game/history.ts`), and
 that history, so sharing one is instant. Levels come from the packs alone (spec section 11.3), so a
 level is exactly as trustworthy as the packs.
 
+The collection, stats and achievements take a pack only once its reveal ends (so a toast can't spoil
+a card still face down). Until then the pack also waits in `brainrot-pending-pack-v1`
+(`src/game/pulls.ts`): a reload, a closed tab or the opener unmounting mid-reveal can't lose it, since
+the app adds a waiting pack on the next load. Screens pass a pulled card whole, with its holo, finish
+and misprint (`src/game/versions.ts`), rather than those as separate props, so none can drop one.
+
 ### Progression
 
 Nothing can change what a pack holds (any luck bonus would let a script skip ahead, since every

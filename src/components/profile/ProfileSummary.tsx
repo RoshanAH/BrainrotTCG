@@ -75,9 +75,9 @@ const ProfileSummary = ({ stats, actions, levelNote, partial = false, onOpenPack
         </div>
         <div>
           <dd className="tabular" title={(stats.best[0]?.score.score ?? 0).toLocaleString()}>
-            {compact.format(stats.best[0]?.score.score ?? 0)}
+            {partial && !stats.best[0] ? '…' : compact.format(stats.best[0]?.score.score ?? 0)}
           </dd>
-          <dt>best score</dt>
+          <dt>best score{partial && '*'}</dt>
         </div>
       </dl>
       {hands.length > 0 && (

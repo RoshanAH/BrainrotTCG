@@ -670,6 +670,15 @@
     border-radius: 2px;
 }
 
+/* On a small card the sticker would cover the name banner: it sits on the corner instead. */
+.summary-card .new-sticker {
+    top: -1px;
+    right: -1px;
+    padding: 1px 5px;
+    border-radius: 0 var(--radius-sm) 0 3px;
+    font-size: 10px;
+}
+
 .summary-card.holo:focus-visible {
     box-shadow: var(--focus-ring), var(--shadow-2);
 }
