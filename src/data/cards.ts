@@ -1,73 +1,63 @@
-// Use Vite's glob import to scan each rarity folder
-const commonImages = import.meta.glob('../assets/cards/common/*.{png,jpg,jpeg,svg}', { eager: true }) as Record<string, { default: string }>;
-const uncommonImages = import.meta.glob('../assets/cards/uncommon/*.{png,jpg,jpeg,svg}', { eager: true }) as Record<string, { default: string }>;
-const rareImages = import.meta.glob('../assets/cards/rare/*.{png,jpg,jpeg,svg}', { eager: true }) as Record<string, { default: string }>;
-const epicImages = import.meta.glob('../assets/cards/epic/*.{png,jpg,jpeg,svg}', { eager: true }) as Record<string, { default: string }>;
-const legendaryImages = import.meta.glob('../assets/cards/legendary/*.{png,jpg,jpeg,svg}', { eager: true }) as Record<string, { default: string }>;
-const brainrotImages = import.meta.glob('../assets/cards/brainrot/*.{png,jpg,jpeg,svg}', { eager: true }) as Record<string, { default: string }>;
+/**
+ * UI-facing card data: set definitions from the registry + built image URLs.
+ * Card definitions live in `src/content/sets/<set>/set.json`.
+ */
+import { SETS } from '../content/sets';
+import { cardImageUrl } from '../content/art';
+import { getCardValue as engineCardValue, scorePack, type CardDefinition, type PackScore, type Rarity } from '../engine';
 
-export type RarityKey = 'COMMON' | 'UNCOMMON' | 'RARE' | 'EPIC' | 'LEGENDARY' | 'BRAINROT';
+export type RarityKey = Rarity;
 
 export interface RarityInfo {
   name: string;
   color: string;
-  weight: number;
 }
 
 export const CARD_RARITIES: Record<RarityKey, RarityInfo> = {
-  COMMON: { name: 'Common', color: '#aaaaaa', weight: 50 },
-  UNCOMMON: { name: 'Uncommon', color: '#1eff00', weight: 25 },
-  RARE: { name: 'Rare', color: '#0070dd', weight: 15 },
-  EPIC: { name: 'Epic', color: '#a335ee', weight: 7 },
-  LEGENDARY: { name: 'Legendary', color: '#ff8000', weight: 2.5 },
-  BRAINROT: { name: 'Brainrot', color: 'rainbow', weight: 0.5 },
+  COMMON: { name: 'Common', color: '#aaaaaa' },
+  UNCOMMON: { name: 'Uncommon', color: '#1eff00' },
+  RARE: { name: 'Rare', color: '#0070dd' },
+  EPIC: { name: 'Epic', color: '#a335ee' },
+  LEGENDARY: { name: 'Legendary', color: '#ff8000' },
+  BRAINROT: { name: 'Brainrot', color: 'rainbow' },
 };
 
 export interface Card {
+  /** `${setId}/${id}`, unique across sets; used as the collection key. */
+  key: string;
+  setId: string;
   id: string;
   name: string;
   rarity: RarityKey;
   image: string;
+  caption?: string;
+  flavor?: string;
 }
 
-// Helper to create cards from a folder's images
-const createCardsFromFolder = (images: Record<string, { default: string }>, rarity: RarityKey): Card[] => {
-  return Object.entries(images).map(([path, module]) => {
-    const fileName = path.split('/').pop()?.replace(/\.[^.]+$/, '') ?? '';
-    return {
-      id: fileName,
-      name: fileName,
-      rarity,
-      image: module.default,
-    };
-  });
-};
+export const toCard = (setId: string, def: CardDefinition): Card => ({
+  key: `${setId}/${def.id}`,
+  setId,
+  id: def.id,
+  name: def.name,
+  rarity: def.rarity,
+  image: cardImageUrl(setId, def.id),
+  caption: def.caption,
+  flavor: def.flavor,
+});
 
-// Combine all cards from each rarity folder
-export const INITIAL_CARDS: Card[] = [
-  ...createCardsFromFolder(commonImages, 'COMMON'),
-  ...createCardsFromFolder(uncommonImages, 'UNCOMMON'),
-  ...createCardsFromFolder(rareImages, 'RARE'),
-  ...createCardsFromFolder(epicImages, 'EPIC'),
-  ...createCardsFromFolder(legendaryImages, 'LEGENDARY'),
-  ...createCardsFromFolder(brainrotImages, 'BRAINROT'),
-];
+/** Every card in every current set. */
+export const ALL_CARDS: Card[] = SETS.flatMap((set) => set.cards.map((def) => toCard(set.id, def)));
 
-// Get cards filtered by rarity
-export const getCardsByRarity = (rarity: RarityKey): Card[] => {
-  return INITIAL_CARDS.filter(card => card.rarity === rarity);
-};
+const BY_KEY = new Map(ALL_CARDS.map((c) => [c.key, c]));
 
-export const RARITY_VALUES: Record<RarityKey, number> = {
-  COMMON: 1,
-  UNCOMMON: 2,
-  RARE: 4,
-  EPIC: 7,
-  LEGENDARY: 20,
-  BRAINROT: 100,
-};
+export const getCard = (key: string): Card | undefined => BY_KEY.get(key);
 
-export const getCardValue = (rarity: RarityKey, isHolo: boolean): number => {
-  const baseValue = RARITY_VALUES[rarity] || 0;
-  return isHolo ? baseValue * 20 : baseValue;
-};
+export const getSetCards = (setId: string): Card[] => ALL_CARDS.filter((c) => c.setId === setId);
+
+export const getCardsByRarity = (rarity: RarityKey): Card[] => ALL_CARDS.filter((card) => card.rarity === rarity);
+
+export const getCardValue = engineCardValue;
+
+/** Score UI cards (matching = same card key). */
+export const scoreCards = (cards: readonly { key: string; rarity: RarityKey; isHolo: boolean }[]): PackScore =>
+  scorePack(cards.map((c) => ({ cardId: c.key, rarity: c.rarity, isHolo: c.isHolo })));

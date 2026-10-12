@@ -1,0 +1,139 @@
+{
+  "id": "genesis",
+  "version": 1,
+  "name": "Genesis",
+  "era": "2026 hackathon",
+  "tagline": "Where it all began",
+  "releasedAt": "2026-03-01",
+  "palette": [
+    "#ff3df2",
+    "#29f0ff",
+    "#ffe14d"
+  ],
+  "packSize": 5,
+  "odds": {
+    "COMMON": 5000,
+    "UNCOMMON": 2500,
+    "RARE": 1500,
+    "EPIC": 700,
+    "LEGENDARY": 250,
+    "BRAINROT": 50
+  },
+  "holoOdds": 500,
+  "cards": [
+    {
+      "id": "locked-in-alien",
+      "name": "Locked In Alien",
+      "rarity": "COMMON",
+      "caption": "Your time is limited"
+    },
+    {
+      "id": "chimpanzini-bananini",
+      "name": "Chimpanzini Bananini",
+      "rarity": "COMMON",
+      "caption": "Because monkeys never cramps"
+    },
+    {
+      "id": "amogus",
+      "name": "Amogus",
+      "rarity": "COMMON",
+      "caption": "SUS"
+    },
+    {
+      "id": "gigachad",
+      "name": "Gigachad",
+      "rarity": "COMMON",
+      "caption": "SIGMA MALE"
+    },
+    {
+      "id": "boneca-ambalabu",
+      "name": "Boneca Ambalabu",
+      "rarity": "COMMON",
+      "caption": "Buhneca Ambuhlabuh"
+    },
+    {
+      "id": "skibidi-toilet",
+      "name": "Skibidi Toilet",
+      "rarity": "UNCOMMON",
+      "caption": "TOOK A DUHMP"
+    },
+    {
+      "id": "brr-brr-patapim",
+      "name": "Brr Brr Patapim",
+      "rarity": "UNCOMMON",
+      "caption": "Buh Buh Patapim"
+    },
+    {
+      "id": "john-pork",
+      "name": "John Pork",
+      "rarity": "UNCOMMON",
+      "caption": "Are you picking up?"
+    },
+    {
+      "id": "ballerina-cappuccina",
+      "name": "Ballerina Cappuccina",
+      "rarity": "UNCOMMON",
+      "caption": "67 mg CAFFEINE"
+    },
+    {
+      "id": "meowl",
+      "name": "Meowl",
+      "rarity": "UNCOMMON",
+      "caption": "🐱"
+    },
+    {
+      "id": "tung-tung-tung-sahur",
+      "name": "Tung Tung Tung Sahur",
+      "rarity": "RARE",
+      "caption": "TUNG TUNG TUNG TUNG"
+    },
+    {
+      "id": "tralalero-tralala",
+      "name": "Tralalero Tralala",
+      "rarity": "RARE",
+      "caption": "Shark with blue shoes"
+    },
+    {
+      "id": "clavicular",
+      "name": "Clavicular",
+      "rarity": "RARE",
+      "caption": "Mogged by the ASU frat leader"
+    },
+    {
+      "id": "bombardino-crocodilo",
+      "name": "Bombardino Crocodilo",
+      "rarity": "EPIC",
+      "caption": "<B67 bomber>"
+    },
+    {
+      "id": "big-chungus",
+      "name": "Big Chungus",
+      "rarity": "EPIC",
+      "caption": "Sup doc"
+    },
+    {
+      "id": "bombini-gusini",
+      "name": "Bombini Gusini",
+      "rarity": "LEGENDARY",
+      "caption": "GIES STUDENT"
+    },
+    {
+      "id": "buh67",
+      "name": "Buh67",
+      "rarity": "BRAINROT",
+      "caption": "1000x developer"
+    },
+    {
+      "id": "duh67",
+      "name": "Duh67",
+      "rarity": "BRAINROT",
+      "caption": "0001x Duhveloper"
+    },
+    {
+      "id": "suh67",
+      "name": "Suh67",
+      "rarity": "BRAINROT",
+      "caption": "Suhftware Engineer"
+    }
+  ]
+}

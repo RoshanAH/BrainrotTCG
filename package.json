@@ -9,7 +9,9 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit -p . && tsc --noEmit -p tsconfig.scripts.json",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "cards": "tsx scripts/cards/build.ts",
+    "check:sets": "tsx scripts/check-sets.ts"
   },
   "dependencies": {
     "@noble/ed25519": "^3.2.0",

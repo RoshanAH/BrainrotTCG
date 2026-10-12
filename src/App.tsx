@@ -8,11 +8,11 @@ import AchievementsPage from './components/achievements/AchievementsPage';
 import HallOfFamePage from './components/pages/HallOfFamePage';
 import SettingsPage from './components/pages/SettingsPage';
 import CollectionBrowser from './components/collection/CollectionBrowser';
-import { INITIAL_CARDS, getCardValue } from './data/cards';
+import { ALL_CARDS, scoreCards } from './data/cards';
 import { getAchievementById, Achievement } from './data/achievements';
 import { CardWithMeta } from './components/cards/Card';
-import { getPackMultiplier } from './utils/poker';
 import { getStoredData } from './utils/storage';
+import { hydrateCollection } from './utils/migrations';
 import { STORAGE_KEYS } from './constants';
 import {
   checkPackMilestones,
@@ -28,7 +28,7 @@ const DEFAULT_SETTINGS: Settings = {
 };
 
 function App() {
-  const [collection, setCollection] = useState<Record<string, CollectionItem>>(() => getStoredData(STORAGE_KEYS.COLLECTION, {}));
+  const [collection, setCollection] = useState<Record<string, CollectionItem>>(() => hydrateCollection(getStoredData(STORAGE_KEYS.COLLECTION, {})));
   const [achievements, setAchievements] = useState<Record<string, AchievementData | number>>(() => getStoredData(STORAGE_KEYS.ACHIEVEMENTS, {}));
   const [stats, setStats] = useState<Stats>(() => getStoredData(STORAGE_KEYS.STATS, { packsOpened: 0, holoCards: {}, highestPackValue: 0, highestPackCards: [] }));
   const [hallOfFame, setHallOfFame] = useState<HallOfFameData>(() => getStoredData(STORAGE_KEYS.HALL_OF_FAME, {}));
@@ -192,9 +192,7 @@ function App() {
 
   const handleCardsOpened = useCallback((newCards: CardWithMeta[]) => {
     // Calculate pack value
-    const packValue = newCards.reduce((sum, card) => sum + getCardValue(card.rarity, card.isHolo), 0);
-    const pokerHand = getPackMultiplier(newCards);
-    const flexValue = packValue * pokerHand.multiplier;
+    const { baseValue: packValue, hand: pokerHand, flexValue } = scoreCards(newCards);
 
     // Update stats using functional update to avoid stale closure
     let updatedStats: Stats = stats;
@@ -217,7 +215,7 @@ function App() {
       // Track holo cards
       newCards.forEach(card => {
         if (card.isHolo) {
-          newStats.holoCards[card.id] = true;
+          newStats.holoCards[card.key] = true;
         }
       });
 
@@ -236,20 +234,20 @@ function App() {
       const holoCounts: Record<string, number> = {};
       newCards.forEach((card) => {
         if (card.isHolo) {
-          holoCounts[card.id] = (holoCounts[card.id] || 0) + 1;
+          holoCounts[card.key] = (holoCounts[card.key] || 0) + 1;
         } else {
-          normalCounts[card.id] = (normalCounts[card.id] || 0) + 1;
+          normalCounts[card.key] = (normalCounts[card.key] || 0) + 1;
         }
       });
 
       // Get all unique card IDs from this pack
-      const cardIds = new Set(newCards.map(c => c.id));
+      const cardIds = new Set(newCards.map(c => c.key));
       cardIds.forEach((cardId) => {
-        const card = newCards.find(c => c.id === cardId);
+        const card = newCards.find(c => c.key === cardId);
         if (!card) return;
         const existing = next[cardId];
         next[cardId] = {
-          card: { id: card.id, name: card.name, rarity: card.rarity, image: card.image },
+          card: { key: card.key, setId: card.setId, id: card.id, name: card.name, rarity: card.rarity, image: card.image },
           normalCount: (existing?.normalCount || 0) + (normalCounts[cardId] || 0),
           holoCount: (existing?.holoCount || 0) + (holoCounts[cardId] || 0),
         };
@@ -346,7 +344,7 @@ function App() {
       </header>
 
       <main>
-        <PackOpener onOpen={handleCardsOpened} cards={INITIAL_CARDS} disabled={isAnyModalOpen} settings={settings} />
+        <PackOpener onOpen={handleCardsOpened} cards={ALL_CARDS} disabled={isAnyModalOpen} settings={settings} />
       </main>
 
       {/* Navigation buttons - hidden when any modal is open */}

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import CardViewerModal from '../cards/CardViewerModal';
-import { Card, getCardValue, INITIAL_CARDS } from '../../data/cards';
+import { ALL_CARDS, getCardValue, type Card } from '../../data/cards';
 import type { CollectionItem } from '../../types';
 
 interface CollectionBrowserProps {
@@ -54,7 +54,7 @@ const CollectionBrowser = ({ collection, onClose }: CollectionBrowserProps) => {
         <div className="collection-header">
           <h2>Collection</h2>
           <p>
-            {Object.keys(collection).length} / {INITIAL_CARDS.length} unique • {totalFound} total
+            {Object.keys(collection).length} / {ALL_CARDS.length} unique • {totalFound} total
           </p>
           <p style={{ color: '#ffd700', fontWeight: 'bold', margin: '0.5rem 0' }}>
             Account Value: {accountValue.toLocaleString()} Buhcoins
@@ -79,7 +79,7 @@ const CollectionBrowser = ({ collection, onClose }: CollectionBrowserProps) => {
               ].filter(Boolean).join(' ');
               return (
                 <article
-                  key={card.id}
+                  key={card.key}
                   className={classes}
                   onClick={() => setSelectedCard({ card, normalCount, holoCount })}
                 >

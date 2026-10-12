@@ -1,4 +1,4 @@
-import { INITIAL_CARDS, getCardValue, RarityKey } from '../data/cards';
+import { ALL_CARDS, getCardValue, type RarityKey } from '../data/cards';
 import type { CollectionItem, Stats, CardsByRarity, RarityCount } from '../types';
 import type { CardWithMeta } from '../components/cards/Card';
 import type { AchievementData } from '../types';
@@ -27,7 +27,7 @@ export const getCollectedByRarity = (collection: Record<string, CollectionItem>)
     BRAINROT: [],
   };
   Object.values(collection).forEach(item => {
-    result[item.card.rarity].push(item.card.id);
+    result[item.card.rarity].push(item.card.key);
   });
   return result;
 };
@@ -36,12 +36,12 @@ export const getCollectedByRarity = (collection: Record<string, CollectionItem>)
  * Get total card counts by rarity from the card database
  */
 export const getCardsByRarity = (): CardsByRarity => ({
-  COMMON: INITIAL_CARDS.filter(c => c.rarity === 'COMMON').length,
-  UNCOMMON: INITIAL_CARDS.filter(c => c.rarity === 'UNCOMMON').length,
-  RARE: INITIAL_CARDS.filter(c => c.rarity === 'RARE').length,
-  EPIC: INITIAL_CARDS.filter(c => c.rarity === 'EPIC').length,
-  LEGENDARY: INITIAL_CARDS.filter(c => c.rarity === 'LEGENDARY').length,
-  BRAINROT: INITIAL_CARDS.filter(c => c.rarity === 'BRAINROT').length,
+  COMMON: ALL_CARDS.filter(c => c.rarity === 'COMMON').length,
+  UNCOMMON: ALL_CARDS.filter(c => c.rarity === 'UNCOMMON').length,
+  RARE: ALL_CARDS.filter(c => c.rarity === 'RARE').length,
+  EPIC: ALL_CARDS.filter(c => c.rarity === 'EPIC').length,
+  LEGENDARY: ALL_CARDS.filter(c => c.rarity === 'LEGENDARY').length,
+  BRAINROT: ALL_CARDS.filter(c => c.rarity === 'BRAINROT').length,
 });
 
 /**
@@ -107,7 +107,7 @@ export const checkCollectionAchievements = (
   const uniqueCards = Object.keys(collection).length;
   if (uniqueCards >= 5) addIfNew(newAchievements, 'collect_5', achievements);
   if (uniqueCards >= 10) addIfNew(newAchievements, 'collect_10', achievements);
-  if (uniqueCards >= INITIAL_CARDS.length) {
+  if (uniqueCards >= ALL_CARDS.length) {
     addIfNew(newAchievements, 'complete_collection', achievements);
   }
 
@@ -115,7 +115,7 @@ export const checkCollectionAchievements = (
   const holoCount = Object.keys(stats.holoCards || {}).length;
   if (holoCount >= 5) addIfNew(newAchievements, 'holo_collector', achievements);
   if (holoCount >= 10) addIfNew(newAchievements, 'holo_10', achievements);
-  if (holoCount >= INITIAL_CARDS.length) {
+  if (holoCount >= ALL_CARDS.length) {
     addIfNew(newAchievements, 'holo_complete', achievements);
   }
 
@@ -134,7 +134,7 @@ export const checkCollectionAchievements = (
   // Holo rarity achievements
   const holoCards = stats.holoCards || {};
   Object.keys(holoCards).forEach(cardId => {
-    const card = INITIAL_CARDS.find(c => c.id === cardId);
+    const card = ALL_CARDS.find(c => c.key === cardId);
     if (!card) return;
 
     if (card.rarity === 'COMMON') addIfNew(newAchievements, 'holo_common', achievements);

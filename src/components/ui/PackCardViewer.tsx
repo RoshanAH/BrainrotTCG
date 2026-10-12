@@ -2,8 +2,8 @@ import { useState } from 'react';
 import BrainrotValuePanel from './BrainrotValuePanel';
 import CardViewerModal from '../cards/CardViewerModal';
 import type { CardWithMeta } from '../cards/Card';
-import { getCardValue } from '../../data/cards';
-import { getPackMultiplier } from '../../utils/poker';
+import { scoreCards } from '../../data/cards';
+import { hydrateCard } from '../../utils/migrations';
 import '../../styles/PackCardViewer.css';
 
 export type PackDisplayMode = 'carousel' | 'grid';
@@ -17,7 +17,7 @@ interface PackCardViewerProps {
 }
 
 const PackCardViewer = ({
-    cards,
+    cards: storedCards,
     displayMode = 'carousel',
     showValue = true,
     onCardClick,
@@ -25,9 +25,9 @@ const PackCardViewer = ({
 }: PackCardViewerProps) => {
     const [selectedCard, setSelectedCard] = useState<CardWithMeta | null>(null);
 
-    const baseValue = cards.reduce((sum, card) => sum + getCardValue(card.rarity, card.isHolo), 0);
-    const pokerHand = getPackMultiplier(cards);
-    const flexValue = baseValue * pokerHand.multiplier;
+    // Stored packs may carry stale image URLs from an older build; re-resolve them.
+    const cards = storedCards.map((card) => hydrateCard(card));
+    const { baseValue, hand: pokerHand, flexValue } = scoreCards(cards);
 
     const handleCardClick = (card: CardWithMeta) => {
         if (onCardClick) {
