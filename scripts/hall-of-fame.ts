@@ -229,8 +229,13 @@ const INBOX_WINDOW_S = 7 * 24 * 60 * 60;
 const INBOX_BUDGET = 300;
 /** Entries filed per run (two GitHub requests each), well under GitHub's limits on creating content. */
 const INBOX_MAX_FILED = 20;
+/**
+ * Events per request. Relays advertise their own maximum (NIP-11 `max_limit`), and asking for more
+ * can get the connection dropped: relay.nostr.net allows 100, and relay.damus.io hangs up at 500.
+ */
+const INBOX_PAGE_SIZE = 100;
 /** Requests per relay for older events, so a burst of junk can't push real submissions out of reach. */
-const INBOX_PAGES = 20;
+const INBOX_PAGES = 50;
 
 const siteUrl = () => {
   const [owner, name] = REPO.split('/');
@@ -243,7 +248,7 @@ const inbox = async () => {
   const seen = new Set<string>(existsSync(SEEN_PATH) ? (JSON.parse(readFileSync(SEEN_PATH, 'utf8')) as string[]) : []);
 
   const since = Math.floor(Date.now() / 1000) - INBOX_WINDOW_S;
-  const { events, perRelay } = await fetchEvents({ kinds: [HOF_KIND], '#t': [HOF_TAG], since, limit: 500 }, undefined, 30000, undefined, INBOX_PAGES);
+  const { events, perRelay } = await fetchEvents({ kinds: [HOF_KIND], '#t': [HOF_TAG], since, limit: INBOX_PAGE_SIZE }, undefined, 60000, undefined, INBOX_PAGES);
   for (const r of perRelay) console.log(`${r.relay}: ${r.count} events${r.error ? ` (${r.error})` : ''}`);
 
   // Pulls already in the Hall of Fame: only verified issues count, so an issue that never verified
