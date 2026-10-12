@@ -1,0 +1,211 @@
+/* The one panel style: bottom sheet on phones, centred dialog from 720 px. */
+
+.sheet-root {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-sheet);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.sheet-backdrop {
+  position: absolute;
+  inset: 0;
+  background: var(--scrim);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation: sheet-fade var(--dur) var(--ease-out);
+}
+
+.sheet {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-height: calc(100dvh - var(--safe-top) - var(--space-5));
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-bottom: none;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  box-shadow: var(--shadow-3);
+  outline: none;
+  animation: sheet-up var(--dur-slow) var(--ease-out);
+}
+
+/* Grab handle, a familiar "this is a sheet" cue on phones. */
+.sheet::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  width: 40px;
+  height: 4px;
+  margin-left: -20px;
+  border-radius: var(--radius-pill);
+  background: var(--border-strong);
+}
+
+.sheet-header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-5) var(--space-4) var(--space-3) var(--gutter);
+}
+
+.sheet-heading {
+  flex: 1;
+  min-width: 0;
+}
+
+.sheet-title {
+  font-size: var(--text-2xl);
+  color: var(--text);
+}
+
+.sheet-subtitle {
+  margin-top: var(--space-1);
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
+
+.sheet-close {
+  flex: none;
+  margin-top: -6px;
+}
+
+.sheet-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0 var(--gutter) calc(var(--space-6) + var(--safe-bottom));
+}
+
+.sheet-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--gutter) calc(var(--space-3) + var(--safe-bottom));
+  border-top: 1px solid var(--border);
+  background: var(--bg-elevated);
+}
+
+.sheet-body:has(+ .sheet-footer) {
+  padding-bottom: var(--space-4);
+}
+
+/* Full screen (e.g. a shared pull opened from a link). */
+.sheet-root--full .sheet {
+  height: 100dvh;
+  max-height: none;
+  border-radius: 0;
+  border: none;
+}
+
+.sheet-root--full .sheet::before {
+  display: none;
+}
+
+/* Bare: content floats on the backdrop; the close button stays reachable. */
+.sheet-root--bare {
+  align-items: center;
+}
+
+.sheet-root--bare .sheet {
+  background: none;
+  border: none;
+  box-shadow: none;
+  max-height: 100dvh;
+  width: auto;
+  animation: sheet-pop var(--dur-slow) var(--ease-spring);
+}
+
+.sheet-root--bare .sheet::before {
+  display: none;
+}
+
+.sheet-root--bare .sheet-header {
+  position: absolute;
+  top: calc(var(--safe-top) + var(--space-2));
+  right: var(--space-2);
+  padding: 0;
+  z-index: 2;
+}
+
+.sheet-root--bare .sheet-close {
+  margin: 0;
+  background: rgba(13, 8, 32, 0.7);
+  color: var(--text);
+}
+
+.sheet-root--bare .sheet-body {
+  padding: var(--space-6) var(--space-4);
+  overflow: visible;
+}
+
+@media (min-width: 720px) {
+  .sheet-root {
+    align-items: center;
+    padding: var(--space-6) var(--space-4);
+  }
+
+  .sheet {
+    max-height: min(88dvh, 920px);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    animation: sheet-pop var(--dur-slow) var(--ease-out);
+  }
+
+  .sheet::before {
+    display: none;
+  }
+
+  .sheet-header {
+    padding-top: var(--space-5);
+  }
+
+  .sheet-root--sm .sheet {
+    max-width: 440px;
+  }
+
+  .sheet-root--md .sheet {
+    max-width: 640px;
+  }
+
+  .sheet-root--lg .sheet {
+    max-width: 1000px;
+  }
+
+  .sheet-root--full {
+    padding: 0;
+  }
+
+  .sheet-root--full .sheet {
+    max-width: none;
+  }
+
+  .sheet-body {
+    padding-bottom: var(--space-6);
+  }
+}
+
+@keyframes sheet-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes sheet-up {
+  from {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+}
+
+@keyframes sheet-pop {
+  from {
+    transform: scale(0.96);
+    opacity: 0;
+  }
+}

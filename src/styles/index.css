@@ -1,170 +1,103 @@
-@font-face {
-    font-family: 'RubikGlitch';
-    src: url('../assets/fonts/RubikGlitch-Regular.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
-}
+@import './tokens.css';
+@import './base.css';
 
+/* Older component styles still use these names; they map onto the tokens. */
 :root {
-    --bg-dark: #0a0a0c;
-    --card-bg: #1a1a1e;
-    --accent-primary: #bc13fe;
-    --accent-secondary: #13fefe;
-    --text-main: #ffffff;
-    --text-muted: #a0a0a8;
-    --rarity-common: #aaaaaa;
-    --rarity-uncommon: #1eff00;
-    --rarity-rare: #0070dd;
-    --rarity-epic: #a335ee;
-    --rarity-legendary: #ff8000;
-    --rarity-brainrot: linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3);
-    --glass-bg: rgba(255, 255, 255, 0.05);
-    --glass-border: rgba(255, 255, 255, 0.1);
-    --shadow-neon: 0 0 15px rgba(188, 19, 254, 0.3);
+  --bg-dark: var(--bg);
+  --card-bg: var(--surface);
+  --accent-primary: var(--brand);
+  --accent-secondary: var(--brand-2);
+  --text-main: var(--text);
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: var(--border);
+  --shadow-neon: var(--glow-brand);
 }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+/* ---- App shell: header (logo + nav on wide screens), main, bottom tab bar on phones ---- */
+
+.app {
+  display: flex;
+  flex-direction: column;
+  /* A game screen: exactly one viewport tall, so the pack and the reveal can size to it. */
+  height: 100dvh;
+  overflow: hidden;
+  padding-top: var(--safe-top);
 }
 
-body {
-    background-color: #1a1a2e;
-    background-image: url('../assets/images/background.svg');
-    background-repeat: repeat;
-    background-size: 256px 256px;
-    color: var(--text-main);
-    min-height: 100vh;
-    overflow-x: hidden;
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  width: 100%;
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: var(--space-3) var(--gutter) var(--space-2);
 }
 
-.app-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 2rem 2rem 0 2rem;
-    height: 100vh;
-    overflow: visible;
+.app-logo {
+  font-family: var(--font-logo);
+  font-size: clamp(1.75rem, 1rem + 4vw, 3.25rem);
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  filter: drop-shadow(var(--glow-brand));
 }
 
-h1 {
-    font-family: 'RubikGlitch', system-ui, sans-serif;
-    font-size: 5rem;
-    font-weight: normal;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin-bottom: 2rem;
-    filter: drop-shadow(var(--shadow-neon));
+.app-logo .title-char {
+  display: inline-block;
+  background: linear-gradient(45deg, var(--brand), var(--brand-2));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: float 2.5s ease-in-out infinite;
 }
 
-h1 .title-char {
-    display: inline-block;
-    font-family: inherit;
-    background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: float 2.5s ease-in-out infinite;
-}
-
-h1 .title-space {
-    display: inline-block;
-    width: 0.3em;
+.app-logo .title-space {
+  display: inline-block;
+  width: 0.3em;
 }
 
 @keyframes float {
-    0%, 100% {
-        transform: translateY(0);
-    }
-    50% {
-        transform: translateY(-4px);
-    }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
 }
 
-main {
-    flex: 1;
-    width: 100%;
-    min-height: 0;
-    overflow: visible;
+.app-main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  width: 100%;
+  min-height: 0;
+  /* Leave room for the bottom tab bar on phones. */
+  padding-bottom: calc(var(--nav-height) + var(--safe-bottom));
 }
 
-.premium-btn {
-    background: linear-gradient(45deg, var(--accent-primary), #8a2be2);
-    color: white;
-    border: none;
-    padding: 1rem 2.5rem;
-    font-size: 1.25rem;
-    font-weight: 700;
-    border-radius: 50px;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    box-shadow: 0 4px 15px rgba(188, 19, 254, 0.4);
+.app.is-focus .app-main {
+  padding-bottom: var(--safe-bottom);
 }
 
-.premium-btn:hover {
-    transform: translateY(-2px) scale(1.05);
-    box-shadow: 0 8px 25px rgba(188, 19, 254, 0.6);
+@media (min-width: 900px) {
+  .app-header {
+    justify-content: space-between;
+    padding-top: var(--space-4);
+  }
+
+  .app-main {
+    padding-bottom: var(--space-4);
+  }
 }
 
-.premium-btn:active {
-    transform: translateY(0) scale(0.98);
-}
-
-/* Navigation Buttons */
-.nav-buttons {
-    position: fixed;
-    left: 1rem;
-    bottom: 1rem;
-    z-index: 40;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.nav-btn {
-    border: 1px solid var(--glass-border);
-    background: rgba(10, 10, 12, 0.92);
-    color: var(--text-main);
-    border-radius: 999px;
-    padding: 0.75rem 1.25rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
-    text-align: left;
-    font-size: 0.9rem;
-}
-
-.nav-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 10px 22px rgba(188, 19, 254, 0.35);
-    background: rgba(188, 19, 254, 0.15);
-}
-
-/* Keep old class for backwards compatibility */
-.collection-browse-btn {
-    position: fixed;
-    left: 1rem;
-    bottom: 1rem;
-    z-index: 40;
-    border: 1px solid var(--glass-border);
-    background: rgba(10, 10, 12, 0.92);
-    color: var(--text-main);
-    border-radius: 999px;
-    padding: 0.75rem 1.25rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
-}
-
-.collection-browse-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 10px 22px rgba(188, 19, 254, 0.35);
+@media (prefers-reduced-motion: reduce) {
+  .app-logo .title-char {
+    animation: none;
+  }
 }
 
 .collection-browser {

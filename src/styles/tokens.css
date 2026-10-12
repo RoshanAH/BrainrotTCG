@@ -1,0 +1,122 @@
+/*
+ * Design tokens: the only place colours, type, spacing, radii, shadows and motion are defined.
+ * Components use these variables, never raw values. See docs/DESIGN.md.
+ */
+@import '@fontsource-variable/inter';
+
+@font-face {
+  font-family: 'RubikGlitch';
+  src: url('../assets/fonts/RubikGlitch-Regular.ttf') format('truetype');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Lilita One';
+  src: url('../assets/fonts/LilitaOne-Regular.ttf') format('truetype');
+  font-display: swap;
+}
+
+:root {
+  color-scheme: dark;
+
+  /* Surfaces: one deep purple ramp, lighter = closer to the viewer */
+  --bg: #0d0820;
+  --bg-elevated: #150e2c;
+  --surface: #1c1338;
+  --surface-2: #261a49;
+  --surface-3: #33245e;
+  --scrim: rgba(6, 3, 16, 0.78);
+  --border: rgba(255, 255, 255, 0.1);
+  --border-strong: rgba(255, 255, 255, 0.2);
+
+  /* Text (all pass WCAG AA on --bg-elevated) */
+  --text: #f7f3ff;
+  --text-muted: #c2b8e0;
+  --text-subtle: #948ab3;
+
+  /* Brand */
+  --brand: #c04dff;
+  --brand-strong: #a12cf0;
+  --brand-2: #29f0ff;
+  --brand-3: #ffd60a;
+  --brand-gradient: linear-gradient(120deg, #ff3df2 0%, #9b5cff 48%, #29d8ff 100%);
+  --focus-ring: 0 0 0 3px var(--bg), 0 0 0 5px var(--brand-2);
+
+  /* Feedback */
+  --success: #3ddc84;
+  --danger: #ff5c7a;
+  --warning: #ffd60a;
+
+  /* Rarity: the same colours everywhere a rarity appears */
+  --rarity-common: #b8b8c6;
+  --rarity-uncommon: #3ddc84;
+  --rarity-rare: #4c9bff;
+  --rarity-epic: #b866ff;
+  --rarity-legendary: #ff9a3d;
+  --rarity-brainrot: linear-gradient(90deg, #ff4d4d, #ff9a3d, #ffe14d, #3ddc84, #4c9bff, #b866ff);
+
+  /* Type: Lilita One for headings, Inter for everything else, Rubik Glitch only for the logo */
+  --font-body: 'Inter Variable', Inter, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Lilita One', 'Inter Variable', system-ui, sans-serif;
+  --font-logo: 'RubikGlitch', 'Lilita One', system-ui, sans-serif;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.375rem;
+  --text-2xl: clamp(1.5rem, 1.2rem + 1.2vw, 1.875rem);
+  --text-3xl: clamp(1.875rem, 1.4rem + 2vw, 2.5rem);
+  --leading-tight: 1.15;
+  --leading: 1.5;
+
+  /* Space: 4px grid */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --gutter: clamp(1rem, 4vw, 2rem);
+
+  /* Shape */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  --radius-pill: 999px;
+
+  /* Depth */
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.25);
+  --shadow-2: 0 8px 24px rgba(0, 0, 0, 0.45);
+  --shadow-3: 0 24px 64px rgba(0, 0, 0, 0.6);
+  --glow-brand: 0 0 24px rgba(192, 77, 255, 0.45);
+
+  /* Motion: short and purposeful; disabled under prefers-reduced-motion */
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur-fast: 120ms;
+  --dur: 200ms;
+  --dur-slow: 320ms;
+
+  /* Layout */
+  --touch-target: 44px;
+  --nav-height: 64px;
+  --header-height: 56px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --content-max: 1120px;
+
+  /* Layers */
+  --z-nav: 50;
+  --z-sheet: 100;
+  --z-toast: 200;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0ms;
+    --dur: 0ms;
+    --dur-slow: 0ms;
+  }
+}

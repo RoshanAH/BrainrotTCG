@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { AnimatePresence } from 'framer-motion';
 import './styles/index.css';
 import PackOpener from './components/pack/PackOpener';
-import AchievementNotification from './components/achievements/AchievementNotification';
+import AchievementToasts from './components/achievements/AchievementToasts';
+import AppNav, { type NavTarget } from './components/ui/AppNav';
 import BestPackPage from './components/pages/BestPackPage';
 import AchievementsPage from './components/achievements/AchievementsPage';
 import HallOfFamePage from './components/pages/HallOfFamePage';
@@ -167,8 +167,18 @@ function App() {
     }, 0);
   }, []);
 
-  const dismissNotification = useCallback((achievementId: string) => {
-    setNotificationQueue(prev => prev.filter(a => a.id !== achievementId));
+  const dismissNotifications = useCallback((ids: string[]) => {
+    setNotificationQueue(prev => prev.filter(a => !ids.includes(a.id)));
+  }, []);
+
+  const openNav = useCallback((target: NavTarget) => {
+    ({
+      collection: setIsCollectionOpen,
+      achievements: setIsAchievementsOpen,
+      hallOfFame: setIsHallOfFameOpen,
+      bestPack: setIsBestPackOpen,
+      settings: setIsSettingsOpen,
+    })[target](true);
   }, []);
 
   const handleSettingsChange = useCallback((newSettings: Settings) => {
@@ -358,29 +368,24 @@ function App() {
   const isAnyModalOpen = isCollectionOpen || isAchievementsOpen || isHallOfFameOpen || isBestPackOpen || isSettingsOpen || !!shareTarget || !!viewProof;
 
   return (
-    <div className="app-container">
-      <header>
-        <h1>
-          {"Brainrot TCG".split('').map((char, i) => (
+    <div className={`app ${packBusy ? 'is-focus' : ''}`}>
+      <header className="app-header">
+        <h1 className="app-logo" aria-label="Brainrot TCG">
+          {'Brainrot TCG'.split('').map((char, i) =>
             char === ' ' ? (
-              <span key={i} className="title-space" />
+              <span key={i} className="title-space" aria-hidden="true" />
             ) : (
-              <span
-                key={i}
-                className="title-char"
-                style={{ animationDelay: `${i * 0.08}s` }}
-              >
+              <span key={i} className="title-char" aria-hidden="true" style={{ animationDelay: `${i * 0.08}s` }}>
                 {char}
               </span>
-            )
-          ))}
+            ),
+          )}
         </h1>
+        <AppNav onOpen={openNav} />
       </header>
 
-      <main>
-        {!isAnyModalOpen && (
-          <SetPicker sets={playableSets} selectedId={selectedSet.id} onSelect={selectSet} collection={collection} disabled={packBusy} />
-        )}
+      <main className="app-main">
+        <SetPicker sets={playableSets} selectedId={selectedSet.id} onSelect={selectSet} collection={collection} disabled={packBusy} />
         <PackOpener
           key={selectedSet.id}
           onOpen={handlePackOpened}
@@ -392,53 +397,7 @@ function App() {
         />
       </main>
 
-      {/* Navigation buttons - hidden when any modal is open */}
-      {!isAnyModalOpen && (
-        <div className="nav-buttons">
-          <button
-            className="nav-btn"
-            onClick={() => setIsHallOfFameOpen(true)}
-          >
-            Hall of Fame
-          </button>
-          <button
-            className="nav-btn"
-            onClick={() => setIsBestPackOpen(true)}
-          >
-            Best Pack
-          </button>
-          <button
-            className="nav-btn"
-            onClick={() => setIsAchievementsOpen(true)}
-          >
-            Achievements
-          </button>
-          <button
-            className="nav-btn"
-            onClick={() => setIsCollectionOpen(true)}
-          >
-            Collection
-          </button>
-          <button
-            className="nav-btn"
-            onClick={() => setIsSettingsOpen(true)}
-          >
-            Settings
-          </button>
-        </div>
-      )}
-
-      {/* Achievement Notifications */}
-      <AnimatePresence>
-        {notificationQueue.map((achievement, index) => (
-          <AchievementNotification
-            key={achievement.id}
-            achievement={achievement}
-            index={index}
-            onDismiss={() => dismissNotification(achievement.id)}
-          />
-        ))}
-      </AnimatePresence>
+      <AchievementToasts queue={notificationQueue} onDismiss={dismissNotifications} onOpen={() => setIsAchievementsOpen(true)} />
 
       {/* Achievements Page */}
       {isAchievementsOpen && (

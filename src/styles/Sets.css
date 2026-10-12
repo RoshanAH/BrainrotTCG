@@ -1,68 +1,123 @@
 .set-picker {
-  display: flex;
-  gap: 0.6rem;
-  overflow-x: auto;
-  padding: 0.4rem 1rem 0.8rem;
-  max-width: 100vw;
-  scrollbar-width: thin;
-  scroll-snap-type: x proximity;
-  justify-content: safe center;
   position: relative;
   z-index: 5;
+  width: 100%;
+  max-width: var(--content-max);
+  margin: 0 auto;
+}
+
+.set-picker-list {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  padding: var(--space-2) var(--gutter) var(--space-3);
+  scroll-snap-type: x proximity;
+  scroll-padding-inline: var(--gutter);
+  scrollbar-width: none;
+  /* Fade the edges so it's obvious the row scrolls. */
+  mask-image: linear-gradient(90deg, transparent, #000 var(--gutter), #000 calc(100% - var(--gutter)), transparent);
+}
+
+.set-picker-list::-webkit-scrollbar {
+  display: none;
+}
+
+@media (min-width: 1200px) {
+  .set-picker-list {
+    justify-content: center;
+  }
 }
 
 .set-chip {
   flex: 0 0 auto;
-  scroll-snap-align: center;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.1rem;
-  min-width: 9.5rem;
-  padding: 0.55rem 0.8rem;
-  border-radius: 0.9rem;
-  border: 2px solid rgba(255, 255, 255, 0.15);
-  background: #2a0f4f; /* browsers without color-mix */
-  background: linear-gradient(135deg, color-mix(in srgb, var(--set-a) 35%, #120024), color-mix(in srgb, var(--set-b) 25%, #120024));
-  color: #fff;
-  cursor: pointer;
+  gap: 2px;
+  min-width: 8.5rem;
+  min-height: var(--touch-target);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  background: linear-gradient(140deg, color-mix(in srgb, var(--set-a) 22%, var(--surface)), color-mix(in srgb, var(--set-b) 14%, var(--surface)));
+  color: var(--text);
   text-align: left;
-  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  scroll-snap-align: center;
+  transition:
+    transform var(--dur-fast) var(--ease-out),
+    border-color var(--dur) var(--ease-out),
+    box-shadow var(--dur) var(--ease-out),
+    opacity var(--dur) var(--ease-out);
 }
 
 .set-chip:hover:not(:disabled) {
-  transform: translateY(-2px);
+  border-color: var(--border-strong);
+}
+
+.set-chip:active:not(:disabled) {
+  transform: scale(0.97);
 }
 
 .set-chip:disabled {
   cursor: not-allowed;
-  opacity: 0.45;
+  opacity: 0.4;
 }
 
 .set-chip.selected {
-  border-color: var(--set-b);
-  box-shadow: 0 0 0 2px var(--set-a), 0 0 18px color-mix(in srgb, var(--set-a) 60%, transparent);
+  border-color: transparent;
+  background:
+    linear-gradient(140deg, color-mix(in srgb, var(--set-a) 30%, var(--surface-2)), color-mix(in srgb, var(--set-b) 22%, var(--surface-2))) padding-box,
+    linear-gradient(120deg, var(--set-a), var(--set-b)) border-box;
+  border: 2px solid transparent;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
 }
 
 .set-chip-era {
-  font-size: 0.7rem;
-  opacity: 0.75;
-  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
 .set-chip-name {
-  font-weight: 800;
-  font-size: 0.95rem;
+  font-family: var(--font-display);
+  font-size: var(--text-base);
+  line-height: 1.15;
+  white-space: nowrap;
 }
 
 .set-chip-progress {
-  font-size: 0.75rem;
-  opacity: 0.85;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.set-chip-bar {
+  flex: 1;
+  height: 4px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+}
+
+.set-chip-bar > span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--set-a), var(--set-b));
 }
 
 .set-chip-draft {
-  color: #ffd166;
+  color: var(--warning);
+}
+
+/* Focus mode: the era can't change mid-pack, so the picker steps aside. */
+.app.is-focus .set-picker {
+  display: none;
 }
 
 /* Sized in pack-width units so it sits in the crimped top, above the tear line, at any pack size. */

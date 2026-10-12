@@ -1,128 +1,175 @@
+/* Rarity badges, the Brainrot Score panel and the scoring guide. */
+
 .rarity-pill {
+  --r: var(--rarity-common);
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  padding: 0.2rem 0.65rem;
-  border-radius: 999px;
-  font-weight: 800;
-  font-size: 0.85rem;
-  color: #fff;
-  background: #555;
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  gap: var(--space-2);
+  min-height: 30px;
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-pill);
+  border: 1.5px solid var(--r);
+  background: color-mix(in srgb, var(--r) 20%, var(--bg-elevated));
+  color: var(--text);
+  font-size: var(--text-sm);
+  font-weight: 700;
   white-space: nowrap;
 }
 
-.rarity-pill.common { background: #6e6e73; }
-.rarity-pill.uncommon { background: #13a600; }
-.rarity-pill.rare { background: #0070dd; }
-.rarity-pill.epic { background: #a335ee; }
-.rarity-pill.legendary { background: #ff8000; }
-.rarity-pill.brainrot { background: linear-gradient(90deg, #ff0000, #ff7f00, #c9b000, #00b000, #0050ff, #7a1fd1); }
-.rarity-pill.holo-pill { background: linear-gradient(90deg, #ff3df2, #29f0ff, #ffe14d); color: #12002a; }
+.rarity-pill.common { --r: var(--rarity-common); }
+.rarity-pill.uncommon { --r: var(--rarity-uncommon); }
+.rarity-pill.rare { --r: var(--rarity-rare); }
+.rarity-pill.epic { --r: var(--rarity-epic); }
+.rarity-pill.legendary { --r: var(--rarity-legendary); }
 
-.rarity-pill-points {
-  font-weight: 600;
-  opacity: 0.9;
-  padding-left: 0.35rem;
-  border-left: 1px solid rgba(255, 255, 255, 0.4);
+.rarity-pill.brainrot,
+.rarity-pill.holo-pill {
+  border-color: transparent;
+  background:
+    linear-gradient(var(--surface-2), var(--surface-2)) padding-box,
+    var(--rarity-brainrot) border-box;
 }
 
+.rarity-pill-gem {
+  color: var(--r);
+  font-size: 0.8em;
+}
+
+.rarity-pill.brainrot .rarity-pill-gem,
+.rarity-pill.holo-pill .rarity-pill-gem {
+  background: var(--rarity-brainrot);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.rarity-pill-points {
+  padding-left: var(--space-2);
+  border-left: 1px solid var(--border-strong);
+  color: var(--text-muted);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Brainrot Score panel ---- */
+
 .score-panel {
-  margin: 1rem auto;
-  padding: 0.9rem 1.6rem;
-  max-width: 30rem;
-  border-radius: 1rem;
-  border: 2px solid #ffd700;
-  background: rgba(255, 215, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  margin: 0 auto var(--space-4);
   text-align: center;
 }
 
-.score-panel-math {
-  color: #ffb347;
-  margin-bottom: 0.3rem;
-}
-
 .score-panel-total {
-  font-family: 'RubikGlitch', system-ui;
-  font-size: 1.6rem;
-  color: #fff;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 1.4rem + 3vw, 2.75rem);
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+  background: linear-gradient(90deg, #ffe14d, #ffb347);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
-.score-panel-total span {
-  font-size: 1rem;
+.score-panel-total .score-panel-brain {
+  -webkit-text-fill-color: initial;
+  color: initial;
+  font-size: 0.8em;
+}
+
+.score-panel-label {
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.score-panel-math {
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+.score-panel-math strong {
+  color: var(--brand-3);
 }
 
 .score-panel-help {
-  margin-top: 0.4rem;
-  background: none;
-  border: none;
-  color: #29f0ff;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: 36px;
+  padding: 0 var(--space-2);
+  color: var(--brand-2);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.score-panel-help svg {
+  width: 16px;
+  height: 16px;
+}
+
+.score-panel-help:hover {
   text-decoration: underline;
-  cursor: pointer;
-  font-size: 0.8rem;
+  text-underline-offset: 0.2em;
 }
 
-.scoring-guide-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 1100;
-  background: rgba(8, 0, 20, 0.88);
-  overflow-y: auto;
-}
-
-.scoring-guide {
-  position: relative;
-  max-width: 34rem;
-  margin: 5vh auto;
-  padding: 1.5rem 1.25rem;
-  border-radius: 1.2rem;
-  background: linear-gradient(160deg, #2a0759, #14022f);
-  border: 2px solid #29f0ff;
-  color: #fff;
-  text-align: left;
-}
-
-.scoring-guide h2 {
-  margin: 0 0 0.5rem;
-  font-family: 'RubikGlitch', system-ui;
-}
-
-.scoring-guide h3 {
-  margin: 1.2rem 0 0.4rem;
-  color: #ffd700;
-}
+/* ---- Scoring guide (inside a Sheet) ---- */
 
 .scoring-formula {
-  font-size: 1.05rem;
+  margin-bottom: var(--space-1);
+  font-size: var(--text-lg);
 }
 
 .scoring-note {
-  color: #bbb;
-  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
+
+.scoring-guide h3 {
+  margin: var(--space-5) 0 var(--space-2);
+  font-size: var(--text-xl);
+  color: var(--brand-3);
 }
 
 .scoring-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
 }
 
 .scoring-table th {
+  padding: var(--space-2) var(--space-2) var(--space-2) 0;
+  color: var(--text-subtle);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.06em;
   text-align: left;
-  color: #aaa;
-  font-weight: 600;
-  padding: 0.3rem 0.25rem;
+  text-transform: uppercase;
 }
 
 .scoring-table td {
-  padding: 0.35rem 0.25rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: var(--space-2) var(--space-2) var(--space-2) 0;
+  border-top: 1px solid var(--border);
 }
 
+.scoring-table td:last-child,
+.scoring-table th:last-child {
+  text-align: right;
+  padding-right: 0;
+}
+
+/* Revealed card's rarity, under the card. Reserves its height so the card doesn't jump. */
 .reveal-rarity {
-  margin-top: 0.75rem;
   display: flex;
   justify-content: center;
-  min-height: 1.8rem;
+  min-height: 32px;
 }
