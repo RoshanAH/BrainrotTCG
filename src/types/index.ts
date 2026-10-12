@@ -1,3 +1,4 @@
+import type { Finish } from '../engine';
 import type { Card } from '../data/cards';
 import type { CardWithMeta } from '../components/cards/Card';
 
@@ -11,6 +12,11 @@ export interface CollectionItem {
   normalCount: number;
   holoCount: number;
   count?: number; // legacy field
+  /** Copies with each finish, and misprints (sets with modifiers). */
+  finishes?: Partial<Record<Finish, number>>;
+  misprints?: number;
+  /** Points those modified copies earned beyond their plain or holo value, so the collection's value stays exact. */
+  modifierPoints?: number;
 }
 
 export interface Stats {

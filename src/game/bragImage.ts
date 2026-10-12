@@ -4,13 +4,24 @@
  * the verifiable pull. Drawn on a canvas from same-origin card images.
  */
 import qrcode from 'qrcode-generator';
-import type { PackScore } from '../engine';
+import type { Finish, PackScore } from '../engine';
+import { FINISH_INFO, modifierLabel } from './modifiers';
 
 interface PosterCard {
   image: string;
   name: string;
   isHolo: boolean;
+  finish?: Finish | null;
+  misprint?: boolean;
 }
+
+/** A finish's frame on the poster: its colour, light to dark to light like the in-game frame. */
+const FINISH_STOPS: Record<Finish, string[]> = {
+  SILVER: ['#f4f7fa', '#8e98a2', '#ffffff', '#7f8992', '#e3e8ec'],
+  GOLD: ['#fff3c4', '#c8961e', '#ffeaa0', '#a5700c', '#ffd76a'],
+  PLATINUM: ['#eefaff', '#7fb4cc', '#ffffff', '#6c9fb8', '#d6f3ff'],
+  DIAMOND: ['#b9f2ff', '#ffffff', '#c9b6ff', '#ffffff', '#7ee7ff'],
+};
 
 interface PosterInput {
   cards: PosterCard[];
@@ -61,6 +72,20 @@ const drawCard = (ctx: CanvasRenderingContext2D, img: HTMLImageElement, card: Po
   ctx.shadowOffsetY = 10;
   roundRect(ctx, -w / 2, -h / 2, w, h, 14);
   ctx.clip();
+  if (card.misprint) {
+    // Off-register colour plates: a pink and a cyan ghost either side, the card a touch askew.
+    ctx.drawImage(img, -w / 2, -h / 2, w, h);
+    for (const [dx, colour] of [[w * 0.025, 'rgba(255, 0, 90, 0.35)'], [-w * 0.025, 'rgba(0, 230, 255, 0.35)']] as const) {
+      ctx.globalAlpha = 0.5;
+      ctx.drawImage(img, -w / 2 + dx, -h / 2, w, h);
+      ctx.globalAlpha = 1;
+      ctx.globalCompositeOperation = 'source-atop';
+      ctx.fillStyle = colour;
+      ctx.fillRect(-w / 2, -h / 2, w, h);
+      ctx.globalCompositeOperation = 'source-over';
+    }
+    ctx.rotate(-0.02);
+  }
   ctx.drawImage(img, -w / 2, -h / 2, w, h);
   if (card.isHolo) {
     // Foil: the only gradient on the poster, as in the app.
@@ -70,6 +95,33 @@ const drawCard = (ctx: CanvasRenderingContext2D, img: HTMLImageElement, card: Po
     ctx.globalAlpha = 0.45;
     ctx.fillStyle = shine;
     ctx.fillRect(-w / 2, -h / 2, w, h);
+  }
+  if (card.finish) {
+    const frame = ctx.createLinearGradient(-w / 2, -h / 2, w / 2, h / 2);
+    FINISH_STOPS[card.finish].forEach((c, i, all) => frame.addColorStop(i / (all.length - 1), c));
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = 1;
+    ctx.strokeStyle = frame;
+    ctx.lineWidth = Math.max(8, w * 0.05);
+    roundRect(ctx, -w / 2, -h / 2, w, h, 14);
+    ctx.stroke();
+  }
+  // Name what's special about it on the card's bottom edge, like the sticker in the game.
+  const label = modifierLabel(card, false).toUpperCase();
+  if (label) {
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = 1;
+    const size = Math.round(Math.max(20, w * 0.075));
+    ctx.font = `800 ${size}px ${BODY_FONT}`;
+    ctx.textAlign = 'center';
+    const tw = Math.min(w * 0.9, ctx.measureText(label).width + size);
+    const lh = size * 1.5;
+    const y = h / 2 - lh - w * 0.05;
+    ctx.fillStyle = 'rgba(18, 17, 20, 0.9)';
+    roundRect(ctx, -tw / 2, y, tw, lh, 6);
+    ctx.fill();
+    ctx.fillStyle = card.finish ? FINISH_INFO[card.finish].color : '#ffffff';
+    ctx.fillText(label, 0, y + lh * 0.72, w * 0.85);
   }
   ctx.restore();
 };

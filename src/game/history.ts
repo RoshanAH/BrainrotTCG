@@ -7,6 +7,7 @@
  */
 import { STORAGE_KEYS } from '../constants';
 import { POKER_HANDS, qualifiesForHallOfFame } from '../engine';
+import { decodeCard, encodeCard, type StoredCard } from './cardCode';
 import type { OpenedPack } from './pulls';
 
 export interface HistoryEntry {
@@ -16,7 +17,7 @@ export interface HistoryEntry {
   /** First 16 hex characters of the key that opened it (profiles only list the current key's packs). */
   key: string;
   /** Null for packs carried over from the old notable-pulls log, which didn't keep cards. */
-  cards: { id: string; holo: boolean }[] | null;
+  cards: StoredCard[] | null;
   hand: string;
   score: number;
   openedAt: number;
@@ -41,7 +42,7 @@ const encode = (e: HistoryEntry): Stored => ({
   v: e.setVersion,
   n: e.nonce,
   k: e.key,
-  ...(e.cards ? { c: e.cards.map((c) => c.id + (c.holo ? '*' : '')).join(',') } : {}),
+  ...(e.cards ? { c: e.cards.map(encodeCard).join(',') } : {}),
   h: e.hand,
   x: e.score,
   t: e.openedAt,
@@ -52,7 +53,7 @@ const decode = (s: Stored): HistoryEntry => ({
   setVersion: s.v,
   nonce: s.n,
   key: s.k,
-  cards: s.c ? s.c.split(',').map((c) => ({ id: c.replace(/\*$/, ''), holo: c.endsWith('*') })) : null,
+  cards: s.c ? s.c.split(',').map(decodeCard) : null,
   hand: s.h,
   score: s.x,
   openedAt: s.t,
@@ -113,7 +114,7 @@ export const recordPack = (pack: OpenedPack) => {
     setVersion: pack.setVersion,
     nonce: pack.nonce,
     key: (pack.publicKeyHex ?? '').slice(0, KEY_PREFIX),
-    cards: pack.cards.map((c) => ({ id: c.id, holo: c.isHolo })),
+    cards: pack.cards.map((c) => ({ id: c.id, holo: c.isHolo, finish: c.finish, misprint: c.misprint })),
     hand: pack.score.hand.name,
     score: pack.score.score,
     openedAt: pack.openedAt,

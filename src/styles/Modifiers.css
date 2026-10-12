@@ -1,0 +1,48 @@
+/*
+ * Card modifiers on thumbnails (pack summary, pack viewer, history rows): a ring in the finish's
+ * colour, off-register colours for a misprint, and a small label. Full cards use Card.css.
+ */
+.mod-thumb {
+  position: relative;
+}
+
+.mod-thumb[class*='finish-'] {
+  outline: 3px solid var(--finish);
+  outline-offset: 1px;
+}
+
+.mod-thumb.finish-platinum,
+.mod-thumb.finish-diamond {
+  filter: drop-shadow(0 0 8px var(--finish));
+}
+
+.mod-thumb.misprint img,
+img.misprint {
+  filter: drop-shadow(2px 0 0 rgba(255, 0, 90, 0.55)) drop-shadow(-2px 0 0 rgba(0, 230, 255, 0.55));
+}
+
+.mod-label {
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  z-index: 3;
+  max-width: calc(100% - 6px);
+  overflow: hidden;
+  padding: 0 5px;
+  border-radius: 3px;
+  background: rgba(18, 17, 20, 0.9);
+  color: var(--finish, #fff);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transform: translateX(-50%);
+}
+
+/* Tiny thumbnails (history rows, Hall of Fame): just the ring. */
+img.finish-silver { box-shadow: 0 0 0 2px #cfd6dd; }
+img.finish-gold { box-shadow: 0 0 0 2px #ffcf4a; }
+img.finish-platinum { box-shadow: 0 0 0 2px #a8e6ff, 0 0 6px #a8e6ff; }
+img.finish-diamond { box-shadow: 0 0 0 2px #c9b6ff, 0 0 8px #c9b6ff; }

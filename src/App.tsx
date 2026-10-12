@@ -12,7 +12,7 @@ import CollectionBrowser from './components/collection/CollectionBrowser';
 import SetPicker from './components/sets/SetPicker';
 import ShareSheet, { type ShareTarget } from './components/share/ShareSheet';
 import PullViewerPage from './components/share/PullViewerPage';
-import { scoreCards } from './data/cards';
+import { cardPoints, scoreCards } from './data/cards';
 import { getAchievementById, Achievement } from './data/achievements';
 import { CardWithMeta } from './components/cards/Card';
 import { DEFAULT_SET_ID, SETS } from './content/sets';
@@ -297,10 +297,21 @@ function App() {
         const card = newCards.find(c => c.key === cardId);
         if (!card) return;
         const existing = next[cardId];
+        const finishes = { ...existing?.finishes };
+        let misprints = existing?.misprints ?? 0;
+        let modifierPoints = existing?.modifierPoints ?? 0;
+        for (const copy of newCards.filter((c) => c.key === cardId)) {
+          if (copy.finish) finishes[copy.finish] = (finishes[copy.finish] ?? 0) + 1;
+          if (copy.misprint) misprints++;
+          modifierPoints += cardPoints(copy.rarity, copy.isHolo, copy.finish, copy.misprint) - cardPoints(copy.rarity, copy.isHolo);
+        }
         next[cardId] = {
           card: { key: card.key, setId: card.setId, id: card.id, name: card.name, rarity: card.rarity, image: card.image },
           normalCount: (existing?.normalCount || 0) + (normalCounts[cardId] || 0),
           holoCount: (existing?.holoCount || 0) + (holoCounts[cardId] || 0),
+          ...(Object.keys(finishes).length ? { finishes } : {}),
+          ...(misprints ? { misprints } : {}),
+          ...(modifierPoints ? { modifierPoints } : {}),
         };
       });
 

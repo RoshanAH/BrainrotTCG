@@ -14,6 +14,17 @@ describe('reveal order', () => {
     expect(cards.map((c) => c.id)).toEqual(['a', 'b', 'c', 'd', 'e']); // the pack itself is untouched
   });
 
+  it('within a rarity, shows finishes, misprints and holos later', () => {
+    const cards = [
+      { id: 'gold', rarity: 'COMMON' as const, isHolo: false, finish: 'GOLD' as const, misprint: false },
+      { id: 'diamond', rarity: 'COMMON' as const, isHolo: false, finish: 'DIAMOND' as const, misprint: false },
+      { id: 'misprint', rarity: 'COMMON' as const, isHolo: false, finish: null, misprint: true },
+      { id: 'plain', rarity: 'COMMON' as const, isHolo: false, finish: null, misprint: false },
+      { id: 'epic', rarity: 'EPIC' as const, isHolo: false, finish: null, misprint: false },
+    ];
+    expect(revealOrder(cards).map((c) => c.id)).toEqual(['plain', 'misprint', 'gold', 'diamond', 'epic']);
+  });
+
   it('marks only the first copy of a card the player did not own', () => {
     const owned = new Set(['set/x']);
     const marked = markNew([{ key: 'set/y' }, { key: 'set/x' }, { key: 'set/y' }], (k) => owned.has(k));

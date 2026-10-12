@@ -328,6 +328,252 @@
           "isHolo": false
         }
       ]
+    },
+    {
+      "set": "right-now@2",
+      "seed": "e73b81eebda41333e05e3f9c63963f9dd1efc12262fb1497cadb0dbccdbe984b",
+      "cards": [
+        {
+          "cardId": "la-peace",
+          "rarity": "UNCOMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "huss-valley",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "bukangi",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": "SILVER",
+          "misprint": false
+        },
+        {
+          "cardId": "steal-an-egg",
+          "rarity": "RARE",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "chile-memes",
+          "rarity": "UNCOMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        }
+      ]
+    },
+    {
+      "set": "right-now@2",
+      "seed": "2498dee226a35267183fc8ac7f9e552285c8f6e29c90be29800fb43da47d1308",
+      "cards": [
+        {
+          "cardId": "huss-valley",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "pirate-gaster",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "pirate-gaster",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "chile-memes",
+          "rarity": "UNCOMMON",
+          "isHolo": false,
+          "finish": "GOLD",
+          "misprint": false
+        },
+        {
+          "cardId": "la-peace",
+          "rarity": "UNCOMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        }
+      ]
+    },
+    {
+      "set": "right-now@2",
+      "seed": "5763a3c2439c29df040ef550500f4e4c777bba6a948a17436ff21a54d7917c20",
+      "cards": [
+        {
+          "cardId": "niu-lai",
+          "rarity": "COMMON",
+          "isHolo": true,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "niu-lai",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "bukangi",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "verity",
+          "rarity": "EPIC",
+          "isHolo": true,
+          "finish": "SILVER",
+          "misprint": false
+        },
+        {
+          "cardId": "niu-lai",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        }
+      ]
+    },
+    {
+      "set": "right-now@2",
+      "seed": "ee9366ea21bf119f52c0ad9066d3eb206a9550cdeff9b4a170d507c724c2d0fe",
+      "cards": [
+        {
+          "cardId": "verity",
+          "rarity": "EPIC",
+          "isHolo": false,
+          "finish": "GOLD",
+          "misprint": false
+        },
+        {
+          "cardId": "huss-valley",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "verity",
+          "rarity": "EPIC",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "ai-rumpelstiltskin",
+          "rarity": "LEGENDARY",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "niu-lai",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": "PLATINUM",
+          "misprint": false
+        }
+      ]
+    },
+    {
+      "set": "right-now@2",
+      "seed": "418cf0cbf8aa8cf95a2ff50853847b5dcc56a2900860a89a7ee90f9cf61dd156",
+      "cards": [
+        {
+          "cardId": "pirate-gaster",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": "DIAMOND",
+          "misprint": false
+        },
+        {
+          "cardId": "huss-valley",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "remember-november",
+          "rarity": "UNCOMMON",
+          "isHolo": false,
+          "finish": "DIAMOND",
+          "misprint": false
+        },
+        {
+          "cardId": "chile-memes",
+          "rarity": "UNCOMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "niu-lai",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        }
+      ]
+    },
+    {
+      "set": "right-now@2",
+      "seed": "942ad30bc2181a51954f2041e3d3d3f5dbea0a113c18d27a43c492ae7bbadaf7",
+      "cards": [
+        {
+          "cardId": "huss-valley",
+          "rarity": "COMMON",
+          "isHolo": true,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "pirate-gaster",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "black-cat-clapping",
+          "rarity": "RARE",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "niu-lai",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "pirate-gaster",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": true
+        }
+      ]
     }
   ],
   "valid": [
@@ -698,6 +944,108 @@
       "hand": "No Matches",
       "multiplier": 1,
       "score": 75,
+      "hallOfFame": false
+    },
+    {
+      "note": "modifiers: a finish",
+      "proof": "AQlyaWdodC1ub3cAAk0__3rjsovdR9T7Ijt5NAE9d8IVqpAH0N8yHF65jlUcAQxTaGlueSBIdW50ZXLTcXcVtiSkyOUxNymy3AaT8azp-UQaKztRcaP2CONmzLuUok_3WUCZ8AuJz5VWBdUPHtRUjWO5mzw71D6GyIQJ",
+      "set": "right-now@2",
+      "publicKey": "4d3fff7ae3b28bdd47d4fb223b7934013d77c215aa9007d0df321c5eb98e551c",
+      "nonce": 1,
+      "name": "Shiny Hunter",
+      "fingerprint": "KF80-V34K",
+      "cards": [
+        {
+          "cardId": "remember-november",
+          "rarity": "UNCOMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "la-peace",
+          "rarity": "UNCOMMON",
+          "isHolo": false,
+          "finish": "SILVER",
+          "misprint": false
+        },
+        {
+          "cardId": "pirate-gaster",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "niu-lai",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "chile-memes",
+          "rarity": "UNCOMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        }
+      ],
+      "points": 260,
+      "hand": "No Matches",
+      "multiplier": 1,
+      "score": 260,
+      "hallOfFame": false
+    },
+    {
+      "note": "modifiers: a misprint",
+      "proof": "AQlyaWdodC1ub3cAAk0__3rjsovdR9T7Ijt5NAE9d8IVqpAH0N8yHF65jlUcIgxTaGlueSBIdW50ZXLnScEfFPFUfbhgWpUSVzZ7dg_yu9uMx2iixOncxtZoHO8PT8TM-InM2aw4tC7A-30sZj8a04oumUB0NDaU4GQG",
+      "set": "right-now@2",
+      "publicKey": "4d3fff7ae3b28bdd47d4fb223b7934013d77c215aa9007d0df321c5eb98e551c",
+      "nonce": 34,
+      "name": "Shiny Hunter",
+      "fingerprint": "KF80-V34K",
+      "cards": [
+        {
+          "cardId": "verity",
+          "rarity": "EPIC",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "la-peace",
+          "rarity": "UNCOMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": true
+        },
+        {
+          "cardId": "steal-an-egg",
+          "rarity": "RARE",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "remember-november",
+          "rarity": "UNCOMMON",
+          "isHolo": false,
+          "finish": "GOLD",
+          "misprint": false
+        },
+        {
+          "cardId": "remember-november",
+          "rarity": "UNCOMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        }
+      ],
+      "points": 4925,
+      "hand": "Pair",
+      "multiplier": 2,
+      "score": 9850,
       "hallOfFame": false
     }
   ],

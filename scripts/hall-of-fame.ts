@@ -50,6 +50,7 @@ import {
   wouldJoinHallOfFame,
   type RankableEntry,
   type VerifiedPull,
+  type Finish,
 } from '../src/engine/index.ts';
 import { fetchEvents, HOF_KIND, HOF_RELAYS, HOF_TAG, probeEvent, publishEvent } from '../src/game/nostrInbox.ts';
 import { processInbox } from './hof-inbox.ts';
@@ -71,7 +72,8 @@ export interface HallOfFameEntry extends RankableEntry {
   hand: string;
   multiplier: number;
   score: number;
-  cards: { cardId: string; isHolo: boolean }[];
+  /** finish and misprint only for cards from sets with modifiers. */
+  cards: { cardId: string; isHolo: boolean; finish?: Finish | null; misprint?: boolean }[];
   /** Trusted, from GitHub: who submitted, and when the bot first verified this pull. */
   issue: number;
   githubUser: string;
@@ -111,7 +113,7 @@ const toEntry = (pull: VerifiedPull, proof: string, issue: Issue, verifiedAt: st
   hand: pull.score.hand.name,
   multiplier: pull.score.hand.multiplier,
   score: pull.score.score,
-  cards: pull.cards.map((c) => ({ cardId: c.cardId, isHolo: c.isHolo })),
+  cards: pull.cards.map((c) => ({ cardId: c.cardId, isHolo: c.isHolo, ...(c.finish ? { finish: c.finish } : {}), ...(c.misprint ? { misprint: true } : {}) })),
   issue: issue.number,
   // Entries the inbox filed came from Nostr, not from this GitHub account.
   githubUser: issue.user?.login === BOT ? 'nostr' : (issue.user?.login ?? 'unknown'),

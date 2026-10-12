@@ -9,15 +9,36 @@
  */
 import { setKey, validateSet, type CardDefinition, type SetDefinition } from '../../engine';
 import genesis from './genesis/set.json';
+import webAncientsV1 from './web-ancients/set.v1.json';
 import webAncients from './web-ancients/set.json';
+import vineAndDankV1 from './vine-and-dank/set.v1.json';
 import vineAndDank from './vine-and-dank/set.json';
+import lockdownLoreV1 from './lockdown-lore/set.v1.json';
 import lockdownLore from './lockdown-lore/set.json';
+import genAlphaUprisingV1 from './gen-alpha-uprising/set.v1.json';
 import genAlphaUprising from './gen-alpha-uprising/set.json';
+import italianBrainrotDeepCutsV1 from './italian-brainrot-deep-cuts/set.v1.json';
 import italianBrainrotDeepCuts from './italian-brainrot-deep-cuts/set.json';
+import rightNowV1 from './right-now/set.v1.json';
 import rightNow from './right-now/set.json';
 
 /** Every version of every set. Display order = timeline order (Genesis first). */
-export const ALL_SET_VERSIONS: SetDefinition[] = [genesis, webAncients, vineAndDank, lockdownLore, genAlphaUprising, italianBrainrotDeepCuts, rightNow].map((s) => validateSet(s));
+// Version 1 of each set is from before card modifiers; version 2 adds them (spec section 5.4).
+export const ALL_SET_VERSIONS: SetDefinition[] = [
+  genesis,
+  webAncientsV1,
+  webAncients,
+  vineAndDankV1,
+  vineAndDank,
+  lockdownLoreV1,
+  lockdownLore,
+  genAlphaUprisingV1,
+  genAlphaUprising,
+  italianBrainrotDeepCutsV1,
+  italianBrainrotDeepCuts,
+  rightNowV1,
+  rightNow,
+].map((s) => validateSet(s));
 
 const byKey = new Map(ALL_SET_VERSIONS.map((s) => [setKey(s), s]));
 if (byKey.size !== ALL_SET_VERSIONS.length) throw new Error('Duplicate set@version in registry');

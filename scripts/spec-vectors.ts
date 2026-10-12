@@ -34,10 +34,14 @@ import {
   toBase64Url,
   toHex,
   utf8,
+  type PulledCard,
   type SetDefinition,
 } from '../src/engine/index.ts';
 
 const OUT = fileURLToPath(new URL('../spec/vectors.json', import.meta.url));
+/** A card as vectors list it; sets with modifiers (section 5.4) also give finish and misprint. */
+const cardJson = (set: SetDefinition) => (c: PulledCard) =>
+  set.modifiers ? { cardId: c.cardId, rarity: c.rarity, isHolo: c.isHolo, finish: c.finish ?? null, misprint: !!c.misprint } : { cardId: c.cardId, rarity: c.rarity, isHolo: c.isHolo };
 const hash = (label: string) => sha256(utf8(label));
 const must = (id: string, version: number): SetDefinition => {
   const set = getSet(id, version);
@@ -82,8 +86,21 @@ for (const [id, version] of [['genesis', 1], ['right-now', 1], ['lockdown-lore',
     packs.push({
       set: setKey(set),
       seed: toHex(seed),
-      cards: generatePack(set, seed).map(({ cardId, rarity, isHolo }) => ({ cardId, rarity, isHolo })),
+      cards: generatePack(set, seed).map(cardJson(set)),
     });
+  }
+}
+// Sets with modifiers: the first seeds that, together, show every finish, a misprint and a stack.
+{
+  const set = must('right-now', 2);
+  const wanted = new Set(['SILVER', 'GOLD', 'PLATINUM', 'DIAMOND', 'misprint', 'holo+finish']);
+  for (let i = 0; wanted.size > 0; i++) {
+    const seed = hash(`brainrot-tcg/vector-pack/${set.id}@${set.version}/${i}`);
+    const cards = generatePack(set, seed);
+    const shows = cards.flatMap((c) => [c.finish ?? '', c.misprint ? 'misprint' : '', c.isHolo && c.finish ? 'holo+finish' : '']);
+    if (i > 0 && !shows.some((x) => wanted.has(x))) continue;
+    for (const x of shows) wanted.delete(x);
+    packs.push({ set: setKey(set), seed: toHex(seed), cards: cards.map(cardJson(set)) });
   }
 }
 
@@ -102,7 +119,7 @@ const addValid = async (set: SetDefinition, sk: Uint8Array, nonce: number, name:
     nonce,
     name: proof.name,
     fingerprint: fingerprint40(publicKey),
-    cards: cards.map(({ cardId, rarity, isHolo }) => ({ cardId, rarity, isHolo })),
+    cards: cards.map(cardJson(set)),
     points: score.points,
     hand: score.hand.name,
     multiplier: score.hand.multiplier,
@@ -125,7 +142,6 @@ for (let nonce = 0; nonce < 5000 && wanted.length; nonce++) {
     wanted.shift();
   }
 }
-
 // --- invalid proofs ---
 const PROOF_DOMAIN = utf8('brainrot-tcg/proof/v1');
 interface Raw {
@@ -239,13 +255,25 @@ for (const [note, name] of [
     nonce: 5,
     name,
     fingerprint: fingerprint40(pk),
-    cards: cards.map(({ cardId, rarity, isHolo }) => ({ cardId, rarity, isHolo })),
+    cards: cards.map(cardJson(set)),
     points: score.points,
     hand: score.hand.name,
     multiplier: score.hand.multiplier,
     score: score.score,
     hallOfFame: qualifiesForHallOfFame(score),
   });
+}
+
+// Sets with modifiers (section 5.4): a pull with a finish and one with a misprint.
+const slop = must('right-now', 2);
+const wantedModifiers = ['finish', 'misprint'];
+for (let nonce = 0; nonce < 5000 && wantedModifiers.length; nonce++) {
+  const cards = await derivePack(slop, publicKeyFromSecret(KEYS[1]), nonce);
+  const kind = wantedModifiers.find((k) => cards.some((c) => (k === 'finish' ? c.finish : c.misprint)));
+  if (kind) {
+    await addValid(slop, KEYS[1], nonce, 'Shiny Hunter', `modifiers: a ${kind}`);
+    wantedModifiers.splice(wantedModifiers.indexOf(kind), 1);
+  }
 }
 
 // --- the same pull, signed twice with different names ---

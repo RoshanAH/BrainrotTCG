@@ -5,6 +5,7 @@ import Tabs from '../ui/Tabs';
 import { tabPanelProps } from '../ui/tabPanel';
 import '../../styles/HallOfFame.css';
 import { getCard } from '../../data/cards';
+import { modifierClasses } from '../../game/modifiers';
 import { checkPull } from '../../game/pulls';
 import { loadHallOfFame, loadPending, type HallOfFameEntry } from '../../game/hallOfFameList';
 import { firstPulls, HALL_OF_FAME_MIN_SCORE, HALL_OF_FAME_TOP, normalizeName, topPulls } from '../../engine';
@@ -84,7 +85,13 @@ const HallOfFamePage = ({ onClose }: HallOfFamePageProps) => {
             pull.score.hand.name === entry.hand &&
             pull.score.score === entry.score &&
             pull.cards.length === entry.cards.length &&
-            pull.cards.every((c, i) => c.cardId === entry.cards[i]?.cardId && c.isHolo === entry.cards[i]?.isHolo);
+            pull.cards.every(
+              (c, i) =>
+                c.cardId === entry.cards[i]?.cardId &&
+                c.isHolo === entry.cards[i]?.isHolo &&
+                (c.finish ?? null) === (entry.cards[i]?.finish ?? null) &&
+                !!c.misprint === !!entry.cards[i]?.misprint,
+            );
           if (!cancelled) setChecks((prev) => ({ ...prev, [entry.issue]: matches ? 'verified' : 'failed' }));
         } catch {
           if (!cancelled) setChecks((prev) => ({ ...prev, [entry.issue]: 'failed' }));
@@ -110,7 +117,7 @@ const HallOfFamePage = ({ onClose }: HallOfFamePageProps) => {
           <span className="hof-cards" aria-hidden="true">
             {entry.cards.map((c, i) => {
               const card = getCard(`${entry.setId}/${c.cardId}`);
-              return card ? <img key={i} src={card.image} alt="" className={`${card.rarity.toLowerCase()} ${c.isHolo ? 'holo' : ''}`} /> : null;
+              return card ? <img key={i} src={card.image} alt="" className={`${card.rarity.toLowerCase()} ${c.isHolo ? 'holo' : ''} ${modifierClasses(c)}`} /> : null;
             })}
           </span>
           <span className="hof-main">

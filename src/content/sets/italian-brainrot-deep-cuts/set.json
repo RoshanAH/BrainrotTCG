@@ -1,6 +1,6 @@
 {
   "id": "italian-brainrot-deep-cuts",
-  "version": 1,
+  "version": 2,
   "name": "Italian Brainrot Deep Cuts",
   "era": "2025",
   "tagline": "Mamma mia, che brainrot!",
@@ -20,6 +20,7 @@
     "BRAINROT": 50
   },
   "holoOdds": 500,
+  "modifiers": 1,
   "cards": [
     {
       "id": "gangster-footera",

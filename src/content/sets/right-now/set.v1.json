@@ -1,0 +1,133 @@
+{
+  "id": "right-now",
+  "version": 1,
+  "name": "Summer of Slop",
+  "era": "Jul–Oct 2026",
+  "tagline": "AI bears, canal sharks & one round raccoon",
+  "releasedAt": "2026-10-12",
+  "palette": [
+    "#FFD60A",
+    "#00B4D8",
+    "#FF4D6D"
+  ],
+  "packSize": 5,
+  "odds": {
+    "COMMON": 5000,
+    "UNCOMMON": 2500,
+    "RARE": 1500,
+    "EPIC": 700,
+    "LEGENDARY": 250,
+    "BRAINROT": 50
+  },
+  "holoOdds": 500,
+  "cards": [
+    {
+      "id": "pirate-gaster",
+      "name": "Pirate Gaster",
+      "rarity": "COMMON",
+      "caption": "Always bet on the Captain",
+      "flavor": "June 2026: Deltarune fans made W.D. Gaster a pirate captain, sea shanty and all.",
+      "year": 2026,
+      "art": "LeanaLeabian's fan art of W.D. Gaster as a pirate captain, with tricorn, hook, parrot and green cape (KYM's main image)."
+    },
+    {
+      "id": "niu-lai",
+      "name": "Niu Lai",
+      "rarity": "COMMON",
+      "caption": "Here comes the cow",
+      "flavor": "Aug 2026: a mother-and-son Chinese cartoon about a scared calf, so bad it became a hit.",
+      "year": 2026,
+      "art": "Still of the red cow hero's deadpan face from the 2026 Chinese animated film Niu Lai (Know Your Meme's main image)."
+    },
+    {
+      "id": "bukangi",
+      "name": "Bukangi",
+      "rarity": "COMMON",
+      "caption": "Won't leave the harbor",
+      "flavor": "Busan, Sept 2026: a 3 m shark moved into a harbor canal and drew a million visitors.",
+      "year": 2026,
+      "art": "Yonhap aerial news photo of Bukangi the shark swimming past stone bollards in the Busan North Port waterfront canal."
+    },
+    {
+      "id": "huss-valley",
+      "name": "Huss Valley",
+      "rarity": "COMMON",
+      "caption": "Why he keep coming back?",
+      "flavor": "July 2026: clips of YouTuber Daniel LaBelle fleeing costumed chasers became 'Huss Valley.'",
+      "year": 2026,
+      "art": "Deep-fried meme frame of Daniel LaBelle as a mailman running from a red dog costume (left panel of Know Your Meme's image)."
+    },
+    {
+      "id": "la-peace",
+      "name": "La Peace",
+      "rarity": "UNCOMMON",
+      "caption": "That's la peace",
+      "flavor": "Aug 2026: Kai Cenat said 'lapis' on a Minecraft stream and it came out 'la peace.'",
+      "year": 2026,
+      "art": "The meme edit of Kai Cenat as a white-bearded sage raising one finger in a Minecraft cave (Know Your Meme's main image)."
+    },
+    {
+      "id": "chile-memes",
+      "name": "Chile Memes",
+      "rarity": "UNCOMMON",
+      "caption": "Cars in Chile be like",
+      "flavor": "Sept 2026: Chile is long and thin, so the internet decided everything there is too.",
+      "year": 2026,
+      "art": "The squeezed-thin teal car in a night parking lot beside a map of Chile (middle panel of Know Your Meme's image)."
+    },
+    {
+      "id": "remember-november",
+      "name": "Remember November",
+      "rarity": "UNCOMMON",
+      "caption": "Remember November 2026",
+      "flavor": "Aug 28, 2026: an AI polar bear sings a cryptic prophecy that November 2026 is coming.",
+      "year": 2026,
+      "art": "Close-up frame of the AI polar bear singing, mouth open, from the viral video (Know Your Meme's main image)."
+    },
+    {
+      "id": "steal-an-egg",
+      "name": "Steal an Egg",
+      "rarity": "RARE",
+      "caption": "Steal an egg. Run.",
+      "flavor": "July 2026: Roblox's Steal an Egg launched and hit 14M players at once by September.",
+      "year": 2026,
+      "art": "The game's official Roblox icon: a blocky avatar hoisting a giant golden egg next to a snarling robot jaguar."
+    },
+    {
+      "id": "black-cat-clapping",
+      "name": "Black Cat Clapping",
+      "rarity": "RARE",
+      "caption": "Wow. Great job. Really.",
+      "flavor": "Sept 2026: an AI black cat with human hands slowly applauds. Green-screened everywhere.",
+      "year": 2026,
+      "art": "Frame of the AI black cat grinning with human teeth and clapping its human hands on a tiled floor (Know Your Meme's main image)."
+    },
+    {
+      "id": "verity",
+      "name": "Verity",
+      "rarity": "EPIC",
+      "caption": "It's me, it's Verity!",
+      "flavor": "May 2026: a Minecraft horror series made Gen Alpha yell 'Verity!' at every smiley face.",
+      "year": 2026,
+      "art": "Screenshot of Verity, the round yellow smiley, floating over Minecraft grass in ThatMob's series (Know Your Meme's main image)."
+    },
+    {
+      "id": "ai-rumpelstiltskin",
+      "name": "AI Rumpelstiltskin",
+      "rarity": "LEGENDARY",
+      "caption": "Tip-toein' in my Jordans",
+      "flavor": "Aug 2026: an AI 'lost 80s film' imp dances in a barn. Set to Riff Raff, it tip-toed viral.",
+      "year": 2026,
+      "art": "Frame of the AI Rumpelstiltskin imp in a velvet tailcoat mid tip-toe dance in a hay barn (NBC News screenshot of the clip)."
+    },
+    {
+      "id": "jimothy",
+      "name": "Jimothy",
+      "rarity": "BRAINROT",
+      "caption": "Praise Jimothy!",
+      "flavor": "July 14, 2026: a round little Seattle raccoon waddled across a backyard into history.",
+      "year": 2026,
+      "art": "Frame from the original July 2026 video of Jimothy the round raccoon on a backyard lawn by a tree (Know Your Meme's main image)."
+    }
+  ]
+}

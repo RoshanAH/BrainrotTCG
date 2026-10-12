@@ -4,6 +4,7 @@ import CardViewerModal from '../cards/CardViewerModal';
 import type { CardWithMeta } from '../cards/Card';
 import { scoreCards } from '../../data/cards';
 import { hydrateCard } from '../../utils/migrations';
+import { modifierLabel, modifierThumb } from '../../game/modifiers';
 import '../../styles/PackCardViewer.css';
 
 export type PackDisplayMode = 'carousel' | 'grid';
@@ -70,12 +71,13 @@ const PackCardViewer = ({
                         <button
                             type="button"
                             key={card.uniqueId || index}
-                            className={getCardClasses(card)}
-                            style={displayMode === 'carousel' ? { '--offset': offset } as React.CSSProperties : undefined}
+                            className={`${getCardClasses(card)} ${modifierThumb(card).className}`}
+                            style={{ ...(displayMode === 'carousel' ? { '--offset': offset } : {}), ...modifierThumb(card).style } as React.CSSProperties}
                             onClick={() => handleCardClick(card)}
-                            aria-label={`${card.name}${card.isHolo ? ' (holo)' : ''}`}
+                            aria-label={`${card.name}${modifierLabel(card) ? ` (${modifierLabel(card)})` : ''}`}
                         >
                             <img src={card.image} alt="" />
+                            {modifierLabel(card, false) && <span className="mod-label">{modifierLabel(card, false)}</span>}
                         </button>
                     );
                 })}

@@ -1,6 +1,6 @@
 {
   "id": "right-now",
-  "version": 1,
+  "version": 2,
   "name": "Summer of Slop",
   "era": "Jul–Oct 2026",
   "tagline": "AI bears, canal sharks & one round raccoon",
@@ -20,6 +20,7 @@
     "BRAINROT": 50
   },
   "holoOdds": 500,
+  "modifiers": 1,
   "cards": [
     {
       "id": "pirate-gaster",

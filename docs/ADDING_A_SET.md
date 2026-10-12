@@ -28,6 +28,7 @@ Rules (see "Real images only" in `docs/ART_STYLE.md`):
   "packSize": 5,
   "odds": { "COMMON": 5000, "UNCOMMON": 2500, "RARE": 1500, "EPIC": 700, "LEGENDARY": 250, "BRAINROT": 50 },
   "holoOdds": 500,
+  "modifiers": 1,
   "cards": [
     {
       "id": "kebab-case-id",
@@ -43,6 +44,9 @@ Rules (see "Real images only" in `docs/ART_STYLE.md`):
 ```
 
 - Odds are integer weights out of 10,000; `holoOdds` is also out of 10,000.
+- `"modifiers": 1` gives every card a chance at a finish (Silver, Gold, Platinum, Diamond) and a
+  misprint, on top of holo (spec section 5.4). New sets should have it. It's part of the set's
+  version: adding it to a released set means a new version, like any change to odds.
 - `draft: true` hides the set unless a player turns on **Settings → Preview upcoming sets**.
   Remove it when the art is final.
 

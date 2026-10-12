@@ -93,7 +93,7 @@ const CardRevealUI = ({ currentCard, currentIndex, totalCards, hasMovedMouse, on
       </div>
 
       <div className="reveal-rarity" aria-live="polite">
-        {revealed && <RarityBadge rarity={currentCard.rarity} isHolo={currentCard.isHolo} />}
+        {revealed && <RarityBadge rarity={currentCard.rarity} isHolo={currentCard.isHolo} finish={currentCard.finish} misprint={currentCard.misprint} />}
         {revealed && currentCard.isNew && <span className="reveal-new">New</span>}
       </div>
 

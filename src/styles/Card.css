@@ -285,3 +285,95 @@
         max-height: 450px;
     }
 }
+/* Card modifiers (game/modifiers.ts): a metallic frame per finish, a misprinted image, and a sticker. */
+.card-front[class*='finish-']::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    padding: clamp(4px, 2.2cqw, 9px);
+    border-radius: 8px;
+    background: var(--finish-frame);
+    background-size: 220% 220%;
+    pointer-events: none;
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+    animation: finish-sheen 3.5s ease-in-out infinite alternate;
+}
+
+.card-front.finish-silver {
+    --finish-frame: linear-gradient(130deg, #f4f7fa, #8e98a2 28%, #ffffff 48%, #7f8992 70%, #e3e8ec);
+}
+
+.card-front.finish-gold {
+    --finish-frame: linear-gradient(130deg, #fff3c4, #c8961e 28%, #ffeaa0 48%, #a5700c 70%, #ffd76a);
+}
+
+.card-front.finish-platinum {
+    --finish-frame: linear-gradient(130deg, #eefaff, #7fb4cc 28%, #ffffff 48%, #6c9fb8 70%, #d6f3ff);
+    box-shadow: 0 0 18px rgba(168, 230, 255, 0.45);
+}
+
+.card-front.finish-diamond {
+    --finish-frame: linear-gradient(130deg, #b9f2ff, #ffffff 20%, #c9b6ff 40%, #ffffff 60%, #7ee7ff 80%, #ffd6f5);
+    box-shadow: 0 0 26px rgba(201, 182, 255, 0.65), 0 0 60px rgba(126, 231, 255, 0.35);
+}
+
+@keyframes finish-sheen {
+    from {
+        background-position: 0% 0%;
+    }
+
+    to {
+        background-position: 100% 100%;
+    }
+}
+
+/* A misprint: the colour plates landed off register. */
+.card-front.misprint .card-full-image {
+    filter: drop-shadow(4px 0 0 rgba(255, 0, 90, 0.55)) drop-shadow(-4px 0 0 rgba(0, 230, 255, 0.55));
+    transform: rotate(-1.4deg) scale(1.03) translate(1.5%, -1%);
+}
+
+.modifier-sticker {
+    position: absolute;
+    bottom: 6%;
+    left: 50%;
+    z-index: 3;
+    max-width: 90%;
+    padding: 0.2em 0.6em;
+    border-radius: 3px;
+    background: rgba(18, 17, 20, 0.88);
+    color: #fff;
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.4);
+    font-family: var(--font-body);
+    font-size: clamp(10px, 3.2cqw, 15px);
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    transform: translateX(-50%);
+}
+
+.finish-gold .modifier-sticker {
+    color: #ffcf4a;
+}
+
+.finish-silver .modifier-sticker {
+    color: #e3e8ec;
+}
+
+.finish-platinum .modifier-sticker {
+    color: #a8e6ff;
+}
+
+.finish-diamond .modifier-sticker {
+    color: #e2d6ff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .card-front[class*='finish-']::after {
+        animation: none;
+    }
+}

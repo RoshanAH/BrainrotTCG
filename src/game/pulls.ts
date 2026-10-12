@@ -9,6 +9,7 @@ import {
   setKey,
   signProof,
   verifyProof,
+  type Finish,
   type PackScore,
   type Rarity,
   type SetDefinition,
@@ -37,11 +38,11 @@ export interface OpenedPack extends PullRef {
   openedAt: number;
 }
 
-export const toCardsWithMeta = (pulled: { setId: string; cardId: string; isHolo: boolean }[]): CardWithMeta[] =>
+export const toCardsWithMeta = (pulled: { setId: string; cardId: string; isHolo: boolean; finish?: Finish | null; misprint?: boolean }[]): CardWithMeta[] =>
   pulled.map((p) => {
     const card: Card | undefined = getCard(`${p.setId}/${p.cardId}`);
     if (!card) throw new Error(`Unknown card ${p.setId}/${p.cardId}`);
-    return { ...card, uniqueId: Math.random(), isRevealed: false, isHolo: p.isHolo };
+    return { ...card, uniqueId: Math.random(), isRevealed: false, isHolo: p.isHolo, ...(p.finish !== undefined ? { finish: p.finish, misprint: !!p.misprint } : {}) };
   });
 
 /** Mine the next pack's ticket in the background. */

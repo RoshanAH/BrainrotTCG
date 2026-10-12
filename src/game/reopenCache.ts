@@ -4,6 +4,7 @@
  * derived itself, so trusting it is trusting this device.
  */
 import type { PulledCard, SetDefinition } from '../engine';
+import { decodeCard, encodeCard, modifiersFor } from './cardCode';
 
 const KEY = 'brainrot-reopened-v1';
 const MAX_ENTRIES = 5000;
@@ -41,11 +42,11 @@ const keyOf = (set: SetDefinition, publicKeyHex: string, nonce: number) => `${se
 export const getReopened = (set: SetDefinition, publicKeyHex: string, nonce: number): PulledCard[] | null => {
   const stored = load().get(keyOf(set, publicKeyHex, nonce));
   if (!stored) return null;
-  const cards = stored.split(',').map((c, slot) => {
-    const cardId = c.replace(/\*$/, '');
+  const cards = stored.split(',').map((text, slot) => {
+    const c = decodeCard(text);
     // This exact version's rarity: a later version may change it (spec section 12).
-    const rarity = set.cards.find((card) => card.id === cardId)?.rarity;
-    return rarity ? { setId: set.id, cardId, rarity, isHolo: c.endsWith('*'), slot } : null;
+    const rarity = set.cards.find((card) => card.id === c.id)?.rarity;
+    return rarity ? { setId: set.id, cardId: c.id, rarity, isHolo: c.holo, ...modifiersFor(c, set.modifiers === 1), slot } : null;
   });
   return cards.every((c) => c) ? (cards as PulledCard[]) : null;
 };
@@ -54,7 +55,7 @@ export const putReopened = (set: SetDefinition, publicKeyHex: string, nonce: num
   const map = load();
   const key = keyOf(set, publicKeyHex, nonce);
   map.delete(key); // re-insert as newest
-  map.set(key, cards.map((c) => c.cardId + (c.isHolo ? '*' : '')).join(','));
+  map.set(key, cards.map((c) => encodeCard({ id: c.cardId, holo: c.isHolo, finish: c.finish, misprint: c.misprint })).join(','));
   dirty = true;
   flushTimer ??= setTimeout(flush, 1000);
 };

@@ -6,6 +6,22 @@ export const RARITIES_RAREST_FIRST: readonly Rarity[] = ['BRAINROT', 'LEGENDARY'
 /** Odds are integer weights out of this total (basis points), so pack generation never touches floats. */
 export const ODDS_TOTAL = 10_000;
 
+/** A card's finish, on top of its rarity and holo (sets with modifiers only). */
+export type Finish = 'SILVER' | 'GOLD' | 'PLATINUM' | 'DIAMOND';
+
+/** Rarest first. This order is part of the pack-generation spec; never reorder. */
+export const FINISHES_RAREST_FIRST: readonly Finish[] = ['DIAMOND', 'PLATINUM', 'GOLD', 'SILVER'];
+
+/**
+ * Modifier table 1 (spec section 5.4), for sets with `"modifiers": 1`: each card also rolls a finish
+ * (odds out of ODDS_TOTAL; the rest have none) and whether it's a misprint. A released table never
+ * changes; different odds would be table 2.
+ */
+export const MODIFIERS_V1 = {
+  finishOdds: { DIAMOND: 10, PLATINUM: 50, GOLD: 250, SILVER: 1000 } as Readonly<Record<Finish, number>>,
+  misprintOdds: 50,
+} as const;
+
 export interface CardDefinition {
   /** Stable slug, unique within the set. Never rename a released card. */
   id: string;
@@ -40,6 +56,8 @@ export interface SetDefinition {
   odds: Record<Rarity, number>;
   /** Chance of holo per card, out of ODDS_TOTAL. */
   holoOdds: number;
+  /** Modifier table: 1 = every card also rolls a finish and a misprint (MODIFIERS_V1). Absent = none. */
+  modifiers?: 1;
   /** Order matters: it is part of pack generation. */
   cards: CardDefinition[];
 }
@@ -52,6 +70,9 @@ export interface PulledCard {
   cardId: string;
   rarity: Rarity;
   isHolo: boolean;
+  /** Sets with modifiers only: the card's finish (null for none) and whether it's a misprint. */
+  finish?: Finish | null;
+  misprint?: boolean;
   /** Position in the pack (0-based). */
   slot: number;
 }
@@ -70,6 +91,7 @@ export const validateSet = (input: unknown): SetDefinition => {
   if (!Number.isInteger(set.packSize) || set.packSize < 1 || set.packSize > 15) fail('packSize must be 1..15');
   if (set.archivedAt !== undefined && !/^\d{4}-\d{2}-\d{2}$/.test(set.archivedAt)) fail('archivedAt must be an ISO date (YYYY-MM-DD)');
   if (!Number.isInteger(set.holoOdds) || set.holoOdds < 0 || set.holoOdds > ODDS_TOTAL) fail('holoOdds out of range');
+  if (set.modifiers !== undefined && set.modifiers !== 1) fail('modifiers must be 1 (the only modifier table so far) or absent');
   const total = RARITIES_RAREST_FIRST.reduce((sum, r) => {
     const w = set.odds?.[r];
     if (!Number.isInteger(w) || w < 0) fail(`odds.${r} must be a non-negative integer`);
