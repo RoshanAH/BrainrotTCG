@@ -5,15 +5,19 @@ import './styles/index.css'
 import App from './App'
 import { runMigrations } from './utils/migrations'
 import { migratePullLog } from './game/history'
+import { takeMovedSave } from './game/move'
 
-runMigrations()
-migratePullLog()
+// A save handed over by the site's old address goes in before anything reads storage.
+takeMovedSave().finally(() => {
+  runMigrations()
+  migratePullLog()
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    {/* Respect the OS "reduce motion" setting for every framer-motion animation. */}
-    <MotionConfig reducedMotion="user">
-      <App />
-    </MotionConfig>
-  </StrictMode>,
-)
+  createRoot(document.getElementById('root')!).render(
+    <StrictMode>
+      {/* Respect the OS "reduce motion" setting for every framer-motion animation. */}
+      <MotionConfig reducedMotion="user">
+        <App />
+      </MotionConfig>
+    </StrictMode>,
+  )
+})
