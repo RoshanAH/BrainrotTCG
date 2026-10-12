@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import type { SetDefinition } from '../../engine';
+import { isNewSet } from '../../content/sets';
 import type { CollectionItem } from '../../types';
 import '../../styles/Sets.css';
 
@@ -47,6 +48,7 @@ const SetPicker = ({ sets, selectedId, onSelect, collection, disabled = false }:
               <span className="set-chip-era">
                 {set.era}
                 {set.draft && <span className="set-chip-draft"> · preview</span>}
+                {isNewSet(set) && <span className="set-chip-new">New</span>}
               </span>
               <span className="set-chip-name">{set.name}</span>
               <span className="set-chip-progress" aria-label={`${owned} of ${set.cards.length} collected`}>

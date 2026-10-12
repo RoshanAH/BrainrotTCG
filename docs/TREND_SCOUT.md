@@ -1,6 +1,6 @@
 # Trend scout
 
-A weekly agent run that finds what's actually trending, so the "Right Now" set stays current. It
+A weekly agent run that finds what's actually trending, so the newest set stays current. It
 posts its findings to the **Trend scout** issue, and once a month it drafts the next drop as a PR.
 
 ## Why not just scroll TikTok?
@@ -45,9 +45,10 @@ images only") and mark each candidate as new or already in a set.
 ## Outputs
 
 - **Weekly:** a comment on the **Trend scout** issue: top candidates (name, what it is, dates,
-  platforms, regions, evidence links, art fit, score), what's cooling in the current Right Now set, and
+  platforms, regions, evidence links, art fit, score), what's cooling in the newest set, and
   answers to any links people posted.
 - **Monthly** (first run after KYM's Meme of the Month winner, around the 2nd): a draft PR with the next
-  drop, made with the `new-set` skill. Each drop is a new set with id `drop-YYYY-MM`, named
-  **Right Now**; the previous drop is renamed to its window (e.g. "Summer 2026"). Card names can change
+  drop, made with the `new-set` skill. Each drop is a new set with id `drop-YYYY-MM` and a
+  permanent name that fits its window and theme (like "Summer of Slop"), never "Right Now" or "Latest":
+  shared pulls and the Hall of Fame show the name forever. The app badges the newest set "New" on its own. Card names can change
   freely; ids, rarities and order can't. A person reviews tone, IP and art before it merges.

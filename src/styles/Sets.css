@@ -115,6 +115,18 @@
   color: var(--warning);
 }
 
+.set-chip-new {
+  margin-left: var(--space-2);
+  padding: 1px 6px;
+  border-radius: var(--radius-pill);
+  background: var(--set-a);
+  color: #12002a;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  vertical-align: 1px;
+}
+
 /* Focus mode: the era can't change mid-pack, so the picker steps aside. */
 .app.is-focus .set-picker {
   display: none;

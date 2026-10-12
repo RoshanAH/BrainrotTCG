@@ -33,6 +33,15 @@ export const isOpenable = (set: SetDefinition): boolean => !set.draft && !set.ar
 /** The pack new players land on: the newest openable set. */
 export const DEFAULT_SET_ID = [...SETS].reverse().find(isOpenable)!.id;
 
+const NEW_FOR_DAYS = 45;
+
+/**
+ * The newest drop gets a "New" badge for a while. Sets never have "now" in their name (it goes
+ * stale the day the next one ships); newness is worked out here from the release date instead.
+ */
+export const isNewSet = (set: SetDefinition, now = Date.now()): boolean =>
+  set.id === DEFAULT_SET_ID && now - Date.parse(set.releasedAt) < NEW_FOR_DAYS * 24 * 60 * 60 * 1000;
+
 export const getSet = (id: string, version: number): SetDefinition | undefined => byKey.get(`${id}@${version}`);
 
 export const getLatestSet = (id: string): SetDefinition | undefined => SETS.find((s) => s.id === id);
