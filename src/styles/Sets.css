@@ -88,6 +88,32 @@
   color: var(--warning);
 }
 
+/* A finished set: "Complete" (every card) or "Master" (every card as a holo). Also on profiles. */
+.set-badge {
+  display: inline-block;
+  margin-left: var(--space-2);
+  padding: 0 5px;
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  color: var(--text);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 1.5;
+  text-transform: uppercase;
+  vertical-align: 1px;
+}
+
+.profile-set-count .set-badge {
+  margin-left: 0;
+}
+
+.set-badge--master {
+  border-color: transparent;
+  background: var(--foil);
+  color: var(--brand-ink);
+}
+
 .set-chip-new {
   margin-left: var(--space-2);
   padding: 0 5px;

@@ -64,7 +64,8 @@ src/game/          Browser glue around the engine.
   player.ts          the local player key, name and ticket counter (localStorage)
   ticketMiner.ts     mines tickets in workers/ticket.worker.ts, pre-mining the next pack
   pulls.ts           openPack(), proofFor(), pullUrl(), checkPull()
-  share.ts, bragImage.ts   brag text, Hall of Fame submit, 9:16 poster with QR
+  share.ts, bragImage.ts   brag text, Hall of Fame submit, 9:16 pull poster and player card with QR
+  progression.ts     titles, card backs, pack foils, collection milestones, set completion
   shareActions.ts    copy the link or image (the system share sheet only on phones)
   previewLinks.ts    link previews: shared links go through a static page per hand and its cards
   hallOfFameList.ts  the published Hall of Fame list, loaded once per visit
@@ -218,6 +219,21 @@ Speed, for a profile of N packs (each pack is one ~0.1 s ticket):
 The game records every pack the moment it's derived (`src/game/history.ts`), and signs profiles from
 that history, so sharing one is instant. Levels come from the packs alone (spec section 11.3), so a
 level is exactly as trustworthy as the packs.
+
+### Progression
+
+Nothing can change what a pack holds (any luck bonus would let a script skip ahead, since every
+ticket costs the same), so progression is everything else, worked out from the packs
+(`src/game/progression.ts`), which makes it as checkable on someone else's profile as their level:
+
+- **Levels** unlock a title (shown next to the level), card backs and pack foils (cosmetic, picked
+  under Profile → Level rewards; applied as `data-card-back` / `data-pack-foil` on `<html>`).
+- **Collection score**: the points of every card pulled, holos at holo points, with named milestones
+  (Bronze 1,000 up to Brainrot 2,000,000).
+- **Sets**: each set is *Complete* with every card and *Master* with every card as a holo, shown on
+  the set picker and profiles, with an achievement for each.
+- **Player card** (`src/game/playerCard.ts`): a 9:16 image of all this plus the best pull, with a QR
+  code for the profile link.
 
 ## Invariants (CI enforces these)
 

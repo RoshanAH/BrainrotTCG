@@ -21,6 +21,8 @@ import type { OpenedPack } from './game/pulls';
 import { importPlayer } from './game/player';
 import { getStoredData } from './utils/storage';
 import { musicLevel, readSettings } from './utils/settings';
+import { CARD_BACKS, PACK_FOILS, usable } from './game/progression';
+import { myStats } from './game/profiles';
 import { CURRENT_DATA_VERSION, hydrateCollection, setDataVersion } from './utils/migrations';
 import { STORAGE_KEYS } from './constants';
 import {
@@ -102,6 +104,15 @@ function App() {
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Level rewards in use (game/progression.ts), checked against the level this save has reached.
+  // Re-read after every pack (myStats reads the pack history, which each pack adds to).
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const level = useMemo(() => myStats().level, [stats.packsOpened]);
+  useEffect(() => {
+    document.documentElement.dataset.cardBack = usable(CARD_BACKS, settings.cardBack, level);
+    document.documentElement.dataset.packFoil = usable(PACK_FOILS, settings.packFoil, level);
+  }, [settings.cardBack, settings.packFoil, level]);
 
   // Follow the music slider (0 is off)
   useEffect(() => {
@@ -429,6 +440,8 @@ function App() {
       {isProfileOpen && (
         <MyProfilePage
           stats={stats}
+          settings={settings}
+          onSettingsChange={handleSettingsChange}
           onClose={() => setIsProfileOpen(false)}
           onSharePull={(entry, cards) =>
             setShareTarget({

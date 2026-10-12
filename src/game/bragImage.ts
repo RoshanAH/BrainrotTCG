@@ -275,3 +275,142 @@ export const renderCardPoster = async (input: CardPosterInput): Promise<Blob> =>
   });
   return toPng(canvas);
 };
+
+export interface ProfilePosterInput {
+  playerName: string;
+  fingerprint: string;
+  level: number;
+  title: string;
+  /** XP now, and the XP where this level started and the next one starts. */
+  xp: number;
+  levelXp: number;
+  nextLevelXp: number;
+  packs: number;
+  unique: number;
+  totalCards: number;
+  holos: number;
+  bestScore: number;
+  /** Collection Brainrot Score, the milestone reached and the next one. */
+  points: number;
+  milestone?: string;
+  nextMilestone?: { name: string; points: number };
+  milestoneFloor: number;
+  /** Every set, in timeline order, with how far it's done. */
+  sets: { code: string; color?: string; have: number; size: number; done: 'complete' | 'master' | null }[];
+  best?: { cards: PosterCard[]; hand: string; score: number; setName: string };
+  /** The profile link (its QR re-checks every pack). */
+  url?: string;
+}
+
+const bar = (ctx: CanvasRenderingContext2D, x: number, y: number, w: number, fraction: number) => {
+  ctx.fillStyle = 'rgba(243, 239, 230, 0.12)';
+  roundRect(ctx, x, y, w, 14, 7);
+  ctx.fill();
+  ctx.fillStyle = YELLOW;
+  roundRect(ctx, x, y, Math.max(14, w * Math.min(1, Math.max(0, fraction))), 14, 7);
+  ctx.fill();
+};
+
+/** A player card: level and title, the numbers, set progress, the best pull, and a QR to the profile. */
+export const renderProfilePoster = async (input: ProfilePosterInput): Promise<Blob> => {
+  const { canvas, ctx } = await newCanvas();
+  drawHeader(ctx, 'Player card', '');
+  const x = 70;
+  const w = W - 140;
+  const fmt = (n: number) => n.toLocaleString('en-US');
+
+  // Name, level and title, XP to the next level.
+  ctx.textAlign = 'left';
+  ctx.fillStyle = PAPER;
+  fitFont(ctx, input.playerName, w, 96, 'normal', DISPLAY_FONT);
+  ctx.fillText(input.playerName, x, 380);
+  ctx.fillStyle = YELLOW;
+  fitFont(ctx, `Level ${input.level} · ${input.title}`, w, 52, '800', BODY_FONT);
+  ctx.fillText(`Level ${input.level} · ${input.title}`, x, 450);
+  bar(ctx, x, 482, w, (input.xp - input.levelXp) / (input.nextLevelXp - input.levelXp));
+  ctx.fillStyle = MUTED;
+  ctx.font = `600 30px ${BODY_FONT}`;
+  ctx.fillText(`${fmt(input.xp)} / ${fmt(input.nextLevelXp)} XP`, x, 540);
+
+  // Four numbers.
+  const stats: [string, string][] = [
+    [fmt(input.packs), input.packs === 1 ? 'pack' : 'packs'],
+    [`${input.unique}/${input.totalCards}`, 'cards'],
+    [fmt(input.holos), 'holo'],
+    [fmt(input.bestScore), 'best score'],
+  ];
+  stats.forEach(([value, label], i) => {
+    const cx = x + (w / 4) * i;
+    ctx.fillStyle = PAPER;
+    fitFont(ctx, value, w / 4 - 20, 64, 'normal', DISPLAY_FONT);
+    ctx.fillText(value, cx, 650);
+    ctx.fillStyle = MUTED;
+    ctx.font = `600 30px ${BODY_FONT}`;
+    ctx.fillText(label, cx, 696);
+  });
+
+  // Collection score and its milestone.
+  ctx.fillStyle = PAPER;
+  ctx.font = `800 36px ${BODY_FONT}`;
+  ctx.fillText('Collection score', x, 790);
+  ctx.textAlign = 'right';
+  ctx.fillStyle = YELLOW;
+  ctx.font = `48px ${DISPLAY_FONT}`;
+  ctx.fillText(input.milestone ?? '', x + w, 792);
+  bar(ctx, x, 818, w, input.nextMilestone ? (input.points - input.milestoneFloor) / (input.nextMilestone.points - input.milestoneFloor) : 1);
+  ctx.textAlign = 'left';
+  ctx.fillStyle = MUTED;
+  ctx.font = `600 30px ${BODY_FONT}`;
+  ctx.fillText(
+    `${fmt(input.points)}${input.nextMilestone ? ` / ${fmt(input.nextMilestone.points)} for ${input.nextMilestone.name}` : ''}`,
+    x,
+    876,
+  );
+
+  // Sets: each code with its progress; complete in white, mastered in foil.
+  ctx.fillStyle = PAPER;
+  ctx.font = `800 36px ${BODY_FONT}`;
+  const complete = input.sets.filter((s) => s.done).length;
+  const mastered = input.sets.filter((s) => s.done === 'master').length;
+  ctx.fillText(`Sets · ${complete} complete${mastered ? ` · ${mastered} mastered` : ''}`, x, 966);
+  const perRow = 5;
+  const cellW = w / perRow;
+  input.sets.forEach((set, i) => {
+    const cx = x + (i % perRow) * cellW;
+    const cy = 1016 + Math.floor(i / perRow) * 74;
+    ctx.fillStyle = set.done ? PAPER : MUTED;
+    ctx.font = `800 30px ${BODY_FONT}`;
+    ctx.fillText(set.code, cx, cy);
+    const codeW = ctx.measureText(set.code).width;
+    ctx.font = `600 26px ${BODY_FONT}`;
+    ctx.fillStyle = set.done === 'master' ? YELLOW : set.done ? PAPER : MUTED;
+    ctx.fillText(set.done === 'master' ? '★' : set.done ? '✓' : `${set.have}/${set.size}`, cx + codeW + 10, cy);
+    ctx.fillStyle = set.color ?? MUTED;
+    ctx.fillRect(cx, cy + 12, codeW, 4);
+  });
+
+  // The best pull.
+  if (input.best) {
+    const top = 1016 + Math.ceil(input.sets.length / perRow) * 74 + 20;
+    ctx.fillStyle = PAPER;
+    ctx.font = `800 36px ${BODY_FONT}`;
+    fitFont(ctx, `Best pull · ${input.best.hand} · ${fmt(input.best.score)}`, w, 36, '800', BODY_FONT);
+    ctx.fillText(`Best pull · ${input.best.hand} · ${fmt(input.best.score)}`, x, top);
+    const images = await Promise.all(input.best.cards.map((c) => loadImage(c.image)));
+    const cardW = Math.min(170, (1520 - top - 60) * (687 / 1024));
+    const gap = (w - cardW * 5) / 4;
+    input.best.cards.forEach((card, i) => {
+      drawCard(ctx, images[i], card, x + cardW / 2 + i * (cardW + gap), top + 40 + (cardW * 1024) / 687 / 2, cardW, 0);
+    });
+  }
+
+  drawLabel(ctx, {
+    kind: 'Verifiable profile',
+    verified: !!input.url,
+    name: input.playerName,
+    cert: `#${input.fingerprint}`,
+    hint: input.url ? 'Scan to re-check every pack.' : 'Brainrot TCG',
+    url: input.url,
+  });
+  return toPng(canvas);
+};

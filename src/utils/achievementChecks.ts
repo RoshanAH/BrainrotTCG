@@ -2,6 +2,8 @@ import { COLLECTIBLE_CARDS, cardPoints, type RarityKey } from '../data/cards';
 import type { CollectionItem, Stats, CardsByRarity, RarityCount } from '../types';
 import type { CardWithMeta } from '../components/cards/Card';
 import type { AchievementData } from '../types';
+import { isOpenable, SETS } from '../content/sets';
+import { setCompleteId, setMasterId } from '../data/achievements';
 
 type AchievementMap = Record<string, AchievementData | number>;
 
@@ -176,6 +178,13 @@ export const checkCollectionAchievements = (
   if (maxCopies >= 10) addIfNew(newAchievements, 'dupes_10', achievements);
   if (maxCopies >= 25) addIfNew(newAchievements, 'dupes_25', achievements);
   if (maxCopies >= 100) addIfNew(newAchievements, 'dupes_100', achievements);
+
+  // Each openable set: every card, then every card as a holo
+  for (const set of SETS.filter(isOpenable)) {
+    const keys = set.cards.map((c) => `${set.id}/${c.id}`);
+    if (keys.every((key) => collection[key])) addIfNew(newAchievements, setCompleteId(set.id), achievements);
+    if (keys.every((key) => (collection[key]?.holoCount ?? 0) > 0)) addIfNew(newAchievements, setMasterId(set.id), achievements);
+  }
 
   // Collection Brainrot Score milestones (10x the Buhcoin-era thresholds)
   const accountValue = getAccountValue(collection);
