@@ -32,13 +32,13 @@
       "art": "Three-lobed fidget spinner with a cheeky face on the center bearing, motion-blur arcs around it, one sweat drop. Background: bright yellow. Colors: electric blue, yellow, white, black."
     },
     {
-      "id": "ok-boomerang",
-      "name": "OK Boomerang",
+      "id": "ok-boomer",
+      "name": "OK Boomer",
       "rarity": "COMMON",
       "caption": "OK boomer",
-      "flavor": "2019's two-word comeback, now a boomerang that always comes back around.",
+      "flavor": "2019's two-word comeback, dropped mid-speech in NZ Parliament. Heckle deflected.",
       "year": 2019,
-      "art": "Wooden boomerang with a smug half-lidded face mid-spin, dotted curved flight path looping back toward it. Background: retro orange-to-pink sunset. Colors: wood tan, orange, pink, black."
+      "art": "Retro wood-panelled TV set glowing on a sideboard, a steaming mug and a folded newspaper beside it, warm 1980s living-room light, no people. Background: orange-to-pink sunset through a window. Colors: wood tan, orange, pink, cream."
     },
     {
       "id": "dancing-hot-dog",
@@ -50,38 +50,38 @@
       "art": "Hot dog in a bun with a mustard zigzag, tiny headphones, stubby arms in a disco pose, one leg kicked high. Background: pastel blue with sparkles. Colors: bun tan, sausage red, mustard yellow, sky blue."
     },
     {
-      "id": "croissant-panic",
-      "name": "Croissant Panic",
+      "id": "dropped-my-croissant",
+      "name": "Dropped My Croissant",
       "rarity": "COMMON",
-      "caption": "I COULDA DROPPED IT!!",
-      "flavor": "Vine, 2015: someone almost drops their croissant and the outrage is legendary.",
-      "year": 2015,
-      "art": "Golden croissant with stick arms hugging itself, huge shocked eyes, screaming mouth, shaking motion lines, a blurry sneaker whooshing past. Background: café pink. Colors: golden yellow, cream, pink, black."
+      "caption": "I could've dropped it!!",
+      "flavor": "Vine, 2014: one jump scare, one croissant on a plate, one legendary meltdown.",
+      "year": 2014,
+      "art": "Golden flaky croissant on a small white plate, tilted mid-wobble as if it is about to slide off, crumbs flying, motion blur, hallway corner behind it, no people. Background: warm beige hallway. Colors: golden yellow, cream, white, beige."
     },
     {
       "id": "moth-lamp",
       "name": "Moth Lamp",
       "rarity": "UNCOMMON",
       "caption": "Brother, may I have lamp",
-      "flavor": "2018: a moth's forbidden love for lamps became the internet's purest obsession.",
+      "flavor": "2018: one fuzzy moth at a window started the internet's purest obsession: lamp.",
       "year": 2018,
       "art": "Fluffy cream moth with huge round black eyes and feathery antennae hugging a glowing table lamp, little hearts floating. Background: dark navy night. Colors: cream, warm yellow, navy, black."
     },
     {
-      "id": "totally-chickens",
-      "name": "Totally Chickens",
+      "id": "all-those-chickens",
+      "name": "All Those Chickens",
       "rarity": "UNCOMMON",
       "caption": "Look at all those chickens",
-      "flavor": "2016 Vine: a confident narrator, a pond full of geese, and zero chickens.",
+      "flavor": "A Vine classic: one confident narrator, a field full of geese, and zero chickens.",
       "year": 2016,
-      "art": "Five white-and-gray geese in a row by a pond, each wearing a tiny fake paper chicken comb, side-eyeing the viewer. Background: green grass and blue pond. Colors: white, gray, orange, green, blue."
+      "art": "Huge flock of white snow geese grazing on a green suburban field, a few looking at the viewer, soft overcast evening light. Background: green grass and a row of hedges. Colors: white, gray, orange, green."
     },
     {
       "id": "mr-skeltal",
       "name": "Mr. Skeltal",
       "rarity": "UNCOMMON",
       "caption": "Doot doot",
-      "flavor": "Good bones and calcium for all: 2014's trumpet skeleton. Thank Mr. Skeltal.",
+      "flavor": "Good bones and calcium will come to you: a 1999 trumpet skull, still dooting.",
       "year": 2014,
       "art": "Grinning cartoon skeleton in a tiny top hat blowing a brass trumpet, 'doot' music notes, a milk carton at its feet. Background: purple. Colors: bone white, brass gold, purple, black."
     },
@@ -95,22 +95,22 @@
       "art": "Pink brain filled with stars and a swirling galaxy, radiating cosmic light rays, tiny smug face. Background: deep space nebula. Colors: pink, cyan, purple, white."
     },
     {
-      "id": "area-51-runner",
-      "name": "Area 51 Runner",
+      "id": "area-51-raid",
+      "name": "Area 51 Raid",
       "rarity": "RARE",
       "caption": "They can't stop all of us",
       "flavor": "2019: two million RSVP'd to storm Area 51 arms-back. A tiny crowd actually went.",
       "year": 2019,
-      "art": "Faceless runner in a tinfoil hat sprinting with both arms stretched straight back, motion lines, a generic 'KEEP OUT' sign and cacti. Background: orange desert dusk. Colors: silver, sand orange, purple sky, black."
+      "art": "Desert road leading to a closed yellow barrier gate with red stop signs and blank white warning signs, cacti and scrub, a faint UFO glow in the sky. Background: deep blue desert sky. Colors: yellow, red, sand, blue."
     },
     {
-      "id": "road-work-sign",
+      "id": "road-work-ahead",
       "name": "Road Work Ahead",
       "rarity": "EPIC",
       "caption": "I sure hope it does",
       "flavor": "2016 Vine: a driver reads a road sign and delivers the decade's greatest pun.",
       "year": 2016,
-      "art": "Orange diamond road sign with a goofy grin and tiny arms giving a thumbs-up on the road shoulder, traffic cones beside it. Background: bright blue sky. Colors: safety orange, black, asphalt gray, sky blue."
+      "art": "Blank orange diamond road-work sign on a folding stand at the edge of a sunny desert road, traffic cones beside it, seen through a car windshield. Background: bright blue sky. Colors: safety orange, black, asphalt gray, sky blue."
     },
     {
       "id": "dat-boi",
@@ -122,13 +122,13 @@
       "art": "Cheerful green frog riding a red unicycle, one webbed hand waving, big grin, pedaling motion lines. Background: sunny yellow. Colors: frog green, red, yellow, white."
     },
     {
-      "id": "such-shibe",
-      "name": "Such Shibe",
+      "id": "doge",
+      "name": "Doge",
       "rarity": "BRAINROT",
       "caption": "Much wow. Very pack.",
       "flavor": "2013's Doge: a side-eyeing Shiba plus floating thoughts. Wow. To the moon.",
       "year": 2013,
-      "art": "Tan-and-cream Shiba Inu sitting with body turned, side-eyeing the viewer with raised brows, scattered multicolor floating words ('wow', 'such', 'very'). Background: light gray. Colors: shiba orange, cream, magenta, lime, cyan."
+      "art": "Photoreal tan-and-cream Shiba Inu lying on a cream sofa, body turned, paws crossed, giving a nervous side-eye with raised brows, soft warm indoor light, no text. Background: blurry cream living room. Colors: shiba orange, cream, warm beige."
     }
   ]
 }
