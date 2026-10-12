@@ -3,7 +3,7 @@ import '../../styles/HallOfFame.css';
 import { getCard } from '../../data/cards';
 import { checkPull } from '../../game/pulls';
 import { REPO } from '../../constants';
-import { HALL_OF_FAME_MIN_SCORE } from '../../engine';
+import { HALL_OF_FAME_MIN_MULTIPLIER, HALL_OF_FAME_MIN_SCORE } from '../../engine';
 
 // Hackathon legends: screenshots from before pulls were verifiable.
 import adiImage from '../../assets/images/hall_of_fame/adi-four-of-a-kind.webp';
@@ -78,7 +78,7 @@ const HallOfFamePage = ({ onClose }: HallOfFamePageProps) => {
       .sort((a, b) => a.submittedAt.localeCompare(b.submittedAt))
       .filter((e) => {
         const key = `${e.setId}|${e.hand}`;
-        if (seen.has(key) || e.multiplier < 50) return false;
+        if (seen.has(key) || e.multiplier < HALL_OF_FAME_MIN_MULTIPLIER) return false;
         seen.add(key);
         return true;
       });
