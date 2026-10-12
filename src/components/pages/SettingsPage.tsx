@@ -3,7 +3,7 @@ import { Download, History, Upload } from 'lucide-react';
 import { STORAGE_KEYS } from '../../constants';
 import { MAX_NAME_LENGTH } from '../../engine';
 import { exportPlayer, getPlayer, renamePlayer } from '../../game/player';
-import { canBringOldSave, fetchOldSave, importSave, type MoveResult } from '../../game/move';
+import { canBringOldSave, fetchOldSave, hasProgress, importSave, type MoveResult } from '../../game/move';
 import { CARD_FLIP_SRC } from '../../constants/audio';
 import { effectsLevel } from '../../utils/settings';
 import type { Settings } from '../../types';
@@ -15,7 +15,8 @@ interface SettingsPageProps {
     settings: Settings;
     onSettingsChange: (settings: Settings) => void;
     onClose: () => void;
-    onImportSave: (data: string) => void;
+    /** Returns an error to show, or null (the page then reloads with the imported save). */
+    onImportSave: (data: string) => string | null;
 }
 
 const SettingsPage = ({ settings, onSettingsChange, onClose, onImportSave }: SettingsPageProps) => {
@@ -91,6 +92,27 @@ const SettingsPage = ({ settings, onSettingsChange, onClose, onImportSave }: Set
         fileInputRef.current?.click();
     };
 
+    /** A backup file waiting for "Replace", and what to say about it. */
+    const [pendingImport, setPendingImport] = useState<string | null>(null);
+    const [importNote, setImportNote] = useState('Load a backup file');
+
+    /** "Name, 14 packs" for a save's player and stats (as stored, or as in a backup file). */
+    const describe = (player: string | null | undefined, stats: string | null | undefined) => {
+        try {
+            const name = (JSON.parse(player ?? 'null') as { name?: string } | null)?.name;
+            const packs = (JSON.parse(stats ?? 'null') as { packsOpened?: number } | null)?.packsOpened ?? 0;
+            return `${name ? `${name}, ` : ''}${packs.toLocaleString()} pack${packs === 1 ? '' : 's'}`;
+        } catch {
+            return 'unknown';
+        }
+    };
+
+    const runImport = (content: string) => {
+        setPendingImport(null);
+        const error = onImportSave(content);
+        if (error) setImportNote(error);
+    };
+
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
@@ -98,7 +120,28 @@ const SettingsPage = ({ settings, onSettingsChange, onClose, onImportSave }: Set
         const reader = new FileReader();
         reader.onload = (event) => {
             const content = event.target?.result as string;
-            onImportSave(content);
+            let incoming: { player?: string; stats?: string } = {};
+            try {
+                incoming = JSON.parse(content);
+            } catch {
+                return setImportNote("Couldn't read that file. Is it a save exported from Settings?");
+            }
+            // Replacing real progress with someone else's (or an older) save asks first, in the page.
+            const here = localStorage.getItem('brainrot-player-v1');
+            const sameKey = (() => {
+                try {
+                    return !!incoming.player && JSON.parse(here ?? '{}').secretKey === JSON.parse(incoming.player).secretKey;
+                } catch {
+                    return false;
+                }
+            })();
+            if (!hasProgress() || (sameKey && describe(here, localStorage.getItem(STORAGE_KEYS.STATS)) === describe(incoming.player, incoming.stats))) {
+                return runImport(content);
+            }
+            setPendingImport(content);
+            setImportNote(
+                `Replace this browser's save (${describe(here, localStorage.getItem(STORAGE_KEYS.STATS))}) with the file's (${describe(incoming.player, incoming.stats)})? Yours is kept as a backup.`,
+            );
         };
         reader.readAsText(file);
 
@@ -172,14 +215,32 @@ const SettingsPage = ({ settings, onSettingsChange, onClose, onImportSave }: Set
                             <Download aria-hidden="true" /> Export
                         </button>
                     </div>
-                    <div className="settings-row">
+                    <div className={pendingImport ? 'settings-row settings-row--wrap' : 'settings-row'}>
                         <span className="settings-text">
                             <span className="settings-label">Restore</span>
-                            <span className="settings-desc">Load a backup file</span>
+                            <span className="settings-desc" role="status">{importNote}</span>
                         </span>
-                        <button type="button" className="btn btn--secondary btn--sm" onClick={handleImportClick}>
-                            <Upload aria-hidden="true" /> Import
-                        </button>
+                        {pendingImport ? (
+                            <span className="settings-actions">
+                                <button
+                                    type="button"
+                                    className="btn btn--secondary btn--sm"
+                                    onClick={() => {
+                                        setPendingImport(null);
+                                        setImportNote('Kept your save.');
+                                    }}
+                                >
+                                    Keep mine
+                                </button>
+                                <button type="button" className="btn btn--primary btn--sm" onClick={() => runImport(pendingImport)}>
+                                    Replace
+                                </button>
+                            </span>
+                        ) : (
+                            <button type="button" className="btn btn--secondary btn--sm" onClick={handleImportClick}>
+                                <Upload aria-hidden="true" /> Import
+                            </button>
+                        )}
                         <input ref={fileInputRef} type="file" accept=".txt,.json" onChange={handleFileChange} hidden />
                     </div>
                     {canBringOldSave() && (

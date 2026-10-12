@@ -46,7 +46,7 @@ const parse = (key: string): unknown => {
  * Real progress in this browser: a pack opened, cards, achievements. Just visiting (say, to look at
  * a friend's pull) makes a player key with no packs, and that's not a save worth asking about.
  */
-const hasProgress = (): boolean => {
+export const hasProgress = (): boolean => {
   if (((parse(PLAYER_KEY) as { nextNonce?: number } | null)?.nextNonce ?? 0) > 0) return true;
   if (((parse('brainrot-stats-v1') as { packsOpened?: number } | null)?.packsOpened ?? 0) > 0) return true;
   return ['brainrot-found-collection-v1', 'brainrot-history-v1', 'brainrot-achievements-v1'].some((k) => {
@@ -142,4 +142,14 @@ export const fetchOldSave = (): Promise<{ save: unknown } | 'none' | 'blocked' |
     };
     window.addEventListener('message', onMessage);
   });
+};
+
+/** Keep this browser's save under `backupKey` before something replaces it (a move, an imported file). */
+export const backUpSave = (backupKey: string) => {
+  const backup = Object.fromEntries(brainrotKeys().filter((k) => !k.startsWith('brainrot-before-')).map((k) => [k, localStorage.getItem(k)]));
+  try {
+    localStorage.setItem(backupKey, JSON.stringify(backup));
+  } catch {
+    // Out of space: the import still asked first.
+  }
 };

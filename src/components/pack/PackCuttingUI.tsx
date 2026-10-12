@@ -12,6 +12,10 @@ interface PackCuttingUIProps {
   error: string | null;
   isCutting: boolean;
   isPackCut: boolean;
+  /** The pack is torn but its ticket is still being worked out (a slow phone). */
+  waiting?: boolean;
+  /** A press just missed the tear line: show where to swipe. */
+  nudging?: boolean;
   cutPoints: CutPoint[];
   sparks: Spark[];
 }
@@ -23,17 +27,20 @@ const PackCuttingUI = ({
   error,
   isCutting,
   isPackCut,
+  waiting = false,
+  nudging = false,
   cutPoints,
   sparks,
 }: PackCuttingUIProps) => {
   const touch = useCoarsePointer();
+
   return (
     <>
       <div className="pack-shell-wrap">
         {/* Also a button for the keyboard: Enter or Space opens it, same as the swipe. */}
         <div
           ref={packRef}
-          className={`pack-shell ${isCutting ? 'is-cutting' : ''} ${isPackCut ? 'is-cut' : ''}`}
+          className={`pack-shell ${isCutting ? 'is-cutting' : ''} ${isPackCut ? 'is-cut' : ''} ${nudging && !isCutting ? 'is-nudged' : ''}`}
           style={{ '--pack-mask': `url("${packDesign}")` } as React.CSSProperties}
           role="button"
           tabIndex={isPackCut ? -1 : 0}
@@ -65,7 +72,9 @@ const PackCuttingUI = ({
           <div className="tear-guide" />
           <div className="swipe-hint">
             <MoveHorizontal className="swipe-hint-icon" aria-hidden="true" />
-            <span className="swipe-hint-text">{touch ? 'Swipe across to open' : 'Drag across to open'}</span>
+            <span className="swipe-hint-text">
+              {nudging ? (touch ? 'Swipe along the dotted line' : 'Drag along the dotted line') : touch ? 'Swipe across to open' : 'Drag across to open'}
+            </span>
           </div>
           {cutPoints.length > 1 && (
             <svg className="cut-line-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
@@ -79,6 +88,11 @@ const PackCuttingUI = ({
         {error && (
           <p className="pack-hint is-error" role="alert">
             {error}
+          </p>
+        )}
+        {waiting && !error && (
+          <p className="pack-hint is-waiting" role="status">
+            Opening…
           </p>
         )}
       </div>

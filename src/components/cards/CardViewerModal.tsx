@@ -32,7 +32,8 @@ const CardViewerModal = ({ card, versions, onClose, canShare = false }: CardView
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    // A real mouse only (phones send a mousemove with every tap, and touchmove while scrolling).
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
     const onMove = (clientX: number, clientY: number) => {
       const rect = cardRef.current?.getBoundingClientRect();
       if (!rect) return;
@@ -41,13 +42,8 @@ const CardViewerModal = ({ card, versions, onClose, canShare = false }: CardView
       setTilt({ x: -py * MAX_TILT, y: px * MAX_TILT });
     };
     const mouse = (e: MouseEvent) => onMove(e.clientX, e.clientY);
-    const touch = (e: TouchEvent) => e.touches[0] && onMove(e.touches[0].clientX, e.touches[0].clientY);
     window.addEventListener('mousemove', mouse);
-    window.addEventListener('touchmove', touch, { passive: true });
-    return () => {
-      window.removeEventListener('mousemove', mouse);
-      window.removeEventListener('touchmove', touch);
-    };
+    return () => window.removeEventListener('mousemove', mouse);
   }, []);
 
   return (

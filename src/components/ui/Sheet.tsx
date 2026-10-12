@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, type ReactNode } from 'react';
+import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import '../../styles/Sheet.css';
@@ -32,6 +32,9 @@ const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), selec
 const Sheet = ({ title, onClose, children, size = 'md', subtitle, footer, bare = false, className = '' }: SheetProps) => {
   const id = useId();
   const panelRef = useRef<HTMLDivElement>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
+  /** A body that scrolls but has nothing to tab to (a guide, an empty list) is itself a tab stop. */
+  const [bodyFocusable, setBodyFocusable] = useState(false);
   const onCloseRef = useRef(onClose);
   useEffect(() => {
     onCloseRef.current = onClose;
@@ -50,6 +53,21 @@ const Sheet = ({ title, onClose, children, size = 'md', subtitle, footer, bare =
         event.stopPropagation();
         onCloseRef.current();
         return;
+      }
+      // With the panel itself focused (as it is on open), the keys that scroll a page scroll the body.
+      const body = bodyRef.current;
+      if (body && document.activeElement === panelRef.current) {
+        const page = body.clientHeight * 0.9;
+        const by: Record<string, number> = { ArrowDown: 40, ArrowUp: -40, PageDown: page, PageUp: -page, ' ': event.shiftKey ? -page : page };
+        if (event.key in by) {
+          event.preventDefault();
+          body.scrollBy({ top: by[event.key] });
+          return;
+        } else if (event.key === 'Home' || event.key === 'End') {
+          event.preventDefault();
+          body.scrollTo({ top: event.key === 'Home' ? 0 : body.scrollHeight });
+          return;
+        }
       }
       if (event.key !== 'Tab' || !panelRef.current) return;
       const items = [...panelRef.current.querySelectorAll<HTMLElement>(FOCUSABLE)].filter((el) => el.offsetParent !== null);
@@ -77,6 +95,16 @@ const Sheet = ({ title, onClose, children, size = 'md', subtitle, footer, bare =
     };
   }, [id]);
 
+  useEffect(() => {
+    const body = bodyRef.current;
+    if (!body) return;
+    const check = () => setBodyFocusable(body.scrollHeight > body.clientHeight + 1 && !body.querySelector(FOCUSABLE));
+    check();
+    const observer = new ResizeObserver(check);
+    observer.observe(body);
+    return () => observer.disconnect();
+  }, [children]);
+
   const titleId = `${id}-title`;
   return createPortal(
     <div className={`sheet-root sheet-root--${size} ${bare ? 'sheet-root--bare' : ''}`}>
@@ -100,7 +128,9 @@ const Sheet = ({ title, onClose, children, size = 'md', subtitle, footer, bare =
             <X strokeWidth={2.4} />
           </button>
         </div>
-        <div className="sheet-body">{children}</div>
+        <div ref={bodyRef} className="sheet-body" tabIndex={bodyFocusable ? 0 : undefined}>
+          {children}
+        </div>
         {footer && <footer className="sheet-footer">{footer}</footer>}
       </div>
     </div>,

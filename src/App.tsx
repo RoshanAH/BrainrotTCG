@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import './styles/index.css';
 import PackOpener from './components/pack/PackOpener';
-import AchievementToasts from './components/achievements/AchievementToasts';
+import AchievementToasts, { type ToastItem } from './components/achievements/AchievementToasts';
 import AppNav, { type NavTarget } from './components/ui/AppNav';
 import MyProfilePage from './components/profile/MyProfilePage';
 import ProfileViewerPage from './components/profile/ProfileViewerPage';
@@ -14,15 +14,16 @@ import ShareSheet, { type ShareTarget } from './components/share/ShareSheet';
 import Sheet from './components/ui/Sheet';
 import PullViewerPage from './components/share/PullViewerPage';
 import { cardPoints, scoreCards } from './data/cards';
-import { getAchievementById, Achievement } from './data/achievements';
+import { getAchievementById } from './data/achievements';
 import { CardWithMeta } from './components/cards/Card';
 import { DEFAULT_SET_ID, SETS } from './content/sets';
 import { extractProfile, extractProof } from './engine';
 import { clearPendingPack, takePendingPack, type OpenedPack, type PullRef } from './game/pulls';
 import { importPlayer } from './game/player';
+import { backUpSave, hasProgress } from './game/move';
 import { getStoredData } from './utils/storage';
 import { musicLevel, readSettings } from './utils/settings';
-import { CARD_BACKS, PACK_FOILS, usable } from './game/progression';
+import { CARD_BACKS, PACK_FOILS, TITLES, nextReward, usable } from './game/progression';
 import { myStats } from './game/profiles';
 import { getHistory } from './game/history';
 import { CURRENT_DATA_VERSION, hydrateCollection, setDataVersion } from './utils/migrations';
@@ -63,7 +64,7 @@ function App() {
   const [isHallOfFameOpen, setIsHallOfFameOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [notificationQueue, setNotificationQueue] = useState<Achievement[]>([]);
+  const [notificationQueue, setNotificationQueue] = useState<ToastItem[]>([]);
   const [shareTarget, setShareTarget] = useState<ShareTarget | null>(null);
   const [packBusy, setPackBusy] = useState(false);
   const [viewProof, setViewProof] = useState<string | null>(() => extractProof(window.location.hash));
@@ -89,7 +90,9 @@ function App() {
     return () => window.removeEventListener('hashchange', onHashChange);
   }, []);
   const closePullViewer = useCallback(() => {
-    history.replaceState(null, '', window.location.pathname + window.location.search);
+    // Shared links arrive through a preview page (/p/<id>), which is only there for chat apps.
+    const path = /\/p\/[^/]+$/.test(window.location.pathname) ? import.meta.env.BASE_URL : window.location.pathname + window.location.search;
+    history.replaceState(null, '', path);
     setViewProof(null);
     setViewProfile(null);
     setBrokenLink(false);
@@ -97,18 +100,28 @@ function App() {
 
   const bgMusicRef = useRef<HTMLAudioElement | null>(null);
 
-  // Play background music on page load
+  // Background music. Browsers (phones always) only allow sound after a tap or a key, so it starts on
+  // the first one if it couldn't start on load; and it isn't downloaded until it plays, so it doesn't
+  // hold up the pack art on a slow connection.
   useEffect(() => {
-    const bgMusic = new Audio(swedenSrc);
+    const bgMusic = new Audio();
+    bgMusic.preload = 'none';
+    bgMusic.src = swedenSrc;
     bgMusic.volume = musicLevel(settings.musicVolume);
     bgMusic.loop = true;
     bgMusicRef.current = bgMusic;
 
+    const events = ['pointerdown', 'keydown'] as const;
+    const startOnInput = () => {
+      events.forEach((e) => window.removeEventListener(e, startOnInput));
+      if (bgMusic.volume > 0 && bgMusic.paused) bgMusic.play().catch(() => { });
+    };
     if (settings.musicVolume > 0) {
-      bgMusic.play().catch(() => { });
+      bgMusic.play().catch(() => events.forEach((e) => window.addEventListener(e, startOnInput)));
     }
 
     return () => {
+      events.forEach((e) => window.removeEventListener(e, startOnInput));
       bgMusic.pause();
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -118,6 +131,30 @@ function App() {
   // Re-read after every pack (myStats reads the pack history, which each pack adds to).
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const level = useMemo(() => myStats().level, [stats.packsOpened]);
+  // A level-up says so, with what it unlocked (otherwise it only shows if you open the profile).
+  const shownLevel = useRef(level);
+  useEffect(() => {
+    const from = shownLevel.current;
+    shownLevel.current = level;
+    if (level <= from) return;
+    const unlocked = [
+      ...TITLES.filter((r) => r.level > from && r.level <= level).map((r) => `the title ${r.name}`),
+      ...CARD_BACKS.filter((r) => r.level > from && r.level <= level).map((r) => `the ${r.name} card back`),
+      ...PACK_FOILS.filter((r) => r.level > from && r.level <= level).map((r) => `the ${r.name} pack foil`),
+    ];
+    const next = nextReward(level);
+    setNotificationQueue((prev) => [
+      ...prev,
+      {
+        id: `level-${level}`,
+        kicker: 'Level up',
+        name: `Level ${level}`,
+        description: unlocked.length ? `Unlocked ${unlocked.join(', ')}. Pick it in your profile.` : next ? `Next: ${next.name} at level ${next.level}.` : 'Keep opening.',
+        opens: 'profile',
+      },
+    ]);
+  }, [level]);
+
   useEffect(() => {
     document.documentElement.dataset.cardBack = usable(CARD_BACKS, settings.cardBack, level);
     document.documentElement.dataset.packFoil = usable(PACK_FOILS, settings.packFoil, level);
@@ -215,14 +252,14 @@ function App() {
     localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(newSettings));
   }, []);
 
-  const handleImportSave = useCallback((data: string) => {
+  /** Load a backup file (Settings asks first if it would replace a different save). Returns an error to show, if any. */
+  const handleImportSave = useCallback((data: string): string | null => {
     try {
       const saveData = JSON.parse(data);
 
       // Validate save data structure
       if (!saveData.version || !saveData.exportedAt) {
-        alert('Invalid save file format');
-        return;
+        return "That file isn't a Brainrot TCG save.";
       }
 
       // Write everything, then reload: the loader runs any migrations an older save needs
@@ -230,6 +267,8 @@ function App() {
       for (const [field] of SAVE_FIELDS) {
         if (typeof saveData[field] === 'string') JSON.parse(saveData[field]); // reject corrupt files before writing anything
       }
+      // The save being replaced is kept, in case it was the wrong file.
+      if (hasProgress()) backUpSave('brainrot-before-import-v1');
       for (const [field, key] of SAVE_FIELDS) {
         if (typeof saveData[field] === 'string') localStorage.setItem(key, saveData[field]);
       }
@@ -238,10 +277,10 @@ function App() {
       }
       setDataVersion(typeof saveData.dataVersion === 'number' ? saveData.dataVersion : saveData.version === 1 ? 1 : CURRENT_DATA_VERSION);
 
-      alert('Save imported successfully!');
       window.location.reload();
+      return null;
     } catch {
-      alert('Failed to import save file. Please check the file format.');
+      return "Couldn't read that file. Is it a save exported from Settings?";
     }
   }, []);
 
@@ -456,7 +495,12 @@ function App() {
         />
       </main>
 
-      <AchievementToasts queue={notificationQueue} onDismiss={dismissNotifications} onOpen={() => setIsAchievementsOpen(true)} />
+      <AchievementToasts
+        queue={notificationQueue}
+        onDismiss={dismissNotifications}
+        onOpen={(target) => (target === 'profile' ? setIsProfileOpen(true) : setIsAchievementsOpen(true))}
+        paused={isAnyModalOpen}
+      />
 
       {/* Achievements Page */}
       {isAchievementsOpen && (

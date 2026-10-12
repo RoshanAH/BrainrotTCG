@@ -90,8 +90,29 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
     if (!isOpening) prefetchNextPack(set);
   }, [isOpening, set]);
 
-  // A pack in progress has spent its ticket, so the app must not swap sets until it's recorded.
-  useEffect(() => onBusyChange?.(isOpening), [isOpening, onBusyChange]);
+  // From the tear on, the ticket is spent: the app mustn't swap sets (or open a sheet over it) until
+  // the pack is recorded. The ticket can still be mining here on a slow phone.
+  // The summary comes after it's recorded, so the tabs and the pack switcher come back there.
+  useEffect(() => onBusyChange?.((isOpening && !showSummary) || (isPackCut && !isOpening)), [isOpening, isPackCut, showSummary, onBusyChange]);
+
+  // Mining taking a while: say so, rather than leave a torn pack sitting still.
+  const [slowOpen, setSlowOpen] = useState(false);
+  /** A press on the pack just missed the tear line, so it shows where to swipe for a moment. */
+  const [nudging, setNudging] = useState(false);
+  const nudgeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const nudge = useCallback(() => {
+    setNudging(true);
+    if (nudgeTimerRef.current) clearTimeout(nudgeTimerRef.current);
+    nudgeTimerRef.current = setTimeout(() => setNudging(false), 1800);
+  }, []);
+  useEffect(() => {
+    if (!isPackCut || isOpening) return;
+    const timer = window.setTimeout(() => setSlowOpen(true), 1200);
+    return () => {
+      window.clearTimeout(timer);
+      setSlowOpen(false);
+    };
+  }, [isPackCut, isOpening]);
 
   const handleCutComplete = useCallback(() => {
     setIsPackCut(true);
@@ -122,6 +143,7 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
     isPackCut,
     volume: effectsVolume,
     disabled,
+    onMiss: nudge,
   });
 
   const finishPack = useCallback(() => {
@@ -336,6 +358,8 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
               error={openError}
               isCutting={isCutting}
               isPackCut={isPackCut}
+              waiting={slowOpen && isPackCut && !isOpening}
+              nudging={nudging}
               cutPoints={cutPoints}
               sparks={settings.particlesEnabled ? sparks : []}
             />

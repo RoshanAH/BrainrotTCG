@@ -84,3 +84,10 @@
         transition-duration: 0.01ms !important;
     }
 }
+
+/* A phone on its side: during a pack the card needs the height more than the logo does. */
+@media (max-height: 520px) {
+  .app.is-focus .app-header {
+    display: none;
+  }
+}

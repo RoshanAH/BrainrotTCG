@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { RotateCcw, Share2 } from 'lucide-react';
 import type { CardWithMeta } from '../cards/Card';
@@ -7,6 +7,7 @@ import BrainrotScorePanel from '../ui/BrainrotScorePanel';
 import { modifierLabel, modifierThumb } from '../../game/modifiers';
 import { CARD_RARITIES, getSetCards, scoreCards } from '../../data/cards';
 import type { SetDefinition } from '../../engine';
+import { myProgress } from '../../game/profiles';
 
 const Motion = motion;
 
@@ -30,11 +31,23 @@ const PackSummaryUI = ({ openedCards, set, onClose, onShare }: PackSummaryUIProp
     return `${String(i + 1).padStart(3, '0')}/${String(setCards.length).padStart(3, '0')}`;
   };
   const newCount = openedCards.filter((c) => c.isNew).length;
+  // What this pack did for your level: shown here so progress isn't hidden away in the profile.
+  const progress = useMemo(() => myProgress(), []);
+  const into = progress.xp - progress.levelXp;
+  const span = progress.nextXp - progress.levelXp;
 
   return (
     <Motion.div className="pack-summary" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.22 }}>
-      <h2 className="summary-title">{hand.name === 'No Matches' ? 'No matches' : hand.name}</h2>
+      <h2 className="summary-title">{hand.name}</h2>
       <BrainrotScorePanel points={points} multiplier={hand.multiplier} handName={hand.name} score={score} setId={set.id} />
+      <div className="summary-xp">
+        <span className="summary-xp-text tabular">
+          <strong>+{progress.gained.toLocaleString()} XP</strong> · Level {progress.level} · {into.toLocaleString()}/{span.toLocaleString()} to Level {progress.level + 1}
+        </span>
+        <span className="progress" aria-hidden="true">
+          <span style={{ width: `${Math.min(100, (into / span) * 100)}%` }} />
+        </span>
+      </div>
 
       <ul className="summary-cards">
         {openedCards.map((card) => (

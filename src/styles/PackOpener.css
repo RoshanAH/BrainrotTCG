@@ -57,6 +57,32 @@
     font-weight: 600;
 }
 
+/* Over the torn pack while a slow ticket mines. */
+.pack-hint.is-waiting {
+    z-index: 3;
+    justify-self: center;
+    width: max-content;
+    margin: 0 auto;
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-pill);
+    background: rgba(18, 17, 20, 0.85);
+    color: var(--text);
+    font-weight: 700;
+    animation: pack-waiting 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes pack-waiting {
+    to {
+        opacity: 0.55;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pack-hint.is-waiting {
+        animation: none;
+    }
+}
+
 .pack-shell {
     --tear-y: 19%;
     position: relative;
@@ -227,6 +253,25 @@
 
 .pack-shell.is-cut .tear-guide {
     opacity: 0;
+}
+
+/* A press that missed the line: the line pulses so it's clear where to swipe. */
+.pack-shell.is-nudged .tear-guide {
+    animation: tear-nudge 0.45s ease-in-out 3;
+}
+
+@keyframes tear-nudge {
+    50% {
+        border-top-color: var(--brand);
+        transform: translateY(-50%) scaleY(1.8);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pack-shell.is-nudged .tear-guide {
+        animation: none;
+        border-top-color: var(--brand);
+    }
 }
 
 /* Swipe hint */
@@ -543,6 +588,20 @@
     margin-bottom: var(--space-5);
 }
 
+.summary-xp {
+    display: grid;
+    gap: var(--space-1);
+    width: min(100%, 22rem);
+    margin: calc(-1 * var(--space-3)) auto var(--space-5);
+    color: var(--text-muted);
+    font-size: var(--text-sm);
+    text-align: center;
+}
+
+.summary-xp strong {
+    color: var(--brand);
+}
+
 .summary-cards {
     display: flex;
     flex-wrap: wrap;
@@ -583,6 +642,10 @@
     transform: translateY(-3px);
 }
 
+.summary-card:focus-visible {
+    box-shadow: 0 0 0 2px var(--r), var(--focus-ring), var(--shadow-2);
+}
+
 .summary-card img {
     display: block;
     width: 100%;
@@ -605,6 +668,10 @@
 
 .summary-card.holo img {
     border-radius: 2px;
+}
+
+.summary-card.holo:focus-visible {
+    box-shadow: var(--focus-ring), var(--shadow-2);
 }
 
 .summary-new {

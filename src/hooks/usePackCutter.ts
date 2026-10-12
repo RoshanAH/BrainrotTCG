@@ -31,9 +31,11 @@ interface UsePackCutterOptions {
   volume?: number;
   /** A sheet is open over the pack: drags belong to it, even after it closes mid-drag. */
   disabled?: boolean;
+  /** A press on the pack away from the tear line (a tap, or a swipe across the art): time for a nudge. */
+  onMiss?: () => void;
 }
 
-export const usePackCutter = ({ onCutComplete, isOpening, isPackCut, volume = 1, disabled = false }: UsePackCutterOptions) => {
+export const usePackCutter = ({ onCutComplete, isOpening, isPackCut, volume = 1, disabled = false, onMiss }: UsePackCutterOptions) => {
   const [isCutting, setIsCutting] = useState(false);
   const [cutPoints, setCutPoints] = useState<CutPoint[]>([]);
 
@@ -168,8 +170,11 @@ export const usePackCutter = ({ onCutComplete, isOpening, isPackCut, volume = 1,
       return;
     }
     isPointerDownRef.current = true;
+    const point = getLocalPoint(event.clientX, event.clientY);
+    const onPack = !!point && point.x >= 0 && point.x <= point.width && point.y >= 0 && point.y <= point.height;
+    if (onPack && Math.abs(point.y - point.tearY) > point.tolerance && !isOpening && !isPackCut) onMiss?.();
     beginOrContinueCut(event.clientX, event.clientY);
-  }, [beginOrContinueCut, disabled]);
+  }, [beginOrContinueCut, disabled, getLocalPoint, isOpening, isPackCut, onMiss]);
 
   const handlePointerMove = useCallback((event: PointerEvent) => {
     if (blockedRef.current || disabled || cutCompletedRef.current || isOpening || isPackCut) return;

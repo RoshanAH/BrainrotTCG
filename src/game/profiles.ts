@@ -22,6 +22,7 @@ import {
   type ProofRule,
   type PulledCard,
   type SetDefinition,
+  xpForLevel,
 } from '../engine';
 import { DEFAULT_SET_ID, getLatestSet, getSet } from '../content/sets';
 import { getPlayer, peekNonce } from './player';
@@ -140,6 +141,14 @@ export const myProfileProof = async (onProgress?: (done: number, total: number) 
   addDerivedPacks(derived);
   const packs = tickets.map((t) => t.pack!);
   return encodeProfile(signProfile({ publicKey: player.publicKey, name: player.name, runs: runsOf(tickets), ...claimsFor(packs) }, player.secretKey));
+};
+
+/** Your level and XP now, and how much the newest pack added (the pack summary shows it). */
+export const myProgress = () => {
+  const packs = myTickets().flatMap((t) => (t.pack ? [t.pack] : []));
+  const now = profileStats(packs);
+  const before = profileStats(packs.slice(0, -1));
+  return { level: now.level, xp: now.xp, gained: now.xp - before.xp, levelXp: xpForLevel(now.level), nextXp: xpForLevel(now.level + 1) };
 };
 
 /** Your stats from this device's history (no mining): what viewers of your profile will see. */

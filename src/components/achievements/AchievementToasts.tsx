@@ -1,15 +1,25 @@
 import { useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Award } from 'lucide-react';
+import { Award, ChevronsUp } from 'lucide-react';
 import type { Achievement } from '../../data/achievements';
 import '../../styles/Toasts.css';
 
+/** An achievement, or (with a kicker) something else worth a toast, like a level-up. */
+export type ToastItem = Pick<Achievement, 'id' | 'name' | 'description'> & {
+  /** Replaces "Achievement unlocked"; such toasts are never grouped. */
+  kicker?: string;
+  /** What tapping it opens. */
+  opens?: 'achievements' | 'profile';
+};
+
 interface AchievementToastsProps {
-  queue: Achievement[];
+  queue: ToastItem[];
   /** Remove these ids from the queue. */
   onDismiss: (ids: string[]) => void;
-  /** Tapping a toast opens the achievements list. */
-  onOpen: () => void;
+  /** Tapping a toast opens the achievements list, or the profile for a level-up. */
+  onOpen: (target: 'achievements' | 'profile') => void;
+  /** A sheet is open: hold the toasts until it closes, so they never cover its title or close button. */
+  paused?: boolean;
 }
 
 /** At this many waiting unlocks, show one grouped toast instead of a long run of single ones. */
@@ -19,10 +29,12 @@ const GROUP_AT = 3;
  * Achievement unlocks, one small toast at a time at the top of the screen. A burst (one lucky pack
  * can unlock seven) becomes a single "N achievements" toast rather than a wall over the game.
  */
-const AchievementToasts = ({ queue, onDismiss, onOpen }: AchievementToastsProps) => {
-  const grouped = queue.length >= GROUP_AT;
-  const shown = grouped ? queue : queue.slice(0, 1);
-  const key = shown.map((a) => a.id).join('|');
+const AchievementToasts = ({ queue, onDismiss, onOpen, paused = false }: AchievementToastsProps) => {
+  // Level-ups and the like go one at a time; a run of achievements at the front can be grouped.
+  const leadingAchievements = queue.findIndex((t) => t.kicker) === -1 ? queue : queue.slice(0, queue.findIndex((t) => t.kicker));
+  const grouped = leadingAchievements.length >= GROUP_AT;
+  const shown = grouped ? leadingAchievements : queue.slice(0, 1);
+  const key = paused ? '' : shown.map((a) => a.id).join('|');
 
   useEffect(() => {
     if (!key) return;
@@ -33,14 +45,14 @@ const AchievementToasts = ({ queue, onDismiss, onOpen }: AchievementToastsProps)
   return (
     <div className="toast-region" role="status" aria-live="polite">
       <AnimatePresence mode="wait">
-        {shown.length > 0 && (
+        {key && (
           <motion.button
             key={key}
             type="button"
-            className="toast"
+            className={`toast ${!grouped && shown[0].kicker ? 'toast--detail' : ''}`}
             onClick={() => {
               onDismiss(shown.map((a) => a.id));
-              onOpen();
+              onOpen(shown[0].opens ?? 'achievements');
             }}
             initial={{ y: -12, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -48,10 +60,10 @@ const AchievementToasts = ({ queue, onDismiss, onOpen }: AchievementToastsProps)
             transition={{ duration: 0.18, ease: 'easeOut' }}
           >
             <span className="toast-icon" aria-hidden="true">
-              <Award strokeWidth={2.4} />
+              {!grouped && shown[0].kicker ? <ChevronsUp strokeWidth={2.4} /> : <Award strokeWidth={2.4} />}
             </span>
             <span className="toast-text">
-              <span className="toast-kicker">{grouped ? `${shown.length} achievements unlocked` : 'Achievement unlocked'}</span>
+              <span className="toast-kicker">{grouped ? `${shown.length} achievements unlocked` : (shown[0].kicker ?? 'Achievement unlocked')}</span>
               <span className="toast-title">
                 {grouped
                   ? shown

@@ -66,9 +66,17 @@
   display: none;
 }
 
-/* Wide screens: top right, clear of the logo on the left. */
+/* A level-up's line is the point of it: what it unlocked. */
+.toast--detail .toast-desc {
+  display: block;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+}
+
+/* Wide screens: top right, under the nav so it never covers a tab, and clear of the logo. */
 @media (min-width: 900px) {
   .toast-region {
+    top: calc(var(--safe-top) + 5.5rem);
     left: auto;
     right: var(--gutter);
     transform: none;

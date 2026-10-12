@@ -260,14 +260,14 @@
     height: 100%;
     background: linear-gradient(
         45deg,
-        rgba(255, 0, 0, 0.15) 0%,
-        rgba(255, 127, 0, 0.15) 14%,
-        rgba(255, 255, 0, 0.15) 28%,
-        rgba(0, 255, 0, 0.15) 42%,
-        rgba(0, 0, 255, 0.15) 56%,
-        rgba(75, 0, 130, 0.15) 70%,
-        rgba(148, 0, 211, 0.15) 84%,
-        rgba(255, 0, 0, 0.15) 100%
+        rgba(255, 0, 0, 0.26) 0%,
+        rgba(255, 127, 0, 0.26) 14%,
+        rgba(255, 255, 0, 0.26) 28%,
+        rgba(0, 255, 0, 0.26) 42%,
+        rgba(0, 0, 255, 0.26) 56%,
+        rgba(75, 0, 130, 0.26) 70%,
+        rgba(148, 0, 211, 0.26) 84%,
+        rgba(255, 0, 0, 0.26) 100%
     );
     background-size: 400% 400%;
     animation: holoRainbowShimmer 3s ease infinite;
@@ -405,4 +405,16 @@
     .finish-frame {
         animation: none;
     }
+}
+
+/* Phones can't tilt a card to catch the light, so a holo keeps glinting on its own. */
+@media (hover: none) and (prefers-reduced-motion: no-preference) {
+    .card-wrapper.holo.shine-played .holo-shine-overlay::before {
+        animation: holoGlint 3.2s ease-in-out 0.4s infinite;
+    }
+}
+
+@keyframes holoGlint {
+    0% { left: -100%; }
+    35%, 100% { left: 150%; }
 }

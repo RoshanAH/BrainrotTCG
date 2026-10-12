@@ -49,7 +49,15 @@ export const toCardsWithMeta = (pulled: { setId: string; cardId: string; isHolo:
 
 /** Mine the next pack's ticket in the background. */
 export const prefetchNextPack = (set: SetDefinition) => {
-  prefetchTicket(setKey(set), getPlayer().publicKey, peekNonce());
+  void getTicket(setKey(set), getPlayer().publicKey, peekNonce())
+    .then((ticket) => {
+      // And its cards' pictures, so they're cached before the tear (and there if the connection drops).
+      for (const card of generatePack(set, packSeedFromTicket(ticket))) {
+        const image = getCard(`${card.setId}/${card.cardId}`)?.image;
+        if (image) new Image().src = image;
+      }
+    })
+    .catch(() => undefined);
 };
 
 /** Open a pack: consume a ticket number, mine (or reuse) its ticket, derive the cards. */

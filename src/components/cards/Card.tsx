@@ -52,6 +52,9 @@ const Card = ({ card, isFlipped, onFlip, slowFlip = false, tell = false }: CardP
             });
         };
 
+        // Tilt follows a real mouse only: phones send a mousemove with every tap, which would leave
+        // the card stuck at an angle.
+        if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
         window.addEventListener('mousemove', handleMouseMove);
         return () => window.removeEventListener('mousemove', handleMouseMove);
     }, []);
