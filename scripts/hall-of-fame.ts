@@ -31,7 +31,7 @@ import { appendFileSync, existsSync, readFileSync, writeFileSync } from 'node:fs
 import { fileURLToPath } from 'node:url';
 import { getSet } from '../src/content/sets/index.ts';
 import { decodeProof, extractProof, HALL_OF_FAME_MIN_SCORE, pullId, qualifiesForHallOfFame, verifyProof, type VerifiedPull } from '../src/engine/index.ts';
-import { fetchEvents, HOF_KIND, HOF_TAG } from '../src/game/nostrInbox.ts';
+import { fetchEvents, HOF_KIND, HOF_RELAYS, HOF_TAG, probeEvent, publishEvent } from '../src/game/nostrInbox.ts';
 import { processInbox } from './hof-inbox.ts';
 
 const ROOT = fileURLToPath(new URL('../', import.meta.url));
@@ -306,11 +306,26 @@ const inbox = async () => {
   console.log(`${events.length} events read, ${added} added`);
 };
 
+/**
+ * Which relays work from here: each is sent a throwaway event (its own tag, expires in an hour) and
+ * asked for it back. Run from the inbox workflow (input `probe`) to check relays from GitHub's runners.
+ */
+const probe = async (relays: string[]) => {
+  const event = probeEvent();
+  const sent = await publishEvent(event, relays, 10000);
+  const read = await fetchEvents({ ids: [event.id], kinds: [HOF_KIND] }, relays, 10000);
+  for (const [i, relay] of relays.entries()) {
+    const back = read.perRelay[i];
+    console.log(`${relay}: write ${sent[i].ok ? 'ok' : `failed (${sent[i].message})`}, read ${back.count > 0 ? 'ok' : `failed (${back.error ?? 'not found'})`}`);
+  }
+};
+
 const mode = process.argv[2];
 if (mode === 'verify-issue') await verifyIssue();
 else if (mode === 'inbox') await inbox();
+else if (mode === 'probe') await probe(process.argv.length > 3 ? process.argv.slice(3) : HOF_RELAYS);
 else if (mode === 'build') await build();
 else {
-  console.error('Usage: npx tsx scripts/hall-of-fame.ts <verify-issue|inbox|build>');
+  console.error('Usage: npx tsx scripts/hall-of-fame.ts <verify-issue|inbox|build|probe [relays...]>');
   process.exit(2);
 }

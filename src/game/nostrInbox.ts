@@ -82,6 +82,29 @@ export const hallOfFameEvent = (proof: string, pullId: string, now = Date.now())
 };
 
 /**
+ * A throwaway event to check that a relay stores and serves our events (`hall-of-fame.ts probe`).
+ * It has its own tag, so the inbox never reads it, and asks relays to drop it after an hour (NIP-40).
+ */
+export const probeEvent = (now = Date.now()): NostrEvent => {
+  const secretKey = schnorr.utils.randomSecretKey();
+  const created = Math.floor(now / 1000);
+  return signEvent(
+    {
+      pubkey: toHex(schnorr.getPublicKey(secretKey)),
+      created_at: created,
+      kind: HOF_KIND,
+      tags: [
+        ['d', `brainrot-tcg/probe/${created}`],
+        ['t', 'brainrot-tcg-probe'],
+        ['expiration', String(created + 3600)],
+      ],
+      content: '{}',
+    },
+    secretKey,
+  );
+};
+
+/**
  * The proof inside a submission, or null if it isn't one. Only the exact text a pull link carries
  * counts (no padding or wrapping), so the proof can be written into a link and read back unchanged.
  */
@@ -152,6 +175,7 @@ export const publishEvent = (event: NostrEvent, relays = HOF_RELAYS, timeoutMs =
   );
 
 export interface Filter {
+  ids?: string[];
   kinds: number[];
   '#t'?: string[];
   since?: number;

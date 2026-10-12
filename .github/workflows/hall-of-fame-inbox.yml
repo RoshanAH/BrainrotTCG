@@ -12,6 +12,11 @@ on:
   schedule:
     - cron: '*/15 * * * *'
   workflow_dispatch:
+    inputs:
+      probe:
+        description: 'Instead of reading the inbox, test these relays (space-separated wss:// URLs; "default" for the current list)'
+        required: false
+        default: ''
 
 permissions:
   contents: read
@@ -23,7 +28,26 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  probe:
+    if: ${{ inputs.probe }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # Passed through the environment, never interpolated into the command.
+      - run: if [ "$RELAYS" = default ]; then npx tsx scripts/hall-of-fame.ts probe; else npx tsx scripts/hall-of-fame.ts probe $RELAYS; fi
+        env:
+          RELAYS: ${{ inputs.probe }}
+
   inbox:
+    if: ${{ !inputs.probe }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
