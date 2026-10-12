@@ -107,57 +107,92 @@ const PAPER = '#f3efe6';
 const MUTED = '#b6b0ba';
 const YELLOW = '#ffd23f';
 const GREEN = '#5fd38d';
+const LOGO_FONT = '"RubikGlitch", system-ui, sans-serif';
+const DISPLAY_FONT = '"Lilita One", system-ui, sans-serif';
+const BODY_FONT = '"Archivo Variable", system-ui, -apple-system, "Segoe UI", sans-serif';
 
-export const renderPoster = async (input: PosterInput): Promise<Blob> => {
+/** A binder-black 1080x1920 canvas with the app's fonts loaded. */
+const newCanvas = async () => {
   const canvas = document.createElement('canvas');
   canvas.width = W;
   canvas.height = H;
   const ctx = canvas.getContext('2d')!;
-  // The poster uses the app's web fonts; make sure they're loaded before drawing with them.
   await Promise.all([
     document.fonts?.load('110px "RubikGlitch"'),
     document.fonts?.load('96px "Lilita One"'),
     document.fonts?.load('800 40px "Archivo Variable"'),
   ]).catch(() => undefined);
-
-  const logo = '"RubikGlitch", system-ui, sans-serif';
-  const display = '"Lilita One", system-ui, sans-serif';
-  const body = '"Archivo Variable", system-ui, -apple-system, "Segoe UI", sans-serif';
-
-  // Binder black, like the app.
   ctx.fillStyle = INK;
   ctx.fillRect(0, 0, W, H);
-
-  // Logo: card-stock white with a hard yellow misprint offset.
-  ctx.textAlign = 'center';
   ctx.textBaseline = 'alphabetic';
-  ctx.font = `104px ${logo}`;
+  return { canvas, ctx };
+};
+
+/** The logo (card-stock white with a hard yellow misprint offset), then the set's code and name. */
+const drawHeader = (ctx: CanvasRenderingContext2D, setName: string, code: string, setColor?: string) => {
+  ctx.textAlign = 'center';
+  ctx.font = `104px ${LOGO_FONT}`;
   ctx.fillStyle = YELLOW;
   ctx.fillText('BRAINROT TCG', W / 2 + 8, 168);
   ctx.fillStyle = PAPER;
   ctx.fillText('BRAINROT TCG', W / 2, 160);
 
-  // Set: its code in its colour, then the name.
-  const code = (input.cert ?? '').split(' ')[0];
-  ctx.font = `700 44px ${body}`;
-  const nameWidth = ctx.measureText(input.setName).width;
-  ctx.font = `800 30px ${body}`;
+  ctx.font = `700 44px ${BODY_FONT}`;
+  const nameWidth = ctx.measureText(setName).width;
+  ctx.font = `800 30px ${BODY_FONT}`;
   const codeWidth = code ? ctx.measureText(code).width + 24 : 0;
-  const total = codeWidth + (code ? 18 : 0) + nameWidth;
-  let x = (W - total) / 2;
+  let x = (W - (codeWidth + (code ? 18 : 0) + nameWidth)) / 2;
+  ctx.textAlign = 'left';
   if (code) {
-    ctx.fillStyle = input.setColor ?? MUTED;
+    ctx.fillStyle = setColor ?? MUTED;
     roundRect(ctx, x, 200, codeWidth, 46, 6);
     ctx.fill();
     ctx.fillStyle = '#111111';
-    ctx.textAlign = 'left';
     ctx.fillText(code, x + 12, 234);
     x += codeWidth + 18;
   }
-  ctx.textAlign = 'left';
   ctx.fillStyle = PAPER;
-  ctx.font = `700 44px ${body}`;
-  ctx.fillText(input.setName, x, 238);
+  ctx.font = `700 44px ${BODY_FONT}`;
+  ctx.fillText(setName, x, 238);
+};
+
+/** A graded-card label: what it is, who, the cert, and (when there's a link) the QR that re-checks it. */
+const drawLabel = (
+  ctx: CanvasRenderingContext2D,
+  label: { kind: string; verified: boolean; name: string; cert: string; hint: string; url?: string },
+) => {
+  const x = 70;
+  const y = 1570;
+  const w = W - 140;
+  const h = 290;
+  ctx.strokeStyle = label.verified ? GREEN : MUTED;
+  ctx.lineWidth = 4;
+  roundRect(ctx, x, y, w, h, 6);
+  ctx.stroke();
+  ctx.textAlign = 'left';
+  ctx.fillStyle = label.verified ? GREEN : MUTED;
+  ctx.font = `800 30px ${BODY_FONT}`;
+  ctx.fillText(label.kind.toUpperCase(), x + 40, y + 64);
+  const textWidth = label.url ? 520 : w - 80;
+  ctx.fillStyle = PAPER;
+  fitFont(ctx, label.name, textWidth, 52, '800', BODY_FONT);
+  ctx.fillText(label.name, x + 40, y + 134);
+  ctx.fillStyle = MUTED;
+  ctx.font = `600 32px ${BODY_FONT}`;
+  ctx.fillText(label.cert, x + 40, y + 186);
+  ctx.font = `500 28px ${BODY_FONT}`;
+  ctx.fillText(label.hint, x + 40, y + 242);
+  if (label.url) drawQr(ctx, label.url, x + w - 40 - 230, y + 30, 230);
+};
+
+const toPng = (canvas: HTMLCanvasElement) =>
+  new Promise<Blob>((resolve, reject) => canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('Canvas export failed'))), 'image/png'));
+
+/** The whole pack: five cards, the hand and score, and a label that links to the verifiable pull. */
+export const renderPoster = async (input: PosterInput): Promise<Blob> => {
+  const { canvas, ctx } = await newCanvas();
+  const code = (input.cert ?? '').split(' ')[0];
+  drawHeader(ctx, input.setName, code, input.setColor);
 
   // Cards: three on top, two below, slightly fanned.
   const images = await Promise.all(input.cards.map((c) => loadImage(c.image)));
@@ -173,38 +208,62 @@ export const renderPoster = async (input: PosterInput): Promise<Blob> => {
     drawCard(ctx, images[i], card, slot.x, slot.y, 300, slot.a);
   });
 
-  // Hand and score.
   const { hand, score } = input.score;
   ctx.textAlign = 'center';
   ctx.fillStyle = PAPER;
-  fitFont(ctx, hand.name, W - 120, 104, 'normal', display);
+  fitFont(ctx, hand.name, W - 120, 104, 'normal', DISPLAY_FONT);
   ctx.fillText(hand.name, W / 2, 1430);
   ctx.fillStyle = MUTED;
-  ctx.font = `600 40px ${body}`;
+  ctx.font = `600 40px ${BODY_FONT}`;
   ctx.fillText(`${score.toLocaleString('en-US')} Brainrot Score`, W / 2, 1500);
 
-  // A graded-card label: who, the cert, and the QR that re-checks it.
-  const labelX = 70;
-  const labelY = 1570;
-  const labelW = W - 140;
-  const labelH = 290;
-  ctx.strokeStyle = GREEN;
-  ctx.lineWidth = 4;
-  roundRect(ctx, labelX, labelY, labelW, labelH, 6);
-  ctx.stroke();
-  ctx.textAlign = 'left';
-  ctx.fillStyle = GREEN;
-  ctx.font = `800 30px ${body}`;
-  ctx.fillText('VERIFIABLE PULL', labelX + 40, labelY + 64);
-  ctx.fillStyle = PAPER;
-  fitFont(ctx, input.playerName, 520, 52, '800', body);
-  ctx.fillText(input.playerName, labelX + 40, labelY + 134);
-  ctx.fillStyle = MUTED;
-  ctx.font = `600 32px ${body}`;
-  ctx.fillText(`Cert ${input.fingerprint}${input.cert ? ` · ${input.cert}` : ''}`, labelX + 40, labelY + 186);
-  ctx.font = `500 28px ${body}`;
-  ctx.fillText('Scan to re-open this exact pack.', labelX + 40, labelY + 242);
-  drawQr(ctx, input.url, labelX + labelW - 40 - 230, labelY + 30, 230);
+  drawLabel(ctx, {
+    kind: 'Verifiable pull',
+    verified: true,
+    name: input.playerName,
+    cert: `Cert ${input.fingerprint}${input.cert ? ` · ${input.cert}` : ''}`,
+    hint: 'Scan to re-open this exact pack.',
+    url: input.url,
+  });
+  return toPng(canvas);
+};
 
-  return new Promise((resolve, reject) => canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('Canvas export failed'))), 'image/png'));
+export interface CardPosterInput {
+  card: PosterCard & { rarityName: string; raritySymbol: string; rarityColor: string; number: string };
+  setName: string;
+  setCode: string;
+  setColor?: string;
+  playerName: string;
+  fingerprint: string;
+  /** The verifiable pull this card came from, if this device has one. */
+  url?: string;
+  cert?: string;
+}
+
+/** One card, big: its name, rarity and collector number, and the pull it came from when there is one. */
+export const renderCardPoster = async (input: CardPosterInput): Promise<Blob> => {
+  const { canvas, ctx } = await newCanvas();
+  drawHeader(ctx, input.setName, input.setCode, input.setColor);
+
+  const image = await loadImage(input.card.image);
+  drawCard(ctx, image, input.card, W / 2, 790, 620, 0);
+
+  ctx.textAlign = 'center';
+  ctx.fillStyle = PAPER;
+  fitFont(ctx, input.card.name, W - 120, 96, 'normal', DISPLAY_FONT);
+  ctx.fillText(input.card.name, W / 2, 1385);
+  const rarity = `${input.card.raritySymbol} ${input.card.rarityName}${input.card.isHolo ? ' · Holo' : ''} · ${input.setCode} ${input.card.number}`;
+  ctx.font = `700 40px ${BODY_FONT}`;
+  ctx.fillStyle = input.card.rarityColor;
+  ctx.fillText(rarity, W / 2, 1470);
+
+  drawLabel(ctx, {
+    kind: input.url ? 'Verifiable pull' : 'From the collection of',
+    verified: !!input.url,
+    name: input.playerName,
+    cert: input.url ? `Cert ${input.fingerprint}${input.cert ? ` · ${input.cert}` : ''}` : `#${input.fingerprint}`,
+    hint: input.url ? 'Scan to re-open the pack it came from.' : 'Pulled before verifiable pulls existed.',
+    url: input.url,
+  });
+  return toPng(canvas);
 };

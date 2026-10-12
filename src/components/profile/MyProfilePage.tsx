@@ -126,7 +126,7 @@ const MyProfilePage = ({ stats, onClose, onSharePull }: MyProfilePageProps) => {
       {stats.highestPackLegacy && stats.highestPackCards?.length ? (
         <section className="pulls-legacy">
           <h3 className="section-title pulls-history-title">Best before verifiable pulls</h3>
-          <PackCardViewer cards={stats.highestPackCards} displayMode="grid" />
+          <PackCardViewer cards={stats.highestPackCards} displayMode="grid" canShareCards />
         </section>
       ) : null}
 

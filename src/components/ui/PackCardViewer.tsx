@@ -14,6 +14,8 @@ interface PackCardViewerProps {
     showValue?: boolean;
     onCardClick?: (card: CardWithMeta) => void;
     className?: string;
+    /** The player's own pack: its cards can be shared one by one. */
+    canShareCards?: boolean;
 }
 
 const PackCardViewer = ({
@@ -22,6 +24,7 @@ const PackCardViewer = ({
     showValue = true,
     onCardClick,
     className = '',
+    canShareCards = false,
 }: PackCardViewerProps) => {
     const [selectedCard, setSelectedCard] = useState<CardWithMeta | null>(null);
 
@@ -86,6 +89,7 @@ const PackCardViewer = ({
                     hasHolo={selectedCard.isHolo}
                     initialHolo={selectedCard.isHolo}
                     onClose={() => setSelectedCard(null)}
+                    canShare={canShareCards}
                 />
             )}
         </div>

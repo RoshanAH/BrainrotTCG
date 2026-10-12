@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { Sparkles } from 'lucide-react';
+import { Share2, Sparkles } from 'lucide-react';
+import CardShareSheet from '../share/CardShareSheet';
 import type { Card } from '../../data/cards';
 import RarityBadge from '../ui/RarityBadge';
 import Sheet from '../ui/Sheet';
@@ -10,13 +11,16 @@ interface CardViewerModalProps {
   hasHolo: boolean;
   initialHolo: boolean;
   onClose: () => void;
+  /** Only for cards the player owns (not someone else's shared pull). */
+  canShare?: boolean;
 }
 
 const MAX_TILT = 12;
 
 /** One card, big, tilting with the pointer. */
-const CardViewerModal = ({ card, hasNormal, hasHolo, initialHolo, onClose }: CardViewerModalProps) => {
+const CardViewerModal = ({ card, hasNormal, hasHolo, initialHolo, onClose, canShare = false }: CardViewerModalProps) => {
   const [isHolo, setIsHolo] = useState(initialHolo);
+  const [sharing, setSharing] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
 
@@ -51,12 +55,20 @@ const CardViewerModal = ({ card, hasNormal, hasHolo, initialHolo, onClose }: Car
       <div className="card-viewer-info">
         <RarityBadge rarity={card.rarity} isHolo={isHolo} />
         {card.flavor && <p className="card-viewer-flavor">{card.flavor}</p>}
-        {hasNormal && hasHolo && (
-          <button type="button" className="btn btn--secondary btn--sm" onClick={() => setIsHolo(!isHolo)} aria-pressed={isHolo}>
-            <Sparkles aria-hidden="true" /> {isHolo ? 'Show normal' : 'Show holo'}
-          </button>
-        )}
+        <div className="card-viewer-actions">
+          {hasNormal && hasHolo && (
+            <button type="button" className="btn btn--secondary btn--sm" onClick={() => setIsHolo(!isHolo)} aria-pressed={isHolo}>
+              <Sparkles aria-hidden="true" /> {isHolo ? 'Show normal' : 'Show holo'}
+            </button>
+          )}
+          {canShare && (
+            <button type="button" className="btn btn--primary btn--sm" onClick={() => setSharing(true)}>
+              <Share2 aria-hidden="true" /> Share card
+            </button>
+          )}
+        </div>
       </div>
+      {sharing && <CardShareSheet card={card} isHolo={isHolo} onClose={() => setSharing(false)} />}
     </Sheet>
   );
 };

@@ -147,3 +147,13 @@ export const migratePullLog = () => {
     // Unreadable old log: nothing to carry over.
   }
 };
+
+/**
+ * This key's most recent pack holding this card, so a card can be shared with the pull that proves
+ * it. Prefers a holo copy when `holo` is set.
+ */
+export const findPackWithCard = (publicKeyHex: string, setId: string, cardId: string, holo = false): HistoryEntry | null => {
+  const mine = getHistory().filter((e) => e.setId === setId && e.cards && publicKeyHex.startsWith(e.key));
+  const has = (e: HistoryEntry, wantHolo: boolean) => e.cards!.some((c) => c.id === cardId && (!wantHolo || c.holo));
+  return (holo ? mine.find((e) => has(e, true)) : undefined) ?? mine.find((e) => has(e, false)) ?? null;
+};

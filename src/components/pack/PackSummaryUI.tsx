@@ -15,7 +15,7 @@ interface PackSummaryUIProps {
 const PackSummaryUI = ({ openedCards, onClose, onShare }: PackSummaryUIProps) => (
   <Motion.div className="pack-summary" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
     <h2 className="summary-title">Your pull</h2>
-    <PackCardViewer cards={openedCards} displayMode="carousel" />
+    <PackCardViewer cards={openedCards} displayMode="carousel" canShareCards />
     <div className="summary-actions">
       {onShare && (
         <button type="button" className="btn btn--secondary btn--lg" onClick={onShare}>

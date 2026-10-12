@@ -6,51 +6,83 @@
   font-size: 0.9em;
 }
 
-.share-cards {
-  margin-bottom: var(--space-4);
-}
-
-.share-primary {
-  margin-bottom: var(--space-3);
-}
-
-.share-secondary {
-  display: flex;
-  gap: var(--space-2);
-  margin-bottom: var(--space-4);
-}
-
-.share-secondary > * {
-  flex: 1 1 0;
-}
-
-.share-option {
+/* Preview on the left (top on phones), actions beside it. */
+.share-layout {
   display: grid;
-  justify-items: center;
-  gap: var(--space-1);
-  min-height: var(--touch-target);
-  padding: var(--space-3) var(--space-2);
-  border-radius: var(--radius-md);
+  gap: var(--space-4);
+}
+
+@media (min-width: 640px) {
+  .share-layout {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+/* The exact image that will be sent, at its real 9:16 shape. */
+.share-preview {
+  display: grid;
+  place-items: center;
+  justify-self: center;
+  width: min(100%, calc(46dvh * 9 / 16), 300px);
+  aspect-ratio: 9 / 16;
+  margin: 0;
   border: 1px solid var(--border);
-  color: var(--text);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.share-preview img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.share-preview-wait {
+  padding: var(--space-4);
+  color: var(--text-subtle);
+  font-size: var(--text-sm);
+  text-align: center;
+}
+
+.share-side {
+  display: grid;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.share-actions-main {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.share-more {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-4);
+}
+
+.share-more .link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: 36px;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
+
+.share-more .link-btn svg {
+  width: 15px;
+  height: 15px;
+}
+
+.share-done {
+  min-height: 1.2em;
+  margin-top: calc(-1 * var(--space-2));
+  color: var(--success);
   font-size: var(--text-sm);
   font-weight: 600;
-  transition: background-color var(--dur) var(--ease-out);
-}
-
-.share-option svg {
-  width: 20px;
-  height: 20px;
-  color: var(--text-muted);
-}
-
-.share-option:hover:not(:disabled) {
-  background: rgba(243, 239, 230, 0.05);
-}
-
-.share-option:disabled {
-  opacity: 0.6;
-  cursor: progress;
 }
 
 .share-hof {

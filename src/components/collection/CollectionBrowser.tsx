@@ -149,6 +149,7 @@ const CollectionBrowser = ({ collection, onClose }: CollectionBrowserProps) => {
           hasHolo={selected.holoCount > 0}
           initialHolo={selected.holoCount > 0 && selected.normalCount === 0}
           onClose={() => setSelected(null)}
+          canShare
         />
       )}
     </>
