@@ -16,7 +16,9 @@ export interface InboxContext {
   maxFiled: number;
   lookup: SetLookup;
   ticketFn?: TicketFn;
-  /** Files one verified, qualifying pull. */
+  /** Whether a verified pull goes in (default: it qualifies); the Hall of Fame also keeps a pull only if it would join the list. */
+  accepts?: (pull: VerifiedPull) => boolean;
+  /** Files one verified, accepted pull. */
   file: (proof: string, pull: VerifiedPull, event: NostrEvent) => Promise<void>;
   log?: (line: string) => void;
 }
@@ -49,8 +51,8 @@ export const processInbox = async (events: readonly NostrEvent[], ctx: InboxCont
       ctx.log?.(`${event.id}: didn't verify (${error instanceof Error ? error.message : String(error)})`);
       continue;
     }
-    if (!qualifiesForHallOfFame(pull.score)) {
-      ctx.log?.(`${event.id}: ${pull.score.hand.name}, ${pull.score.score} doesn't qualify`);
+    if (!(ctx.accepts ? ctx.accepts(pull) : qualifiesForHallOfFame(pull.score))) {
+      ctx.log?.(`${event.id}: ${pull.score.hand.name}, ${pull.score.score} doesn't make the Hall of Fame`);
       continue;
     }
     try {

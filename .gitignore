@@ -28,3 +28,7 @@ dist-ssr
 
 # Python
 __pycache__/
+hof-build-cache.json
+hof-inbox-seen.json
+hof-comment.md
+/pages/

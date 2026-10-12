@@ -1,7 +1,7 @@
 .card-wrapper {
     perspective: 1000px;
-    height: calc(100vh - 14rem);
-    max-height: 560px;
+    height: calc(100dvh - 13rem);
+    max-height: 46rem;
     aspect-ratio: 5 / 7;
     cursor: pointer;
     position: relative;

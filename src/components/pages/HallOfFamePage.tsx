@@ -6,7 +6,8 @@ import { tabPanelProps } from '../ui/tabPanel';
 import '../../styles/HallOfFame.css';
 import { getCard } from '../../data/cards';
 import { checkPull } from '../../game/pulls';
-import { decodeProof, HALL_OF_FAME_MIN_MULTIPLIER, HALL_OF_FAME_MIN_SCORE, normalizeName, pullId } from '../../engine';
+import { loadHallOfFame, loadPending, type HallOfFameEntry } from '../../game/hallOfFameList';
+import { firstPulls, HALL_OF_FAME_MIN_SCORE, HALL_OF_FAME_TOP, normalizeName, topPulls } from '../../engine';
 
 // Hackathon legends: screenshots from before pulls were verifiable.
 import adiImage from '../../assets/images/hall_of_fame/adi-four-of-a-kind.webp';
@@ -27,22 +28,6 @@ const HACKATHON_LEGENDS: LegendEntry[] = [
   { name: 'TehSquid', description: 'Full House', image: squidImage, date: 'March 4th, 2026', portrait: true },
 ];
 
-/** Shape of public/hall-of-fame.json, built by scripts/hall-of-fame.ts during deploy. */
-interface HallOfFameEntry {
-  proof: string;
-  name: string;
-  fingerprint: string;
-  setId: string;
-  setName: string;
-  hand: string;
-  multiplier: number;
-  score: number;
-  cards: { cardId: string; isHolo: boolean }[];
-  issue: number;
-  githubUser: string;
-  submittedAt: string;
-}
-
 type Check = 'checking' | 'verified' | 'failed';
 
 /** How many entries to re-verify on this device (each costs one ticket). */
@@ -60,42 +45,26 @@ const HallOfFamePage = ({ onClose }: HallOfFamePageProps) => {
   const [tab, setTab] = useState<'top' | 'firsts' | 'legends'>('top');
   const tabsId = useId();
 
+  const [pending, setPending] = useState<HallOfFameEntry[]>([]);
+
   useEffect(() => {
-    fetch(`${import.meta.env.BASE_URL}hall-of-fame.json`, { cache: 'no-cache' })
-      .then((res) => (res.ok ? res.json() : []))
-      .then((data: HallOfFameEntry[]) => setEntries(Array.isArray(data) ? data : []))
-      .catch(() => setEntries([]));
+    const controller = new AbortController();
+    loadHallOfFame().then((list) => {
+      if (controller.signal.aborted) return;
+      setEntries(list ?? []);
+      // Then anything sent since the last deploy, checked here (see loadPending).
+      loadPending(list ?? [], (entry) => setPending((prev) => [...prev, entry]), controller.signal).catch(() => {});
+    });
+    return () => controller.abort();
   }, []);
+  const all = useMemo(() => (entries ? [...entries, ...pending] : null), [entries, pending]);
 
-  // One entry per pull (earliest submission keeps the credit), best first. A pull can be signed
-  // more than once, so this keys on set, key and ticket number rather than the proof text.
-  const ranked = useMemo(() => {
-    const seen = new Set<string>();
-    const idOf = (e: HallOfFameEntry) => {
-      try {
-        return pullId(decodeProof(e.proof));
-      } catch {
-        return e.proof; // fails verification below and shows as such
-      }
-    };
-    return [...(entries ?? [])]
-      .sort((a, b) => a.submittedAt.localeCompare(b.submittedAt))
-      .filter((e) => !seen.has(idOf(e)) && !!seen.add(idOf(e)))
-      .sort((a, b) => b.score - a.score || a.submittedAt.localeCompare(b.submittedAt));
-  }, [entries]);
-
-  /** First verified submission of each hand in each set. */
-  const firsts = useMemo(() => {
-    const seen = new Set<string>();
-    return [...ranked]
-      .sort((a, b) => a.submittedAt.localeCompare(b.submittedAt))
-      .filter((e) => {
-        const key = `${e.setId}|${e.hand}`;
-        if (seen.has(key) || e.multiplier < HALL_OF_FAME_MIN_MULTIPLIER) return false;
-        seen.add(key);
-        return true;
-      });
-  }, [ranked]);
+  // The same rules the deploy used to pick these entries (src/engine/hallOfFame.ts): one entry per
+  // pull, the earliest verification keeping the credit. A pull can be signed more than once, so they
+  // key on the pull id (set, key and ticket number) rather than the proof text.
+  const ranked = useMemo(() => topPulls(all ?? []), [all]);
+  // World firsts go by when GitHub verified them, so only filed entries can be one.
+  const firsts = useMemo(() => firstPulls(entries ?? []), [entries]);
 
   // Don't trust the JSON either: re-derive each pack here, one at a time.
   useEffect(() => {
@@ -103,6 +72,7 @@ const HallOfFamePage = ({ onClose }: HallOfFamePageProps) => {
     (async () => {
       for (const entry of ranked.slice(0, VERIFY_LIMIT)) {
         if (cancelled) return;
+        if (entry.pending) continue; // checked on this device already, to be listed at all
         setChecks((prev) => ({ ...prev, [entry.issue]: 'checking' }));
         try {
           const pull = await checkPull(entry.proof);
@@ -127,7 +97,7 @@ const HallOfFamePage = ({ onClose }: HallOfFamePageProps) => {
   }, [ranked]);
 
   const renderEntry = (entry: HallOfFameEntry, rank?: number) => {
-    const check = checks[entry.issue];
+    const check = entry.pending ? 'verified' : checks[entry.issue];
     const who = normalizeName(entry.name) || 'Anonymous';
     return (
       <li key={`${entry.proof}-${rank ?? 'first'}`}>
@@ -149,6 +119,7 @@ const HallOfFamePage = ({ onClose }: HallOfFamePageProps) => {
               {who} <span className="share-fp">#{entry.fingerprint}</span>
             </span>
             <span className="hof-meta">
+              {entry.pending && <span className="hof-pending">Just submitted · </span>}
               {entry.setName}
               {/* On world firsts, when matters. */}
               {rank === undefined && ` · ${formatDate(entry.submittedAt)}`}
@@ -174,7 +145,7 @@ const HallOfFamePage = ({ onClose }: HallOfFamePageProps) => {
   );
 
   return (
-    <Sheet title="Hall of Fame" subtitle="Full Houses and better, from every player" onClose={onClose} size="lg" className="hall-of-fame">
+    <Sheet title="Hall of Fame" subtitle={`The top ${HALL_OF_FAME_TOP} pulls, and the first of every hand in each set`} onClose={onClose} size="lg" className="hall-of-fame">
       <Tabs
         idBase={tabsId}
         label="Hall of Fame lists"
@@ -190,8 +161,8 @@ const HallOfFamePage = ({ onClose }: HallOfFamePageProps) => {
       <div className="hof-panel" {...tabPanelProps(tabsId, tab)}>
         {tab === 'top' && (
           <>
-            {entries === null && <p className="hof-loading">Loading…</p>}
-            {entries?.length === 0 && empty}
+            {all === null && <p className="hof-loading">Loading…</p>}
+            {all?.length === 0 && empty}
             {ranked.length > 0 && (
               <>
                 <p className="hof-note">
@@ -205,7 +176,7 @@ const HallOfFamePage = ({ onClose }: HallOfFamePageProps) => {
 
         {tab === 'firsts' && (
           <>
-            <p className="hof-note">The first verified Full House or better in each set.</p>
+            <p className="hof-note">The first verified Full House, 4 of a Kind and 5 of a Kind in each set.</p>
             {firsts.length > 0 ? <ul className="hof-list">{firsts.map((e) => renderEntry(e))}</ul> : empty}
           </>
         )}

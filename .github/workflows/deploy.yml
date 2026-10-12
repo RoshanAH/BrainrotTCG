@@ -28,15 +28,78 @@ jobs:
 
       - run: npm ci
       - run: npm run check
-      # Re-verify every Hall of Fame issue and bake the results into the site.
+      # Verify Hall of Fame issues and bake the list into the site. Results for issues unchanged
+      # since the last deploy are cached; the key covers everything that decides a result.
+      - uses: actions/cache/restore@v4
+        with:
+          path: hof-build-cache.json
+          key: hof-build-${{ hashFiles('src/engine/**', 'src/content/sets/**/*.json', 'src/content/sets/index.ts', 'scripts/hall-of-fame.ts') }}-${{ github.run_id }}
+          restore-keys: hof-build-${{ hashFiles('src/engine/**', 'src/content/sets/**/*.json', 'src/content/sets/index.ts', 'scripts/hall-of-fame.ts') }}-
       - run: npx tsx scripts/hall-of-fame.ts build
         env:
           GITHUB_TOKEN: ${{ github.token }}
+      - uses: actions/cache/save@v4
+        with:
+          path: hof-build-cache.json
+          key: hof-build-${{ hashFiles('src/engine/**', 'src/content/sets/**/*.json', 'src/content/sets/index.ts', 'scripts/hall-of-fame.ts') }}-${{ github.run_id }}
+      # Where the site lives: Cloudflare Pages once its two secrets are set (docs/HOSTING.md),
+      # otherwise GitHub Pages as before. Secrets only reach this step through its environment.
+      - id: site
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          PROJECT: ${{ vars.CLOUDFLARE_PROJECT || 'brainrottcg' }}
+          CUSTOM_URL: ${{ vars.SITE_URL }}
+          OWNER: ${{ github.repository_owner }}
+          REPO: ${{ github.event.repository.name }}
+        run: |
+          if [ -n "$CLOUDFLARE_API_TOKEN" ] && [ -n "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            # Creating the project fails harmlessly once it exists.
+            npx --yes wrangler@4.141.0 pages project create "$PROJECT" --production-branch=main >/dev/null 2>&1 || true
+            sub=$(curl -fsS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+              "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/$PROJECT" | jq -r '.result.subdomain')
+            if [ -z "$sub" ] || [ "$sub" = null ]; then echo "::error::Couldn't read the Cloudflare Pages project $PROJECT"; exit 1; fi
+            { echo "host=cloudflare"; echo "url=${CUSTOM_URL:-https://$sub/}"; echo "base=/"; } >> "$GITHUB_OUTPUT"
+          else
+            { echo "host=github"; echo "url=https://$OWNER.github.io/$REPO/"; echo "base=/$REPO/"; } >> "$GITHUB_OUTPUT"
+          fi
+      # After a move, the build knows the old address, so it can take saves handed over from it
+      # (src/game/move.ts); a build that hasn't moved has no old address and takes nothing.
       - run: npm run build
+        env:
+          BASE_PATH: ${{ steps.site.outputs.base }}
+          SITE_URL: ${{ steps.site.outputs.url }}
+          VITE_OLD_ORIGIN: ${{ steps.site.outputs.host == 'cloudflare' && format('https://{0}.github.io', github.repository_owner) || '' }}
+          VITE_OLD_SITE_URL: ${{ steps.site.outputs.host == 'cloudflare' && format('https://{0}.github.io/{1}/', github.repository_owner, github.event.repository.name) || '' }}
+      - name: Deploy to Cloudflare Pages
+        if: steps.site.outputs.host == 'cloudflare'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          PROJECT: ${{ vars.CLOUDFLARE_PROJECT || 'brainrottcg' }}
+        run: npx --yes wrangler@4.141.0 pages deploy dist --project-name="$PROJECT" --branch=main --commit-dirty=true
+      # The old address only starts forwarding once the new one is serving this exact build.
+      - name: Check the new address serves this build
+        if: steps.site.outputs.host == 'cloudflare'
+        env:
+          URL: ${{ steps.site.outputs.url }}
+        run: |
+          asset=$(grep -o 'assets/index-[A-Za-z0-9_-]*\.js' dist/index.html | head -1)
+          for i in $(seq 1 30); do curl -fsS "$URL" | grep -q "$asset" && exit 0; sleep 10; done
+          echo "::error::$URL isn't serving this build"; exit 1
+      - name: The old address forwards to the new one, bringing saves along
+        if: steps.site.outputs.host == 'cloudflare'
+        env:
+          URL: ${{ steps.site.outputs.url }}
+          OLD_BASE_PATH: /${{ github.event.repository.name }}/
+        run: |
+          npx tsx scripts/redirect-site.ts "$URL" pages
+          # Old shared links keep their card preview, and forward through the page above.
+          OUT_DIR=pages PAGES_ONLY=1 BASE_PATH="$OLD_BASE_PATH" SITE_URL="$URL" npx tsx scripts/preview-pages.ts
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: ${{ steps.site.outputs.host == 'cloudflare' && 'pages' || 'dist' }}
 
   deploy:
     needs: build

@@ -186,7 +186,7 @@
 
 .hof-legends {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
   gap: var(--space-4);
   list-style: none;
 }
@@ -231,4 +231,10 @@
   .hof-cards img + img {
     margin-left: -12px;
   }
+}
+
+/* Sent, checked on this device, not filed yet. */
+.hof-pending {
+  color: var(--brand);
+  font-weight: 600;
 }

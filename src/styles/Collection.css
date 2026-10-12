@@ -249,7 +249,7 @@
 .card-viewer-card {
   --r: var(--rarity-common);
   position: relative;
-  width: min(78vw, 46dvh, 380px);
+  width: min(78vw, 46dvh, 24rem);
   aspect-ratio: 687 / 1024;
   border-radius: var(--radius-md);
   overflow: hidden;
@@ -275,7 +275,7 @@
   flex-direction: column;
   align-items: center;
   gap: var(--space-3);
-  max-width: 380px;
+  max-width: 24rem;
   text-align: center;
 }
 

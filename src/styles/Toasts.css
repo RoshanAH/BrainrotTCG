@@ -4,7 +4,7 @@
   top: calc(var(--safe-top) + 6px);
   left: 50%;
   z-index: var(--z-toast);
-  width: min(92vw, 380px);
+  width: min(92vw, 24rem);
   transform: translateX(-50%);
   pointer-events: none;
 }

@@ -65,7 +65,11 @@ src/game/          Browser glue around the engine.
   ticketMiner.ts     mines tickets in workers/ticket.worker.ts, pre-mining the next pack
   pulls.ts           openPack(), proofFor(), pullUrl(), checkPull()
   share.ts, bragImage.ts   brag text, Hall of Fame submit, 9:16 poster with QR
+  shareActions.ts    copy the link or image (the system share sheet only on phones)
+  previewLinks.ts    link previews: shared links go through a static page per card and hand
+  hallOfFameList.ts  the published Hall of Fame list, loaded once per visit
   nostrInbox.ts      Hall of Fame submissions over public Nostr relays (loaded only when used)
+  move.ts            hands a save over from the site's old address, window to window (docs/HOSTING.md)
 
 src/components/    React UI (pack opening, collection, set picker, share sheet, pull viewer, pages)
 
@@ -77,6 +81,8 @@ scripts/           Node tools (run with tsx)
   check-sets.ts      set lock guard
   hall-of-fame.ts    verifies Hall of Fame issues; files Nostr submissions; builds public/hall-of-fame.json
   hof-inbox.ts       the inbox rules: verify, dedupe, budget, retry
+  preview-pages.ts   after the Vite build: a preview image per card, a preview page per card and hand
+  redirect-site.ts   the old address after a move: forwards every link and brings saves along
 ```
 
 ## How a pull works
@@ -115,7 +121,7 @@ There are two ways in. Most players don't have a GitHub account, so the default 
 
 ```
 player ─► Share ─► "Submit"  ─► signed Nostr event ─► 5 public relays
-                                                          │  every 15 min
+                                                          │  four times an hour
                     .github/workflows/hall-of-fame-inbox.yml
                     scripts/hall-of-fame.ts inbox  ─► bot-filed issue + comment + labels (+ redeploy)
                                    │
@@ -125,7 +131,7 @@ player ─► Share ─► "on GitHub" ─► GitHub issue form (pull link; need
                     scripts/hall-of-fame.ts verify-issue  ─► comment + labels (+ redeploy)
                                    │
                     .github/workflows/deploy.yml
-                    scripts/hall-of-fame.ts build  ─► public/hall-of-fame.json (re-verified, deduped)
+                    scripts/hall-of-fame.ts build  ─► public/hall-of-fame.json (top 100 + firsts)
                                    │
                     Hall of Fame page re-derives each entry again in the visitor's browser
 ```
@@ -152,12 +158,40 @@ checks a bounded number, and junk is skipped), but it can't forge an entry: the 
 visitor re-derive each pull from its proof. A maintainer can drop an entry the same way as any other
 (the `rejected` label below).
 
+**One list, any size.** The Hall of Fame is the top 100 pulls by Brainrot Score plus the first Full
+House, 4 of a Kind and 5 of a Kind in each set: about 120 entries however many people play. The rules
+live in `src/engine/hallOfFame.ts` and decide it everywhere: the share sheet only offers Submit for a
+pull that would join, the inbox and the issue verifier read the deployed list and file only pulls that
+would join, and the deploy writes only the list. Verified issues are closed (the deploy reads every
+state), so the issue list holds only what needs attention. Deploys keep each verified issue's result
+in the Actions cache, keyed on the engine, the sets and the script: an issue unchanged since the last
+deploy isn't verified or read again, so a deploy's work grows with new submissions, not all of them.
+
 Issue text is untrusted: it's only parsed by the script, never put into a shell command, and only
 echoed back through a sanitiser. The submitter's GitHub username comes from GitHub. "World first"
 order uses the time the bot first verified that exact pull on the issue (a marker in its comment), not
 the issue's creation date, so a placeholder issue edited later can't claim an earlier spot. Each pull
 counts once, however many times it's submitted or re-signed. A maintainer can drop an entry by adding
 the `rejected` label to its issue.
+
+## Sharing and link previews
+
+Sharing copies: the link, or the poster image (the system share sheet appears only on phones). A pull
+link carries its whole proof, which is what makes it checkable anywhere without a server, and also
+why it's long; the proof is about 170 characters and can't get much shorter.
+
+Chat apps build a link preview from the page address alone, and the proof is after the `#`, which
+they never see. So a copied link goes through a static page for the pack's rarest card and its hand,
+`p/<code>.html#/pull/<proof>` (the code is 8 hex characters of `sha256("set/card/HAND")`, fixed
+forever). `scripts/preview-pages.ts` writes those after the Vite build: a 1200x630 image per card and
+a page per card and hand, titled like "A Full House in Summer of Slop". The page forwards to the pull.
+The path only picks the preview; the pull is still re-derived from the proof when it's opened.
+
+## Hosting
+
+Static files on GitHub Pages, or on Cloudflare Pages once two secrets are set; both free with
+nothing to bill. See `docs/HOSTING.md`, including how old links and saves follow a move (saves go
+window to window with origin-checked postMessage, never in a URL).
 
 ## Profiles and levels (no server)
 

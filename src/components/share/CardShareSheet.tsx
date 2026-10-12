@@ -39,12 +39,15 @@ const CardShareSheet = ({ card, isHolo, onClose }: CardShareSheetProps) => {
   const cardId = card.key.split('/')[1];
 
   const pack = useMemo(() => findPackWithCard(player.publicKeyHex, card.setId, cardId, isHolo), [player.publicKeyHex, card.setId, cardId, isHolo]);
-  const url = useMemo(
-    () => (pack ? pullUrl(proofFor({ setId: pack.setId, setVersion: pack.setVersion, nonce: pack.nonce, publicKeyHex: pack.key })) : undefined),
+  const proof = useMemo(
+    () => (pack ? proofFor({ setId: pack.setId, setVersion: pack.setVersion, nonce: pack.nonce, publicKeyHex: pack.key }) : undefined),
     [pack],
   );
+  // The QR code opens the pull directly; the pasted link previews as this card.
+  const url = proof ? pullUrl(proof) : undefined;
+  const link = proof && pack ? pullUrl(proof, { setId: card.setId, cardId, hand: pack.hand }) : undefined;
   const rarity = CARD_RARITIES[card.rarity];
-  const text = `${card.name} (${rarity.name}${isHolo ? ', holo' : ''}) from ${setName} in Brainrot TCG${url ? `\n${url}` : ''}`;
+  const text = `${card.name} (${rarity.name}${isHolo ? ', holo' : ''}) from ${setName} in Brainrot TCG${link ? `\n${link}` : ''}`;
 
   return (
     <SharePreviewSheet
@@ -71,7 +74,7 @@ const CardShareSheet = ({ card, isHolo, onClose }: CardShareSheetProps) => {
         })
       }
       imageName={`brainrot-${card.key.replace('/', '-')}${isHolo ? '-holo' : ''}.png`}
-      url={url}
+      url={link}
       text={text}
       onClose={onClose}
     >

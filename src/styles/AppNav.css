@@ -16,7 +16,7 @@
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   height: var(--nav-height);
-  max-width: 560px;
+  max-width: 36rem;
   margin: 0 auto;
   list-style: none;
 }

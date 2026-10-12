@@ -1,0 +1,107 @@
+/**
+ * The published Hall of Fame (public/hall-of-fame.json, built by scripts/hall-of-fame.ts during
+ * deploy): the top pulls and each set's firsts. Nothing in it is trusted; the page re-checks entries.
+ */
+import { decodeProof, pullId, wouldJoinHallOfFame, type RankableEntry } from '../engine';
+import { checkPull } from './pulls';
+import { wasSubmitted } from './share';
+
+export interface HallOfFameEntry extends RankableEntry {
+  proof: string;
+  name: string;
+  fingerprint: string;
+  setName: string;
+  cards: { cardId: string; isHolo: boolean }[];
+  issue: number;
+  githubUser: string;
+  /** On the relays and checked on this device, but not filed yet (see `loadPending`). */
+  pending?: boolean;
+}
+
+/** Entries from before ids were published get theirs from the proof (a bad proof keys on its text). */
+const withId = (entry: Omit<HallOfFameEntry, 'id'> & { id?: unknown }): HallOfFameEntry => {
+  if (typeof entry.id === 'string') return entry as HallOfFameEntry;
+  let id = entry.proof;
+  try {
+    id = pullId(decodeProof(entry.proof));
+  } catch {
+    // fails verification on the page and shows as such
+  }
+  return { ...entry, id };
+};
+
+let loading: Promise<HallOfFameEntry[] | null> | null = null;
+
+/** The published list, fetched once per visit; null if it couldn't be loaded. */
+export const loadHallOfFame = (): Promise<HallOfFameEntry[] | null> =>
+  (loading ??= fetch(`${import.meta.env.BASE_URL}hall-of-fame.json`, { cache: 'no-cache' })
+    .then((res) => (res.ok ? res.json() : null))
+    .then((data: unknown) => (Array.isArray(data) ? data.map(withId) : null))
+    .catch(() => {
+      loading = null; // try again next time
+      return null;
+    }));
+
+/** How many unfiled submissions one visit checks (a ticket each), newest first after your own. */
+const PENDING_LIMIT = 10;
+
+/**
+ * Submissions sent in the last week that aren't in the published list yet. The GitHub job files them
+ * for good on a schedule, which GitHub can delay; meanwhile every visitor reads the relays and checks
+ * them on their own device, so a pull shows as soon as it's sent. Each one that would join the list
+ * is handed to `onEntry` as it's checked.
+ */
+export const loadPending = async (published: readonly HallOfFameEntry[], onEntry: (entry: HallOfFameEntry) => void, signal: AbortSignal) => {
+  const { fetchEvents, proofFromEvent, HOF_KIND, HOF_TAG } = await import('./nostrInbox');
+  const since = Math.floor(Date.now() / 1000) - 7 * 24 * 60 * 60;
+  const { events } = await fetchEvents({ kinds: [HOF_KIND], '#t': [HOF_TAG], since, limit: 100 }, undefined, 5000);
+  const listed = new Set(published.map((e) => e.id));
+  const seen = new Set<string>();
+  const candidates = events
+    .sort((a, b) => b.created_at - a.created_at)
+    .flatMap((event) => {
+      const proof = proofFromEvent(event);
+      if (!proof) return [];
+      try {
+        const id = pullId(decodeProof(proof));
+        if (listed.has(id) || seen.has(id)) return [];
+        seen.add(id);
+        return [{ event, proof, id, mine: wasSubmitted(id) }];
+      } catch {
+        return [];
+      }
+    })
+    .sort((a, b) => Number(b.mine) - Number(a.mine))
+    .slice(0, PENDING_LIMIT);
+
+  const list: RankableEntry[] = [...published];
+  for (const [i, { proof, id }] of candidates.entries()) {
+    if (signal.aborted) return;
+    try {
+      const pull = await checkPull(proof);
+      if (!wouldJoinHallOfFame({ id, setId: pull.set.id, score: pull.score }, list)) continue;
+      const entry: HallOfFameEntry = {
+        id,
+        proof,
+        name: pull.proof.name,
+        fingerprint: pull.fingerprint,
+        setId: pull.set.id,
+        setName: pull.set.name,
+        hand: pull.score.hand.name,
+        multiplier: pull.score.hand.multiplier,
+        score: pull.score.score,
+        cards: pull.cards.map((c) => ({ cardId: c.cardId, isHolo: c.isHolo })),
+        issue: -(i + 1), // not filed yet; negative so it never clashes with a real issue
+        githubUser: 'nostr',
+        // The event's own time is whatever the sender set, so it can't place this ahead of anything
+        // already filed: it counts as now.
+        submittedAt: new Date().toISOString(),
+        pending: true,
+      };
+      list.push(entry);
+      if (!signal.aborted) onEntry(entry);
+    } catch {
+      // didn't verify: never shown
+    }
+  }
+};
