@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
+import { Crown, ShieldAlert, ShieldCheck } from 'lucide-react';
+import Sheet from '../ui/Sheet';
+import Tabs from '../ui/Tabs';
 import '../../styles/HallOfFame.css';
 import { getCard } from '../../data/cards';
 import { checkPull } from '../../game/pulls';
-import { REPO } from '../../constants';
 import { decodeProof, HALL_OF_FAME_MIN_MULTIPLIER, HALL_OF_FAME_MIN_SCORE, normalizeName, pullId } from '../../engine';
 
 // Hackathon legends: screenshots from before pulls were verifiable.
@@ -54,6 +56,7 @@ interface HallOfFamePageProps {
 const HallOfFamePage = ({ onClose }: HallOfFamePageProps) => {
   const [entries, setEntries] = useState<HallOfFameEntry[] | null>(null);
   const [checks, setChecks] = useState<Record<number, Check>>({});
+  const [tab, setTab] = useState<'top' | 'firsts' | 'legends'>('top');
 
   useEffect(() => {
     fetch(`${import.meta.env.BASE_URL}hall-of-fame.json`, { cache: 'no-cache' })
@@ -121,94 +124,125 @@ const HallOfFamePage = ({ onClose }: HallOfFamePageProps) => {
     };
   }, [ranked]);
 
-  const renderEntry = (entry: HallOfFameEntry, index?: number) => {
+  const renderEntry = (entry: HallOfFameEntry, rank?: number) => {
     const check = checks[entry.issue];
+    const who = normalizeName(entry.name) || 'Anonymous';
     return (
-      <article key={`${entry.proof}-${index ?? 'first'}`} className={`hof-entry ${check === 'failed' ? 'failed' : ''}`}>
-        {index !== undefined && <div className="hof-rank">#{index + 1}</div>}
-        <div className="hof-cards">
-          {entry.cards.map((c, i) => {
-            const card = getCard(`${entry.setId}/${c.cardId}`);
-            return card ? (
-              <img key={i} src={card.image} alt={card.name} className={`hof-card ${card.rarity.toLowerCase()} ${c.isHolo ? 'holo' : ''}`} />
-            ) : null;
-          })}
-        </div>
-        <div className="hof-info">
-          <div className="hof-hand">
-            {entry.hand} <span className="hof-flex">🧠 {entry.score.toLocaleString()}</span>
-          </div>
-          <div className="hof-who">
-            {normalizeName(entry.name) || 'Anonymous'} <span className="share-fp">#{entry.fingerprint}</span> ·{' '}
-            <a href={`https://github.com/${REPO}/issues/${entry.issue}`} target="_blank" rel="noreferrer">
-              @{entry.githubUser}
-            </a>
-          </div>
-          <div className="hof-meta">
-            {entry.setName} · {formatDate(entry.submittedAt)}
-          </div>
-          <div className={`hof-check ${check ?? ''}`}>
-            {check === 'verified' && '✓ verified on your device'}
-            {check === 'checking' && 'checking…'}
-            {check === 'failed' && '✗ failed verification'}
-          </div>
-          <a className="hof-view" href={`#/pull/${entry.proof}`}>View pull</a>
-        </div>
-      </article>
+      <li key={`${entry.proof}-${rank ?? 'first'}`}>
+        <a
+          className={`hof-entry ${check === 'failed' ? 'is-failed' : ''}`}
+          href={`#/pull/${entry.proof}`}
+          aria-label={`${rank !== undefined ? `Number ${rank + 1}: ` : ''}${entry.hand} by ${who} in ${entry.setName}, score ${entry.score}`}
+        >
+          {rank !== undefined && <span className="hof-rank tabular">{rank + 1}</span>}
+          <span className="hof-cards" aria-hidden="true">
+            {entry.cards.map((c, i) => {
+              const card = getCard(`${entry.setId}/${c.cardId}`);
+              return card ? <img key={i} src={card.image} alt="" className={`${card.rarity.toLowerCase()} ${c.isHolo ? 'holo' : ''}`} /> : null;
+            })}
+          </span>
+          <span className="hof-main">
+            <span className="hof-hand">{entry.hand}</span>
+            <span className="hof-who">
+              {who} <span className="share-fp">#{entry.fingerprint}</span>
+            </span>
+            <span className="hof-meta">
+              {entry.setName} · {formatDate(entry.submittedAt)} · @{entry.githubUser}
+            </span>
+          </span>
+          <span className="hof-side">
+            <span className="hof-score tabular">🧠 {entry.score.toLocaleString()}</span>
+            <CheckBadge check={check} />
+          </span>
+        </a>
+      </li>
     );
   };
 
-  return (
-    <div className="hall-of-fame-page">
-      <div className="hall-of-fame-header">
-        <h2>Hall of Fame</h2>
-        <p>
-          The luckiest verified pulls on Earth. GitHub Actions verified every entry, and the top {VERIFY_LIMIT} are re-checked on
-          your device right now. Open any pull to check it yourself.
-        </p>
-        <button className="hall-of-fame-close-btn" onClick={onClose}>&times;</button>
-      </div>
-
-      <section className="hof-section">
-        <h3>Global leaderboard</h3>
-        {entries === null && <p className="hof-empty">Loading…</p>}
-        {entries?.length === 0 && (
-          <p className="hof-empty">
-            No verified entries yet. Pull a Full House or better (or a {HALL_OF_FAME_MIN_SCORE.toLocaleString()}+ Brainrot Score), hit <strong>Share this pull</strong>, then{' '}
-            <strong>Submit to the global Hall of Fame</strong>. You could be first.
-          </p>
-        )}
-        <div className="hof-list">{ranked.map((e, i) => renderEntry(e, i))}</div>
-      </section>
-
-      {firsts.length > 0 && (
-        <section className="hof-section">
-          <h3>World firsts</h3>
-          <p className="hof-sub">The first verified Full House or better in each set, by submission time.</p>
-          <div className="hof-list">{firsts.map((e) => renderEntry(e))}</div>
-        </section>
-      )}
-
-      <section className="hof-section">
-        <h3>Hackathon legends</h3>
-        <p className="hof-sub">The originals, from before pulls were verifiable.</p>
-        <div className="hall-of-fame-grid">
-          {HACKATHON_LEGENDS.map((entry) => (
-            <div key={entry.name} className="hall-of-fame-card">
-              <div className={`hall-of-fame-image ${entry.portrait ? 'portrait' : ''}`}>
-                <img src={entry.image} alt={`${entry.name}'s achievement`} />
-              </div>
-              <div className="hall-of-fame-info">
-                <div className="hall-of-fame-name">{entry.name}</div>
-                <div className="hall-of-fame-achievement">{entry.description}</div>
-                <div className="hall-of-fame-date">{entry.date}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+  const empty = (
+    <div className="hof-empty">
+      <Crown aria-hidden="true" />
+      <p>
+        <strong>No verified entries yet.</strong> Pull a Full House or better (or score 🧠 {HALL_OF_FAME_MIN_SCORE.toLocaleString()}+),
+        share it, and submit it from the share sheet. You could be first.
+      </p>
     </div>
   );
+
+  return (
+    <Sheet title="Hall of Fame" subtitle="The luckiest verified pulls on Earth" onClose={onClose} size="lg" className="hall-of-fame">
+      <Tabs
+        label="Hall of Fame lists"
+        value={tab}
+        onChange={setTab}
+        tabs={[
+          { id: 'top', label: 'Leaderboard' },
+          { id: 'firsts', label: 'World firsts' },
+          { id: 'legends', label: 'Legends' },
+        ]}
+      />
+
+      <div className="hof-panel" role="tabpanel">
+        {tab === 'top' && (
+          <>
+            {entries === null && <p className="hof-loading">Loading…</p>}
+            {entries?.length === 0 && empty}
+            {ranked.length > 0 && (
+              <>
+                <p className="hof-note">
+                  <ShieldCheck aria-hidden="true" /> The top {VERIFY_LIMIT} are re-checked on your device. Tap one to see it.
+                </p>
+                <ol className="hof-list">{ranked.map((e, i) => renderEntry(e, i))}</ol>
+              </>
+            )}
+          </>
+        )}
+
+        {tab === 'firsts' && (
+          <>
+            <p className="hof-note">The first verified Full House or better in each set.</p>
+            {firsts.length > 0 ? <ul className="hof-list">{firsts.map((e) => renderEntry(e))}</ul> : empty}
+          </>
+        )}
+
+        {tab === 'legends' && (
+          <>
+            <p className="hof-note">The originals, from the hackathon, before pulls were verifiable.</p>
+            <ul className="hof-legends">
+              {HACKATHON_LEGENDS.map((entry) => (
+                <li key={entry.name} className="hof-legend">
+                  <img src={entry.image} alt={`${entry.name}'s ${entry.description}`} className={entry.portrait ? 'is-portrait' : ''} loading="lazy" />
+                  <span className="hof-legend-info">
+                    <strong>{entry.name}</strong>
+                    <span>
+                      {entry.description} · {entry.date}
+                    </span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+      </div>
+    </Sheet>
+  );
+};
+
+const CheckBadge = ({ check }: { check?: Check }) => {
+  if (check === 'verified')
+    return (
+      <span className="hof-check is-verified">
+        <ShieldCheck aria-hidden="true" /> Verified
+      </span>
+    );
+  if (check === 'failed')
+    return (
+      <span className="hof-check is-failed">
+        <ShieldAlert aria-hidden="true" /> Failed
+      </span>
+    );
+  if (check === 'checking') return <span className="hof-check">Checking…</span>;
+  return null;
 };
 
 export default HallOfFamePage;

@@ -3,7 +3,7 @@ import './styles/index.css';
 import PackOpener from './components/pack/PackOpener';
 import AchievementToasts from './components/achievements/AchievementToasts';
 import AppNav, { type NavTarget } from './components/ui/AppNav';
-import BestPackPage from './components/pages/BestPackPage';
+import PullsPage from './components/pages/PullsPage';
 import AchievementsPage from './components/achievements/AchievementsPage';
 import HallOfFamePage from './components/pages/HallOfFamePage';
 import SettingsPage from './components/pages/SettingsPage';
@@ -17,7 +17,7 @@ import { CardWithMeta } from './components/cards/Card';
 import { DEFAULT_SET_ID, SETS } from './content/sets';
 import { extractProof } from './engine';
 import type { OpenedPack } from './game/pulls';
-import { recordPull } from './game/pullLog';
+import { recordPack } from './game/history';
 import { importPlayer } from './game/player';
 import { getStoredData } from './utils/storage';
 import { CURRENT_DATA_VERSION, hydrateCollection, setDataVersion } from './utils/migrations';
@@ -42,6 +42,7 @@ const SAVE_FIELDS = [
   ['stats', STORAGE_KEYS.STATS],
   ['hallOfFame', STORAGE_KEYS.HALL_OF_FAME],
   ['pulls', STORAGE_KEYS.PULLS],
+  ['history', STORAGE_KEYS.HISTORY],
   ['settings', STORAGE_KEYS.SETTINGS],
 ] as const;
 
@@ -231,7 +232,7 @@ function App() {
     const newCards = pack.cards;
     const pullRef = { setId: pack.setId, setVersion: pack.setVersion, nonce: pack.nonce, publicKeyHex: pack.publicKeyHex };
     const { points: packValue, hand: pokerHand, score } = scoreCards(newCards);
-    recordPull(pack);
+    recordPack(pack);
 
     // Update stats using functional update to avoid stale closure
     let updatedStats: Stats = stats;
@@ -414,12 +415,18 @@ function App() {
         />
       )}
 
-      {/* Best Pack Page */}
       {isBestPackOpen && (
-        <BestPackPage
+        <PullsPage
           stats={stats}
           onClose={() => setIsBestPackOpen(false)}
-          onShare={stats.highestPackRef ? shareBestPack : undefined}
+          onShareBest={stats.highestPackRef ? shareBestPack : undefined}
+          onSharePull={(entry, cards) =>
+            setShareTarget({
+              ref: { setId: entry.setId, setVersion: entry.setVersion, nonce: entry.nonce, publicKeyHex: entry.key },
+              cards,
+              score: scoreCards(cards),
+            })
+          }
         />
       )}
 

@@ -1,0 +1,398 @@
+/* Collection sheet and the big single-card viewer. */
+
+.collection-set {
+  padding: var(--space-4) 0;
+  border-top: 1px solid var(--border);
+}
+
+.collection-set:first-child {
+  border-top: none;
+  padding-top: var(--space-1);
+}
+
+.collection-set-header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    'name count'
+    'era count'
+    'bar bar';
+  column-gap: var(--space-3);
+  row-gap: 2px;
+}
+
+.collection-set-header h3 {
+  grid-area: name;
+  font-size: var(--text-xl);
+}
+
+.collection-set-era {
+  grid-area: era;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
+
+.collection-set-archived {
+  padding: 1px var(--space-2);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-pill);
+  color: var(--text-subtle);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.collection-set-count {
+  grid-area: count;
+  align-self: center;
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
+.collection-set-bar {
+  grid-area: bar;
+  height: 4px;
+  margin-top: var(--space-2);
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.collection-set-bar > span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--set-a), var(--set-b));
+}
+
+.collection-later {
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border);
+}
+
+.collection-set + .collection-later {
+  margin-top: var(--space-2);
+}
+
+.collection-later:first-child {
+  padding-top: 0;
+  border-top: none;
+}
+
+.collection-later .section-title {
+  margin-bottom: var(--space-2);
+}
+
+.collection-later ul {
+  list-style: none;
+}
+
+.collection-later li {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: baseline;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+}
+
+.collection-later li + li {
+  border-top: 1px solid var(--border);
+}
+
+.collection-later-name {
+  font-weight: 600;
+}
+
+.collection-later-era,
+.collection-later-count {
+  color: var(--text-subtle);
+  font-size: var(--text-sm);
+}
+
+.collection-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(86px, 1fr));
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+  list-style: none;
+}
+
+@media (min-width: 720px) {
+  .collection-grid {
+    grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
+    gap: var(--space-3);
+  }
+}
+
+.collection-item,
+.collection-slot {
+  --r: var(--rarity-common);
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 687 / 1024;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.collection-item {
+  box-shadow: 0 0 0 2px var(--r);
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+
+.collection-item:hover {
+  transform: translateY(-3px);
+}
+
+.collection-item:focus-visible {
+  box-shadow: 0 0 0 2px var(--r), var(--focus-ring);
+}
+
+.collection-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.collection-item.common,
+.collection-slot-gem.common { --r: var(--rarity-common); }
+.collection-item.uncommon,
+.collection-slot-gem.uncommon { --r: var(--rarity-uncommon); }
+.collection-item.rare,
+.collection-slot-gem.rare { --r: var(--rarity-rare); }
+.collection-item.epic,
+.collection-slot-gem.epic { --r: var(--rarity-epic); }
+.collection-item.legendary,
+.collection-slot-gem.legendary { --r: var(--rarity-legendary); }
+.collection-item.brainrot { box-shadow: 0 0 0 2px #ffe14d, 0 0 14px rgba(255, 225, 77, 0.5); }
+.collection-slot-gem.brainrot { --r: #ffe14d; }
+
+.collection-count {
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
+  z-index: 3;
+  padding: 1px 6px;
+  border-radius: var(--radius-pill);
+  background: rgba(13, 8, 32, 0.85);
+  color: var(--text);
+  font-size: var(--text-xs);
+  font-weight: 700;
+}
+
+/* A card you don't have yet: an empty slot hinting at its rarity. */
+.collection-slot {
+  display: grid;
+  place-items: center;
+  border: 1.5px dashed var(--border-strong);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.collection-slot-gem {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid var(--r);
+  color: var(--r);
+  font-weight: 800;
+  opacity: 0.7;
+}
+
+.collection-empty {
+  padding: var(--space-5) 0;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* ---- Single card viewer (bare sheet) ---- */
+
+.card-viewer .sheet-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.card-viewer-card {
+  --r: var(--rarity-common);
+  position: relative;
+  width: min(78vw, 46dvh, 380px);
+  aspect-ratio: 687 / 1024;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: 0 0 0 3px var(--r), var(--shadow-3);
+  transform-style: preserve-3d;
+  transition: transform 0.1s ease-out;
+}
+
+.card-viewer-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card-viewer-card.uncommon { --r: var(--rarity-uncommon); }
+.card-viewer-card.rare { --r: var(--rarity-rare); }
+.card-viewer-card.epic { --r: var(--rarity-epic); }
+.card-viewer-card.legendary { --r: var(--rarity-legendary); }
+.card-viewer-card.brainrot { box-shadow: 0 0 0 3px #ffe14d, 0 0 30px rgba(255, 225, 77, 0.5), var(--shadow-3); }
+
+.card-viewer-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  max-width: 380px;
+  text-align: center;
+}
+
+.card-viewer-flavor {
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
+
+.collection-item.holo {
+    position: relative;
+    overflow: hidden;
+    box-shadow: 6px 10px 16px rgba(0, 0, 0, 0.45),
+                0 0 15px rgba(255, 0, 255, 0.25),
+                0 0 30px rgba(0, 255, 255, 0.15);
+}
+
+/* Rainbow shimmer for holo items */
+.collection-item.holo::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        45deg,
+        rgba(255, 0, 0, 0.15) 0%,
+        rgba(255, 127, 0, 0.15) 14%,
+        rgba(255, 255, 0, 0.15) 28%,
+        rgba(0, 255, 0, 0.15) 42%,
+        rgba(0, 0, 255, 0.15) 56%,
+        rgba(75, 0, 130, 0.15) 70%,
+        rgba(148, 0, 211, 0.15) 84%,
+        rgba(255, 0, 0, 0.15) 100%
+    );
+    background-size: 400% 400%;
+    animation: collectionHoloRainbow 3s ease infinite;
+    pointer-events: none;
+    border-radius: 10px;
+    mix-blend-mode: overlay;
+    z-index: 1;
+}
+
+@keyframes collectionHoloRainbow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Shine sweep for holo items in grid */
+.collection-item.holo::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(
+        120deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0) 30%,
+        rgba(255, 255, 255, 0.6) 50%,
+        rgba(255, 255, 255, 0) 70%,
+        transparent 100%
+    );
+    transform: skewX(-20deg);
+    animation: collectionItemHoloShine 4s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 2;
+}
+
+@keyframes collectionItemHoloShine {
+    0% { left: -100%; }
+    30% { left: 150%; }
+    100% { left: 150%; }
+}
+
+
+
+.card-viewer-card.holo {
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6),
+                0 0 30px rgba(255, 0, 255, 0.3),
+                0 0 60px rgba(0, 255, 255, 0.2);
+}
+
+/* Rainbow shimmer for card viewer */
+.card-viewer-card.holo::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        45deg,
+        rgba(255, 0, 0, 0.18) 0%,
+        rgba(255, 127, 0, 0.18) 14%,
+        rgba(255, 255, 0, 0.18) 28%,
+        rgba(0, 255, 0, 0.18) 42%,
+        rgba(0, 0, 255, 0.18) 56%,
+        rgba(75, 0, 130, 0.18) 70%,
+        rgba(148, 0, 211, 0.18) 84%,
+        rgba(255, 0, 0, 0.18) 100%
+    );
+    background-size: 400% 400%;
+    animation: cardViewerHoloRainbow 3s ease infinite;
+    pointer-events: none;
+    border-radius: 10px;
+    mix-blend-mode: overlay;
+    z-index: 1;
+}
+
+@keyframes cardViewerHoloRainbow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Shine sweep overlay */
+.card-viewer-card.holo::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(
+        120deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0) 30%,
+        rgba(255, 255, 255, 0.7) 50%,
+        rgba(255, 255, 255, 0) 70%,
+        transparent 100%
+    );
+    transform: skewX(-20deg);
+    animation: cardViewerHoloShine 2.5s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 2;
+}
+
+@keyframes cardViewerHoloShine {
+    0% { left: -100%; }
+    50% { left: 150%; }
+    100% { left: 150%; }
+}
+

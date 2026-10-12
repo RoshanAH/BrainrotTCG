@@ -23,7 +23,7 @@ export interface PullRef {
   setId: string;
   setVersion: number;
   nonce: number;
-  /** The key that opened it. Only that key can share it (refs saved before this field have none). */
+  /** The key that opened it, or a prefix of it. Only that key can share it (older refs have none). */
   publicKeyHex?: string;
 }
 
@@ -63,7 +63,7 @@ export const openPack = async (set: SetDefinition): Promise<OpenedPack> => {
 };
 
 /** Can this player share this pull? (False after importing a different player's key.) */
-export const canShare = (ref: PullRef): boolean => !ref.publicKeyHex || ref.publicKeyHex === getPlayer().publicKeyHex;
+export const canShare = (ref: PullRef): boolean => !ref.publicKeyHex || getPlayer().publicKeyHex.startsWith(ref.publicKeyHex);
 
 /** Sign a proof for one of this player's pulls (with their current name). */
 export const proofFor = (ref: PullRef): string => {

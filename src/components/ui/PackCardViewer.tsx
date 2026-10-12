@@ -64,14 +64,16 @@ const PackCardViewer = ({
                         : 0;
 
                     return (
-                        <div
+                        <button
+                            type="button"
                             key={card.uniqueId || index}
                             className={getCardClasses(card)}
                             style={displayMode === 'carousel' ? { '--offset': offset } as React.CSSProperties : undefined}
                             onClick={() => handleCardClick(card)}
+                            aria-label={`${card.name}${card.isHolo ? ' (holo)' : ''}`}
                         >
-                            <img src={card.image} alt={card.name} />
-                        </div>
+                            <img src={card.image} alt="" />
+                        </button>
                     );
                 })}
             </div>

@@ -7,7 +7,9 @@ import { getPlayer } from '../../game/player';
 import { canShare, proofFor, pullUrl, type PullRef } from '../../game/pulls';
 import { bragText, hallOfFameSubmitUrl } from '../../game/share';
 import { renderPoster } from '../../game/bragImage';
+import { Copy, Crown, ImageDown, Link2, Share2, ShieldCheck } from 'lucide-react';
 import PackCardViewer from '../ui/PackCardViewer';
+import Sheet from '../ui/Sheet';
 import '../../styles/Share.css';
 
 export interface ShareTarget {
@@ -78,46 +80,73 @@ const ShareSheet = ({ target, onClose }: ShareSheetProps) => {
 
   if (!shareable) {
     return (
-      <div className="share-sheet-backdrop" onClick={onClose}>
-        <div className="share-sheet" onClick={(e) => e.stopPropagation()} role="dialog" aria-label="Can't share this pull">
-          <button className="share-close" onClick={onClose} aria-label="Close">×</button>
-          <h2>Can't share this one</h2>
-          <p className="share-note">
-            This pack was opened with a different player key than the one on this device (for example, before you imported a save),
-            so this device can't sign a proof for it. Open it on the device that has that key, or import that save again.
-          </p>
-        </div>
-      </div>
+      <Sheet title="Can't share this one" onClose={onClose} size="sm">
+        <p className="share-note">
+          This pack was opened with a different player key than the one on this device (for example, before you imported a
+          save), so this device can't sign a proof for it. Open it on the device that has that key, or import that save again.
+        </p>
+      </Sheet>
     );
   }
 
+  const canNativeShare = typeof navigator.share === 'function';
   return (
-    <div className="share-sheet-backdrop" onClick={onClose}>
-      <div className="share-sheet" onClick={(e) => e.stopPropagation()} role="dialog" aria-label="Share this pull">
-        <button className="share-close" onClick={onClose} aria-label="Close">×</button>
-        <h2>Show it off</h2>
-        <p className="share-owner">
-          Pulled by <strong>{player.name}</strong> <span className="share-fp">#{player.fingerprint}</span> · {setName}
-        </p>
-        <PackCardViewer cards={target.cards} displayMode="grid" />
-        <pre className="share-brag">{text}</pre>
-        <div className="share-actions">
-          {'share' in navigator && <button onClick={nativeShare}>Share…</button>}
-          <button onClick={() => copy('link', url)}>{copied === 'link' ? 'Copied!' : 'Copy link'}</button>
-          <button onClick={() => copy('text', text)}>{copied === 'text' ? 'Copied!' : 'Copy brag text'}</button>
-          <button onClick={savePoster} disabled={posterBusy}>{posterBusy ? 'Making poster…' : 'Save poster (9:16)'}</button>
-          {qualifiesForHallOfFame(target.score) && (
-            <a className="share-hof" href={hallOfFameSubmitUrl(url, `${target.score.hand.name} in ${setName}`)} target="_blank" rel="noreferrer">
-              Submit to the global Hall of Fame
-            </a>
-          )}
-        </div>
-        <p className="share-note">
-          The link is a ~150-byte proof. Anyone who opens it re-derives this exact pack from your player key and ticket #{target.ref.nonce} on
-          their own device, so it can't be edited or faked.
-        </p>
+    <Sheet
+      title="Share your pull"
+      subtitle={
+        <>
+          {setName} · {target.score.hand.name} · <span className="tabular">🧠 {target.score.score.toLocaleString()}</span>
+        </>
+      }
+      onClose={onClose}
+      size="sm"
+      className="share-sheet"
+    >
+      <PackCardViewer cards={target.cards} displayMode="grid" showValue={false} className="share-cards" />
+
+      <div className="share-primary">
+        {canNativeShare ? (
+          <button type="button" className="btn btn--primary btn--lg btn--block" onClick={nativeShare}>
+            <Share2 aria-hidden="true" /> Share
+          </button>
+        ) : (
+          <button type="button" className="btn btn--primary btn--lg btn--block" onClick={() => copy('link', url)}>
+            <Link2 aria-hidden="true" /> {copied === 'link' ? 'Link copied' : 'Copy link'}
+          </button>
+        )}
       </div>
-    </div>
+
+      <div className="share-secondary">
+        {canNativeShare && (
+          <button type="button" className="share-option" onClick={() => copy('link', url)}>
+            <Link2 aria-hidden="true" />
+            {copied === 'link' ? 'Copied' : 'Copy link'}
+          </button>
+        )}
+        <button type="button" className="share-option" onClick={() => copy('text', text)}>
+          <Copy aria-hidden="true" />
+          {copied === 'text' ? 'Copied' : 'Copy text'}
+        </button>
+        <button type="button" className="share-option" onClick={savePoster} disabled={posterBusy}>
+          <ImageDown aria-hidden="true" />
+          {posterBusy ? 'Making…' : 'Poster'}
+        </button>
+      </div>
+
+      {qualifiesForHallOfFame(target.score) && (
+        <a className="share-hof" href={hallOfFameSubmitUrl(url, `${target.score.hand.name} in ${setName}`)} target="_blank" rel="noreferrer">
+          <Crown aria-hidden="true" />
+          <span>
+            <strong>This qualifies for the Hall of Fame</strong>
+            <span>Submit it on GitHub</span>
+          </span>
+        </a>
+      )}
+
+      <p className="share-note">
+        <ShieldCheck aria-hidden="true" /> Anyone who opens the link re-checks this exact pack on their own device.
+      </p>
+    </Sheet>
   );
 };
 

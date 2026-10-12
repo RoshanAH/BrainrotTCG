@@ -148,32 +148,36 @@
 }
 
 /* Swipe hint */
+/* Sits just under the tear line as a pill, so it reads over any pack art. */
 .swipe-hint {
     position: absolute;
-    top: calc(var(--tear-y) + 1%);
+    top: calc(var(--tear-y) + 2.5%);
     left: 50%;
     transform: translateX(-50%);
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 0.5rem;
+    gap: var(--space-2);
+    padding: var(--space-1) var(--space-3) var(--space-1) var(--space-2);
+    border-radius: var(--radius-pill);
+    background: rgba(12, 8, 24, 0.72);
+    backdrop-filter: blur(6px);
+    box-shadow: var(--shadow-1);
     z-index: 6;
     pointer-events: none;
     animation: swipeHintFade 3s ease-in-out infinite;
 }
 
 .swipe-hint-icon {
-    font-size: 2rem;
+    font-size: 1.25rem;
     animation: swipeMotion 1.5s ease-in-out infinite;
 }
 
 .swipe-hint-text {
-    font-size: 0.9rem;
+    color: #fff;
+    font-size: var(--text-xs);
     font-weight: 700;
-    color: rgba(255, 255, 255, 0.9);
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
     white-space: nowrap;
 }
 
@@ -181,11 +185,11 @@
 
     0%,
     100% {
-        transform: translateX(-20px);
+        transform: translateX(-4px);
     }
 
     50% {
-        transform: translateX(20px);
+        transform: translateX(4px);
     }
 }
 
@@ -193,7 +197,7 @@
 
     0%,
     100% {
-        opacity: 0.6;
+        opacity: 0.8;
     }
 
     50% {
@@ -203,6 +207,8 @@
 
 .pack-shell.is-cutting .swipe-hint,
 .pack-shell.is-cut .swipe-hint {
+    /* The fade animation would otherwise keep overriding the opacity. */
+    animation: none;
     opacity: 0;
     transition: opacity 0.3s ease;
 }
@@ -324,7 +330,7 @@
 @keyframes fadePulse {
     0%,
     100% {
-        opacity: 0.6;
+        opacity: 0.8;
     }
     50% {
         opacity: 1;

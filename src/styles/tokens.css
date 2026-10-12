@@ -6,13 +6,15 @@
 
 @font-face {
   font-family: 'RubikGlitch';
-  src: url('../assets/fonts/RubikGlitch-Regular.ttf') format('truetype');
+  /* Only drawn for the logo, so just Basic Latin (56 KB instead of 407 KB). */
+  src: url('../assets/fonts/RubikGlitch-Latin.woff2') format('woff2');
+  unicode-range: U+0020-007E;
   font-display: swap;
 }
 
 @font-face {
   font-family: 'Lilita One';
-  src: url('../assets/fonts/LilitaOne-Regular.ttf') format('truetype');
+  src: url('../assets/fonts/LilitaOne-Regular.woff2') format('woff2');
   font-display: swap;
 }
 
