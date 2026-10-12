@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import './styles/index.css';
 import PackOpener from './components/pack/PackOpener';
-import AchievementToasts from './components/achievements/AchievementToasts';
+import AchievementToasts, { type ToastItem } from './components/achievements/AchievementToasts';
 import AppNav, { type NavTarget } from './components/ui/AppNav';
 import MyProfilePage from './components/profile/MyProfilePage';
 import ProfileViewerPage from './components/profile/ProfileViewerPage';
@@ -11,23 +11,27 @@ import SettingsPage from './components/pages/SettingsPage';
 import CollectionBrowser from './components/collection/CollectionBrowser';
 import SetPicker from './components/sets/SetPicker';
 import ShareSheet, { type ShareTarget } from './components/share/ShareSheet';
+import Sheet from './components/ui/Sheet';
 import PullViewerPage from './components/share/PullViewerPage';
 import { cardPoints, scoreCards } from './data/cards';
-import { getAchievementById, Achievement } from './data/achievements';
+import { getAchievementById } from './data/achievements';
 import { CardWithMeta } from './components/cards/Card';
 import { DEFAULT_SET_ID, SETS } from './content/sets';
 import { extractProfile, extractProof } from './engine';
-import type { OpenedPack } from './game/pulls';
+import { clearPendingPack, takePendingPack, type OpenedPack, type PullRef } from './game/pulls';
 import { importPlayer } from './game/player';
+import { backUpSave, hasProgress } from './game/move';
 import { getStoredData } from './utils/storage';
 import { musicLevel, readSettings } from './utils/settings';
-import { CARD_BACKS, PACK_FOILS, usable } from './game/progression';
+import { CARD_BACKS, PACK_FOILS, TITLES, nextReward, usable } from './game/progression';
 import { myStats } from './game/profiles';
+import { getHistory } from './game/history';
 import { CURRENT_DATA_VERSION, hydrateCollection, setDataVersion } from './utils/migrations';
 import { STORAGE_KEYS } from './constants';
 import {
   checkPackMilestones,
   checkCollectionAchievements,
+  checkModifierAchievements,
   checkPackAchievements,
 } from './utils/achievementChecks';
 import type { CollectionItem, Stats, HallOfFameData, Settings, AchievementData } from './types';
@@ -44,6 +48,9 @@ const SAVE_FIELDS = [
   ['settings', STORAGE_KEYS.SETTINGS],
 ] as const;
 
+/** A pull or profile link that got cut off or mangled on the way (chat apps do that). */
+const isBrokenLink = (hash: string) => /^#\/(pull|profile)\//.test(hash) && !extractProof(hash) && !extractProfile(hash);
+
 function App() {
   const [collection, setCollection] = useState<Record<string, CollectionItem>>(() => hydrateCollection(getStoredData(STORAGE_KEYS.COLLECTION, {})));
   const [achievements, setAchievements] = useState<Record<string, AchievementData | number>>(() => getStoredData(STORAGE_KEYS.ACHIEVEMENTS, {}));
@@ -57,11 +64,12 @@ function App() {
   const [isHallOfFameOpen, setIsHallOfFameOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [notificationQueue, setNotificationQueue] = useState<Achievement[]>([]);
+  const [notificationQueue, setNotificationQueue] = useState<ToastItem[]>([]);
   const [shareTarget, setShareTarget] = useState<ShareTarget | null>(null);
   const [packBusy, setPackBusy] = useState(false);
   const [viewProof, setViewProof] = useState<string | null>(() => extractProof(window.location.hash));
   const [viewProfile, setViewProfile] = useState<string | null>(() => extractProfile(window.location.hash));
+  const [brokenLink, setBrokenLink] = useState(() => isBrokenLink(window.location.hash));
 
   const playableSets = SETS.filter((s) => !s.archivedAt && (!s.draft || settings.showDraftSets));
   const [selectedSetId, setSelectedSetId] = useState<string>(() => localStorage.getItem(STORAGE_KEYS.SELECTED_SET) ?? DEFAULT_SET_ID);
@@ -76,30 +84,44 @@ function App() {
     const onHashChange = () => {
       setViewProof(extractProof(window.location.hash));
       setViewProfile(extractProfile(window.location.hash));
+      setBrokenLink(isBrokenLink(window.location.hash));
     };
     window.addEventListener('hashchange', onHashChange);
     return () => window.removeEventListener('hashchange', onHashChange);
   }, []);
   const closePullViewer = useCallback(() => {
-    history.replaceState(null, '', window.location.pathname + window.location.search);
+    // Shared links arrive through a preview page (/p/<id>), which is only there for chat apps.
+    const path = /\/p\/[^/]+$/.test(window.location.pathname) ? import.meta.env.BASE_URL : window.location.pathname + window.location.search;
+    history.replaceState(null, '', path);
     setViewProof(null);
     setViewProfile(null);
+    setBrokenLink(false);
   }, []);
 
   const bgMusicRef = useRef<HTMLAudioElement | null>(null);
 
-  // Play background music on page load
+  // Background music. Browsers (phones always) only allow sound after a tap or a key, so it starts on
+  // the first one if it couldn't start on load; and it isn't downloaded until it plays, so it doesn't
+  // hold up the pack art on a slow connection.
   useEffect(() => {
-    const bgMusic = new Audio(swedenSrc);
+    const bgMusic = new Audio();
+    bgMusic.preload = 'none';
+    bgMusic.src = swedenSrc;
     bgMusic.volume = musicLevel(settings.musicVolume);
     bgMusic.loop = true;
     bgMusicRef.current = bgMusic;
 
+    const events = ['pointerdown', 'keydown'] as const;
+    const startOnInput = () => {
+      events.forEach((e) => window.removeEventListener(e, startOnInput));
+      if (bgMusic.volume > 0 && bgMusic.paused) bgMusic.play().catch(() => { });
+    };
     if (settings.musicVolume > 0) {
-      bgMusic.play().catch(() => { });
+      bgMusic.play().catch(() => events.forEach((e) => window.addEventListener(e, startOnInput)));
     }
 
     return () => {
+      events.forEach((e) => window.removeEventListener(e, startOnInput));
       bgMusic.pause();
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -109,6 +131,30 @@ function App() {
   // Re-read after every pack (myStats reads the pack history, which each pack adds to).
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const level = useMemo(() => myStats().level, [stats.packsOpened]);
+  // A level-up says so, with what it unlocked (otherwise it only shows if you open the profile).
+  const shownLevel = useRef(level);
+  useEffect(() => {
+    const from = shownLevel.current;
+    shownLevel.current = level;
+    if (level <= from) return;
+    const unlocked = [
+      ...TITLES.filter((r) => r.level > from && r.level <= level).map((r) => `the title ${r.name}`),
+      ...CARD_BACKS.filter((r) => r.level > from && r.level <= level).map((r) => `the ${r.name} card back`),
+      ...PACK_FOILS.filter((r) => r.level > from && r.level <= level).map((r) => `the ${r.name} pack foil`),
+    ];
+    const next = nextReward(level);
+    setNotificationQueue((prev) => [
+      ...prev,
+      {
+        id: `level-${level}`,
+        kicker: 'Level up',
+        name: `Level ${level}`,
+        description: unlocked.length ? `Unlocked ${unlocked.join(', ')}. Pick it in your profile.` : next ? `Next: ${next.name} at level ${next.level}.` : 'Keep opening.',
+        opens: 'profile',
+      },
+    ]);
+  }, [level]);
+
   useEffect(() => {
     document.documentElement.dataset.cardBack = usable(CARD_BACKS, settings.cardBack, level);
     document.documentElement.dataset.packFoil = usable(PACK_FOILS, settings.packFoil, level);
@@ -128,8 +174,16 @@ function App() {
     // Use shared achievement checking functions
     const packAchievements = checkPackMilestones(stats.packsOpened || 0, achievements);
     const collectionAchievements = checkCollectionAchievements(collection, stats, achievements);
+    // Finishes and misprints pulled before their achievements existed: from the pack history, and
+    // from the collection's tallies for packs the history has no cards for.
+    const pulled = getHistory().flatMap((e) => (e.cards ?? []).map((c) => ({ isHolo: c.holo, finish: c.finish, misprint: c.misprint })));
+    const tallied = Object.values(collection).flatMap((item) => [
+      ...Object.entries(item?.finishes ?? {}).filter(([, n]) => (n ?? 0) > 0).map(([finish]) => ({ isHolo: false, finish })),
+      ...((item?.misprints ?? 0) > 0 ? [{ isHolo: false, misprint: true }] : []),
+    ]);
+    const modifierAchievements = checkModifierAchievements([...pulled, ...tallied], achievements);
 
-    const retroactiveAchievements = [...packAchievements, ...collectionAchievements];
+    const retroactiveAchievements = [...packAchievements, ...collectionAchievements, ...modifierAchievements];
 
     // Apply retroactive achievements (without notifications to avoid spam on load)
     if (retroactiveAchievements.length > 0) {
@@ -146,7 +200,7 @@ function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Only run on mount
 
-  const unlockAchievement = useCallback((achievementId: string, pack?: CardWithMeta[]) => {
+  const unlockAchievement = useCallback((achievementId: string, pack?: CardWithMeta[], ref?: PullRef) => {
     const achievement = getAchievementById(achievementId);
     if (!achievement) return;
 
@@ -159,6 +213,7 @@ function App() {
       const achievementData: AchievementData = {
         unlockedAt: Date.now(),
         pack: pack,
+        ...(ref ? { ref } : {}),
       };
       const next = { ...prev, [achievementId]: achievementData };
       localStorage.setItem(STORAGE_KEYS.ACHIEVEMENTS, JSON.stringify(next));
@@ -197,14 +252,14 @@ function App() {
     localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(newSettings));
   }, []);
 
-  const handleImportSave = useCallback((data: string) => {
+  /** Load a backup file (Settings asks first if it would replace a different save). Returns an error to show, if any. */
+  const handleImportSave = useCallback((data: string): string | null => {
     try {
       const saveData = JSON.parse(data);
 
       // Validate save data structure
       if (!saveData.version || !saveData.exportedAt) {
-        alert('Invalid save file format');
-        return;
+        return "That file isn't a Brainrot TCG save.";
       }
 
       // Write everything, then reload: the loader runs any migrations an older save needs
@@ -212,6 +267,8 @@ function App() {
       for (const [field] of SAVE_FIELDS) {
         if (typeof saveData[field] === 'string') JSON.parse(saveData[field]); // reject corrupt files before writing anything
       }
+      // The save being replaced is kept, in case it was the wrong file.
+      if (hasProgress()) backUpSave('brainrot-before-import-v1');
       for (const [field, key] of SAVE_FIELDS) {
         if (typeof saveData[field] === 'string') localStorage.setItem(key, saveData[field]);
       }
@@ -220,14 +277,14 @@ function App() {
       }
       setDataVersion(typeof saveData.dataVersion === 'number' ? saveData.dataVersion : saveData.version === 1 ? 1 : CURRENT_DATA_VERSION);
 
-      alert('Save imported successfully!');
       window.location.reload();
+      return null;
     } catch {
-      alert('Failed to import save file. Please check the file format.');
+      return "Couldn't read that file. Is it a save exported from Settings?";
     }
   }, []);
 
-  const checkAllAchievements = useCallback((newCards: CardWithMeta[], updatedCollection: Record<string, CollectionItem>, updatedStats: Stats, currentAchievements: Record<string, AchievementData | number>) => {
+  const checkAllAchievements = useCallback((newCards: CardWithMeta[], pullRef: PullRef, updatedCollection: Record<string, CollectionItem>, updatedStats: Stats, currentAchievements: Record<string, AchievementData | number>) => {
     // Use shared achievement checking functions - pass current achievements to avoid stale state
     const packMilestones = checkPackMilestones(updatedStats.packsOpened, currentAchievements);
     const collectionAchievements = checkCollectionAchievements(updatedCollection, updatedStats, currentAchievements);
@@ -235,10 +292,11 @@ function App() {
 
     // Combine all achievements and unlock them with the pack data
     const allNewAchievements = [...packMilestones, ...collectionAchievements, ...packAchievements];
-    allNewAchievements.forEach(id => unlockAchievement(id, newCards));
+    allNewAchievements.forEach(id => unlockAchievement(id, newCards, pullRef));
   }, [unlockAchievement]);
 
   const handlePackOpened = useCallback((pack: OpenedPack) => {
+    clearPendingPack(pack.nonce);
     const newCards = pack.cards;
     const pullRef = { setId: pack.setId, setVersion: pack.setVersion, nonce: pack.nonce, publicKeyHex: pack.publicKeyHex };
     const { points: packValue, hand: pokerHand, score } = scoreCards(newCards);
@@ -368,14 +426,21 @@ function App() {
       [100_000, 'pack_value_10000'], [100_000_000, 'pack_value_max'],
     ];
     PACK_SCORE_ACHIEVEMENTS.forEach(([min, id]) => score >= min && packValueAchievements.push(id));
-    packValueAchievements.forEach(id => unlockAchievement(id, newCards));
+    packValueAchievements.forEach(id => unlockAchievement(id, newCards, pullRef));
 
     // Check other achievements - get current state to avoid stale closure
     setAchievements(currentAchievements => {
-      checkAllAchievements(newCards, updatedCollection || collection, updatedStats, currentAchievements);
+      checkAllAchievements(newCards, pullRef, updatedCollection || collection, updatedStats, currentAchievements);
       return currentAchievements;
     });
   }, [stats, hallOfFame, collection, checkAllAchievements, unlockAchievement]);
+
+  // A pack whose reveal never finished (a reload, a closed tab): its ticket is spent, so it still counts.
+  useEffect(() => {
+    const pending = takePendingPack();
+    if (pending) handlePackOpened(pending);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const sharePack = useCallback((pack: OpenedPack) => {
     setShareTarget({ ref: { setId: pack.setId, setVersion: pack.setVersion, nonce: pack.nonce, publicKeyHex: pack.publicKeyHex }, cards: pack.cards, score: pack.score });
@@ -430,7 +495,12 @@ function App() {
         />
       </main>
 
-      <AchievementToasts queue={notificationQueue} onDismiss={dismissNotifications} onOpen={() => setIsAchievementsOpen(true)} />
+      <AchievementToasts
+        queue={notificationQueue}
+        onDismiss={dismissNotifications}
+        onOpen={(target) => (target === 'profile' ? setIsProfileOpen(true) : setIsAchievementsOpen(true))}
+        paused={isAnyModalOpen}
+      />
 
       {/* Achievements Page */}
       {isAchievementsOpen && (
@@ -438,6 +508,7 @@ function App() {
           unlockedAchievements={achievements}
           onClose={() => setIsAchievementsOpen(false)}
           progress={achievementProgress}
+          onSharePull={(ref, cards) => setShareTarget({ ref, cards, score: scoreCards(cards) })}
         />
       )}
 
@@ -477,6 +548,14 @@ function App() {
       {viewProof && <PullViewerPage proof={viewProof} onClose={closePullViewer} />}
 
       {viewProfile && <ProfileViewerPage proof={viewProfile} onClose={closePullViewer} />}
+
+      {brokenLink && (
+        <Sheet title="This link doesn't work" onClose={closePullViewer} size="sm">
+          <p className="share-note">
+            It looks cut off or changed, maybe when it was copied or pasted. Ask for the link again, or open a pack yourself.
+          </p>
+        </Sheet>
+      )}
 
       {/* Settings Page */}
       {isSettingsOpen && (

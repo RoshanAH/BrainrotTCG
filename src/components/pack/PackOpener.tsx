@@ -90,8 +90,29 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
     if (!isOpening) prefetchNextPack(set);
   }, [isOpening, set]);
 
-  // A pack in progress has spent its ticket, so the app must not swap sets until it's recorded.
-  useEffect(() => onBusyChange?.(isOpening), [isOpening, onBusyChange]);
+  // From the tear on, the ticket is spent: the app mustn't swap sets (or open a sheet over it) until
+  // the pack is recorded. The ticket can still be mining here on a slow phone.
+  // The summary comes after it's recorded, so the tabs and the pack switcher come back there.
+  useEffect(() => onBusyChange?.((isOpening && !showSummary) || (isPackCut && !isOpening)), [isOpening, isPackCut, showSummary, onBusyChange]);
+
+  // Mining taking a while: say so, rather than leave a torn pack sitting still.
+  const [slowOpen, setSlowOpen] = useState(false);
+  /** A press on the pack just missed the tear line, so it shows where to swipe for a moment. */
+  const [nudging, setNudging] = useState(false);
+  const nudgeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const nudge = useCallback(() => {
+    setNudging(true);
+    if (nudgeTimerRef.current) clearTimeout(nudgeTimerRef.current);
+    nudgeTimerRef.current = setTimeout(() => setNudging(false), 1800);
+  }, []);
+  useEffect(() => {
+    if (!isPackCut || isOpening) return;
+    const timer = window.setTimeout(() => setSlowOpen(true), 1200);
+    return () => {
+      window.clearTimeout(timer);
+      setSlowOpen(false);
+    };
+  }, [isPackCut, isOpening]);
 
   const handleCutComplete = useCallback(() => {
     setIsPackCut(true);
@@ -121,6 +142,8 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
     isOpening,
     isPackCut,
     volume: effectsVolume,
+    disabled,
+    onMiss: nudge,
   });
 
   const finishPack = useCallback(() => {
@@ -185,11 +208,14 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
 
     // A short buzz on phones: a tick for any card, a double for big pulls.
     if (typeof navigator.vibrate === 'function' && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      navigator.vibrate(isBigPull(currentCard.rarity) ? [18, 60, 30] : 8);
+      navigator.vibrate(isBigPull(currentCard) ? [18, 60, 30] : 8);
     }
 
     if (settings.particlesEnabled) {
-      triggerRarityConfetti(currentCard.rarity);
+      // A finish or misprint gets at least an Epic's confetti.
+      const modified = !!currentCard.finish || !!currentCard.misprint;
+      const plainish = currentCard.rarity === 'COMMON' || currentCard.rarity === 'UNCOMMON' || currentCard.rarity === 'RARE';
+      triggerRarityConfetti(modified && plainish ? 'EPIC' : currentCard.rarity);
       if (currentCard.isHolo) {
         triggerHoloSparkles();
       }
@@ -219,6 +245,7 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
     disabled,
     onCloseSummary: closeSummary,
     onToggleAutoMode: () => setAutoMode(prev => !prev),
+    onOpenPack: () => !isPackCut && completeCut(),
     handleInteractionRef,
   });
 
@@ -289,6 +316,14 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
     };
   }, [handlePointerDown, handlePointerMove, handlePointerEnd, endCutAttempt]);
 
+  // Unmounted mid-reveal (the set list changed under it): the pack still goes to the collection.
+  const recordOnUnmountRef = useRef(recordPack);
+  useEffect(() => {
+    recordOnUnmountRef.current = recordPack;
+  }, [recordPack]);
+
+  useEffect(() => () => recordOnUnmountRef.current(), []);
+
   // Cleanup on unmount
   useEffect(() => () => {
     if (openTimeoutRef.current) {
@@ -307,7 +342,8 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
             key="pack"
             initial={{ y: '-100vh', opacity: 0, rotate: -10 }}
             animate={{ y: 0, opacity: 1, rotate: 0 }}
-            exit={{ scale: 1.5, opacity: 0 }}
+            // Quick, on its own timing: the drop-in spring's long tail left the screen blank before the reveal.
+            exit={{ scale: 1.25, opacity: 0, transition: { duration: 0.25, ease: 'easeIn' } }}
             transition={{
               type: 'spring',
               stiffness: 80,
@@ -323,6 +359,8 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
               error={openError}
               isCutting={isCutting}
               isPackCut={isPackCut}
+              waiting={slowOpen && isPackCut && !isOpening}
+              nudging={nudging}
               cutPoints={cutPoints}
               sparks={settings.particlesEnabled ? sparks : []}
             />
@@ -332,6 +370,7 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
             key="opening"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
+            transition={{ duration: 0.2 }}
             className="card-reveal-area"
           >
             {!showSummary ? (

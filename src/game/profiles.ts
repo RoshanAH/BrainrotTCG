@@ -22,6 +22,7 @@ import {
   type ProofRule,
   type PulledCard,
   type SetDefinition,
+  xpForLevel,
 } from '../engine';
 import { DEFAULT_SET_ID, getLatestSet, getSet } from '../content/sets';
 import { getPlayer, peekNonce } from './player';
@@ -71,10 +72,14 @@ const myTickets = (): Ticket[] => {
     const entry = known.get(nonce);
     const set = setOf(entry) ?? previous;
     const cards = entry && setOf(entry) ? toPulled(entry, set) : null;
+    const score = cards && scorePulled(cards);
+    // Packs re-opened by an older build were stored without their finishes and misprints; their
+    // saved score gives them away. Treat them as unknown so they're re-opened properly.
+    const intact = score && !(set.modifiers === 1 && entry && score.score !== entry.score);
     tickets.push({
       nonce,
       set,
-      pack: cards ? { nonce, set, cards, score: scorePulled(cards) } : null,
+      pack: cards && score && intact ? { nonce, set, cards, score } : null,
       filled: !setOf(entry),
       openedAt: entry?.openedAt ?? previousTime,
     });
@@ -127,7 +132,7 @@ export const myProfileProof = async (onProgress?: (done: number, total: number) 
       setVersion: t.set.version,
       nonce: t.nonce,
       key: player.publicKeyHex.slice(0, 16),
-      cards: cards.map((c) => ({ id: c.cardId, holo: c.isHolo })),
+      cards: cards.map((c) => ({ id: c.cardId, holo: c.isHolo, ...(c.finish ? { finish: c.finish } : {}), ...(c.misprint ? { misprint: true } : {}) })),
       hand: t.pack.score.hand.name,
       score: t.pack.score.score,
       openedAt: t.openedAt,
@@ -136,6 +141,14 @@ export const myProfileProof = async (onProgress?: (done: number, total: number) 
   addDerivedPacks(derived);
   const packs = tickets.map((t) => t.pack!);
   return encodeProfile(signProfile({ publicKey: player.publicKey, name: player.name, runs: runsOf(tickets), ...claimsFor(packs) }, player.secretKey));
+};
+
+/** Your level and XP now, and how much the newest pack added (the pack summary shows it). */
+export const myProgress = () => {
+  const packs = myTickets().flatMap((t) => (t.pack ? [t.pack] : []));
+  const now = profileStats(packs);
+  const before = profileStats(packs.slice(0, -1));
+  return { level: now.level, xp: now.xp, gained: now.xp - before.xp, levelXp: xpForLevel(now.level), nextXp: xpForLevel(now.level + 1) };
 };
 
 /** Your stats from this device's history (no mining): what viewers of your profile will see. */

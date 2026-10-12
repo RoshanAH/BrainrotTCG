@@ -18,6 +18,8 @@ import {
 import { getSet } from '../content/sets';
 import { allocateNonce, getPlayer, peekNonce } from './player';
 import { recordPack } from './history';
+import { decodeCard, encodeCard, modifiersFor } from './cardCode';
+import { STORAGE_KEYS } from '../constants';
 import { previewOf, previewPath } from './previewLinks';
 import { revealOrder } from './reveal';
 import { getTicket, prefetchTicket } from './ticketMiner';
@@ -47,7 +49,15 @@ export const toCardsWithMeta = (pulled: { setId: string; cardId: string; isHolo:
 
 /** Mine the next pack's ticket in the background. */
 export const prefetchNextPack = (set: SetDefinition) => {
-  prefetchTicket(setKey(set), getPlayer().publicKey, peekNonce());
+  void getTicket(setKey(set), getPlayer().publicKey, peekNonce())
+    .then((ticket) => {
+      // And its cards' pictures, so they're cached before the tear (and there if the connection drops).
+      for (const card of generatePack(set, packSeedFromTicket(ticket))) {
+        const image = getCard(`${card.setId}/${card.cardId}`)?.image;
+        if (image) new Image().src = image;
+      }
+    })
+    .catch(() => undefined);
 };
 
 /** Open a pack: consume a ticket number, mine (or reuse) its ticket, derive the cards. */
@@ -67,7 +77,69 @@ export const openPack = async (set: SetDefinition): Promise<OpenedPack> => {
   };
   // Recorded now, not after the reveal: the ticket is spent either way, and a profile needs every one.
   recordPack(pack);
+  savePendingPack(pack);
   return pack;
+};
+
+/*
+ * The collection only takes a pack once its reveal is done (so achievements don't spoil it), but the
+ * ticket is spent the moment it opens. Until the collection has it, the pack waits here, so a reload,
+ * a closed tab or a dead phone mid-reveal can't lose it: the app adds it on the next load.
+ */
+interface PendingPack {
+  s: string;
+  v: number;
+  n: number;
+  k?: string;
+  c: string;
+  t: number;
+}
+
+const savePendingPack = (pack: OpenedPack) => {
+  const pending: PendingPack = {
+    s: pack.setId,
+    v: pack.setVersion,
+    n: pack.nonce,
+    k: pack.publicKeyHex,
+    c: pack.cards.map((c) => encodeCard({ id: c.id, holo: c.isHolo, finish: c.finish, misprint: c.misprint })).join(','),
+    t: pack.openedAt,
+  };
+  try {
+    localStorage.setItem(STORAGE_KEYS.PENDING_PACK, JSON.stringify(pending));
+  } catch {
+    // Out of space: the history still has it.
+  }
+};
+
+/** The collection has this pack now. */
+export const clearPendingPack = (nonce: number) => {
+  try {
+    const pending = JSON.parse(localStorage.getItem(STORAGE_KEYS.PENDING_PACK) ?? 'null') as PendingPack | null;
+    if (pending?.n === nonce) localStorage.removeItem(STORAGE_KEYS.PENDING_PACK);
+  } catch {
+    localStorage.removeItem(STORAGE_KEYS.PENDING_PACK);
+  }
+};
+
+/** A pack opened but never added to the collection (this player's only), taken off the shelf. */
+export const takePendingPack = (): OpenedPack | null => {
+  let pending: PendingPack | null;
+  try {
+    pending = JSON.parse(localStorage.getItem(STORAGE_KEYS.PENDING_PACK) ?? 'null');
+  } catch {
+    pending = null;
+  }
+  localStorage.removeItem(STORAGE_KEYS.PENDING_PACK);
+  const set = pending && getSet(pending.s, pending.v);
+  if (!pending || !set || (pending.k && pending.k !== getPlayer().publicKeyHex)) return null;
+  try {
+    const cards = toCardsWithMeta(
+      pending.c.split(',').map(decodeCard).map((c) => ({ setId: set.id, cardId: c.id, isHolo: c.holo, ...modifiersFor(c, set.modifiers === 1) })),
+    ).map((c) => ({ ...c, isRevealed: true }));
+    return { setId: set.id, setVersion: set.version, nonce: pending.n, publicKeyHex: pending.k, cards, score: scoreCards(cards), openedAt: pending.t };
+  } catch {
+    return null;
+  }
 };
 
 /** Can this player share this pull? (False after importing a different player's key.) */

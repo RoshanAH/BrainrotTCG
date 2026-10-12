@@ -122,7 +122,7 @@ There are two ways in. Most players don't have a GitHub account, so the default 
 
 ```
 player ─► Share ─► "Submit"  ─► signed Nostr event ─► 5 public relays
-                                                          │  four times an hour
+                                                          │  every 15 minutes (Cloudflare cron)
                     .github/workflows/hall-of-fame-inbox.yml
                     scripts/hall-of-fame.ts inbox  ─► bot-filed issue + comment + labels (+ redeploy)
                                    │
@@ -150,9 +150,12 @@ window, so a burst of junk can't push a real submission out of reach, and keeps 
 signature checks out, so one bad relay can't hide another's good copy. Only the exact proof text a
 link carries is accepted, so what's filed always reads back as the same pull. A filing that stops
 halfway (issue opened, not yet labelled `verified`) is finished on the next run.
-It costs nothing: the relays are free, and Actions minutes on a public repository are free. GitHub
-pauses scheduled workflows after 60 days without a commit; if that happens, re-enable "Hall of Fame
-inbox" in the Actions tab (submissions from the last week are still picked up).
+It costs nothing: the relays are free, and Actions minutes on a public repository are free.
+GitHub's own schedule for the inbox is best effort and has never fired for this repository, so a
+Cloudflare Worker with a cron trigger (`workers/hall-of-fame-cron/`, also free) starts the workflow
+every 15 minutes; the schedule stays as a backup, and runs never overlap. If neither runs, nothing is
+lost: submissions show in the Hall of Fame straight from the relays, and any run picks up the last
+week's.
 
 A relay can drop a submission (that's why there are five) or flood the inbox with junk (each run
 checks a bounded number, and junk is skipped), but it can't forge an entry: the deploy and every
@@ -219,6 +222,12 @@ Speed, for a profile of N packs (each pack is one ~0.1 s ticket):
 The game records every pack the moment it's derived (`src/game/history.ts`), and signs profiles from
 that history, so sharing one is instant. Levels come from the packs alone (spec section 11.3), so a
 level is exactly as trustworthy as the packs.
+
+The collection, stats and achievements take a pack only once its reveal ends (so a toast can't spoil
+a card still face down). Until then the pack also waits in `brainrot-pending-pack-v1`
+(`src/game/pulls.ts`): a reload, a closed tab or the opener unmounting mid-reveal can't lose it, since
+the app adds a waiting pack on the next load. Screens pass a pulled card whole, with its holo, finish
+and misprint (`src/game/versions.ts`), rather than those as separate props, so none can drop one.
 
 ### Progression
 

@@ -6,7 +6,7 @@
  * Stored compactly: thousands of packs fit comfortably in localStorage.
  */
 import { STORAGE_KEYS } from '../constants';
-import { POKER_HANDS, qualifiesForHallOfFame } from '../engine';
+import { POKER_HANDS, qualifiesForHallOfFame, type Finish } from '../engine';
 import { decodeCard, encodeCard, type StoredCard } from './cardCode';
 import type { OpenedPack } from './pulls';
 
@@ -161,10 +161,32 @@ export const migratePullLog = () => {
 
 /**
  * This key's most recent pack holding this card, so a card can be shared with the pull that proves
- * it. Prefers a holo copy when `holo` is set.
+ * it: one with this exact version if there is one, else one with the same holo, else any.
  */
-export const findPackWithCard = (publicKeyHex: string, setId: string, cardId: string, holo = false): HistoryEntry | null => {
+export const findPackWithCard = (
+  publicKeyHex: string,
+  setId: string,
+  cardId: string,
+  version: { isHolo: boolean; finish?: Finish | null; misprint?: boolean } = { isHolo: false },
+): HistoryEntry | null => {
   const mine = getHistory().filter((e) => e.setId === setId && e.cards && publicKeyHex.startsWith(e.key));
-  const has = (e: HistoryEntry, wantHolo: boolean) => e.cards!.some((c) => c.id === cardId && (!wantHolo || c.holo));
-  return (holo ? mine.find((e) => has(e, true)) : undefined) ?? mine.find((e) => has(e, false)) ?? null;
+  const exact = (c: StoredCard) => c.holo === version.isHolo && (c.finish ?? null) === (version.finish ?? null) && !!c.misprint === !!version.misprint;
+  const has = (test: (c: StoredCard) => boolean) => mine.find((e) => e.cards!.some((c) => c.id === cardId && test(c)));
+  return has(exact) ?? has((c) => c.holo === version.isHolo) ?? has(() => true) ?? null;
+};
+
+/**
+ * The pack with exactly these cards (in order, with holo, finish and misprint), opened nearest to
+ * `at`, for records that kept a pack's cards but not its ticket. Within six hours, since the same
+ * five cards can come up twice.
+ */
+export const findPackByCards = (cards: readonly StoredCard[], setId: string, at: number): HistoryEntry | null => {
+  const want = cards.map(encodeCard).join(',');
+  let best: HistoryEntry | null = null;
+  for (const e of getHistory()) {
+    if (e.setId !== setId || !e.cards || Math.abs(e.openedAt - at) > 6 * 3600_000) continue;
+    if (e.cards.map(encodeCard).join(',') !== want) continue;
+    if (!best || Math.abs(e.openedAt - at) < Math.abs(best.openedAt - at)) best = e;
+  }
+  return best;
 };

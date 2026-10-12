@@ -37,7 +37,8 @@
 
 @media (max-width: 700px) {
     .pack-shell-wrap {
-        --pack-w: min(115vw, (100cqh - 7rem) * 4);
+        /* The full width of the phone: big, without running off both sides. */
+        --pack-w: min(100vw, (100cqh - 7rem) * 4);
     }
 }
 
@@ -54,6 +55,32 @@
 .pack-hint.is-error {
     color: var(--danger);
     font-weight: 600;
+}
+
+/* Over the torn pack while a slow ticket mines. */
+.pack-hint.is-waiting {
+    z-index: 3;
+    justify-self: center;
+    width: max-content;
+    margin: 0 auto;
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-pill);
+    background: rgba(18, 17, 20, 0.85);
+    color: var(--text);
+    font-weight: 700;
+    animation: pack-waiting 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes pack-waiting {
+    to {
+        opacity: 0.55;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pack-hint.is-waiting {
+        animation: none;
+    }
 }
 
 .pack-shell {
@@ -226,6 +253,25 @@
 
 .pack-shell.is-cut .tear-guide {
     opacity: 0;
+}
+
+/* A press that missed the line: the line pulses so it's clear where to swipe. */
+.pack-shell.is-nudged .tear-guide {
+    animation: tear-nudge 0.45s ease-in-out 3;
+}
+
+@keyframes tear-nudge {
+    50% {
+        border-top-color: var(--brand);
+        transform: translateY(-50%) scaleY(1.8);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pack-shell.is-nudged .tear-guide {
+        animation: none;
+        border-top-color: var(--brand);
+    }
 }
 
 /* Swipe hint */
@@ -496,6 +542,15 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    /* The chosen card back (Card.css), like the card being flipped. */
+    filter: var(--card-back-filter, none);
+    animation: var(--card-back-anim, none);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .reveal-stack-card img {
+        animation: none;
+    }
 }
 
 /* A big pull dims everything around it for a moment. */
@@ -531,6 +586,20 @@
 
 .pack-summary .score-panel {
     margin-bottom: var(--space-5);
+}
+
+.summary-xp {
+    display: grid;
+    gap: var(--space-1);
+    width: min(100%, 22rem);
+    margin: calc(-1 * var(--space-3)) auto var(--space-5);
+    color: var(--text-muted);
+    font-size: var(--text-sm);
+    text-align: center;
+}
+
+.summary-xp strong {
+    color: var(--brand);
 }
 
 .summary-cards {
@@ -573,6 +642,10 @@
     transform: translateY(-3px);
 }
 
+.summary-card:focus-visible {
+    box-shadow: 0 0 0 2px var(--r), var(--focus-ring), var(--shadow-2);
+}
+
 .summary-card img {
     display: block;
     width: 100%;
@@ -597,9 +670,46 @@
     border-radius: 2px;
 }
 
+/* On a small card the sticker would cover the name banner: it sits on the corner instead. */
+.summary-card .new-sticker {
+    top: -1px;
+    right: -1px;
+    padding: 1px 5px;
+    border-radius: 0 var(--radius-sm) 0 3px;
+    font-size: 10px;
+}
+
+.summary-card.holo:focus-visible {
+    box-shadow: var(--focus-ring), var(--shadow-2);
+}
+
 .summary-new {
     margin-top: var(--space-3);
     color: var(--text-muted);
     font-size: var(--text-sm);
     font-weight: 600;
+}
+
+/* The pack is also a button for the keyboard. */
+.pack-shell:focus-visible {
+    outline: 3px solid var(--brand);
+    outline-offset: 6px;
+}
+
+/* Phones: the card at about five sixths of the width, the summary a size down. (Last in the file so
+   it wins over the rules above.) */
+@media (max-width: 700px) {
+    .active-card-container .card-wrapper,
+    .reveal-stack-card {
+        height: min(100cqh - 28px, 46rem, 100cqw * 0.84 * 1024 / 687);
+    }
+
+    .summary-title {
+        font-size: var(--text-2xl);
+    }
+
+    .summary-actions .btn--lg {
+        min-height: 46px;
+        font-size: var(--text-base);
+    }
 }

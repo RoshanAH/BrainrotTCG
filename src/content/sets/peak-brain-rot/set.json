@@ -1,0 +1,134 @@
+{
+  "id": "peak-brain-rot",
+  "version": 1,
+  "name": "Peak Brain Rot",
+  "era": "2024",
+  "tagline": "Brat, Shrimp Jesus & Olympic aura",
+  "releasedAt": "2026-10-12",
+  "palette": [
+    "#8ACE00",
+    "#0055A4",
+    "#FF8A5B"
+  ],
+  "packSize": 5,
+  "odds": {
+    "COMMON": 5000,
+    "UNCOMMON": 2500,
+    "RARE": 1500,
+    "EPIC": 700,
+    "LEGENDARY": 250,
+    "BRAINROT": 50
+  },
+  "holoOdds": 500,
+  "modifiers": 1,
+  "cards": [
+    {
+      "id": "pepe-the-king-prawn",
+      "name": "Pepe the King Prawn",
+      "rarity": "COMMON",
+      "caption": "Me after pulling 5 commons",
+      "flavor": "Dec 2024: TikTok paired the Muppet's blank stare with stories you wish you could unsee.",
+      "year": 2024,
+      "art": "Real image: KYM's main image, the blurry close-up of Pepe the King Prawn (The Muppets) staring blankly, red hair and antenna up, apron on."
+    },
+    {
+      "id": "cheeseball-the-wizard",
+      "name": "Cheeseball the Wizard",
+      "rarity": "COMMON",
+      "caption": "Knows one spell: nap",
+      "flavor": "Aug 2024: an AI pic of a chubby orange cat in a wizard hat. Korean X named him Cheeseball.",
+      "year": 2024,
+      "art": "Real image: the right panel of KYM's main image, the AI-generated fat orange cat in a grey pointy wizard hat, gripping a wooden staff in a dark forest."
+    },
+    {
+      "id": "olympic-muffins",
+      "name": "Olympic Muffins",
+      "rarity": "COMMON",
+      "caption": "Insane 11/10, per Norway",
+      "flavor": "Paris 2024: swimmer Henrik Christiansen's TikToks made a village muffin the real gold.",
+      "year": 2024,
+      "art": "Real image: the middle panel of KYM's main image, the Olympic Village double-chocolate muffin in a brown paper tulip wrapper, chocolate chunks on top, on white."
+    },
+    {
+      "id": "shikanoko-nokonoko",
+      "name": "Shikanoko Nokonoko",
+      "rarity": "COMMON",
+      "caption": "Antlers: 1, Door: 0",
+      "flavor": "July 2024: Nokotan's deer girl smashed into class, and her theme song took over TikTok.",
+      "year": 2024,
+      "art": "Real image: KYM's main image, an anime still of Noko Shikanoko with her antlers, smiling cat-mouthed as she breaks through the classroom door and wall."
+    },
+    {
+      "id": "pommel-horse-guy",
+      "name": "Pommel Horse Guy",
+      "rarity": "UNCOMMON",
+      "caption": "Arrive. Pommel. Leave.",
+      "flavor": "Paris 2024: Stephen Nedoroscik waited all night, eyes shut, did one routine, won bronze.",
+      "year": 2024,
+      "art": "Real image: the face from KYM's main image, a TV frame of gymnast Stephen Nedoroscik leaning back with his eyes closed behind sparkly glasses."
+    },
+    {
+      "id": "triangle-factory",
+      "name": "Triangle Factory",
+      "rarity": "UNCOMMON",
+      "caption": "A circle?? In here??",
+      "flavor": "Aug 2024: @MeatMarket__'s MS Paint comic about a factory worker who just rolls with it.",
+      "year": 2024,
+      "art": "Real image: KYM's main image, the MS Paint panel of a hard-hat worker by a conveyor of red triangles and one blue circle, captioned 'i guess we doin circles now'."
+    },
+    {
+      "id": "bro-visited-his-friend",
+      "name": "Bro Visited His Friend",
+      "rarity": "UNCOMMON",
+      "caption": "Bro opened a pack",
+      "flavor": "Mar 2024: @fallenchungus's bit: repeat what someone said, but put 'bro' at the start.",
+      "year": 2024,
+      "art": "Real image: the right half of @fallenchungus's MS Paint comic (KYM's main image), a grinning blob saying 'bro visited his friend'."
+    },
+    {
+      "id": "shrimp-jesus",
+      "name": "Shrimp Jesus",
+      "rarity": "RARE",
+      "caption": "Type Amen if you see it",
+      "flavor": "Early 2024: Facebook spam pages flooded feeds with AI art. Shrimp Jesus became its mascot.",
+      "year": 2024,
+      "art": "Real image: the Facebook AI image used by The Guardian, a haloed Jesus whose body and arms are made of shrimp, floating underwater among small fish."
+    },
+    {
+      "id": "i-am-steve",
+      "name": "I Am Steve",
+      "rarity": "RARE",
+      "caption": "He is, in fact, Steve",
+      "flavor": "Sept 2024: the Minecraft movie teaser zoomed in on Jack Black. The internet never healed.",
+      "year": 2024,
+      "art": "Real image: KYM's main image, the teaser trailer frame of Jack Black as Steve, grey-bearded in a teal shirt, staring into the camera in a blocky landscape."
+    },
+    {
+      "id": "willy-wonka-experience",
+      "name": "Willy Wonka Experience",
+      "rarity": "EPIC",
+      "caption": "Catgacating, as advertised",
+      "flavor": "Feb 2024, Glasgow: AI flyers promised a candy paradise. Guests got a near-empty warehouse.",
+      "year": 2024,
+      "art": "Real image: the AI-generated promo art from the event's flyer: a top-hatted showman among giant lollipops under an 'ENCHERINING ENTERTAINMENT' banner."
+    },
+    {
+      "id": "yusuf-dikec",
+      "name": "Yusuf Dikeç",
+      "rarity": "LEGENDARY",
+      "caption": "Hand in pocket. Silver.",
+      "flavor": "Paris 2024: Turkey's Yusuf Dikeç won silver in a T-shirt, no gear, one hand in his pocket.",
+      "year": 2024,
+      "art": "Real image: the photo half of KYM's main image, Yusuf Dikeç in glasses and a white TÜRKIYE shirt, aiming his air pistol one-handed, other hand in his pocket."
+    },
+    {
+      "id": "brat-summer",
+      "name": "Brat Summer",
+      "rarity": "BRAINROT",
+      "caption": "Blurry Arial, max aura",
+      "flavor": "Charli XCX's lime cover ruled summer 2024. Collins named 'brat' its Word of the Year.",
+      "year": 2024,
+      "art": "Real image: the Brat album cover (Charli XCX, 2024), the lowercase word 'brat' in slightly blurred black Arial on a flat lime-green square."
+    }
+  ]
+}

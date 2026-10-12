@@ -137,13 +137,13 @@
 
 .card-wrapper:is(.common, .uncommon, .rare, .epic, .legendary) .card-face {
     border-color: var(--r);
-    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.55);
+    box-shadow: var(--finish-glow, 0 0 #0000), 0 14px 34px rgba(0, 0, 0, 0.55);
 }
 
 .card-wrapper.brainrot .card-face {
     border: 3px solid transparent;
     background: linear-gradient(#000, #000) padding-box, var(--rarity-brainrot) border-box;
-    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.55);
+    box-shadow: var(--finish-glow, 0 0 #0000), 0 14px 34px rgba(0, 0, 0, 0.55);
 }
 
 /* Before the flip: the back's edge shows the rarity of a big pull, brighter the rarer it is. */
@@ -156,6 +156,9 @@
 .card-wrapper.tell-epic { --tell: var(--rarity-epic); }
 .card-wrapper.tell-legendary { --tell: var(--rarity-legendary); }
 .card-wrapper.tell-brainrot { --tell: #ffd23f; }
+/* A finish or misprint tells in its own colour, whatever the rarity. */
+.card-wrapper.tell-finish { --tell: var(--finish-tell); }
+.card-wrapper.tell-misprint { --tell: #ff3d8a; }
 
 /* Legendary and Brainrot backs breathe, so you know something big is under there. */
 .card-wrapper:is(.tell-legendary, .tell-brainrot) .card-back {
@@ -257,14 +260,14 @@
     height: 100%;
     background: linear-gradient(
         45deg,
-        rgba(255, 0, 0, 0.15) 0%,
-        rgba(255, 127, 0, 0.15) 14%,
-        rgba(255, 255, 0, 0.15) 28%,
-        rgba(0, 255, 0, 0.15) 42%,
-        rgba(0, 0, 255, 0.15) 56%,
-        rgba(75, 0, 130, 0.15) 70%,
-        rgba(148, 0, 211, 0.15) 84%,
-        rgba(255, 0, 0, 0.15) 100%
+        rgba(255, 0, 0, 0.26) 0%,
+        rgba(255, 127, 0, 0.26) 14%,
+        rgba(255, 255, 0, 0.26) 28%,
+        rgba(0, 255, 0, 0.26) 42%,
+        rgba(0, 0, 255, 0.26) 56%,
+        rgba(75, 0, 130, 0.26) 70%,
+        rgba(148, 0, 211, 0.26) 84%,
+        rgba(255, 0, 0, 0.26) 100%
     );
     background-size: 400% 400%;
     animation: holoRainbowShimmer 3s ease infinite;
@@ -285,12 +288,15 @@
         max-height: 450px;
     }
 }
-/* Card modifiers (game/modifiers.ts): a metallic frame per finish, a misprinted image, and a sticker. */
-.card-front[class*='finish-']::after {
-    content: '';
+/*
+ * Card modifiers (game/modifiers.ts): a metallic frame per finish, a misprinted image, and a sticker.
+ * The frame is its own element and the glow its own shadow (--finish-glow, added to every face's
+ * box-shadow), so neither fights the holo effects or the rarity border for the same property.
+ */
+.finish-frame {
     position: absolute;
     inset: 0;
-    z-index: 2;
+    z-index: 3;
     padding: clamp(4px, 2.2cqw, 9px);
     border-radius: 8px;
     background: var(--finish-frame);
@@ -302,22 +308,26 @@
     animation: finish-sheen 3.5s ease-in-out infinite alternate;
 }
 
-.card-front.finish-silver {
+.card-front.finish-silver,
+.card-viewer-card.finish-silver {
     --finish-frame: linear-gradient(130deg, #f4f7fa, #8e98a2 28%, #ffffff 48%, #7f8992 70%, #e3e8ec);
 }
 
-.card-front.finish-gold {
+.card-front.finish-gold,
+.card-viewer-card.finish-gold {
     --finish-frame: linear-gradient(130deg, #fff3c4, #c8961e 28%, #ffeaa0 48%, #a5700c 70%, #ffd76a);
 }
 
-.card-front.finish-platinum {
+.card-front.finish-platinum,
+.card-viewer-card.finish-platinum {
     --finish-frame: linear-gradient(130deg, #eefaff, #7fb4cc 28%, #ffffff 48%, #6c9fb8 70%, #d6f3ff);
-    box-shadow: 0 0 18px rgba(168, 230, 255, 0.45);
+    --finish-glow: 0 0 18px rgba(168, 230, 255, 0.45);
 }
 
-.card-front.finish-diamond {
+.card-front.finish-diamond,
+.card-viewer-card.finish-diamond {
     --finish-frame: linear-gradient(130deg, #b9f2ff, #ffffff 20%, #c9b6ff 40%, #ffffff 60%, #7ee7ff 80%, #ffd6f5);
-    box-shadow: 0 0 26px rgba(201, 182, 255, 0.65), 0 0 60px rgba(126, 231, 255, 0.35);
+    --finish-glow: 0 0 26px rgba(201, 182, 255, 0.65), 0 0 60px rgba(126, 231, 255, 0.35);
 }
 
 @keyframes finish-sheen {
@@ -331,17 +341,35 @@
 }
 
 /* A misprint: the colour plates landed off register. */
-.card-front.misprint .card-full-image {
-    filter: drop-shadow(4px 0 0 rgba(255, 0, 90, 0.55)) drop-shadow(-4px 0 0 rgba(0, 230, 255, 0.55));
-    transform: rotate(-1.4deg) scale(1.03) translate(1.5%, -1%);
+.card-front.misprint .card-full-image,
+.card-viewer-card.misprint > img:first-child {
+    transform: rotate(-1.5deg) scale(1.03);
+}
+
+/* The second, off-register pass of a misprint: the same card, shifted and in the wrong inks. */
+.misprint-ghost {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+    opacity: 0.45;
+    mix-blend-mode: screen;
+    filter: hue-rotate(150deg) saturate(2.2);
+    transform: translate(4%, 2%) rotate(1deg);
+    pointer-events: none;
 }
 
 .modifier-sticker {
     position: absolute;
-    bottom: 6%;
+    /* On the strip between the art and the caption, so neither the name nor the caption is covered. */
+    bottom: 27.5%;
     left: 50%;
     z-index: 3;
-    max-width: 90%;
+    max-width: 92%;
+    overflow: hidden;
     padding: 0.2em 0.6em;
     border-radius: 3px;
     background: rgba(18, 17, 20, 0.88);
@@ -351,6 +379,7 @@
     font-size: clamp(10px, 3.2cqw, 15px);
     font-weight: 800;
     letter-spacing: 0.06em;
+    text-overflow: ellipsis;
     text-transform: uppercase;
     white-space: nowrap;
     transform: translateX(-50%);
@@ -373,7 +402,19 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .card-front[class*='finish-']::after {
+    .finish-frame {
         animation: none;
     }
+}
+
+/* Phones can't tilt a card to catch the light, so a holo keeps glinting on its own. */
+@media (hover: none) and (prefers-reduced-motion: no-preference) {
+    .card-wrapper.holo.shine-played .holo-shine-overlay::before {
+        animation: holoGlint 3.2s ease-in-out 0.4s infinite;
+    }
+}
+
+@keyframes holoGlint {
+    0% { left: -100%; }
+    35%, 100% { left: 150%; }
 }

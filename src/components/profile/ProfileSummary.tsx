@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import { ChevronRight } from 'lucide-react';
 import { POKER_HANDS, xpForLevel, type HandKey, type ProfilePack, type ProfileStats } from '../../engine';
-import { COLLECTIBLE_CARDS, getSetCards } from '../../data/cards';
+import { COLLECTIBLE_CARDS, collectibleOwned, getSetCards } from '../../data/cards';
 import { SETS, setCode } from '../../content/sets';
 import { toCardsWithMeta } from '../../game/pulls';
 import { collectionMilestone, setProgress, titleFor } from '../../game/progression';
@@ -65,7 +65,7 @@ const ProfileSummary = ({ stats, actions, levelNote, partial = false, onOpenPack
         </div>
         <div>
           <dd className="tabular">
-            {stats.unique}/{COLLECTIBLE_CARDS.length}
+            {collectibleOwned(stats.uniqueBySet)}/{COLLECTIBLE_CARDS.length}
           </dd>
           <dt>cards{partial && '*'}</dt>
         </div>
@@ -75,9 +75,9 @@ const ProfileSummary = ({ stats, actions, levelNote, partial = false, onOpenPack
         </div>
         <div>
           <dd className="tabular" title={(stats.best[0]?.score.score ?? 0).toLocaleString()}>
-            {compact.format(stats.best[0]?.score.score ?? 0)}
+            {partial && !stats.best[0] ? '…' : compact.format(stats.best[0]?.score.score ?? 0)}
           </dd>
-          <dt>best score</dt>
+          <dt>best score{partial && '*'}</dt>
         </div>
       </dl>
       {hands.length > 0 && (
@@ -149,6 +149,9 @@ const ProfileSummary = ({ stats, actions, levelNote, partial = false, onOpenPack
       {sets.length > 0 && (
         <section>
           <h3 className="section-title profile-heading">Collection by era{partial && '*'}</h3>
+          <p className="profile-footnote profile-sets-key">
+            <strong>Complete</strong>: every card in the set. <strong>Master</strong>: every card in the set as a holo.
+          </p>
           <ul className="profile-sets">
             {sets.map((set) => {
               const have = stats.uniqueBySet[set.id] ?? 0;

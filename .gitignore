@@ -33,3 +33,6 @@ hof-inbox-seen.json
 hof-comment.md
 /pages/
 /.cache/
+
+# Wrangler (workers/)
+.wrangler

@@ -13,6 +13,14 @@
   color: var(--text);
   font-size: var(--text-sm);
   font-weight: 700;
+  /* Long ones ("Platinum Misprint Holo Legendary · 160,000,000 pts") wrap between parts on phones. */
+  flex-wrap: wrap;
+  justify-content: center;
+  row-gap: 0;
+  max-width: 100%;
+}
+
+.rarity-pill > * {
   white-space: nowrap;
 }
 
@@ -152,8 +160,31 @@
 /* Revealed card's rarity, under the card. Reserves its height so the card doesn't jump. */
 .reveal-rarity {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   min-height: 32px;
+  padding-inline: var(--gutter);
+}
+
+.reveal-rarity > * {
+  animation: reveal-badge-in var(--dur) var(--ease-out) 0.35s both;
+}
+
+.reveal-rarity.is-slow > * {
+  animation-delay: 1.1s;
+}
+
+@keyframes reveal-badge-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-rarity > * {
+    animation: none;
+  }
 }
 
 /* Finish and misprint names in the guide (game/modifiers.ts) */

@@ -4,7 +4,7 @@ import '../../styles/Card.css';
 import cardBackImage from '../../assets/images/card_back.webp';
 import type { Card as CardType } from '../../data/cards';
 import type { Finish } from '../../engine';
-import { modifierClasses, modifierLabel } from '../../game/modifiers';
+import { FINISH_INFO, modifierClasses, modifierLabel } from '../../game/modifiers';
 
 export interface CardWithMeta extends CardType {
     uniqueId: number;
@@ -52,6 +52,9 @@ const Card = ({ card, isFlipped, onFlip, slowFlip = false, tell = false }: CardP
             });
         };
 
+        // Tilt follows a real mouse only: phones send a mousemove with every tap, which would leave
+        // the card stuck at an angle.
+        if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
         window.addEventListener('mousemove', handleMouseMove);
         return () => window.removeEventListener('mousemove', handleMouseMove);
     }, []);
@@ -66,6 +69,8 @@ const Card = ({ card, isFlipped, onFlip, slowFlip = false, tell = false }: CardP
         isFlipped ? card.rarity.toLowerCase() : '',
         !isFlipped && tell ? `tell tell-${card.rarity.toLowerCase()}` : '',
         !isFlipped && tell && card.isHolo ? 'tell-holo' : '',
+        !isFlipped && tell && card.finish ? 'tell-finish' : '',
+        !isFlipped && tell && !card.finish && card.misprint ? 'tell-misprint' : '',
         card.isHolo ? 'holo' : '',
         hasShined ? 'shine-played' : ''
     ].filter(Boolean).join(' ');
@@ -77,6 +82,7 @@ const Card = ({ card, isFlipped, onFlip, slowFlip = false, tell = false }: CardP
             onContextMenu={(e) => e.preventDefault()}
             style={{
                 transform: `perspective(1000px) rotateX(${tilt.rotateX}deg) rotateY(${tilt.rotateY}deg)`,
+                ...(card.finish ? { '--finish-tell': FINISH_INFO[card.finish].color } : {}),
                 transition: 'transform 0.15s ease-out'
             }}
         >
@@ -99,8 +105,10 @@ const Card = ({ card, isFlipped, onFlip, slowFlip = false, tell = false }: CardP
                 {/* Card Front */}
                 <div className={`card-face card-front ${modifierClasses(card)}`}>
                     <img src={card.image} alt={card.name} className="card-full-image" draggable="false" />
+                    {card.misprint && <img src={card.image} alt="" aria-hidden="true" className="misprint-ghost" draggable="false" />}
                     {card.isHolo && <div className="holo-shine-overlay"></div>}
                     <div className="holo-overlay"></div>
+                    {card.finish && <span className="finish-frame" aria-hidden="true" />}
                     {card.isNew && <span className="new-sticker">New</span>}
                     {modifierLabel(card, false) && <span className="modifier-sticker">{modifierLabel(card, false)}</span>}
                 </div>

@@ -17,8 +17,11 @@ import lockdownLoreV1 from './lockdown-lore/set.v1.json';
 import lockdownLore from './lockdown-lore/set.json';
 import genAlphaUprisingV1 from './gen-alpha-uprising/set.v1.json';
 import genAlphaUprising from './gen-alpha-uprising/set.json';
+import peakBrainRot from './peak-brain-rot/set.json';
 import italianBrainrotDeepCutsV1 from './italian-brainrot-deep-cuts/set.v1.json';
 import italianBrainrotDeepCuts from './italian-brainrot-deep-cuts/set.json';
+import sixSevenSeason from './six-seven-season/set.json';
+import springBreakdown from './spring-breakdown/set.json';
 import rightNowV1 from './right-now/set.v1.json';
 import rightNow from './right-now/set.json';
 
@@ -34,8 +37,11 @@ export const ALL_SET_VERSIONS: SetDefinition[] = [
   lockdownLore,
   genAlphaUprisingV1,
   genAlphaUprising,
+  peakBrainRot,
   italianBrainrotDeepCutsV1,
   italianBrainrotDeepCuts,
+  sixSevenSeason,
+  springBreakdown,
   rightNowV1,
   rightNow,
 ].map((s) => validateSet(s));

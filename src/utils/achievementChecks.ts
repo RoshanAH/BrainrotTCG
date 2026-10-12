@@ -17,6 +17,25 @@ const addIfNew = (list: string[], id: string, achievements: AchievementMap): voi
 };
 
 /**
+ * Card modifiers (sets with modifiers): each finish, a misprint, and stacks on one card. Run on each
+ * new pack, and on load over the pack history so cards pulled before these existed still count.
+ */
+export const checkModifierAchievements = (
+  cards: readonly { isHolo: boolean; finish?: string | null; misprint?: boolean }[],
+  achievements: AchievementMap,
+): string[] => {
+  const found: string[] = [];
+  if (cards.some(c => c.finish === 'SILVER')) addIfNew(found, 'finish_silver', achievements);
+  if (cards.some(c => c.finish === 'GOLD')) addIfNew(found, 'finish_gold', achievements);
+  if (cards.some(c => c.finish === 'PLATINUM')) addIfNew(found, 'finish_platinum', achievements);
+  if (cards.some(c => c.finish === 'DIAMOND')) addIfNew(found, 'finish_diamond', achievements);
+  if (cards.some(c => c.misprint)) addIfNew(found, 'misprint', achievements);
+  if (cards.some(c => c.finish && c.isHolo)) addIfNew(found, 'stacked', achievements);
+  if (cards.some(c => c.finish && c.isHolo && c.misprint)) addIfNew(found, 'fully_loaded', achievements);
+  return found;
+};
+
+/**
  * Get the count of cards by rarity in the collection
  */
 export const getCollectedByRarity = (collection: Record<string, CollectionItem>): RarityCount => {
@@ -227,14 +246,7 @@ export const checkPackAchievements = (
   const pairCount = counts.filter(c => c >= 2).length;
   if (pairCount >= 2) addIfNew(newAchievements, 'two_pair', achievements);
 
-  // Card modifiers (sets with modifiers): each finish, a misprint, and stacks on one card
-  if (newCards.some(c => c.finish === 'SILVER')) addIfNew(newAchievements, 'finish_silver', achievements);
-  if (newCards.some(c => c.finish === 'GOLD')) addIfNew(newAchievements, 'finish_gold', achievements);
-  if (newCards.some(c => c.finish === 'PLATINUM')) addIfNew(newAchievements, 'finish_platinum', achievements);
-  if (newCards.some(c => c.finish === 'DIAMOND')) addIfNew(newAchievements, 'finish_diamond', achievements);
-  if (newCards.some(c => c.misprint)) addIfNew(newAchievements, 'misprint', achievements);
-  if (newCards.some(c => c.finish && c.isHolo)) addIfNew(newAchievements, 'stacked', achievements);
-  if (newCards.some(c => c.finish && c.isHolo && c.misprint)) addIfNew(newAchievements, 'fully_loaded', achievements);
+  newAchievements.push(...checkModifierAchievements(newCards, achievements));
 
   // Rarity-based pack achievements
   const rarities = new Set(newCards.map(c => c.rarity));

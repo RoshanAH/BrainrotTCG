@@ -66,34 +66,51 @@ interface RewardPickerProps {
   preview: (reward: Reward) => ReactNode;
 }
 
-/** One kind of reward as a row of choices; locked ones show the level that unlocks them. */
-const RewardPicker = ({ label, rewards, chosen, level, onChoose, preview }: RewardPickerProps) => (
-  <div className="reward-picker" role="radiogroup" aria-label={label}>
-    <span className="reward-picker-label">{label}</span>
-    <div className="reward-options">
-      {rewards.map((r) => {
-        const locked = r.level > level;
-        return (
-          <button
-            key={r.id}
-            type="button"
-            role="radio"
-            aria-checked={r.id === chosen}
-            className={`reward-option ${locked ? 'is-locked' : ''}`}
-            disabled={locked}
-            onClick={() => onChoose(r.id)}
-            aria-label={locked ? `${r.name}, unlocks at level ${r.level}` : r.name}
-          >
-            {preview(r)}
-            <span className="reward-option-name">
-              {locked && <Lock aria-hidden="true" />}
-              {locked ? `Lv ${r.level}` : r.name}
-            </span>
-          </button>
-        );
-      })}
+/**
+ * One kind of reward as a row of choices; locked ones show the level that unlocks them. A radio
+ * group: one Tab stop (the chosen one), and the arrow keys move between the unlocked choices.
+ */
+const RewardPicker = ({ label, rewards, chosen, level, onChoose, preview }: RewardPickerProps) => {
+  const open = rewards.filter((r) => r.level <= level);
+  const onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    const step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[event.key];
+    if (!step || open.length === 0) return;
+    event.preventDefault();
+    const at = Math.max(0, open.findIndex((r) => r.id === chosen));
+    const next = open[(at + step + open.length) % open.length];
+    onChoose(next.id);
+    event.currentTarget.querySelector<HTMLElement>(`[data-reward="${next.id}"]`)?.focus();
+  };
+  return (
+    <div className="reward-picker" role="radiogroup" aria-label={label} onKeyDown={onKeyDown}>
+      <span className="reward-picker-label">{label}</span>
+      <div className="reward-options">
+        {rewards.map((r) => {
+          const locked = r.level > level;
+          return (
+            <button
+              key={r.id}
+              type="button"
+              role="radio"
+              data-reward={r.id}
+              aria-checked={r.id === chosen}
+              tabIndex={r.id === chosen ? 0 : -1}
+              className={`reward-option ${locked ? 'is-locked' : ''}`}
+              disabled={locked}
+              onClick={() => onChoose(r.id)}
+              aria-label={locked ? `${r.name}, unlocks at level ${r.level}` : r.name}
+            >
+              {preview(r)}
+              <span className="reward-option-name">
+                {locked && <Lock aria-hidden="true" />}
+                {locked ? `Lv ${r.level}` : r.name}
+              </span>
+            </button>
+          );
+        })}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default RewardsPanel;

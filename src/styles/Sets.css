@@ -6,86 +6,264 @@
   margin: 0 auto;
 }
 
-.set-picker-list {
+/* One line: older, the current era (opens every pack), newer. */
+.set-switcher {
   display: flex;
+  align-items: stretch;
   gap: var(--space-2);
-  overflow-x: auto;
+  max-width: 34rem;
+  margin: 0 auto;
   padding: var(--space-2) var(--gutter) var(--space-3);
-  scroll-snap-type: x proximity;
-  scroll-padding-inline: var(--gutter);
-  scrollbar-width: none;
-  /* Fade the edges so it's obvious the row scrolls. */
-  mask-image: linear-gradient(90deg, transparent, #000 var(--gutter), #000 calc(100% - var(--gutter)), transparent);
 }
 
-.set-picker-list::-webkit-scrollbar {
-  display: none;
-}
-
-@media (min-width: 1200px) {
-  .set-picker-list {
-    /* "safe" so a row wider than the screen starts at the left instead of being cut off there. */
-    justify-content: safe center;
-  }
-}
-
-.set-chip {
-  flex: 0 0 auto;
-  display: grid;
-  gap: 2px;
-  min-height: var(--touch-target);
-  padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-md);
+.set-step,
+.set-current {
   border: 1px solid var(--border);
+  border-radius: var(--radius-md);
   color: var(--text);
-  text-align: left;
-  scroll-snap-align: center;
   transition:
     transform var(--dur-fast) var(--ease-out),
     border-color var(--dur) var(--ease-out),
-    background-color var(--dur) var(--ease-out),
     opacity var(--dur) var(--ease-out);
 }
 
-.set-chip:hover:not(:disabled) {
-  border-color: var(--border-strong);
+.set-step {
+  flex: 0 0 var(--touch-target);
+  display: grid;
+  place-items: center;
 }
 
-.set-chip:active:not(:disabled) {
+.set-step svg {
+  width: 20px;
+  height: 20px;
+}
+
+.set-current {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+  min-height: var(--touch-target);
+  padding: var(--space-2) calc(var(--space-3) + 24px) var(--space-2) var(--space-3);
+  background: var(--surface-2);
+  border-color: var(--border-strong);
+  text-align: left;
+}
+
+/* The set's own colour along the bottom edge, so each era reads differently at a glance. */
+.set-current::after {
+  content: '';
+  position: absolute;
+  inset: auto var(--space-3) -1px;
+  height: 2px;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(90deg, var(--set-a), var(--set-b));
+}
+
+.set-step:hover:not(:disabled),
+.set-current:hover:not(:disabled) {
+  border-color: var(--text-muted);
+}
+
+.set-step:active:not(:disabled),
+.set-current:active:not(:disabled) {
   transform: scale(0.97);
 }
 
-.set-chip:disabled {
-  cursor: not-allowed;
+.set-step:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.set-current:disabled {
   opacity: 0.4;
+  cursor: not-allowed;
 }
 
-.set-chip.selected {
-  background: var(--surface-2);
-  border-color: var(--text);
-}
-
-.set-chip-head {
+.set-current-head {
   display: flex;
   align-items: center;
   gap: var(--space-2);
+  min-width: 0;
 }
 
-.set-chip-name {
+.set-current-name {
+  overflow: hidden;
   font-family: var(--font-display);
   font-size: var(--text-base);
   line-height: 1.15;
   white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
-.set-chip-meta {
+/* The era gives way first, so the count and Complete/New tags always show. */
+.set-current-meta {
+  display: flex;
+  align-items: center;
+  min-width: 0;
   color: var(--text-muted);
   font-size: var(--text-xs);
   white-space: nowrap;
 }
 
-.set-chip-draft {
+.set-current-meta > * {
+  flex: none;
+}
+
+.set-current-meta > .set-current-era {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.set-current-all {
+  position: absolute;
+  top: 50%;
+  right: var(--space-3);
+  display: grid;
+  translate: 0 -50%;
+  color: var(--text-muted);
+}
+
+.set-current-all svg {
+  width: 20px;
+  height: 20px;
+}
+
+.set-new-dot {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--brand);
+  box-shadow: 0 0 0 2px var(--surface-2);
+}
+
+.set-draft {
   color: var(--warning);
+}
+
+/* Every pack, newest first: the wrapper art, the era and how much of it you have. */
+.pack-shelf-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
+  gap: var(--space-5) var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pack-tile {
+  display: grid;
+  gap: 2px;
+  width: 100%;
+  padding: var(--space-2);
+  border: 1px solid transparent;
+  border-radius: var(--radius-lg);
+  color: var(--text);
+  text-align: left;
+  transition:
+    transform var(--dur-fast) var(--ease-out),
+    border-color var(--dur) var(--ease-out),
+    background-color var(--dur) var(--ease-out);
+}
+
+.pack-tile:hover {
+  background: var(--surface-2);
+}
+
+.pack-tile:active {
+  transform: scale(0.98);
+}
+
+.pack-tile.selected {
+  border-color: var(--set-a);
+  background: var(--surface-2);
+}
+
+.pack-tile-art {
+  position: relative;
+  display: block;
+  margin-bottom: var(--space-2);
+}
+
+.pack-tile-art img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 300 / 533;
+  transition: transform var(--dur) var(--ease-out);
+}
+
+.pack-tile:hover .pack-tile-art img {
+  transform: translateY(-4px) rotate(-1deg);
+}
+
+.pack-tile-flag {
+  position: absolute;
+  top: 6%;
+  left: 50%;
+  translate: -50% 0;
+  padding: 1px 8px;
+  border-radius: 3px;
+  background: var(--brand);
+  color: var(--brand-ink);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.pack-tile-flag.is-preview {
+  background: var(--warning);
+}
+
+.pack-tile-name {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  line-height: 1.2;
+}
+
+.pack-tile-meta {
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+}
+
+.pack-tile-progress {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+}
+
+.pack-tile-progress .set-badge {
+  margin-left: 0;
+}
+
+.pack-tile-bar {
+  flex: 1 1 auto;
+  height: 4px;
+  overflow: hidden;
+  border-radius: var(--radius-pill);
+  background: rgba(243, 239, 230, 0.1);
+}
+
+.pack-tile-bar > span {
+  display: block;
+  height: 100%;
+  background: var(--set-a);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pack-tile:hover .pack-tile-art img {
+    transform: none;
+  }
 }
 
 /* A finished set: "Complete" (every card) or "Master" (every card as a holo). Also on profiles. */
@@ -114,7 +292,7 @@
   color: var(--brand-ink);
 }
 
-.set-chip-new {
+.set-new {
   margin-left: var(--space-2);
   padding: 0 5px;
   border-radius: 3px;

@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { STORAGE_KEYS } from '../constants';
-import { byBest, getHistory, historyForKey, isHallOfFameWorthy, migratePullLog, recordPack, type HistoryEntry } from './history';
+import { byBest, findPackByCards, getHistory, historyForKey, isHallOfFameWorthy, migratePullLog, recordPack, type HistoryEntry } from './history';
 import { HALL_OF_FAME_MIN_SCORE } from '../engine';
 import type { OpenedPack } from './pulls';
 
@@ -121,5 +121,26 @@ describe('sorting and filtering packs', () => {
   it('puts the best first, newest first among equals', () => {
     const sorted = [entry('Pair', 50, 1), entry('Pair', 900, 2), entry('Pair', 50, 3)].sort(byBest);
     expect(sorted.map((e) => e.openedAt)).toEqual([2, 3, 1]);
+  });
+});
+
+describe('finding a pack by its cards', () => {
+  beforeEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  const cardsOf = (p: OpenedPack) => p.cards.map((c) => ({ id: c.id, holo: c.isHolo }));
+
+  it('finds the same five cards opened nearest the time, and nothing for other cards or long after', () => {
+    installStorage();
+    const hour = 3600_000;
+    recordPack(pack(0, { openedAt: 10 * hour }));
+    recordPack(pack(1, { openedAt: 12 * hour }));
+    expect(findPackByCards(cardsOf(pack(0)), 'right-now', 10 * hour + 5_000)?.nonce).toBe(0);
+    expect(findPackByCards(cardsOf(pack(0)), 'right-now', 12 * hour - 5_000)?.nonce).toBe(1);
+    expect(findPackByCards(cardsOf(pack(0)), 'right-now', 30 * hour)).toBeNull();
+    expect(findPackByCards(cardsOf(pack(0)), 'genesis', 10 * hour)).toBeNull();
+    const holoSwapped = cardsOf(pack(0)).map((c) => ({ ...c, holo: !c.holo }));
+    expect(findPackByCards(holoSwapped, 'right-now', 10 * hour)).toBeNull();
   });
 });

@@ -123,12 +123,6 @@
   box-shadow: 0 0 0 1.5px var(--brand-3);
 }
 
-/* Finishes (game/modifiers.ts) */
-.hof-cards img.finish-silver { box-shadow: 0 0 0 2px #cfd6dd; }
-.hof-cards img.finish-gold { box-shadow: 0 0 0 2px #ffcf4a; }
-.hof-cards img.finish-platinum { box-shadow: 0 0 0 2px #a8e6ff, 0 0 6px #a8e6ff; }
-.hof-cards img.finish-diamond { box-shadow: 0 0 0 2px #c9b6ff, 0 0 8px #c9b6ff; }
-
 .hof-main {
   display: grid;
   min-width: 0;
@@ -148,6 +142,13 @@
 
 .hof-who {
   color: var(--text-muted);
+  /* A long name wraps rather than hiding the fingerprint that tells players apart. */
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.hof-who .share-fp {
+  white-space: nowrap;
 }
 
 .hof-meta {
@@ -207,11 +208,9 @@
   display: block;
   width: 100%;
   aspect-ratio: 4 / 3;
-  object-fit: cover;
-}
-
-.hof-legend img.is-portrait {
-  object-position: center 30%;
+  /* The whole screenshot, letterboxed: cropping cut the cards out of tall ones and left UI scraps. */
+  object-fit: contain;
+  background: var(--bg-elevated);
 }
 
 .hof-legend-info {
