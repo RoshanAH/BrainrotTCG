@@ -87,31 +87,40 @@
 }
 
 .share-hof {
-  display: flex;
-  align-items: center;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: start;
   gap: var(--space-3);
   padding: var(--space-3) var(--space-4);
-  margin-bottom: var(--space-4);
   border-radius: var(--radius-md);
   border: 1px solid var(--border-strong);
   color: var(--text);
-  text-decoration: none;
 }
 
 .share-hof > svg {
-  flex: none;
   width: 22px;
   height: 22px;
-  color: var(--warning);
+  margin-top: 2px;
+  color: var(--text-muted);
 }
 
 .share-hof > span {
   display: grid;
+  gap: 2px;
+  min-width: 0;
 }
 
 .share-hof > span > span {
   color: var(--text-muted);
   font-size: var(--text-sm);
+}
+
+.share-hof a {
+  width: fit-content;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
 }
 
 .share-note {
