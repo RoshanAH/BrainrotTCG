@@ -22,6 +22,10 @@ export interface Stats {
   highestPackMultiplier?: number;
   highestPackHandName?: string;
   highestPackCards?: CardWithMeta[];
+  /** Ticket reference of the best pack, so it can be shared as a verifiable proof. */
+  highestPackRef?: { setId: string; setVersion: number; nonce: number };
+  /** The best pack predates verifiable pulls and can't be proven. */
+  highestPackLegacy?: boolean;
 }
 
 export interface HallOfFameData {
@@ -60,4 +64,6 @@ export interface CardsByRarity {
 export interface Settings {
   soundEnabled: boolean;
   particlesEnabled: boolean;
+  /** Show draft sets (placeholder art) in the set picker. */
+  showDraftSets?: boolean;
 }

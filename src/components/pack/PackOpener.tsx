@@ -1,9 +1,9 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import type { Card as CardType } from '../../data/cards';
 import type { CardWithMeta } from '../cards/Card';
 import type { Settings } from '../../types';
-import { generatePack } from '../../utils/packGenerator';
+import type { SetDefinition } from '../../engine';
+import { openPack, prefetchNextPack, type OpenedPack } from '../../game/pulls';
 import { triggerRarityConfetti, triggerHoloSparkles } from '../../utils/confettiEffects';
 import { usePackCutter } from '../../hooks/usePackCutter';
 import { useAudio } from '../../hooks/useAudio';
@@ -26,14 +26,18 @@ interface PreloadedAssets {
 }
 
 interface PackOpenerProps {
-  onOpen: (cards: CardWithMeta[]) => void;
-  cards: CardType[];
+  /** Called once every card has been revealed. */
+  onOpen: (pack: OpenedPack) => void;
+  onShare: (pack: OpenedPack) => void;
+  set: SetDefinition;
   disabled?: boolean;
   settings: Settings;
 }
 
-const PackOpener = ({ onOpen, cards, disabled = false, settings }: PackOpenerProps) => {
+const PackOpener = ({ onOpen, onShare, set, disabled = false, settings }: PackOpenerProps) => {
   const [isOpening, setIsOpening] = useState(false);
+  const [openedPack, setOpenedPack] = useState<OpenedPack | null>(null);
+  const [openError, setOpenError] = useState<string | null>(null);
   const [openedCards, setOpenedCards] = useState<CardWithMeta[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPackCut, setIsPackCut] = useState(false);
@@ -49,25 +53,41 @@ const PackOpener = ({ onOpen, cards, disabled = false, settings }: PackOpenerPro
   const openTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const handleInteractionRef = useRef<() => void>(() => {});
 
-  const startOpening = useCallback(() => {
-    const pack = generatePack(cards);
+  const startOpening = useCallback(async () => {
+    let pack: OpenedPack;
+    try {
+      // Usually instant: the ticket was mined while the pack was on screen.
+      pack = await openPack(set);
+    } catch (error) {
+      console.error('Could not open pack', error);
+      setOpenError('This pack refused to open. Try again!');
+      setIsPackCut(false);
+      return;
+    }
     const brainrotVoices = preloadAudio(BRAINROT_VOICES);
     const cardFlip = preloadAudio([CARD_FLIP_SRC])[0];
     const effects = preloadAudio(EFFECT_SOUNDS);
 
     setPreloadedAssets({ brainrotVoices, cardFlip, effects });
-    setOpenedCards(pack);
+    setOpenedPack(pack);
+    setOpenedCards(pack.cards);
     setCurrentIndex(0);
     setIsOpening(true);
-  }, [cards, preloadAudio]);
+  }, [set, preloadAudio]);
+
+  // Mine the next pack's ticket while this one is on screen.
+  useEffect(() => {
+    if (!isOpening) prefetchNextPack(set);
+  }, [isOpening, set]);
 
   const handleCutComplete = useCallback(() => {
     setIsPackCut(true);
     if (openTimeoutRef.current) {
       window.clearTimeout(openTimeoutRef.current);
     }
+    setOpenError(null);
     openTimeoutRef.current = window.setTimeout(() => {
-      startOpening();
+      void startOpening();
     }, 460);
   }, [startOpening]);
 
@@ -98,6 +118,7 @@ const PackOpener = ({ onOpen, cards, disabled = false, settings }: PackOpenerPro
     }
     setPreloadedAssets(null);
     setIsOpening(false);
+    setOpenedPack(null);
     setOpenedCards([]);
     setCurrentIndex(0);
     setIsPackCut(false);
@@ -111,10 +132,10 @@ const PackOpener = ({ onOpen, cards, disabled = false, settings }: PackOpenerPro
     if (currentIndex < openedCards.length - 1) {
       setCurrentIndex(currentIndex + 1);
     } else {
-      onOpen(openedCards);
+      if (openedPack) onOpen({ ...openedPack, cards: openedCards });
       setShowSummary(true);
     }
-  }, [currentIndex, openedCards, onOpen]);
+  }, [currentIndex, openedCards, openedPack, onOpen]);
 
   const closeSummary = useCallback(() => {
     finishPack();
@@ -264,6 +285,8 @@ const PackOpener = ({ onOpen, cards, disabled = false, settings }: PackOpenerPro
             <PackCuttingUI
               packRef={packRef}
               packDesign={packDesign}
+              set={set}
+              error={openError}
               isCutting={isCutting}
               isPackCut={isPackCut}
               cutPoints={cutPoints}
@@ -289,6 +312,7 @@ const PackOpener = ({ onOpen, cards, disabled = false, settings }: PackOpenerPro
               <PackSummaryUI
                 openedCards={openedCards}
                 onClose={closeSummary}
+                onShare={openedPack ? () => onShare({ ...openedPack, cards: openedCards }) : undefined}
               />
             )}
           </Motion.div>

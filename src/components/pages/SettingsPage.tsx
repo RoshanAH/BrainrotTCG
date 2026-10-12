@@ -1,5 +1,7 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { STORAGE_KEYS } from '../../constants';
+import { MAX_NAME_LENGTH } from '../../engine';
+import { exportPlayer, getPlayer, renamePlayer } from '../../game/player';
 import type { Settings } from '../../types';
 import '../../styles/Settings.css';
 
@@ -12,6 +14,14 @@ interface SettingsPageProps {
 
 const SettingsPage = ({ settings, onSettingsChange, onClose, onImportSave }: SettingsPageProps) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const [player, setPlayer] = useState(getPlayer);
+    const [nameDraft, setNameDraft] = useState(player.name);
+
+    const saveName = () => {
+        const updated = renamePlayer(nameDraft);
+        setPlayer(updated);
+        setNameDraft(updated.name);
+    };
 
     const handleToggleSound = () => {
         onSettingsChange({ ...settings, soundEnabled: !settings.soundEnabled });
@@ -28,8 +38,11 @@ const SettingsPage = ({ settings, onSettingsChange, onClose, onImportSave }: Set
             stats: localStorage.getItem(STORAGE_KEYS.STATS),
             hallOfFame: localStorage.getItem(STORAGE_KEYS.HALL_OF_FAME),
             settings: localStorage.getItem(STORAGE_KEYS.SETTINGS),
+            pulls: localStorage.getItem(STORAGE_KEYS.PULLS),
+            // Your secret player key: it's what makes your pulls yours. Don't share this file.
+            player: exportPlayer(),
             exportedAt: new Date().toISOString(),
-            version: 1,
+            version: 2,
         };
 
         const blob = new Blob([JSON.stringify(saveData, null, 2)], { type: 'text/plain' });
@@ -71,6 +84,25 @@ const SettingsPage = ({ settings, onSettingsChange, onClose, onImportSave }: Set
 
             <div className="settings-content">
                 <div className="settings-section">
+                    <h3>Player</h3>
+                    <div className="settings-option">
+                        <div className="settings-option-info">
+                            <span className="settings-option-label">Name</span>
+                            <span className="settings-option-desc">Shown on pulls you share. Your ID #{player.fingerprint} comes from your player key.</span>
+                        </div>
+                        <input
+                            className="settings-name-input"
+                            value={nameDraft}
+                            maxLength={MAX_NAME_LENGTH}
+                            onChange={(e) => setNameDraft(e.target.value)}
+                            onBlur={saveName}
+                            onKeyDown={(e) => e.key === 'Enter' && saveName()}
+                            aria-label="Player name"
+                        />
+                    </div>
+                </div>
+
+                <div className="settings-section">
                     <h3>Audio & Visuals</h3>
 
                     <div className="settings-option">
@@ -101,12 +133,28 @@ const SettingsPage = ({ settings, onSettingsChange, onClose, onImportSave }: Set
                 </div>
 
                 <div className="settings-section">
+                    <h3>Packs</h3>
+                    <div className="settings-option">
+                        <div className="settings-option-info">
+                            <span className="settings-option-label">Preview upcoming sets</span>
+                            <span className="settings-option-desc">Open sets that are still waiting for their final art</span>
+                        </div>
+                        <button
+                            className={`settings-toggle ${settings.showDraftSets ? 'active' : ''}`}
+                            onClick={() => onSettingsChange({ ...settings, showDraftSets: !settings.showDraftSets })}
+                        >
+                            <span className="toggle-slider" />
+                        </button>
+                    </div>
+                </div>
+
+                <div className="settings-section">
                     <h3>Save Data</h3>
 
                     <div className="settings-option">
                         <div className="settings-option-info">
                             <span className="settings-option-label">Export Save</span>
-                            <span className="settings-option-desc">Download your progress as a text file</span>
+                            <span className="settings-option-desc">Download your progress, including your secret player key. Keep it private.</span>
                         </div>
                         <button className="settings-btn" onClick={handleExportSave}>
                             Export
