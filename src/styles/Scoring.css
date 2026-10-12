@@ -1,0 +1,128 @@
+.rarity-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: #fff;
+  background: #555;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  white-space: nowrap;
+}
+
+.rarity-pill.common { background: #6e6e73; }
+.rarity-pill.uncommon { background: #13a600; }
+.rarity-pill.rare { background: #0070dd; }
+.rarity-pill.epic { background: #a335ee; }
+.rarity-pill.legendary { background: #ff8000; }
+.rarity-pill.brainrot { background: linear-gradient(90deg, #ff0000, #ff7f00, #c9b000, #00b000, #0050ff, #7a1fd1); }
+.rarity-pill.holo-pill { background: linear-gradient(90deg, #ff3df2, #29f0ff, #ffe14d); color: #12002a; }
+
+.rarity-pill-points {
+  font-weight: 600;
+  opacity: 0.9;
+  padding-left: 0.35rem;
+  border-left: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.score-panel {
+  margin: 1rem auto;
+  padding: 0.9rem 1.6rem;
+  max-width: 30rem;
+  border-radius: 1rem;
+  border: 2px solid #ffd700;
+  background: rgba(255, 215, 0, 0.1);
+  text-align: center;
+}
+
+.score-panel-math {
+  color: #ffb347;
+  margin-bottom: 0.3rem;
+}
+
+.score-panel-total {
+  font-family: 'RubikGlitch', system-ui;
+  font-size: 1.6rem;
+  color: #fff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.score-panel-total span {
+  font-size: 1rem;
+}
+
+.score-panel-help {
+  margin-top: 0.4rem;
+  background: none;
+  border: none;
+  color: #29f0ff;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.scoring-guide-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  background: rgba(8, 0, 20, 0.88);
+  overflow-y: auto;
+}
+
+.scoring-guide {
+  position: relative;
+  max-width: 34rem;
+  margin: 5vh auto;
+  padding: 1.5rem 1.25rem;
+  border-radius: 1.2rem;
+  background: linear-gradient(160deg, #2a0759, #14022f);
+  border: 2px solid #29f0ff;
+  color: #fff;
+  text-align: left;
+}
+
+.scoring-guide h2 {
+  margin: 0 0 0.5rem;
+  font-family: 'RubikGlitch', system-ui;
+}
+
+.scoring-guide h3 {
+  margin: 1.2rem 0 0.4rem;
+  color: #ffd700;
+}
+
+.scoring-formula {
+  font-size: 1.05rem;
+}
+
+.scoring-note {
+  color: #bbb;
+  font-size: 0.85rem;
+}
+
+.scoring-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.scoring-table th {
+  text-align: left;
+  color: #aaa;
+  font-weight: 600;
+  padding: 0.3rem 0.25rem;
+}
+
+.scoring-table td {
+  padding: 0.35rem 0.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.reveal-rarity {
+  margin-top: 0.75rem;
+  display: flex;
+  justify-content: center;
+  min-height: 1.8rem;
+}

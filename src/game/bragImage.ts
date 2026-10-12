@@ -143,14 +143,14 @@ export const renderPoster = async (input: PosterInput): Promise<Blob> => {
   });
 
   // Hand + value
-  const { hand, flexValue } = input.score;
-  const handText = hand.multiplier > 1 ? `${hand.name.toUpperCase()} ×${hand.multiplier}` : 'NO MATCHES';
+  const { hand, score } = input.score;
+  const handText = hand.multiplier > 1 ? `${hand.name.toUpperCase()} ×${hand.multiplier.toLocaleString('en-US')}` : 'NO MATCHES';
   ctx.fillStyle = '#ffd700';
   fitFont(ctx, handText, W - 120, 96, 'normal', display);
   ctx.fillText(handText, W / 2, 1440);
   ctx.fillStyle = '#ffffff';
   ctx.font = `800 54px ${body}`;
-  ctx.fillText(`${flexValue.toLocaleString('en-US')} brainrot value`, W / 2, 1520);
+  ctx.fillText(`${score.toLocaleString('en-US')} Brainrot Score`, W / 2, 1520);
 
   // Who + QR
   ctx.textAlign = 'left';

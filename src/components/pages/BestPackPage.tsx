@@ -1,6 +1,5 @@
 import { CardWithMeta } from '../cards/Card';
 import PackCardViewer from '../ui/PackCardViewer';
-import BrainrotValuePanel from '../ui/BrainrotValuePanel';
 import '../../styles/BestPackPage.css';
 import '../../styles/Share.css';
 
@@ -22,12 +21,7 @@ interface BestPackPageProps {
 }
 
 const BestPackPage = ({ stats, onClose, onShare }: BestPackPageProps) => {
-    // Gracefully fallback to legacy stats if the user hasn't gotten a new best pack yet
-    const displayValue = stats.highestPackFlexValue || stats.highestPackValue || 0;
-    const displayBase = stats.highestPackBaseValue || stats.highestPackValue || 0;
-    const displayMulti = stats.highestPackMultiplier || 1;
-    const displayHand = stats.highestPackHandName || "No Matches";
-    const hasLegacyStats = !stats.highestPackFlexValue && stats.highestPackValue;
+    const hasBest = !!stats.highestPackCards?.length;
 
     return (
         <div className="best-pack-page">
@@ -40,33 +34,16 @@ const BestPackPage = ({ stats, onClose, onShare }: BestPackPageProps) => {
                 <div className="best-pack-share">
                     <button className="summary-share-btn" onClick={onShare}>Share this pull (verifiable link)</button>
                 </div>
-            ) : stats.highestPackLegacy && displayValue > 0 ? (
+            ) : stats.highestPackLegacy && hasBest ? (
                 <p className="best-pack-legacy">Opened before verifiable pulls existed, so it can't be shared as a proof. Beat it to get a shareable best!</p>
             ) : null}
 
             <div className="best-pack-content">
-                {displayValue > 0 && stats.highestPackCards ? (
-                    hasLegacyStats ? (
-                        // Legacy stats - show custom panel since we don't have accurate multiplier info
-                        <>
-                            <BrainrotValuePanel
-                                baseValue={displayBase}
-                                multiplier={displayMulti}
-                                handName={displayHand}
-                                flexValue={displayValue}
-                            />
-                            <PackCardViewer
-                                cards={stats.highestPackCards}
-                                displayMode="carousel"
-                                showValue={false}
-                            />
-                        </>
-                    ) : (
-                        <PackCardViewer
-                            cards={stats.highestPackCards}
-                            displayMode="carousel"
-                        />
-                    )
+                {hasBest && stats.highestPackCards ? (
+                    <PackCardViewer
+                        cards={stats.highestPackCards}
+                        displayMode="carousel"
+                    />
                 ) : (
                     <div className="best-pack-empty">
                         <p>You haven't opened any packs yet!</p>

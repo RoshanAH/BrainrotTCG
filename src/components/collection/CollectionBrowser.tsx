@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import CardViewerModal from '../cards/CardViewerModal';
-import { getCardValue, getSetCards, type Card } from '../../data/cards';
+import { cardPoints, getSetCards, type Card } from '../../data/cards';
 import { SETS } from '../../content/sets';
 import type { CollectionItem } from '../../types';
 
@@ -41,7 +41,7 @@ const CollectionBrowser = ({ collection, onClose }: CollectionBrowserProps) => {
 
   const totalFound = items.reduce((sum, item) => sum + item.normalCount + item.holoCount, 0);
   const accountValue = items.reduce(
-    (sum, item) => sum + item.normalCount * getCardValue(item.card.rarity, false) + item.holoCount * getCardValue(item.card.rarity, true),
+    (sum, item) => sum + item.normalCount * cardPoints(item.card.rarity, false) + item.holoCount * cardPoints(item.card.rarity, true),
     0,
   );
 
@@ -54,10 +54,10 @@ const CollectionBrowser = ({ collection, onClose }: CollectionBrowserProps) => {
             {items.length} unique • {totalFound} total
           </p>
           <p style={{ color: '#ffd700', fontWeight: 'bold', margin: '0.5rem 0' }}>
-            Account Value: {accountValue.toLocaleString()} Buhcoins
+            🧠 Collection Brainrot Score: {accountValue.toLocaleString()}
             {totalFound > 0 && (
               <span style={{ color: '#aaa', fontWeight: 'normal', marginLeft: '0.75rem' }}>
-                (Average: {(accountValue / totalFound).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/card)
+                (average {Math.round(accountValue / totalFound).toLocaleString()} pts/card)
               </span>
             )}
           </p>

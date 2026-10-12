@@ -3,7 +3,7 @@ import '../../styles/HallOfFame.css';
 import { getCard } from '../../data/cards';
 import { checkPull } from '../../game/pulls';
 import { REPO } from '../../constants';
-import { HALL_OF_FAME_MIN_FLEX } from '../../engine';
+import { HALL_OF_FAME_MIN_SCORE } from '../../engine';
 
 // Hackathon legends: screenshots from before pulls were verifiable.
 import adiImage from '../../assets/images/hall_of_fame/adi-four-of-a-kind.webp';
@@ -33,7 +33,7 @@ interface HallOfFameEntry {
   setName: string;
   hand: string;
   multiplier: number;
-  flexValue: number;
+  score: number;
   cards: { cardId: string; isHolo: boolean }[];
   issue: number;
   githubUser: string;
@@ -68,7 +68,7 @@ const HallOfFamePage = ({ onClose }: HallOfFamePageProps) => {
     return [...(entries ?? [])]
       .sort((a, b) => a.submittedAt.localeCompare(b.submittedAt))
       .filter((e) => !seen.has(e.proof) && !!seen.add(e.proof))
-      .sort((a, b) => b.multiplier - a.multiplier || b.flexValue - a.flexValue || a.submittedAt.localeCompare(b.submittedAt));
+      .sort((a, b) => b.multiplier - a.multiplier || b.score - a.score || a.submittedAt.localeCompare(b.submittedAt));
   }, [entries]);
 
   /** First verified submission of each hand in each set. */
@@ -99,7 +99,7 @@ const HallOfFamePage = ({ onClose }: HallOfFamePageProps) => {
             pull.fingerprint === entry.fingerprint &&
             pull.set.id === entry.setId &&
             pull.score.hand.name === entry.hand &&
-            pull.score.flexValue === entry.flexValue &&
+            pull.score.score === entry.score &&
             pull.cards.length === entry.cards.length &&
             pull.cards.every((c, i) => c.cardId === entry.cards[i]?.cardId && c.isHolo === entry.cards[i]?.isHolo);
           if (!cancelled) setChecks((prev) => ({ ...prev, [entry.issue]: matches ? 'verified' : 'failed' }));
@@ -128,7 +128,7 @@ const HallOfFamePage = ({ onClose }: HallOfFamePageProps) => {
         </div>
         <div className="hof-info">
           <div className="hof-hand">
-            {entry.hand} <span className="hof-flex">{entry.flexValue.toLocaleString()} brainrot value</span>
+            {entry.hand} <span className="hof-flex">🧠 {entry.score.toLocaleString()}</span>
           </div>
           <div className="hof-who">
             {entry.name} <span className="share-fp">#{entry.fingerprint}</span> ·{' '}
@@ -163,7 +163,7 @@ const HallOfFamePage = ({ onClose }: HallOfFamePageProps) => {
         {entries === null && <p className="hof-empty">Loading…</p>}
         {entries?.length === 0 && (
           <p className="hof-empty">
-            No verified entries yet. Pull a Full House or better (or {HALL_OF_FAME_MIN_FLEX.toLocaleString()}+ brainrot value), hit <strong>Share this pull</strong>, then{' '}
+            No verified entries yet. Pull a Full House or better (or a {HALL_OF_FAME_MIN_SCORE.toLocaleString()}+ Brainrot Score), hit <strong>Share this pull</strong>, then{' '}
             <strong>Submit to the global Hall of Fame</strong>. You could be first.
           </p>
         )}

@@ -74,27 +74,27 @@ export const ACHIEVEMENTS: Achievement[] = [
   { id: 'dupes_25', name: 'Obsessed', description: 'Own 25 copies of a single card', icon: '🤪' },
   { id: 'dupes_100', name: 'Why Though?', description: 'Own 100 copies of a single card', icon: '❓' },
 
-  // Account value milestones
-  { id: 'value_10k', name: 'Five Figures', description: 'Reach 10,000 total account value', icon: '💵' },
-  { id: 'value_100k', name: 'Six Figures', description: 'Reach 100,000 total account value', icon: '💰' },
-  { id: 'value_1m', name: 'Millionaire', description: 'Reach 1,000,000 total account value', icon: '🤑' },
+  // Collection Brainrot Score milestones
+  { id: 'value_10k', name: 'Six Figures', description: 'Reach a 100,000 collection Brainrot Score', icon: '💵' },
+  { id: 'value_100k', name: 'Millionaire', description: 'Reach a 1,000,000 collection Brainrot Score', icon: '💰' },
+  { id: 'value_1m', name: 'Eight Figures', description: 'Reach a 10,000,000 collection Brainrot Score', icon: '🤑' },
 
-  // Pack Value
-  { id: 'pack_value_5', name: 'Struck Nothing', description: 'Open a pack with exactly 5 Brainrot value', icon: '🗑️' },
-  { id: 'pack_value_50', name: 'Decent Pull', description: 'Open a pack with at least 50 Brainrot value', icon: '💰' },
-  { id: 'pack_value_100', name: 'Big Money', description: 'Open a pack with at least 100 Brainrot value', icon: '💎' },
-  { id: 'pack_value_500', name: 'Struck Gold', description: 'Open a pack with at least 500 Brainrot value', icon: '👑' },
-  { id: 'pack_value_1000', name: 'Thousandaire', description: 'Open a pack with at least 1,000 Brainrot value', icon: '🍷' },
-  { id: 'pack_value_2000', name: 'Two Grand', description: 'Open a pack with at least 2,000 Brainrot value', icon: '🍾' },
-  { id: 'pack_value_3000', name: 'Three Grand', description: 'Open a pack with at least 3,000 Brainrot value', icon: '🏦' },
-  { id: 'pack_value_4000', name: 'Four Grand', description: 'Open a pack with at least 4,000 Brainrot value', icon: '🏙️' },
-  { id: 'pack_value_5000', name: 'Five Grand', description: 'Open a pack with at least 5,000 Brainrot value', icon: '🚀' },
-  { id: 'pack_value_6000', name: 'Six Grand', description: 'Open a pack with at least 6,000 Brainrot value', icon: '🏎️' },
-  { id: 'pack_value_7000', name: 'Seven Grand', description: 'Open a pack with at least 7,000 Brainrot value', icon: '🚁' },
-  { id: 'pack_value_8000', name: 'Eight Grand', description: 'Open a pack with at least 8,000 Brainrot value', icon: '✈️' },
-  { id: 'pack_value_9000', name: 'Nine Grand', description: 'Open a pack with at least 9,000 Brainrot value', icon: '🏰' },
-  { id: 'pack_value_10000', name: 'Ten Grand', description: 'Open a pack with at least 10,000 Brainrot value', icon: '🌌' },
-  { id: 'pack_value_max', name: 'Literally Impossible', description: 'Open a pack with 10,000,000 Brainrot value', icon: '🤯' },
+  // Pack Brainrot Score
+  { id: 'pack_value_5', name: 'Struck Nothing', description: 'Open a pack with a Brainrot Score of exactly 50', icon: '🗑️' },
+  { id: 'pack_value_50', name: 'Decent Pull', description: 'Open a pack with a Brainrot Score of 500+', icon: '💰' },
+  { id: 'pack_value_100', name: 'Big Money', description: 'Open a pack with a Brainrot Score of 1,000+', icon: '💎' },
+  { id: 'pack_value_500', name: 'Struck Gold', description: 'Open a pack with a Brainrot Score of 5,000+', icon: '👑' },
+  { id: 'pack_value_1000', name: 'Ten Grand', description: 'Open a pack with a Brainrot Score of 10,000+', icon: '🍷' },
+  { id: 'pack_value_2000', name: 'Twenty Grand', description: 'Open a pack with a Brainrot Score of 20,000+', icon: '🍾' },
+  { id: 'pack_value_3000', name: 'Thirty Grand', description: 'Open a pack with a Brainrot Score of 30,000+', icon: '🏦' },
+  { id: 'pack_value_4000', name: 'Forty Grand', description: 'Open a pack with a Brainrot Score of 40,000+', icon: '🏙️' },
+  { id: 'pack_value_5000', name: 'Fifty Grand', description: 'Open a pack with a Brainrot Score of 50,000+', icon: '🚀' },
+  { id: 'pack_value_6000', name: 'Sixty Grand', description: 'Open a pack with a Brainrot Score of 60,000+', icon: '🏎️' },
+  { id: 'pack_value_7000', name: 'Seventy Grand', description: 'Open a pack with a Brainrot Score of 70,000+', icon: '🚁' },
+  { id: 'pack_value_8000', name: 'Eighty Grand', description: 'Open a pack with a Brainrot Score of 80,000+', icon: '✈️' },
+  { id: 'pack_value_9000', name: 'Ninety Grand', description: 'Open a pack with a Brainrot Score of 90,000+', icon: '🏰' },
+  { id: 'pack_value_10000', name: 'Six Figure Pack', description: 'Open a pack with a Brainrot Score of 100,000+', icon: '🌌' },
+  { id: 'pack_value_max', name: 'Literally Impossible', description: 'Open a pack with a Brainrot Score of 100,000,000+', icon: '🤯' },
 ];
 
 export const getAchievementById = (id: string): Achievement | undefined => ACHIEVEMENTS.find(a => a.id === id);

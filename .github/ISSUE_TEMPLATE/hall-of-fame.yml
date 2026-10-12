@@ -7,7 +7,7 @@ body:
     attributes:
       value: |
         Paste the link from **Share this pull** in the game. A bot re-opens the pack from the link's proof.
-        If it's real and qualifies (**Full House or better**, or **2,000+ brainrot value**), it joins the
+        If it's real and qualifies (**Full House or better**, or a **Brainrot Score of 20,000+**), it joins the
         Hall of Fame on the next deploy, credited to you. Fakes and edited links simply don't verify.
   - type: input
     id: pull

@@ -1,21 +1,36 @@
-interface BrainrotValuePanelProps {
-    baseValue: number;
-    multiplier: number;
-    handName: string;
-    flexValue: number;
+import { useState } from 'react';
+import { getLatestSet } from '../../content/sets';
+import ScoringGuide from './ScoringGuide';
+import '../../styles/Scoring.css';
+
+interface BrainrotScorePanelProps {
+  points: number;
+  multiplier: number;
+  handName: string;
+  score: number;
+  /** Set whose odds the "how it works" guide should show. */
+  setId?: string;
 }
 
-const BrainrotValuePanel = ({ baseValue, multiplier, handName, flexValue }: BrainrotValuePanelProps) => {
-    return (
-        <div className="summary-value" style={{ margin: '1rem 0', padding: '1rem 2rem', background: 'rgba(255, 215, 0, 0.1)', border: '2px solid #ffd700', borderRadius: '1rem' }}>
-            <div style={{ marginBottom: '0.5rem', color: '#ffb347' }}>
-                {baseValue.toLocaleString()} Buhcoins &times; {multiplier}x ({handName})
-            </div>
-            <span style={{ fontFamily: '"RubikGlitch", system-ui', color: 'white', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>
-                = {flexValue.toLocaleString()} Brainrot value!
-            </span>
-        </div>
-    );
+const BrainrotScorePanel = ({ points, multiplier, handName, score, setId }: BrainrotScorePanelProps) => {
+  const [showGuide, setShowGuide] = useState(false);
+  const set = getLatestSet(setId ?? 'genesis') ?? getLatestSet('genesis');
+  return (
+    <div className="score-panel">
+      <div className="score-panel-math">
+        {points.toLocaleString()} pts × {multiplier.toLocaleString()} ({handName})
+      </div>
+      <div className="score-panel-total">
+        🧠 {score.toLocaleString()} <span>Brainrot Score</span>
+      </div>
+      {set && (
+        <button className="score-panel-help" onClick={(e) => { e.stopPropagation(); setShowGuide(true); }}>
+          How scoring works
+        </button>
+      )}
+      {showGuide && set && <ScoringGuide set={set} onClose={() => setShowGuide(false)} />}
+    </div>
+  );
 };
 
-export default BrainrotValuePanel;
+export default BrainrotScorePanel;

@@ -16,7 +16,7 @@
 import { appendFileSync, existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { getSet } from '../src/content/sets/index.ts';
-import { extractProof, qualifiesForHallOfFame, toHex, verifyProof, type VerifiedPull } from '../src/engine/index.ts';
+import { extractProof, HALL_OF_FAME_MIN_SCORE, qualifiesForHallOfFame, toHex, verifyProof, type VerifiedPull } from '../src/engine/index.ts';
 
 const ROOT = fileURLToPath(new URL('../', import.meta.url));
 const OUTPUT = `${ROOT}public/hall-of-fame.json`;
@@ -32,7 +32,7 @@ export interface HallOfFameEntry {
   setName: string;
   hand: string;
   multiplier: number;
-  flexValue: number;
+  score: number;
   cards: { cardId: string; isHolo: boolean }[];
   /** Trusted, from GitHub: who submitted and when. */
   issue: number;
@@ -64,7 +64,7 @@ const toEntry = (pull: VerifiedPull, proof: string, issue: Issue): HallOfFameEnt
   setName: pull.set.name,
   hand: pull.score.hand.name,
   multiplier: pull.score.hand.multiplier,
-  flexValue: pull.score.flexValue,
+  score: pull.score.score,
   cards: pull.cards.map((c) => ({ cardId: c.cardId, isHolo: c.isHolo })),
   issue: issue.number,
   githubUser: issue.user?.login ?? 'unknown',
@@ -79,7 +79,7 @@ const checkIssue = async (issue: Issue): Promise<Checked> => {
   try {
     const pull = await verifyProof(proof, getSet);
     if (!qualifiesForHallOfFame(pull.score)) {
-      return { ok: false, reason: `The pull is real, but a ${pull.score.hand.name} worth ${pull.score.flexValue.toLocaleString('en-US')} doesn't qualify yet (Full House or better, or 2,000+ brainrot value).` };
+      return { ok: false, reason: `The pull is real, but a ${pull.score.hand.name} with a Brainrot Score of ${pull.score.score.toLocaleString('en-US')} doesn't qualify yet (Full House or better, or ${HALL_OF_FAME_MIN_SCORE.toLocaleString('en-US')}+ Brainrot Score).` };
     }
     return { ok: true, entry: toEntry(pull, proof, issue), pull };
   } catch (error) {
@@ -92,7 +92,7 @@ const verifyIssue = async () => {
   const result = await checkIssue(event.issue);
   const footer = '\n\n---\n_Verified automatically by re-deriving the pack from its proof (`scripts/hall-of-fame.ts`)._';
   const body = result.ok
-    ? `✅ **Verified!** ${safe(result.entry.name)} #${result.entry.fingerprint} pulled a **${result.entry.hand}** in ${safe(result.entry.setName)} worth **${result.entry.flexValue.toLocaleString('en-US')}** brainrot value.\n\nIt will appear in the Hall of Fame after the next deploy (started automatically).${footer}`
+    ? `✅ **Verified!** ${safe(result.entry.name)} #${result.entry.fingerprint} pulled a **${result.entry.hand}** in ${safe(result.entry.setName)} with a Brainrot Score of **${result.entry.score.toLocaleString('en-US')}**.\n\nIt will appear in the Hall of Fame after the next deploy (started automatically).${footer}`
     : `❌ **Not added.** ${result.reason}${footer}`;
   writeFileSync('hof-comment.md', body);
   if (process.env.GITHUB_OUTPUT) appendFileSync(process.env.GITHUB_OUTPUT, `verified=${result.ok}\n`);
@@ -136,7 +136,7 @@ const build = async () => {
     if (seen.has(key)) continue;
     seen.add(key);
     entries.push(result.entry);
-    console.log(`#${issue.number}: ${result.entry.hand} (${result.entry.flexValue})`);
+    console.log(`#${issue.number}: ${result.entry.hand} (${result.entry.score})`);
   }
   writeFileSync(OUTPUT, JSON.stringify(entries, null, 1) + '\n');
   console.log(`${entries.length} verified entries -> public/hall-of-fame.json`);

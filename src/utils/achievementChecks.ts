@@ -1,4 +1,4 @@
-import { COLLECTIBLE_CARDS, getCardValue, type RarityKey } from '../data/cards';
+import { COLLECTIBLE_CARDS, cardPoints, type RarityKey } from '../data/cards';
 import type { CollectionItem, Stats, CardsByRarity, RarityCount } from '../types';
 import type { CardWithMeta } from '../components/cards/Card';
 import type { AchievementData } from '../types';
@@ -63,14 +63,14 @@ export const getMaxCopiesOfCard = (collection: Record<string, CollectionItem>): 
 };
 
 /**
- * Calculate total account value
+ * Collection Brainrot Score: points of every card owned
  */
 export const getAccountValue = (collection: Record<string, CollectionItem>): number => {
   return Object.values(collection).reduce((sum, item) => {
     const normalCount = item.count ?? item.normalCount ?? 0;
-    const baseValue = getCardValue(item.card.rarity, false);
-    const holoValue = getCardValue(item.card.rarity, true);
-    return sum + (baseValue * normalCount) + (holoValue * (item.holoCount || 0));
+    const points = cardPoints(item.card.rarity, false);
+    const holoValue = cardPoints(item.card.rarity, true);
+    return sum + (points * normalCount) + (holoValue * (item.holoCount || 0));
   }, 0);
 };
 
@@ -177,11 +177,11 @@ export const checkCollectionAchievements = (
   if (maxCopies >= 25) addIfNew(newAchievements, 'dupes_25', achievements);
   if (maxCopies >= 100) addIfNew(newAchievements, 'dupes_100', achievements);
 
-  // Account value milestones
+  // Collection Brainrot Score milestones (10x the Buhcoin-era thresholds)
   const accountValue = getAccountValue(collection);
-  if (accountValue >= 10000) addIfNew(newAchievements, 'value_10k', achievements);
-  if (accountValue >= 100000) addIfNew(newAchievements, 'value_100k', achievements);
-  if (accountValue >= 1000000) addIfNew(newAchievements, 'value_1m', achievements);
+  if (accountValue >= 100_000) addIfNew(newAchievements, 'value_10k', achievements);
+  if (accountValue >= 1_000_000) addIfNew(newAchievements, 'value_100k', achievements);
+  if (accountValue >= 10_000_000) addIfNew(newAchievements, 'value_1m', achievements);
 
   return newAchievements;
 };

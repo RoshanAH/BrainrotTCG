@@ -228,7 +228,7 @@ function App() {
   const handlePackOpened = useCallback((pack: OpenedPack) => {
     const newCards = pack.cards;
     const pullRef = { setId: pack.setId, setVersion: pack.setVersion, nonce: pack.nonce };
-    const { baseValue: packValue, hand: pokerHand, flexValue } = scoreCards(newCards);
+    const { points: packValue, hand: pokerHand, score } = scoreCards(newCards);
     recordPull(pack);
 
     // Update stats using functional update to avoid stale closure
@@ -241,8 +241,8 @@ function App() {
       };
 
       // Update highest pack value - compare against previous state
-      if (flexValue > (prev.highestPackFlexValue || prev.highestPackValue || 0)) {
-        newStats.highestPackFlexValue = flexValue;
+      if (score > (prev.highestPackFlexValue || prev.highestPackValue || 0)) {
+        newStats.highestPackFlexValue = score;
         newStats.highestPackBaseValue = packValue;
         newStats.highestPackMultiplier = pokerHand.multiplier;
         newStats.highestPackHandName = pokerHand.name;
@@ -336,21 +336,15 @@ function App() {
 
     // Check pack value achievements - unlockAchievement handles duplicates internally
     const packValueAchievements: string[] = [];
-    if (flexValue === 5) packValueAchievements.push('pack_value_5');
-    if (flexValue >= 50) packValueAchievements.push('pack_value_50');
-    if (flexValue >= 100) packValueAchievements.push('pack_value_100');
-    if (flexValue >= 500) packValueAchievements.push('pack_value_500');
-    if (flexValue >= 1000) packValueAchievements.push('pack_value_1000');
-    if (flexValue >= 2000) packValueAchievements.push('pack_value_2000');
-    if (flexValue >= 3000) packValueAchievements.push('pack_value_3000');
-    if (flexValue >= 4000) packValueAchievements.push('pack_value_4000');
-    if (flexValue >= 5000) packValueAchievements.push('pack_value_5000');
-    if (flexValue >= 6000) packValueAchievements.push('pack_value_6000');
-    if (flexValue >= 7000) packValueAchievements.push('pack_value_7000');
-    if (flexValue >= 8000) packValueAchievements.push('pack_value_8000');
-    if (flexValue >= 9000) packValueAchievements.push('pack_value_9000');
-    if (flexValue >= 10000) packValueAchievements.push('pack_value_10000');
-    if (flexValue >= 10000000) packValueAchievements.push('pack_value_max');
+    // Thresholds are 10x the original Buhcoin-era ones (card points were scaled by 10).
+    if (score === 50) packValueAchievements.push('pack_value_5');
+    const PACK_SCORE_ACHIEVEMENTS: [number, string][] = [
+      [500, 'pack_value_50'], [1_000, 'pack_value_100'], [5_000, 'pack_value_500'], [10_000, 'pack_value_1000'],
+      [20_000, 'pack_value_2000'], [30_000, 'pack_value_3000'], [40_000, 'pack_value_4000'], [50_000, 'pack_value_5000'],
+      [60_000, 'pack_value_6000'], [70_000, 'pack_value_7000'], [80_000, 'pack_value_8000'], [90_000, 'pack_value_9000'],
+      [100_000, 'pack_value_10000'], [100_000_000, 'pack_value_max'],
+    ];
+    PACK_SCORE_ACHIEVEMENTS.forEach(([min, id]) => score >= min && packValueAchievements.push(id));
     packValueAchievements.forEach(id => unlockAchievement(id, newCards));
 
     // Check other achievements - get current state to avoid stale closure

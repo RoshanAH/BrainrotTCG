@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import Card from '../cards/Card';
 import type { CardWithMeta } from '../cards/Card';
+import RarityBadge from '../ui/RarityBadge';
 
 const Motion = motion;
 
@@ -42,6 +43,10 @@ const CardRevealUI = ({
           </Motion.div>
         )}
       </AnimatePresence>
+
+      <div className="reveal-rarity">
+        {currentCard?.isRevealed && <RarityBadge rarity={currentCard.rarity} isHolo={currentCard.isHolo} />}
+      </div>
 
       <div className="tip-text">
         {currentCard?.isRevealed ? "Click or Space to see next" : "Click or Space to reveal"}

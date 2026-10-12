@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import BrainrotValuePanel from './BrainrotValuePanel';
+import BrainrotScorePanel from './BrainrotScorePanel';
 import CardViewerModal from '../cards/CardViewerModal';
 import type { CardWithMeta } from '../cards/Card';
 import { scoreCards } from '../../data/cards';
@@ -27,7 +27,7 @@ const PackCardViewer = ({
 
     // Stored packs may carry stale image URLs from an older build; re-resolve them.
     const cards = storedCards.map((card) => hydrateCard(card));
-    const { baseValue, hand: pokerHand, flexValue } = scoreCards(cards);
+    const { points, hand: pokerHand, score } = scoreCards(cards);
 
     const handleCardClick = (card: CardWithMeta) => {
         if (onCardClick) {
@@ -48,11 +48,12 @@ const PackCardViewer = ({
     return (
         <div className={`pack-card-viewer ${className}`}>
             {showValue && (
-                <BrainrotValuePanel
-                    baseValue={baseValue}
+                <BrainrotScorePanel
+                    points={points}
                     multiplier={pokerHand.multiplier}
                     handName={pokerHand.name}
-                    flexValue={flexValue}
+                    score={score}
+                    setId={cards[0]?.setId}
                 />
             )}
 

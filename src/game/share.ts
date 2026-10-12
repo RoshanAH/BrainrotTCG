@@ -15,7 +15,7 @@ export const bragText = (cards: { rarity: Rarity; isHolo: boolean }[], score: Pa
   [
     `🧠 Brainrot TCG · ${setName}`,
     cards.map((c) => RARITY_EMOJI[c.rarity] + (c.isHolo ? '✨' : '')).join(''),
-    `${score.hand.name}${score.hand.multiplier > 1 ? ` ×${score.hand.multiplier}` : ''} · ${score.flexValue.toLocaleString('en-US')} brainrot value`,
+    `${score.hand.name}${score.hand.multiplier > 1 ? ` ×${score.hand.multiplier.toLocaleString('en-US')}` : ''} · 🧠 ${score.score.toLocaleString('en-US')} Brainrot Score`,
     `Verify it yourself: ${url}`,
   ].join('\n');
 

@@ -5,11 +5,11 @@
  * `${setId}/${cardId}`. Old saves used image file names as ids.
  */
 import legacyGenesisIds from '../content/sets/genesis/legacy-ids.json';
-import { getCard, type Card } from '../data/cards';
+import { getCard, scoreCards, type Card } from '../data/cards';
 import { STORAGE_KEYS } from '../constants';
 
 const DATA_VERSION_KEY = 'brainrot-data-version';
-const CURRENT_VERSION = 2;
+const CURRENT_VERSION = 3;
 
 const LEGACY: Record<string, string> = legacyGenesisIds;
 
@@ -91,6 +91,23 @@ const migrateV2 = () => {
   }
 };
 
+/**
+ * v3: Buhcoins became Brainrot Score (card points x10, combo multipliers
+ * matched to their odds). Recompute the stored best pack under the new rules.
+ */
+const migrateV3 = () => {
+  const stats = read(STORAGE_KEYS.STATS) as AnyRecord | undefined;
+  if (!stats || typeof stats !== 'object' || !Array.isArray(stats.highestPackCards) || stats.highestPackCards.length === 0) return;
+  const cards = (stats.highestPackCards as AnyRecord[]).map((c) => ({ ...hydrateCard({ ...c, id: String(c.id) }), isHolo: !!c.isHolo }));
+  const { points, hand, score } = scoreCards(cards);
+  stats.highestPackFlexValue = score;
+  stats.highestPackBaseValue = points;
+  stats.highestPackMultiplier = hand.multiplier;
+  stats.highestPackHandName = hand.name;
+  delete stats.highestPackValue;
+  write(STORAGE_KEYS.STATS, stats);
+};
+
 export const runMigrations = () => {
   let version = 1;
   try {
@@ -99,6 +116,7 @@ export const runMigrations = () => {
     return;
   }
   if (version < 2) migrateV2();
+  if (version < 3) migrateV3();
   try {
     localStorage.setItem(DATA_VERSION_KEY, String(CURRENT_VERSION));
   } catch {
