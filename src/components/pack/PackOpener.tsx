@@ -1,9 +1,9 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import type { Card as CardType } from '../../data/cards';
 import type { CardWithMeta } from '../cards/Card';
 import type { Settings } from '../../types';
-import { generatePack } from '../../utils/packGenerator';
+import type { SetDefinition } from '../../engine';
+import { openPack, prefetchNextPack, type OpenedPack } from '../../game/pulls';
 import { triggerRarityConfetti, triggerHoloSparkles } from '../../utils/confettiEffects';
 import { usePackCutter } from '../../hooks/usePackCutter';
 import { useAudio } from '../../hooks/useAudio';
@@ -12,11 +12,9 @@ import { BRAINROT_VOICES, EFFECT_SOUNDS, CARD_FLIP_SRC } from '../../constants/a
 import PackCuttingUI from './PackCuttingUI';
 import CardRevealUI from './CardRevealUI';
 import PackSummaryUI from './PackSummaryUI';
-import pack1 from '../../assets/packs/pack1.png';
-import pack2 from '../../assets/packs/pack2.png';
+import { packImageUrl } from '../../content/art';
 import '../../styles/PackOpener.css';
 
-const PACK_DESIGNS = [pack1, pack2];
 const Motion = motion;
 
 interface PreloadedAssets {
@@ -26,20 +24,26 @@ interface PreloadedAssets {
 }
 
 interface PackOpenerProps {
-  onOpen: (cards: CardWithMeta[]) => void;
-  cards: CardType[];
+  /** Called once every card has been revealed. */
+  onOpen: (pack: OpenedPack) => void;
+  onShare: (pack: OpenedPack) => void;
+  /** True while a pack is being opened (its ticket is spent but it isn't recorded yet). */
+  onBusyChange?: (busy: boolean) => void;
+  set: SetDefinition;
   disabled?: boolean;
   settings: Settings;
 }
 
-const PackOpener = ({ onOpen, cards, disabled = false, settings }: PackOpenerProps) => {
+const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, settings }: PackOpenerProps) => {
   const [isOpening, setIsOpening] = useState(false);
+  const [openedPack, setOpenedPack] = useState<OpenedPack | null>(null);
+  const [openError, setOpenError] = useState<string | null>(null);
   const [openedCards, setOpenedCards] = useState<CardWithMeta[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPackCut, setIsPackCut] = useState(false);
   const [preloadedAssets, setPreloadedAssets] = useState<PreloadedAssets | null>(null);
   const [showSummary, setShowSummary] = useState(false);
-  const [packDesign, setPackDesign] = useState(() => PACK_DESIGNS[Math.floor(Math.random() * PACK_DESIGNS.length)]);
+  const packDesign = packImageUrl(set.id);
   const [hasMovedMouse, setHasMovedMouse] = useState(false);
   const [autoMode, setAutoMode] = useState(false);
 
@@ -49,25 +53,44 @@ const PackOpener = ({ onOpen, cards, disabled = false, settings }: PackOpenerPro
   const openTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const handleInteractionRef = useRef<() => void>(() => {});
 
-  const startOpening = useCallback(() => {
-    const pack = generatePack(cards);
+  const startOpening = useCallback(async () => {
+    let pack: OpenedPack;
+    try {
+      // Usually instant: the ticket was mined while the pack was on screen.
+      pack = await openPack(set);
+    } catch (error) {
+      console.error('Could not open pack', error);
+      setOpenError('This pack refused to open. Try again!');
+      setIsPackCut(false);
+      return;
+    }
     const brainrotVoices = preloadAudio(BRAINROT_VOICES);
     const cardFlip = preloadAudio([CARD_FLIP_SRC])[0];
     const effects = preloadAudio(EFFECT_SOUNDS);
 
     setPreloadedAssets({ brainrotVoices, cardFlip, effects });
-    setOpenedCards(pack);
+    setOpenedPack(pack);
+    setOpenedCards(pack.cards);
     setCurrentIndex(0);
     setIsOpening(true);
-  }, [cards, preloadAudio]);
+  }, [set, preloadAudio]);
+
+  // Mine the next pack's ticket while this one is on screen.
+  useEffect(() => {
+    if (!isOpening) prefetchNextPack(set);
+  }, [isOpening, set]);
+
+  // A pack in progress has spent its ticket, so the app must not swap sets until it's recorded.
+  useEffect(() => onBusyChange?.(isOpening), [isOpening, onBusyChange]);
 
   const handleCutComplete = useCallback(() => {
     setIsPackCut(true);
     if (openTimeoutRef.current) {
       window.clearTimeout(openTimeoutRef.current);
     }
+    setOpenError(null);
     openTimeoutRef.current = window.setTimeout(() => {
-      startOpening();
+      void startOpening();
     }, 460);
   }, [startOpening]);
 
@@ -98,12 +121,12 @@ const PackOpener = ({ onOpen, cards, disabled = false, settings }: PackOpenerPro
     }
     setPreloadedAssets(null);
     setIsOpening(false);
+    setOpenedPack(null);
     setOpenedCards([]);
     setCurrentIndex(0);
     setIsPackCut(false);
     setShowSummary(false);
     setHasMovedMouse(false);
-    setPackDesign(PACK_DESIGNS[Math.floor(Math.random() * PACK_DESIGNS.length)]);
     resetCutState();
   }, [resetCutState, preloadedAssets, cleanupAudio]);
 
@@ -111,10 +134,10 @@ const PackOpener = ({ onOpen, cards, disabled = false, settings }: PackOpenerPro
     if (currentIndex < openedCards.length - 1) {
       setCurrentIndex(currentIndex + 1);
     } else {
-      onOpen(openedCards);
+      if (openedPack) onOpen({ ...openedPack, cards: openedCards });
       setShowSummary(true);
     }
-  }, [currentIndex, openedCards, onOpen]);
+  }, [currentIndex, openedCards, openedPack, onOpen]);
 
   const closeSummary = useCallback(() => {
     finishPack();
@@ -153,7 +176,9 @@ const PackOpener = ({ onOpen, cards, disabled = false, settings }: PackOpenerPro
   }, [isOpening, openedCards, currentIndex, handleFlip, nextCard]);
 
   // Keep ref updated for use in intervals (avoids stale closure)
-  handleInteractionRef.current = handleInteraction;
+  useEffect(() => {
+    handleInteractionRef.current = handleInteraction;
+  }, [handleInteraction]);
 
   // Use keyboard controls hook
   useKeyboardControls({
@@ -210,12 +235,10 @@ const PackOpener = ({ onOpen, cards, disabled = false, settings }: PackOpenerPro
     };
   }, [autoMode, disabled, showSummary, isOpening, isPackCut, closeSummary, completeCut, handleInteraction]);
 
-  // Stop auto mode when disabled
-  useEffect(() => {
-    if (disabled && autoMode) {
-      setAutoMode(false);
-    }
-  }, [disabled, autoMode]);
+  // Stop auto mode when disabled (adjusting state during render avoids an extra effect pass)
+  if (disabled && autoMode) {
+    setAutoMode(false);
+  }
 
   // Pointer event listeners for cutting
   useEffect(() => {
@@ -264,6 +287,8 @@ const PackOpener = ({ onOpen, cards, disabled = false, settings }: PackOpenerPro
             <PackCuttingUI
               packRef={packRef}
               packDesign={packDesign}
+              set={set}
+              error={openError}
               isCutting={isCutting}
               isPackCut={isPackCut}
               cutPoints={cutPoints}
@@ -289,6 +314,7 @@ const PackOpener = ({ onOpen, cards, disabled = false, settings }: PackOpenerPro
               <PackSummaryUI
                 openedCards={openedCards}
                 onClose={closeSummary}
+                onShare={openedPack ? () => onShare({ ...openedPack, cards: openedCards }) : undefined}
               />
             )}
           </Motion.div>

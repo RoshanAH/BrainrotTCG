@@ -32,10 +32,9 @@
 
 body {
     background-color: #1a1a2e;
-    background-image: url('../assets/images/background.png');
+    background-image: url('../assets/images/background.svg');
     background-repeat: repeat;
     background-size: 256px 256px;
-    background-blend-mode: multiply;
     color: var(--text-main);
     min-height: 100vh;
     overflow-x: hidden;
@@ -581,5 +580,69 @@ main {
     .nav-btn {
         padding: 0.5rem 1rem;
         font-size: 0.8rem;
+    }
+}
+
+/* Collection grouped by set */
+.collection-set {
+    margin-bottom: 2rem;
+}
+
+.collection-set-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 0.75rem;
+    margin: 0 0 0.75rem;
+}
+
+.collection-set-header h3 {
+    margin: 0;
+    color: #fff;
+    font-size: 1.25rem;
+}
+
+.collection-set-era {
+    color: #aaa;
+    font-size: 0.85rem;
+}
+
+.collection-set-archived {
+    border: 1px solid #888;
+    border-radius: 999px;
+    color: #bbb;
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    padding: 0.1rem 0.5rem;
+    text-transform: uppercase;
+}
+
+.collection-set-progress {
+    margin-left: auto;
+    color: #ffd700;
+    font-weight: 700;
+}
+
+.collection-set-bar {
+    flex-basis: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.12);
+    overflow: hidden;
+}
+
+.collection-set-bar > div {
+    height: 100%;
+    background: linear-gradient(90deg, #ff3df2, #29f0ff);
+}
+
+/* Respect the OS "reduce motion" setting for CSS animations (holo shine, floating title, sparks). */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
     }
 }

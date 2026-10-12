@@ -16,12 +16,18 @@ export interface CollectionItem {
 export interface Stats {
   packsOpened: number;
   holoCards: Record<string, boolean>;
-  highestPackValue?: number; // legacy
+  highestPackValue?: number; // legacy (pre-poker-hands), removed by migration v3
+  /** Best pack's Brainrot Score (field name predates the rename). */
   highestPackFlexValue?: number;
+  /** Best pack's card points. */
   highestPackBaseValue?: number;
   highestPackMultiplier?: number;
   highestPackHandName?: string;
   highestPackCards?: CardWithMeta[];
+  /** Ticket reference of the best pack, so it can be shared as a verifiable proof. */
+  highestPackRef?: { setId: string; setVersion: number; nonce: number; publicKeyHex?: string };
+  /** The best pack predates verifiable pulls and can't be proven. */
+  highestPackLegacy?: boolean;
 }
 
 export interface HallOfFameData {
@@ -60,4 +66,6 @@ export interface CardsByRarity {
 export interface Settings {
   soundEnabled: boolean;
   particlesEnabled: boolean;
+  /** Show draft sets (placeholder art) in the set picker. */
+  showDraftSets?: boolean;
 }

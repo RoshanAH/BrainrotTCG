@@ -1,0 +1,994 @@
+{
+  "spec": "spec/PULL_SPEC.md",
+  "version": 1,
+  "generatedBy": "spec/make_python_vectors.py",
+  "testKey": {
+    "seed": "a2844eb2445c2a12beaa65cdf68e69fb58e1e3e79f11e587602ab58dcd7d8e82",
+    "publicKey": "beb5d23f1a487720cb83e6f6f0baec51efd0a577f6e1e86bee69652134971072",
+    "fingerprint": "YH48-X752",
+    "derivation": "seed = SHA-256(UTF-8('brainrot-tcg/verify_pull.py/test-key/v1'))"
+  },
+  "tickets": [
+    {
+      "setKey": "right-now@1",
+      "publicKey": "beb5d23f1a487720cb83e6f6f0baec51efd0a577f6e1e86bee69652134971072",
+      "nonce": 5,
+      "ticket": "302426b1c6251b5da474e5a4294e258cc3260cec2681a70df75004154e606569"
+    },
+    {
+      "setKey": "gen-alpha-uprising@1",
+      "publicKey": "beb5d23f1a487720cb83e6f6f0baec51efd0a577f6e1e86bee69652134971072",
+      "nonce": 12777,
+      "ticket": "4359201a306baf924767b1e47f7192232eca0d26387d039dbada0fc3c56e3dbe"
+    },
+    {
+      "setKey": "right-now@1",
+      "publicKey": "beb5d23f1a487720cb83e6f6f0baec51efd0a577f6e1e86bee69652134971072",
+      "nonce": 9007199254740991,
+      "ticket": "7856b0f744ef38e40a2bebce6f24929f8c751f7357dd5d75de1d2cd58a095fd4"
+    },
+    {
+      "setKey": "zoë-set@65535",
+      "publicKey": "beb5d23f1a487720cb83e6f6f0baec51efd0a577f6e1e86bee69652134971072",
+      "nonce": 0,
+      "ticket": "7497fb9a51769d6731e9f08aefea0c4c39adfeb2bf0d523b2d8781f1de809aea"
+    }
+  ],
+  "rng": [
+    {
+      "seed": "0000000000000000000000000000000000000000000000000000000000000000",
+      "outputs": [
+        808754475,
+        4216505632,
+        947923937,
+        2491578854,
+        3964400089,
+        2091952393,
+        4208506024,
+        1017427976
+      ]
+    },
+    {
+      "seed": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "outputs": [
+        2089927686,
+        2053306979,
+        3058727884,
+        117756824,
+        2574100927,
+        1659126310,
+        3028377073,
+        762330931
+      ]
+    },
+    {
+      "seed": "62e8e41d1d01b7a9f5aa6718697bd5af8c10a637780ba9b49de16a029e612bdc",
+      "outputs": [
+        2527088917,
+        3012925338,
+        4066289797,
+        2400180448,
+        2274332229,
+        356731368,
+        3593908018,
+        3029867037
+      ]
+    }
+  ],
+  "packs": [
+    {
+      "set": "gen-alpha-uprising@1",
+      "seed": "a2ff0e0bf8341e4ce72b34d0e0a93466aea7a4aa25c480c9595b25bbdfbe7911",
+      "cards": [
+        {
+          "cardId": "ok-i-pull-up",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "sad-hamster",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "pesto-the-penguin",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "pesto-the-penguin",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "sad-hamster",
+          "rarity": "COMMON",
+          "isHolo": false
+        }
+      ]
+    },
+    {
+      "set": "italian-brainrot-deep-cuts@1",
+      "seed": "670bd4c89774b1a45fddec83ce05e033c4fd0755c53924162c655074d6bc2a19",
+      "cards": [
+        {
+          "cardId": "trippi-troppi",
+          "rarity": "EPIC",
+          "isHolo": false
+        },
+        {
+          "cardId": "ballerino-lololo",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "spijuniro-golubiro",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "ballerino-lololo",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "dragon-cannelloni",
+          "rarity": "RARE",
+          "isHolo": false
+        }
+      ]
+    },
+    {
+      "set": "vine-and-dank@1",
+      "seed": "435c305065925796393ebf6d29bdb049359d017c7e74ccee27f5bd6cb65b53d9",
+      "cards": [
+        {
+          "cardId": "mr-skeltal",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "moth-lamp",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "moth-lamp",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "mocking-spongebob",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "moth-lamp",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        }
+      ]
+    },
+    {
+      "set": "web-ancients@1",
+      "seed": "0a316630a15dccfe459ad87b110ee4c4057f3b4b2a2d6a08841d13bbef22ea4e",
+      "cards": [
+        {
+          "cardId": "y-u-no-guy",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "forever-alone",
+          "rarity": "EPIC",
+          "isHolo": false
+        },
+        {
+          "cardId": "arrow-to-the-knee",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "gangnam-style",
+          "rarity": "LEGENDARY",
+          "isHolo": false
+        },
+        {
+          "cardId": "me-gusta",
+          "rarity": "COMMON",
+          "isHolo": false
+        }
+      ]
+    }
+  ],
+  "valid": [
+    {
+      "note": "name of 24 code points, all astral (48 UTF-16 code units)",
+      "proof": "AQlyaWdodC1ub3cAAb610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByBWDwn6eg8J-noPCfp6Dwn6eg8J-noPCfp6Dwn6eg8J-noPCfp6Dwn6eg8J-noPCfp6Dwn6eg8J-noPCfp6Dwn6eg8J-noPCfp6Dwn6eg8J-noPCfp6Dwn6eg8J-noPCfp6BfUFRpw9QaclOjKB0HV8iZ6mm61OCDXsnkU_0olGlXama0knwKOnp84A4yYEi2mtVULMlFLsuJ7B_8g_jZowwD",
+      "set": "right-now@1",
+      "publicKey": "beb5d23f1a487720cb83e6f6f0baec51efd0a577f6e1e86bee69652134971072",
+      "nonce": 5,
+      "name": "🧠🧠🧠🧠🧠🧠🧠🧠🧠🧠🧠🧠🧠🧠🧠🧠🧠🧠🧠🧠🧠🧠🧠🧠",
+      "fingerprint": "YH48-X752",
+      "cards": [
+        {
+          "cardId": "remember-november",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "la-peace",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "verity",
+          "rarity": "EPIC",
+          "isHolo": false
+        },
+        {
+          "cardId": "niu-lai",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "chile-memes",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        }
+      ],
+      "points": 140,
+      "hand": "No Matches",
+      "multiplier": 1,
+      "score": 140,
+      "hallOfFame": false
+    },
+    {
+      "note": "name of exactly 24 ASCII code points",
+      "proof": "AQlyaWdodC1ub3cAAb610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByBRh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh_kYJn3jgZzAv9boeeAwIEDkICVqB2Os32nOYT8syNBFaWzC_ek8sISiWTah3SQV5tMQGlRBB6Y28mBq-t0wsN",
+      "set": "right-now@1",
+      "publicKey": "beb5d23f1a487720cb83e6f6f0baec51efd0a577f6e1e86bee69652134971072",
+      "nonce": 5,
+      "name": "xxxxxxxxxxxxxxxxxxxxxxxx",
+      "fingerprint": "YH48-X752",
+      "cards": [
+        {
+          "cardId": "remember-november",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "la-peace",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "verity",
+          "rarity": "EPIC",
+          "isHolo": false
+        },
+        {
+          "cardId": "niu-lai",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "chile-memes",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        }
+      ],
+      "points": 140,
+      "hand": "No Matches",
+      "multiplier": 1,
+      "score": 140,
+      "hallOfFame": false
+    },
+    {
+      "note": "nonce 2^53-1 (largest 8-byte varint)",
+      "proof": "AQlyaWdodC1ub3cAAb610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxBy_________w8JTWF4IE5vbmNlf-dMTxzTImkScvrrTv1mucwjsCv6sb0wNb7I9h5UA5e4t6LShfPve7M2hz4SyKUTtIxfc1hYLzyNh_S6ToCLCA",
+      "set": "right-now@1",
+      "publicKey": "beb5d23f1a487720cb83e6f6f0baec51efd0a577f6e1e86bee69652134971072",
+      "nonce": 9007199254740991,
+      "name": "Max Nonce",
+      "fingerprint": "YH48-X752",
+      "cards": [
+        {
+          "cardId": "pirate-gaster",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "verity",
+          "rarity": "EPIC",
+          "isHolo": false
+        },
+        {
+          "cardId": "bukangi",
+          "rarity": "COMMON",
+          "isHolo": true
+        },
+        {
+          "cardId": "black-cat-clapping",
+          "rarity": "RARE",
+          "isHolo": false
+        },
+        {
+          "cardId": "ai-rumpelstiltskin",
+          "rarity": "LEGENDARY",
+          "isHolo": false
+        }
+      ],
+      "points": 515,
+      "hand": "No Matches",
+      "multiplier": 1,
+      "score": 515,
+      "hallOfFame": false
+    },
+    {
+      "note": "name not in NFC (Zoe + U+0308)",
+      "proof": "AQlyaWdodC1ub3cAAb610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByBQVab2XMiJxoWGcaU6gd0vhe33ItjmqX6yJX4PMyzak2ywyQkHLXIfViXGARQaTdIaAmJzh_l0Pkc9OttGG2HOFJliydzQI",
+      "set": "right-now@1",
+      "publicKey": "beb5d23f1a487720cb83e6f6f0baec51efd0a577f6e1e86bee69652134971072",
+      "nonce": 5,
+      "name": "Zoë",
+      "fingerprint": "YH48-X752",
+      "cards": [
+        {
+          "cardId": "remember-november",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "la-peace",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "verity",
+          "rarity": "EPIC",
+          "isHolo": false
+        },
+        {
+          "cardId": "niu-lai",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "chile-memes",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        }
+      ],
+      "points": 140,
+      "hand": "No Matches",
+      "multiplier": 1,
+      "score": 140,
+      "hallOfFame": false
+    },
+    {
+      "note": "name with unassigned U+0378",
+      "proof": "AQlyaWdodC1ub3cAAb610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByBQNFzbiSLI2S7v1ah-hTi97gWgKobmUfwUoHj2FN7zjQWeopNdJzE2d-bMoHPDgUV15ch5UaEyJ26z7PLF-qDLAD-ZcG",
+      "set": "right-now@1",
+      "publicKey": "beb5d23f1a487720cb83e6f6f0baec51efd0a577f6e1e86bee69652134971072",
+      "nonce": 5,
+      "name": "E͸",
+      "fingerprint": "YH48-X752",
+      "cards": [
+        {
+          "cardId": "remember-november",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "la-peace",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "verity",
+          "rarity": "EPIC",
+          "isHolo": false
+        },
+        {
+          "cardId": "niu-lai",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "chile-memes",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        }
+      ],
+      "points": 140,
+      "hand": "No Matches",
+      "multiplier": 1,
+      "score": 140,
+      "hallOfFame": false
+    },
+    {
+      "note": "name with U+1FAE9 (assigned in Unicode 16.0)",
+      "proof": "AQlyaWdodC1ub3cAAb610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByBQlFdmFuIPCfq6kUCoNXtblQfCsbuvZQQ2t0vkPTA1wLKdgzDOgH1PZ_ykeVBC2ozRzjXNme5k4dhD1LjvupAZhRhnk0viiewHkM",
+      "set": "right-now@1",
+      "publicKey": "beb5d23f1a487720cb83e6f6f0baec51efd0a577f6e1e86bee69652134971072",
+      "nonce": 5,
+      "name": "Evan 🫩",
+      "fingerprint": "YH48-X752",
+      "cards": [
+        {
+          "cardId": "remember-november",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "la-peace",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "verity",
+          "rarity": "EPIC",
+          "isHolo": false
+        },
+        {
+          "cardId": "niu-lai",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "chile-memes",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        }
+      ],
+      "points": 140,
+      "hand": "No Matches",
+      "multiplier": 1,
+      "score": 140,
+      "hallOfFame": false
+    },
+    {
+      "note": "name with private-use U+E000",
+      "proof": "AQlyaWdodC1ub3cAAb610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByBQRF7oCAeGHQIUTxVfyKWtwFBXGUhkIrIhM0mANym_cNMaIG6UnPqIQ8UTLkO1ZZffcpfzDZSKZGKlKXjBvaMmy9hfxkDg",
+      "set": "right-now@1",
+      "publicKey": "beb5d23f1a487720cb83e6f6f0baec51efd0a577f6e1e86bee69652134971072",
+      "nonce": 5,
+      "name": "E",
+      "fingerprint": "YH48-X752",
+      "cards": [
+        {
+          "cardId": "remember-november",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "la-peace",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "verity",
+          "rarity": "EPIC",
+          "isHolo": false
+        },
+        {
+          "cardId": "niu-lai",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "chile-memes",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        }
+      ],
+      "points": 140,
+      "hand": "No Matches",
+      "multiplier": 1,
+      "score": 140,
+      "hallOfFame": false
+    },
+    {
+      "note": "name with U+0600 (format character, not on the §7.2 lists)",
+      "proof": "AQlyaWdodC1ub3cAAb610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByBQNF2ICumdZnB0r5sSuttPAMqhMobsw0G8ictHJRCRnbf6MVPwEHD0UaFW-xIf3BK-tjA8OmNYSi4xBlhog0OyeK2oIN",
+      "set": "right-now@1",
+      "publicKey": "beb5d23f1a487720cb83e6f6f0baec51efd0a577f6e1e86bee69652134971072",
+      "nonce": 5,
+      "name": "E؀",
+      "fingerprint": "YH48-X752",
+      "cards": [
+        {
+          "cardId": "remember-november",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "la-peace",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "verity",
+          "rarity": "EPIC",
+          "isHolo": false
+        },
+        {
+          "cardId": "niu-lai",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "chile-memes",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        }
+      ],
+      "points": 140,
+      "hand": "No Matches",
+      "multiplier": 1,
+      "score": 140,
+      "hallOfFame": false
+    },
+    {
+      "note": "name with U+3164 Hangul filler (not on the §7.2 lists)",
+      "proof": "AQlyaWdodC1ub3cAAb610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByBQdFdmFu44Wkw4T1PJ8MbLGnC5luZXSX77Z6wT7qO9CLtSeg4mkfHgI9LK2FmP_TxIuX6KblmKSj7_rNyBTXxfKGU00gHAFWBw",
+      "set": "right-now@1",
+      "publicKey": "beb5d23f1a487720cb83e6f6f0baec51efd0a577f6e1e86bee69652134971072",
+      "nonce": 5,
+      "name": "Evanㅤ",
+      "fingerprint": "YH48-X752",
+      "cards": [
+        {
+          "cardId": "remember-november",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "la-peace",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "verity",
+          "rarity": "EPIC",
+          "isHolo": false
+        },
+        {
+          "cardId": "niu-lai",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "chile-memes",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        }
+      ],
+      "points": 140,
+      "hand": "No Matches",
+      "multiplier": 1,
+      "score": 140,
+      "hallOfFame": false
+    },
+    {
+      "note": "name with an emoji variation selector (U+2764 U+FE0F)",
+      "proof": "AQlyaWdodC1ub3cAAb610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByBQtFdmFuIOKdpO-4j-MrHl9C4hDZJYk78n_LpzQUEoazeqpcKTbMi2CwVpBGmfHnDkjqqeP8BP8L1XxHTXYWqajDBJu9k_HLUnwdSww",
+      "set": "right-now@1",
+      "publicKey": "beb5d23f1a487720cb83e6f6f0baec51efd0a577f6e1e86bee69652134971072",
+      "nonce": 5,
+      "name": "Evan ❤️",
+      "fingerprint": "YH48-X752",
+      "cards": [
+        {
+          "cardId": "remember-november",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "la-peace",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "verity",
+          "rarity": "EPIC",
+          "isHolo": false
+        },
+        {
+          "cardId": "niu-lai",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "chile-memes",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        }
+      ],
+      "points": 140,
+      "hand": "No Matches",
+      "multiplier": 1,
+      "score": 140,
+      "hallOfFame": false
+    },
+    {
+      "note": "small-order R (canonical identity) with S = k*a; R is not otherwise checked",
+      "proof": "AQlyaWdodC1ub3cAAb610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByBQRFdmFuAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUj9I8p_0p56tqRhb1h4p0ZPSGXeDroDZOm3DC5IFdBA",
+      "set": "right-now@1",
+      "publicKey": "beb5d23f1a487720cb83e6f6f0baec51efd0a577f6e1e86bee69652134971072",
+      "nonce": 5,
+      "name": "Evan",
+      "fingerprint": "YH48-X752",
+      "cards": [
+        {
+          "cardId": "remember-november",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "la-peace",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "verity",
+          "rarity": "EPIC",
+          "isHolo": false
+        },
+        {
+          "cardId": "niu-lai",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "chile-memes",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        }
+      ],
+      "points": 140,
+      "hand": "No Matches",
+      "multiplier": 1,
+      "score": 140,
+      "hallOfFame": false
+    },
+    {
+      "note": "mined No Matches",
+      "proof": "ARJnZW4tYWxwaGEtdXByaXNpbmcAAb610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByAwhObyBNYXRjaG5lsRiaAVwjtY6HDXNN_j4glYi1EFlq1eLvMOTLzpZR0Km9--ma-3Xz3P5Qdp749PsGg-f38np9Isx9RDY6Fgw",
+      "set": "gen-alpha-uprising@1",
+      "publicKey": "beb5d23f1a487720cb83e6f6f0baec51efd0a577f6e1e86bee69652134971072",
+      "nonce": 3,
+      "name": "No Match",
+      "fingerprint": "YH48-X752",
+      "cards": [
+        {
+          "cardId": "dancing-toothless",
+          "rarity": "UNCOMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "smurf-cat",
+          "rarity": "EPIC",
+          "isHolo": false
+        },
+        {
+          "cardId": "sigma",
+          "rarity": "LEGENDARY",
+          "isHolo": false
+        },
+        {
+          "cardId": "ok-i-pull-up",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "sad-hamster",
+          "rarity": "COMMON",
+          "isHolo": false
+        }
+      ],
+      "points": 310,
+      "hand": "No Matches",
+      "multiplier": 1,
+      "score": 310,
+      "hallOfFame": false
+    },
+    {
+      "note": "mined Full House",
+      "proof": "ARJnZW4tYWxwaGEtdXByaXNpbmcAAb610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByUwpGdWxsIEhvdXNluxkYZlL939y3jWi-4nu-_ZR0cQSA2IjBW8JPmvEwPyx2LG1tXakQuNepjVWFMuCroXSCXs0f85EY6vgK5NBmDg",
+      "set": "gen-alpha-uprising@1",
+      "publicKey": "beb5d23f1a487720cb83e6f6f0baec51efd0a577f6e1e86bee69652134971072",
+      "nonce": 83,
+      "name": "Full House",
+      "fingerprint": "YH48-X752",
+      "cards": [
+        {
+          "cardId": "ok-i-pull-up",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "side-eye-cat",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "side-eye-cat",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "side-eye-cat",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "ok-i-pull-up",
+          "rarity": "COMMON",
+          "isHolo": false
+        }
+      ],
+      "points": 50,
+      "hand": "Full House",
+      "multiplier": 150,
+      "score": 7500,
+      "hallOfFame": true
+    },
+    {
+      "note": "mined 3 of a Kind (Hall of Fame by score alone)",
+      "proof": "ARJnZW4tYWxwaGEtdXByaXNpbmcAAb610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByxAILSG9sbyBIdW50ZXJxfCNkFKSuOaL0LtUppPv1s96hjHYv_6a-5oXjLpL3oKrbA7_LzrUAI4G4jS4ruxSt8aVLtKnAASRcQr3sOPoG",
+      "set": "gen-alpha-uprising@1",
+      "publicKey": "beb5d23f1a487720cb83e6f6f0baec51efd0a577f6e1e86bee69652134971072",
+      "nonce": 324,
+      "name": "Holo Hunter",
+      "fingerprint": "YH48-X752",
+      "cards": [
+        {
+          "cardId": "pedro-raccoon",
+          "rarity": "RARE",
+          "isHolo": false
+        },
+        {
+          "cardId": "side-eye-cat",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "pedro-raccoon",
+          "rarity": "RARE",
+          "isHolo": true
+        },
+        {
+          "cardId": "sad-hamster",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "pedro-raccoon",
+          "rarity": "RARE",
+          "isHolo": true
+        }
+      ],
+      "points": 1455,
+      "hand": "3 of a Kind",
+      "multiplier": 15,
+      "score": 21825,
+      "hallOfFame": true
+    },
+    {
+      "note": "mined 5 of a Kind",
+      "proof": "ARJnZW4tYWxwaGEtdXByaXNpbmcAAb610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxBy6WMJRml2ZSBLaW5kOY2f19PYoVadxHGkRyLabaZY3aYYCymZQMXlmPrVx0SFNCS3HvW-cpkiBSPLmN8fQCHG2W81eB40p9vjGuT6BA",
+      "set": "gen-alpha-uprising@1",
+      "publicKey": "beb5d23f1a487720cb83e6f6f0baec51efd0a577f6e1e86bee69652134971072",
+      "nonce": 12777,
+      "name": "Five Kind",
+      "fingerprint": "YH48-X752",
+      "cards": [
+        {
+          "cardId": "pesto-the-penguin",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "pesto-the-penguin",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "pesto-the-penguin",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "pesto-the-penguin",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "pesto-the-penguin",
+          "rarity": "COMMON",
+          "isHolo": false
+        }
+      ],
+      "points": 50,
+      "hand": "5 of a Kind",
+      "multiplier": 10000,
+      "score": 500000,
+      "hallOfFame": true
+    }
+  ],
+  "invalid": [
+    {
+      "note": "8-byte varint above 2^53-1 (2^53)",
+      "rule": "decode",
+      "proof": "AQlyaWdodC1ub3cAAb610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxBygICAgICAgBAERXZhbpF50CuFlCIsGZA9458itzK4BvhdPB_B10Tgom80t1Ew5fgGoJ9_yXqvHki2cYp2UPRjmDrMDbqizPIwYgG05gs"
+    },
+    {
+      "note": "overlong UTF-8 in name (C0 80)",
+      "rule": "decode",
+      "proof": "AQlyaWdodC1ub3cAAb610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByBQZFdsCAYW4_swIw1fRyJ-IwfJLl8K6VdxVGATFN_0tUCvzbrrdl-U-99nPQVDsWPfqfM7vIC2ruhyMgUWbpNXZBXGaJN9sL"
+    },
+    {
+      "note": "overlong 3-byte UTF-8 in name (E0 80 80)",
+      "rule": "decode",
+      "proof": "AQlyaWdodC1ub3cAAb610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByBQRF4ICAVft14GnkBRgXbRTabfjjK6SwcnJoIHadjp4fElUKUz0CktbTcfZGKIB7lbTloY2tb_ISML8vSTpjxXAO3vgIAw"
+    },
+    {
+      "note": "UTF-8-encoded surrogate in name (ED A0 80)",
+      "rule": "decode",
+      "proof": "AQlyaWdodC1ub3cAAb610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByBQRF7aCAfB98ua1q3NFa3rmbQL6ac0b11WiI0B2INI15gh24QGkrc7ZIBSVVoizZ7V1p3hkzGI4E6Xq8uvfl0liF8Al7Cg"
+    },
+    {
+      "note": "UTF-8 above U+10FFFF in name (F4 90 80 80)",
+      "rule": "decode",
+      "proof": "AQlyaWdodC1ub3cAAb610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByBQVF9JCAgE3cm_XK8pNRUyoUGiJffmEVsW3Pq6NdfIJMZOybc4UzcXwQwBGWiWziIIe8VDoOQf1Sz8VA4wjhIxXxEpKUVAs"
+    },
+    {
+      "note": "stray continuation byte in name (80)",
+      "rule": "decode",
+      "proof": "AQlyaWdodC1ub3cAAb610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByBQVFdoBhbpCBum7QP_RaoedHLwZKY9F8slLXJjdCDEnRXJomXGlpj-L2HsVyc5Trc5Bw67zhHPZKwRoUHu5i22T7tHp66Ac"
+    },
+    {
+      "note": "invalid UTF-8 in set id",
+      "rule": "decode",
+      "proof": "AQlyaWdodC1uw3cAAb610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByBQRFdmFuFhIbLIPcF7nWgpFlT9H9YGXRlxd4mD5t0RCdI3_LEWje6JtMsz9yq8q9TAtEt5JgMfp9mbfwT883WbeSRiaYCQ"
+    },
+    {
+      "note": "set id of 65 bytes",
+      "rule": "decode",
+      "proof": "AUF4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eAABvrXSPxpIdyDLg-b28LrsUe_QpXf24ehr7mllITSXEHIFBEV2YW6rOW0PoJK0rm6jW40zClPxeHQCQfo62plxYMlQWBM2BeNdFzpkrTlSizSBINb1GzFT_B4bsuDETksGusfxoHgM"
+    },
+    {
+      "note": "name of 25 code points, all astral (50 UTF-16 code units)",
+      "rule": "name",
+      "proof": "AQlyaWdodC1ub3cAAb610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByBWTwn6eg8J-noPCfp6Dwn6eg8J-noPCfp6Dwn6eg8J-noPCfp6Dwn6eg8J-noPCfp6Dwn6eg8J-noPCfp6Dwn6eg8J-noPCfp6Dwn6eg8J-noPCfp6Dwn6eg8J-noPCfp6Dwn6egm9XpHwa3l3Rrm-I-THr8whKCcNj_dqrElearlHCDZsmO8w4W4j7XvYZr3fyewT_sRszL002cYzkcfgiXSKrQCw"
+    },
+    {
+      "note": "name starts with a UTF-8 BOM (must be kept, so U+FEFF is seen)",
+      "rule": "name",
+      "proof": "AQlyaWdodC1ub3cAAb610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByBQfvu79FdmFuzgnnx3W-dYS6i19xXW90H69i2gG7RaSp4flSc6wB9Q73YFOEYjYJh8_qq8hsKbpRoKFQkt-MggLkcmDXCKYCBQ"
+    },
+    {
+      "note": "name with NUL (U+0000)",
+      "rule": "name",
+      "proof": "AQlyaWdodC1ub3cAAb610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByBQVFdgBhbsx5I45SxEA4NJlUy3kA4ZhmkGNcXzHQ2lPRi_daJ6IpcFos30-Ks02vImQzxhv8QyiHh7y3AcjyRe4d2JNQPAw"
+    },
+    {
+      "note": "name with DEL (U+007F)",
+      "rule": "name",
+      "proof": "AQlyaWdodC1ub3cAAb610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByBQVFdn9hbhZ9xmQt9JX55GIC1Ht3ZvgyDX4YQA1lu-JggoixQexl_yRQvzpi2M6bj6U1Fl8lLXKfghX7zZ9BUf2IQFR-PgQ"
+    },
+    {
+      "note": "name with C1 control NEL (U+0085)",
+      "rule": "name",
+      "proof": "AQlyaWdodC1ub3cAAb610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByBQZFdsKFYW6R-GNoOQ5UUN-OVAh6F_luiUjTIuq4SDRC3l57Y4ORTH7WkVfbsgDNbQpgHicF6hPP-sdXJKQE_XPfZEzFZxwA"
+    },
+    {
+      "note": "name with soft hyphen (U+00AD)",
+      "rule": "name",
+      "proof": "AQlyaWdodC1ub3cAAb610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByBQZFdsKtYW5rhwzTFdEWT5dgtQ7v2xFJjkr1CJF_yZmU_6WYd4jRXDNf9tocVqyHprSXNTTEDKVJQw9V7GCemu7Xtaso-AAI"
+    },
+    {
+      "note": "name with Arabic letter mark (U+061C)",
+      "rule": "name",
+      "proof": "AQlyaWdodC1ub3cAAb610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByBQZFdticYW6ZTg4QSoJUpGx_9TJRmUEucZ8D1cRhvm5zJRNGggonFKGKn1o8aLn-OzT_S-9ai_NNg07c48SHOjBW5PYyaeoJ"
+    },
+    {
+      "note": "name with Mongolian vowel separator (U+180E)",
+      "rule": "name",
+      "proof": "AQlyaWdodC1ub3cAAb610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByBQdFduGgjmFuGDxJtMM6e2M1xIT6dM-LEVHI-QuDdnotYQV_SHkKZXh-YzsVOOwhMbibme-7r8kVY-VV1Si_4szromxmQ7MxAA"
+    },
+    {
+      "note": "name with left-to-right isolate (U+2066)",
+      "rule": "name",
+      "proof": "AQlyaWdodC1ub3cAAb610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByBQdFduKBpmFumJt7hO8QWlGXS2fvkoK9_FSrZVW8j19l82KJCtb0UFgQkpVC28v-efUikdmlW9QjoJzv95o03uMc6fJCztlsBQ"
+    },
+    {
+      "note": "name with interlinear annotation anchor (U+FFF9)",
+      "rule": "name",
+      "proof": "AQlyaWdodC1ub3cAAb610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByBQdFdu-_uWFuKIyvcgflw7lTv1kE8M1bpKzFfohFVrcJjrHTBPYE3qxya9XzChsit-aCm7TTDl8FMsAeHFkOGpskWdOiZfYECQ"
+    },
+    {
+      "note": "name with language tag (U+E0001)",
+      "rule": "name",
+      "proof": "AQlyaWdodC1ub3cAAb610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByBQhFdvOggIFhboU50G2iiRn_Y-VWJub_Pg4KDUiM5hooa3Lcb4D4igUpdcxjTnylOaDjUGOQCmEslxdP13_8a3_bQ4ZxqI9zzw0"
+    },
+    {
+      "note": "name with a ZWJ emoji sequence (family, U+200D)",
+      "rule": "name",
+      "proof": "AQlyaWdodC1ub3cAAb610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByBRLwn5Go4oCN8J-RqeKAjfCfkaekrCOOCeogqBmzIVU1ZO-zYgdFWt_12R0LvijrbRwjzVq8WiqJNo_Y4Zd08Eu478632y1S-_gmFt5U1-dmHTsF"
+    },
+    {
+      "note": "name with a subdivision flag (tag characters U+E0067...)",
+      "rule": "name",
+      "proof": "AQlyaWdodC1ub3cAAb610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByBRzwn4-086CBp_OggaLzoIGz86CBo_OggbTzoIG_T1yQgRF5bEj4TCbTd1fsc5KYlRRLXEH4jGVtKWshgNfPqyoPEaRLwSZ4z1z1eVvK2oYMrop9dInbUEegSzqeCQ"
+    },
+    {
+      "note": "name with ideographic space (U+3000)",
+      "rule": "name",
+      "proof": "AQlyaWdodC1ub3cAAb610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByBQdFduOAgGFuyCSAMOXOdpJI50TZDOTEAiykmg-cSHIE0esdLGIskYhEeWxa0XU4wAGiHGozjf2ge2W-ICRgJbJk51SPTQqYCg"
+    },
+    {
+      "note": "name with line separator (U+2028)",
+      "rule": "name",
+      "proof": "AQlyaWdodC1ub3cAAb610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByBQdFduKAqGFuWWZFtkhoEhE3xJ08H1af3i0IQoKyE1Ggy-zTNxLln8AZRCNFrljXvwjEyn1am1BIv4hQyWTacvJOAwuBH5dTBQ"
+    },
+    {
+      "note": "name with a leading space",
+      "rule": "name",
+      "proof": "AQlyaWdodC1ub3cAAb610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByBQUgRXZhbirGR_VOOd5KgqoHfeo9OlQsUk5kqkpJ0-7pg0VPFykSfdnkWP9aXdNMcaxERG0HM1HMm5Ml0H8bY7rlq-UWlgg"
+    },
+    {
+      "note": "public key with x = 0 and the sign bit set",
+      "rule": "publicKey",
+      "proof": "AQlyaWdodC1ub3cAAQEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACABQRFdmFuAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    },
+    {
+      "note": "public key that is not on the curve",
+      "rule": "publicKey",
+      "proof": "AQlyaWdodC1ub3cAAQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABQRFdmFuAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    },
+    {
+      "note": "order-8 public key; the forged signature passes the cofactorless check",
+      "rule": "publicKey",
+      "proof": "AQlyaWdodC1ub3cAASbolY_CsiewRcP0ifLvmPDV36wF08YzObE4AohtU_wFBgRFdmFuAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    },
+    {
+      "note": "mixed-order public key (A + order-8 point); its signature fails too",
+      "rule": "publicKey",
+      "proof": "AQlyaWdodC1ub3cAAWGVSns08hPbErGbbwwWWfBqGa7LnXkTAVzDrJGO0pzRAAVNaXhlZBZozuODAWlkCWiISPYbLmdJlfAghUB6ppRv398bh7JJkNY_hkEvWnhZbGe4NyjeblUsatX0brUp3VPXfYQ3ZgQ"
+    },
+    {
+      "note": "mixed-order public key (A + order-8 point); its signature alone would pass",
+      "rule": "publicKey",
+      "proof": "AQlyaWdodC1ub3cAAWGVSns08hPbErGbbwwWWfBqGa7LnXkTAVzDrJGO0pzRBAVNaXhlZPvwIsCUd9C7mIWHNUDNmZjobf69DVDnbt3dQvV62yxngBELpd2UJ_s8ro3M_JhQL-mat1kQtVupVpE5XI9oagY"
+    },
+    {
+      "note": "R plus an order-8 point: passes only the cofactored equation",
+      "rule": "signature",
+      "proof": "AQlyaWdodC1ub3cAAb610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByBQRFdmFu3H_Zgp159TvnYHq40D9m290pdeeEtwn9K8JdjKBM6w0EZnTCDrWBUsZB-7KsHf09ZfGO7hESzaT3nyKiHJjIDg"
+    },
+    {
+      "note": "R = identity encoded non-canonically (y = p+1), S = k*a",
+      "rule": "signature",
+      "proof": "AQlyaWdodC1ub3cAAb610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByBQRFdmFu7v_______________________________________3-QpMzLo30nv-apch66lm8rW0zBjuUA4ibwXtNrxV4uCA"
+    },
+    {
+      "note": "set id starts with a UTF-8 BOM (must be kept, so the set is unknown)",
+      "rule": "set",
+      "proof": "AQzvu79yaWdodC1ub3cAAb610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByBQRFdmFuciqVme1XfpXGJO-_t5VHh9uCFYoIZwyxRECKXLh11EXA5DvpJWKCFDKpYIrQvG8aqavaLva1qHVxmf2Wx34YCQ"
+    }
+  ],
+  "samePull": [
+    {
+      "note": "same set, key and nonce; names NFC, not NFC and empty",
+      "proofs": [
+        "AQlyaWdodC1ub3cAAb610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByCQRab8OrgzN2MwErpabO2O_IjPxjzlqPzFTjas_RV-y66gZn3WgmJ1d3oU9yC_WErjY1oXgnL-IFHtEsHxrrR_0WZh3cBA",
+        "AQlyaWdodC1ub3cAAb610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByCQVab2XMiLAerH6ninv8QY8qSnU-uFoeftgWckyuC9EsNLDp43fl0OsPtI9fwK9G915c8Q8nSml6nGimCFGvIctQC7awfgg",
+        "AQlyaWdodC1ub3cAAb610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByCQCGgeV0IsC_utbRReKnLhaGdetQc4Ta5MY0h-6wKo9eQjmzYGPGiycMTw0rAbT_c89l2Vk5OX64lA8jIijYuagD"
+      ],
+      "pullId": "right-now@1/beb5d23f1a487720cb83e6f6f0baec51efd0a577f6e1e86bee69652134971072/9"
+    }
+  ]
+}

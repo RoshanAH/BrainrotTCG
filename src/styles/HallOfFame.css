@@ -143,3 +143,124 @@
         padding: 1rem;
     }
 }
+
+/* Global (verified) Hall of Fame */
+.hof-section {
+    max-width: 60rem;
+    margin: 0 auto 2.5rem;
+}
+
+.hof-section h3 {
+    color: #ffd700;
+    font-size: 1.4rem;
+    margin: 0 0 0.25rem;
+}
+
+.hof-sub,
+.hof-empty {
+    color: #aaa;
+    margin: 0 0 1rem;
+}
+
+.hof-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.hof-entry {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr);
+    gap: 1rem;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-radius: 1rem;
+    border: 1px solid rgba(255, 215, 0, 0.35);
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.08), rgba(255, 61, 242, 0.06));
+}
+
+.hof-entry.failed {
+    opacity: 0.4;
+}
+
+.hof-rank {
+    font-family: 'RubikGlitch', system-ui;
+    font-size: 1.6rem;
+    color: #ffd700;
+}
+
+.hof-cards {
+    display: flex;
+    gap: 0.3rem;
+}
+
+.hof-card {
+    width: 19%;
+    max-width: 4.5rem;
+    border-radius: 0.3rem;
+    border: 2px solid #555;
+}
+
+.hof-card.uncommon { border-color: #1eff00; }
+.hof-card.rare { border-color: #0070dd; }
+.hof-card.epic { border-color: #a335ee; }
+.hof-card.legendary { border-color: #ff8000; }
+.hof-card.brainrot { border-color: #ff3df2; }
+.hof-card.holo { box-shadow: 0 0 10px rgba(255, 255, 255, 0.8); }
+
+.hof-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    color: #fff;
+    min-width: 0;
+}
+
+.hof-hand {
+    font-weight: 800;
+    font-size: 1.1rem;
+}
+
+.hof-flex {
+    color: #ffb347;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-left: 0.4rem;
+}
+
+.hof-who a {
+    color: #29f0ff;
+}
+
+.hof-meta {
+    color: #aaa;
+    font-size: 0.85rem;
+}
+
+.hof-check {
+    font-size: 0.8rem;
+    color: #aaa;
+}
+
+.hof-check.verified {
+    color: #2bff6a;
+}
+
+.hof-check.failed {
+    color: #ff6b6b;
+}
+
+.hof-view {
+    color: #ffd700;
+    font-size: 0.85rem;
+}
+
+@media (max-width: 640px) {
+    .hof-entry {
+        grid-template-columns: auto minmax(0, 1fr);
+    }
+
+    .hof-info {
+        grid-column: 1 / -1;
+    }
+}

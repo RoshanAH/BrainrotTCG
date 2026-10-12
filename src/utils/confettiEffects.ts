@@ -33,6 +33,7 @@ export const triggerRarityConfetti = (rarity: RarityKey): void => {
   if (!config) return;
 
   confetti({
+    disableForReducedMotion: true,
     particleCount: config.particleCount,
     spread: config.spread,
     origin: { y: 0.6 },
@@ -46,6 +47,7 @@ export const triggerRarityConfetti = (rarity: RarityKey): void => {
 export const triggerHoloSparkles = (): void => {
   // First burst
   confetti({
+    disableForReducedMotion: true,
     particleCount: 60,
     spread: 80,
     origin: { y: 0.55 },
@@ -60,6 +62,7 @@ export const triggerHoloSparkles = (): void => {
   // Second burst slightly delayed
   setTimeout(() => {
     confetti({
+    disableForReducedMotion: true,
       particleCount: 40,
       spread: 60,
       origin: { y: 0.5, x: 0.4 },
@@ -70,6 +73,7 @@ export const triggerHoloSparkles = (): void => {
       ticks: 120,
     });
     confetti({
+    disableForReducedMotion: true,
       particleCount: 40,
       spread: 60,
       origin: { y: 0.5, x: 0.6 },

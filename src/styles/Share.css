@@ -1,0 +1,163 @@
+.share-sheet-backdrop,
+.pull-viewer-page {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(8, 0, 20, 0.92);
+  overflow-y: auto;
+}
+
+.share-sheet {
+  position: relative;
+  max-width: 44rem;
+  margin: 4vh auto;
+  padding: 1.5rem 1rem;
+  border-radius: 1.2rem;
+  background: linear-gradient(160deg, #2a0759, #14022f);
+  border: 2px solid #ff3df2;
+  color: #fff;
+  text-align: center;
+}
+
+.share-sheet h2,
+.pull-viewer-title {
+  margin: 0 0 0.25rem;
+  font-family: 'RubikGlitch', system-ui;
+}
+
+.share-close {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.9rem;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 2rem;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.share-owner {
+  margin: 0 0 0.5rem;
+  color: #ddd;
+}
+
+.share-fp {
+  font-family: ui-monospace, monospace;
+  color: #29f0ff;
+}
+
+.share-brag {
+  display: inline-block;
+  text-align: left;
+  white-space: pre-wrap;
+  word-break: break-all;
+  max-width: 100%;
+  margin: 0.5rem auto;
+  padding: 0.75rem 1rem;
+  border-radius: 0.6rem;
+  background: rgba(0, 0, 0, 0.35);
+  font-size: 0.85rem;
+}
+
+.share-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: center;
+  margin: 0.75rem 0;
+}
+
+.share-actions button,
+.share-actions a {
+  padding: 0.6rem 1rem;
+  border-radius: 0.6rem;
+  border: 2px solid #29f0ff;
+  background: rgba(41, 240, 255, 0.12);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.share-actions .share-hof {
+  border-color: #ffd700;
+  background: rgba(255, 215, 0, 0.15);
+}
+
+.share-note {
+  font-size: 0.8rem;
+  color: #bbb;
+  max-width: 36rem;
+  margin: 0.5rem auto 0;
+}
+
+.pull-viewer-page {
+  padding: 2rem 1rem;
+  color: #fff;
+  text-align: center;
+}
+
+.pull-viewer-checking {
+  margin-top: 30vh;
+}
+
+.pull-viewer-spinner {
+  width: 3rem;
+  height: 3rem;
+  margin: 0 auto 1rem;
+  border-radius: 50%;
+  border: 4px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #ff3df2;
+  animation: pull-spin 0.8s linear infinite;
+}
+
+@keyframes pull-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.pull-viewer-verified {
+  max-width: 38rem;
+  margin: 1rem auto;
+  padding: 0.75rem 1rem;
+  border-radius: 0.8rem;
+  border: 2px solid #2bff6a;
+  background: rgba(43, 255, 106, 0.1);
+  font-size: 0.9rem;
+}
+
+.pull-viewer-invalid {
+  margin-top: 20vh;
+}
+
+.summary-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.summary-share-btn {
+  padding: 0.8rem 1.4rem;
+  border-radius: 0.8rem;
+  border: 2px solid #ffd700;
+  background: linear-gradient(135deg, #ff3df2, #ff9d1a);
+  color: #fff;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.best-pack-share {
+  display: flex;
+  justify-content: center;
+  margin: 0.5rem 0;
+}
+
+.best-pack-legacy {
+  text-align: center;
+  color: #bbb;
+  font-size: 0.85rem;
+}

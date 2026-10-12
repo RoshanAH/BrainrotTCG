@@ -1,0 +1,56 @@
+name: Hall of Fame
+
+# Verifies pull links submitted through the Hall of Fame issue form.
+# Issue text is untrusted: it is only parsed by scripts/hall-of-fame.ts,
+# never interpolated into shell commands.
+on:
+  issues:
+    types: [opened, edited, reopened]
+
+permissions:
+  contents: read
+  issues: write
+  actions: write
+
+concurrency:
+  group: hall-of-fame-${{ github.event.issue.number }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    if: startsWith(github.event.issue.title, '[Hall of Fame]')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - id: check
+        run: npx tsx scripts/hall-of-fame.ts verify-issue
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: Comment and label
+        if: steps.check.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE: ${{ github.event.issue.number }}
+          VERIFIED: ${{ steps.check.outputs.verified }}
+        run: |
+          gh label create hall-of-fame --color FF3DF2 --description "Hall of Fame submission" 2>/dev/null || true
+          gh label create verified --color 2BFF6A --description "Pull verified" 2>/dev/null || true
+          gh label create not-verified --color 999999 --description "Pull did not verify or qualify" 2>/dev/null || true
+          gh issue comment "$ISSUE" --body-file hof-comment.md
+          if [ "$VERIFIED" = "true" ]; then
+            gh issue edit "$ISSUE" --add-label hall-of-fame,verified
+            gh issue edit "$ISSUE" --remove-label not-verified 2>/dev/null || true
+          else
+            gh issue edit "$ISSUE" --add-label hall-of-fame,not-verified
+            gh issue edit "$ISSUE" --remove-label verified 2>/dev/null || true
+          fi
+      - name: Redeploy so the entry goes live
+        if: steps.check.outputs.verified == 'true' && steps.check.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run deploy.yml --ref "${{ github.event.repository.default_branch }}"

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import type { Card } from '../../data/cards';
-import { getCardValue } from '../../data/cards';
+import RarityBadge from '../ui/RarityBadge';
 
 interface CardViewerModalProps {
   card: Card;
@@ -87,9 +87,8 @@ const CardViewerModal = ({ card, hasNormal, hasHolo, initialHolo, onClose }: Car
         </div>
 
         <div className="card-viewer-info" style={{ textAlign: 'center', marginTop: '1rem', color: 'white', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>
-          <p style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>
-            Value: {getCardValue(card.rarity, isHolo)} Buhcoin{getCardValue(card.rarity, isHolo) !== 1 ? 's' : ''}
-          </p>
+          <RarityBadge rarity={card.rarity} isHolo={isHolo} />
+          {card.caption && <p style={{ margin: '0.6rem 0 0', opacity: 0.85 }}>{card.caption}</p>}
           {hasNormal && hasHolo && (
             <button
               onClick={(e) => { e.stopPropagation(); setIsHolo(!isHolo); }}

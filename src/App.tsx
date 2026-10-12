@@ -8,11 +8,19 @@ import AchievementsPage from './components/achievements/AchievementsPage';
 import HallOfFamePage from './components/pages/HallOfFamePage';
 import SettingsPage from './components/pages/SettingsPage';
 import CollectionBrowser from './components/collection/CollectionBrowser';
-import { INITIAL_CARDS, getCardValue } from './data/cards';
+import SetPicker from './components/sets/SetPicker';
+import ShareSheet, { type ShareTarget } from './components/share/ShareSheet';
+import PullViewerPage from './components/share/PullViewerPage';
+import { scoreCards } from './data/cards';
 import { getAchievementById, Achievement } from './data/achievements';
 import { CardWithMeta } from './components/cards/Card';
-import { getPackMultiplier } from './utils/poker';
+import { DEFAULT_SET_ID, SETS } from './content/sets';
+import { extractProof } from './engine';
+import type { OpenedPack } from './game/pulls';
+import { recordPull } from './game/pullLog';
+import { importPlayer } from './game/player';
 import { getStoredData } from './utils/storage';
+import { CURRENT_DATA_VERSION, hydrateCollection, setDataVersion } from './utils/migrations';
 import { STORAGE_KEYS } from './constants';
 import {
   checkPackMilestones,
@@ -27,8 +35,18 @@ const DEFAULT_SETTINGS: Settings = {
   particlesEnabled: true,
 };
 
+/** Save-file fields and where they live in localStorage. */
+const SAVE_FIELDS = [
+  ['collection', STORAGE_KEYS.COLLECTION],
+  ['achievements', STORAGE_KEYS.ACHIEVEMENTS],
+  ['stats', STORAGE_KEYS.STATS],
+  ['hallOfFame', STORAGE_KEYS.HALL_OF_FAME],
+  ['pulls', STORAGE_KEYS.PULLS],
+  ['settings', STORAGE_KEYS.SETTINGS],
+] as const;
+
 function App() {
-  const [collection, setCollection] = useState<Record<string, CollectionItem>>(() => getStoredData(STORAGE_KEYS.COLLECTION, {}));
+  const [collection, setCollection] = useState<Record<string, CollectionItem>>(() => hydrateCollection(getStoredData(STORAGE_KEYS.COLLECTION, {})));
   const [achievements, setAchievements] = useState<Record<string, AchievementData | number>>(() => getStoredData(STORAGE_KEYS.ACHIEVEMENTS, {}));
   const [stats, setStats] = useState<Stats>(() => getStoredData(STORAGE_KEYS.STATS, { packsOpened: 0, holoCards: {}, highestPackValue: 0, highestPackCards: [] }));
   const [hallOfFame, setHallOfFame] = useState<HallOfFameData>(() => getStoredData(STORAGE_KEYS.HALL_OF_FAME, {}));
@@ -41,7 +59,28 @@ function App() {
   const [isBestPackOpen, setIsBestPackOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [notificationQueue, setNotificationQueue] = useState<Achievement[]>([]);
-  const [currentPack, setCurrentPack] = useState<CardWithMeta[] | null>(null);
+  const [shareTarget, setShareTarget] = useState<ShareTarget | null>(null);
+  const [packBusy, setPackBusy] = useState(false);
+  const [viewProof, setViewProof] = useState<string | null>(() => extractProof(window.location.hash));
+
+  const playableSets = SETS.filter((s) => !s.archivedAt && (!s.draft || settings.showDraftSets));
+  const [selectedSetId, setSelectedSetId] = useState<string>(() => localStorage.getItem(STORAGE_KEYS.SELECTED_SET) ?? DEFAULT_SET_ID);
+  const selectedSet = playableSets.find((s) => s.id === selectedSetId) ?? playableSets.find((s) => s.id === DEFAULT_SET_ID) ?? playableSets[0];
+  const selectSet = useCallback((setId: string) => {
+    setSelectedSetId(setId);
+    localStorage.setItem(STORAGE_KEYS.SELECTED_SET, setId);
+  }, []);
+
+  // Shared pull links: #/pull/<proof>
+  useEffect(() => {
+    const onHashChange = () => setViewProof(extractProof(window.location.hash));
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
+  }, []);
+  const closePullViewer = useCallback(() => {
+    history.replaceState(null, '', window.location.pathname + window.location.search);
+    setViewProof(null);
+  }, []);
 
   const bgMusicRef = useRef<HTMLAudioElement | null>(null);
 
@@ -147,34 +186,21 @@ function App() {
         return;
       }
 
-      // Import each piece of data
-      if (saveData.collection) {
-        const collectionData = JSON.parse(saveData.collection);
-        localStorage.setItem(STORAGE_KEYS.COLLECTION, saveData.collection);
-        setCollection(collectionData);
+      // Write everything, then reload: the loader runs any migrations an older save needs
+      // (saves from before timeline sets use old card ids and the old score scale).
+      for (const [field] of SAVE_FIELDS) {
+        if (typeof saveData[field] === 'string') JSON.parse(saveData[field]); // reject corrupt files before writing anything
       }
-      if (saveData.achievements) {
-        const achievementsData = JSON.parse(saveData.achievements);
-        localStorage.setItem(STORAGE_KEYS.ACHIEVEMENTS, saveData.achievements);
-        setAchievements(achievementsData);
+      for (const [field, key] of SAVE_FIELDS) {
+        if (typeof saveData[field] === 'string') localStorage.setItem(key, saveData[field]);
       }
-      if (saveData.stats) {
-        const statsData = JSON.parse(saveData.stats);
-        localStorage.setItem(STORAGE_KEYS.STATS, saveData.stats);
-        setStats(statsData);
+      if (typeof saveData.player === 'string' && !importPlayer(saveData.player)) {
+        alert('The player key in this save is invalid; keeping your current one.');
       }
-      if (saveData.hallOfFame) {
-        const hallOfFameData = JSON.parse(saveData.hallOfFame);
-        localStorage.setItem(STORAGE_KEYS.HALL_OF_FAME, saveData.hallOfFame);
-        setHallOfFame(hallOfFameData);
-      }
-      if (saveData.settings) {
-        const settingsData = JSON.parse(saveData.settings);
-        localStorage.setItem(STORAGE_KEYS.SETTINGS, saveData.settings);
-        setSettings(settingsData);
-      }
+      setDataVersion(typeof saveData.dataVersion === 'number' ? saveData.dataVersion : saveData.version === 1 ? 1 : CURRENT_DATA_VERSION);
 
       alert('Save imported successfully!');
+      window.location.reload();
     } catch {
       alert('Failed to import save file. Please check the file format.');
     }
@@ -191,11 +217,11 @@ function App() {
     allNewAchievements.forEach(id => unlockAchievement(id, newCards));
   }, [unlockAchievement]);
 
-  const handleCardsOpened = useCallback((newCards: CardWithMeta[]) => {
-    // Calculate pack value
-    const packValue = newCards.reduce((sum, card) => sum + getCardValue(card.rarity, card.isHolo), 0);
-    const pokerHand = getPackMultiplier(newCards);
-    const flexValue = packValue * pokerHand.multiplier;
+  const handlePackOpened = useCallback((pack: OpenedPack) => {
+    const newCards = pack.cards;
+    const pullRef = { setId: pack.setId, setVersion: pack.setVersion, nonce: pack.nonce, publicKeyHex: pack.publicKeyHex };
+    const { points: packValue, hand: pokerHand, score } = scoreCards(newCards);
+    recordPull(pack);
 
     // Update stats using functional update to avoid stale closure
     let updatedStats: Stats = stats;
@@ -207,18 +233,20 @@ function App() {
       };
 
       // Update highest pack value - compare against previous state
-      if (flexValue > (prev.highestPackFlexValue || prev.highestPackValue || 0)) {
-        newStats.highestPackFlexValue = flexValue;
+      if (score > (prev.highestPackFlexValue || prev.highestPackValue || 0)) {
+        newStats.highestPackFlexValue = score;
         newStats.highestPackBaseValue = packValue;
         newStats.highestPackMultiplier = pokerHand.multiplier;
         newStats.highestPackHandName = pokerHand.name;
         newStats.highestPackCards = newCards;
+        newStats.highestPackRef = pullRef;
+        newStats.highestPackLegacy = false;
       }
 
       // Track holo cards
       newCards.forEach(card => {
         if (card.isHolo) {
-          newStats.holoCards[card.id] = true;
+          newStats.holoCards[card.key] = true;
         }
       });
 
@@ -237,20 +265,20 @@ function App() {
       const holoCounts: Record<string, number> = {};
       newCards.forEach((card) => {
         if (card.isHolo) {
-          holoCounts[card.id] = (holoCounts[card.id] || 0) + 1;
+          holoCounts[card.key] = (holoCounts[card.key] || 0) + 1;
         } else {
-          normalCounts[card.id] = (normalCounts[card.id] || 0) + 1;
+          normalCounts[card.key] = (normalCounts[card.key] || 0) + 1;
         }
       });
 
       // Get all unique card IDs from this pack
-      const cardIds = new Set(newCards.map(c => c.id));
+      const cardIds = new Set(newCards.map(c => c.key));
       cardIds.forEach((cardId) => {
-        const card = newCards.find(c => c.id === cardId);
+        const card = newCards.find(c => c.key === cardId);
         if (!card) return;
         const existing = next[cardId];
         next[cardId] = {
-          card: { id: card.id, name: card.name, rarity: card.rarity, image: card.image },
+          card: { key: card.key, setId: card.setId, id: card.id, name: card.name, rarity: card.rarity, image: card.image },
           normalCount: (existing?.normalCount || 0) + (normalCounts[cardId] || 0),
           holoCount: (existing?.holoCount || 0) + (holoCounts[cardId] || 0),
         };
@@ -262,7 +290,7 @@ function App() {
     });
 
     // Check Hall of Fame milestones
-    let updatedHallOfFame = { ...hallOfFame };
+    const updatedHallOfFame = { ...hallOfFame };
     const cardCounts: Record<string, number> = {};
     newCards.forEach(c => {
       cardCounts[c.id] = (cardCounts[c.id] || 0) + 1;
@@ -298,26 +326,17 @@ function App() {
       localStorage.setItem(STORAGE_KEYS.HALL_OF_FAME, JSON.stringify(updatedHallOfFame));
     }
 
-    // Store current pack for achievement viewing
-    setCurrentPack(newCards);
-
     // Check pack value achievements - unlockAchievement handles duplicates internally
     const packValueAchievements: string[] = [];
-    if (flexValue === 5) packValueAchievements.push('pack_value_5');
-    if (flexValue >= 50) packValueAchievements.push('pack_value_50');
-    if (flexValue >= 100) packValueAchievements.push('pack_value_100');
-    if (flexValue >= 500) packValueAchievements.push('pack_value_500');
-    if (flexValue >= 1000) packValueAchievements.push('pack_value_1000');
-    if (flexValue >= 2000) packValueAchievements.push('pack_value_2000');
-    if (flexValue >= 3000) packValueAchievements.push('pack_value_3000');
-    if (flexValue >= 4000) packValueAchievements.push('pack_value_4000');
-    if (flexValue >= 5000) packValueAchievements.push('pack_value_5000');
-    if (flexValue >= 6000) packValueAchievements.push('pack_value_6000');
-    if (flexValue >= 7000) packValueAchievements.push('pack_value_7000');
-    if (flexValue >= 8000) packValueAchievements.push('pack_value_8000');
-    if (flexValue >= 9000) packValueAchievements.push('pack_value_9000');
-    if (flexValue >= 10000) packValueAchievements.push('pack_value_10000');
-    if (flexValue >= 10000000) packValueAchievements.push('pack_value_max');
+    // Thresholds are 10x the original Buhcoin-era ones (card points were scaled by 10).
+    if (score === 50) packValueAchievements.push('pack_value_5');
+    const PACK_SCORE_ACHIEVEMENTS: [number, string][] = [
+      [500, 'pack_value_50'], [1_000, 'pack_value_100'], [5_000, 'pack_value_500'], [10_000, 'pack_value_1000'],
+      [20_000, 'pack_value_2000'], [30_000, 'pack_value_3000'], [40_000, 'pack_value_4000'], [50_000, 'pack_value_5000'],
+      [60_000, 'pack_value_6000'], [70_000, 'pack_value_7000'], [80_000, 'pack_value_8000'], [90_000, 'pack_value_9000'],
+      [100_000, 'pack_value_10000'], [100_000_000, 'pack_value_max'],
+    ];
+    PACK_SCORE_ACHIEVEMENTS.forEach(([min, id]) => score >= min && packValueAchievements.push(id));
     packValueAchievements.forEach(id => unlockAchievement(id, newCards));
 
     // Check other achievements - get current state to avoid stale closure
@@ -325,9 +344,18 @@ function App() {
       checkAllAchievements(newCards, updatedCollection || collection, updatedStats, currentAchievements);
       return currentAchievements;
     });
-  }, [hallOfFame, collection, checkAllAchievements, unlockAchievement]);
+  }, [stats, hallOfFame, collection, checkAllAchievements, unlockAchievement]);
 
-  const isAnyModalOpen = isCollectionOpen || isAchievementsOpen || isHallOfFameOpen || isBestPackOpen || isSettingsOpen;
+  const sharePack = useCallback((pack: OpenedPack) => {
+    setShareTarget({ ref: { setId: pack.setId, setVersion: pack.setVersion, nonce: pack.nonce, publicKeyHex: pack.publicKeyHex }, cards: pack.cards, score: pack.score });
+  }, []);
+
+  const shareBestPack = useCallback(() => {
+    if (!stats.highestPackRef || !stats.highestPackCards) return;
+    setShareTarget({ ref: stats.highestPackRef, cards: stats.highestPackCards, score: scoreCards(stats.highestPackCards) });
+  }, [stats]);
+
+  const isAnyModalOpen = isCollectionOpen || isAchievementsOpen || isHallOfFameOpen || isBestPackOpen || isSettingsOpen || !!shareTarget || !!viewProof;
 
   return (
     <div className="app-container">
@@ -350,7 +378,18 @@ function App() {
       </header>
 
       <main>
-        <PackOpener onOpen={handleCardsOpened} cards={INITIAL_CARDS} disabled={isAnyModalOpen} settings={settings} />
+        {!isAnyModalOpen && (
+          <SetPicker sets={playableSets} selectedId={selectedSet.id} onSelect={selectSet} collection={collection} disabled={packBusy} />
+        )}
+        <PackOpener
+          key={selectedSet.id}
+          onOpen={handlePackOpened}
+          onShare={sharePack}
+          onBusyChange={setPackBusy}
+          set={selectedSet}
+          disabled={isAnyModalOpen}
+          settings={settings}
+        />
       </main>
 
       {/* Navigation buttons - hidden when any modal is open */}
@@ -421,6 +460,7 @@ function App() {
         <BestPackPage
           stats={stats}
           onClose={() => setIsBestPackOpen(false)}
+          onShare={stats.highestPackRef ? shareBestPack : undefined}
         />
       )}
 
@@ -431,6 +471,10 @@ function App() {
           onClose={() => setIsCollectionOpen(false)}
         />
       )}
+
+      {shareTarget && <ShareSheet target={shareTarget} onClose={() => setShareTarget(null)} />}
+
+      {viewProof && <PullViewerPage proof={viewProof} onClose={closePullViewer} />}
 
       {/* Settings Page */}
       {isSettingsOpen && (

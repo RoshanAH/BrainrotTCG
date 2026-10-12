@@ -1,9 +1,9 @@
-import { INITIAL_CARDS, getCardValue, RarityKey } from '../data/cards';
+import { COLLECTIBLE_CARDS, cardPoints, type RarityKey } from '../data/cards';
 import type { CollectionItem, Stats, CardsByRarity, RarityCount } from '../types';
-import type { CardWithMeta } from '../components/Card';
-import { MILESTONES } from '../constants';
+import type { CardWithMeta } from '../components/cards/Card';
+import type { AchievementData } from '../types';
 
-type AchievementMap = Record<string, number>;
+type AchievementMap = Record<string, AchievementData | number>;
 
 /**
  * Helper to add achievement if not already unlocked
@@ -26,8 +26,9 @@ export const getCollectedByRarity = (collection: Record<string, CollectionItem>)
     LEGENDARY: [],
     BRAINROT: [],
   };
-  Object.values(collection).forEach(item => {
-    result[item.card.rarity].push(item.card.id);
+  // Only released sets count toward completion (draft-set cards are previews).
+  COLLECTIBLE_CARDS.forEach(card => {
+    if (collection[card.key]) result[card.rarity].push(card.key);
   });
   return result;
 };
@@ -36,12 +37,12 @@ export const getCollectedByRarity = (collection: Record<string, CollectionItem>)
  * Get total card counts by rarity from the card database
  */
 export const getCardsByRarity = (): CardsByRarity => ({
-  COMMON: INITIAL_CARDS.filter(c => c.rarity === 'COMMON').length,
-  UNCOMMON: INITIAL_CARDS.filter(c => c.rarity === 'UNCOMMON').length,
-  RARE: INITIAL_CARDS.filter(c => c.rarity === 'RARE').length,
-  EPIC: INITIAL_CARDS.filter(c => c.rarity === 'EPIC').length,
-  LEGENDARY: INITIAL_CARDS.filter(c => c.rarity === 'LEGENDARY').length,
-  BRAINROT: INITIAL_CARDS.filter(c => c.rarity === 'BRAINROT').length,
+  COMMON: COLLECTIBLE_CARDS.filter(c => c.rarity === 'COMMON').length,
+  UNCOMMON: COLLECTIBLE_CARDS.filter(c => c.rarity === 'UNCOMMON').length,
+  RARE: COLLECTIBLE_CARDS.filter(c => c.rarity === 'RARE').length,
+  EPIC: COLLECTIBLE_CARDS.filter(c => c.rarity === 'EPIC').length,
+  LEGENDARY: COLLECTIBLE_CARDS.filter(c => c.rarity === 'LEGENDARY').length,
+  BRAINROT: COLLECTIBLE_CARDS.filter(c => c.rarity === 'BRAINROT').length,
 });
 
 /**
@@ -62,14 +63,14 @@ export const getMaxCopiesOfCard = (collection: Record<string, CollectionItem>): 
 };
 
 /**
- * Calculate total account value
+ * Collection Brainrot Score: points of every card owned
  */
 export const getAccountValue = (collection: Record<string, CollectionItem>): number => {
   return Object.values(collection).reduce((sum, item) => {
     const normalCount = item.count ?? item.normalCount ?? 0;
-    const baseValue = getCardValue(item.card.rarity, false);
-    const holoValue = getCardValue(item.card.rarity, true);
-    return sum + (baseValue * normalCount) + (holoValue * (item.holoCount || 0));
+    const points = cardPoints(item.card.rarity, false);
+    const holoValue = cardPoints(item.card.rarity, true);
+    return sum + (points * normalCount) + (holoValue * (item.holoCount || 0));
   }, 0);
 };
 
@@ -107,7 +108,7 @@ export const checkCollectionAchievements = (
   const uniqueCards = Object.keys(collection).length;
   if (uniqueCards >= 5) addIfNew(newAchievements, 'collect_5', achievements);
   if (uniqueCards >= 10) addIfNew(newAchievements, 'collect_10', achievements);
-  if (uniqueCards >= INITIAL_CARDS.length) {
+  if (COLLECTIBLE_CARDS.every(card => collection[card.key])) {
     addIfNew(newAchievements, 'complete_collection', achievements);
   }
 
@@ -115,7 +116,7 @@ export const checkCollectionAchievements = (
   const holoCount = Object.keys(stats.holoCards || {}).length;
   if (holoCount >= 5) addIfNew(newAchievements, 'holo_collector', achievements);
   if (holoCount >= 10) addIfNew(newAchievements, 'holo_10', achievements);
-  if (holoCount >= INITIAL_CARDS.length) {
+  if (COLLECTIBLE_CARDS.every(card => stats.holoCards?.[card.key])) {
     addIfNew(newAchievements, 'holo_complete', achievements);
   }
 
@@ -134,7 +135,7 @@ export const checkCollectionAchievements = (
   // Holo rarity achievements
   const holoCards = stats.holoCards || {};
   Object.keys(holoCards).forEach(cardId => {
-    const card = INITIAL_CARDS.find(c => c.id === cardId);
+    const card = COLLECTIBLE_CARDS.find(c => c.key === cardId);
     if (!card) return;
 
     if (card.rarity === 'COMMON') addIfNew(newAchievements, 'holo_common', achievements);
@@ -176,11 +177,11 @@ export const checkCollectionAchievements = (
   if (maxCopies >= 25) addIfNew(newAchievements, 'dupes_25', achievements);
   if (maxCopies >= 100) addIfNew(newAchievements, 'dupes_100', achievements);
 
-  // Account value milestones
+  // Collection Brainrot Score milestones (10x the Buhcoin-era thresholds)
   const accountValue = getAccountValue(collection);
-  if (accountValue >= 10000) addIfNew(newAchievements, 'value_10k', achievements);
-  if (accountValue >= 100000) addIfNew(newAchievements, 'value_100k', achievements);
-  if (accountValue >= 1000000) addIfNew(newAchievements, 'value_1m', achievements);
+  if (accountValue >= 100_000) addIfNew(newAchievements, 'value_10k', achievements);
+  if (accountValue >= 1_000_000) addIfNew(newAchievements, 'value_100k', achievements);
+  if (accountValue >= 10_000_000) addIfNew(newAchievements, 'value_1m', achievements);
 
   return newAchievements;
 };
