@@ -9,10 +9,13 @@ Read `docs/ADDING_A_SET.md` and `docs/ART_STYLE.md` first; they are the source o
 
 ## 1. Research (use subagents with web search)
 
-- Find what is trending in brainrot/meme culture **right now**: TikTok, YouTube Shorts, Roblox
-  (e.g. Steal a Brainrot-style games), Twitch, X, Reddit, and non-English scenes (Indonesia,
-  Brazil, India, Korea, Spain/LatAm, Philippines...). Cite sources with dates. Discard anything you
-  can't confirm from at least two sources.
+- Follow `docs/TREND_SCOUT.md`: which sources work (Know Your Meme RSS, Instagram Explore, trends24,
+  Wikipedia pageviews, Google Trends RSS, trend blogs), what counts as a real trend (two independent
+  publishers in 21 days plus a platform signal), and the scraping rules (no logins, honour robots.txt).
+  Don't try to scroll TikTok or Reels directly.
+- Read the latest comments on the **Trend scout** issue: weekly findings plus links people posted.
+- Look beyond the US (Indonesia, Brazil, India, Korea, Spain/LatAm, Philippines...). Cite sources with
+  dates.
 - Check open GitHub issues titled "Propose a card" (community proposals); top-voted ones go first.
 - Skip memes already in an existing set (`grep -h '"name"' src/content/sets/*/set.json`).
 
@@ -27,7 +30,8 @@ hate-associated, and pick another from the same era. PG-13. Flag anything risky 
 
 ## 3. Files
 
-1. `src/content/sets/<id>/set.json` with `"draft": true` (template in `docs/ADDING_A_SET.md`).
+1. `src/content/sets/<id>/set.json` with `"draft": true` (template in `docs/ADDING_A_SET.md`). A monthly
+   drop is a new set with id `drop-YYYY-MM` named "Right Now"; rename the previous drop to its window.
 2. Real images: for every card, the meme's canonical image from the web saved as
    `src/content/sets/<id>/art/<card-id>.png`, following "Real images only" in `docs/ART_STYLE.md`
    (download into an empty folder, validate and re-encode with `python3 -I` + Pillow, crop to 6:7).
