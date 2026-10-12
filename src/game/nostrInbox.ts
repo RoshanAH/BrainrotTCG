@@ -119,6 +119,8 @@ export const proofFromEvent = (e: NostrEvent): string | null => {
 };
 
 type Socket = Pick<WebSocket, 'send' | 'close'> & {
+  /** WebSocket.OPEN is 1; test sockets may leave it out. */
+  readyState?: number;
   onopen: ((ev: unknown) => void) | null;
   onmessage: ((ev: { data: unknown }) => void) | null;
   onerror: ((ev: unknown) => void) | null;
@@ -208,7 +210,8 @@ export const fetchEvents = async (filter: Filter, relays = HOF_RELAYS, timeoutMs
             done = true;
             clearTimeout(timer);
             try {
-              socket?.send(JSON.stringify(['CLOSE', sub]));
+              // Only an open connection can take the goodbye (sending on a closed one logs an error).
+              if (socket && (socket.readyState === undefined || socket.readyState === 1)) socket.send(JSON.stringify(['CLOSE', sub]));
               socket?.close();
             } catch {
               // already closed

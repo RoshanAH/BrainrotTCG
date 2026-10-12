@@ -75,7 +75,7 @@ export const loadPending = async (published: readonly HallOfFameEntry[], onEntry
     .slice(0, PENDING_LIMIT);
 
   const list: RankableEntry[] = [...published];
-  for (const [i, { event, proof, id }] of candidates.entries()) {
+  for (const [i, { proof, id }] of candidates.entries()) {
     if (signal.aborted) return;
     try {
       const pull = await checkPull(proof);
@@ -93,7 +93,9 @@ export const loadPending = async (published: readonly HallOfFameEntry[], onEntry
         cards: pull.cards.map((c) => ({ cardId: c.cardId, isHolo: c.isHolo })),
         issue: -(i + 1), // not filed yet; negative so it never clashes with a real issue
         githubUser: 'nostr',
-        submittedAt: new Date(event.created_at * 1000).toISOString(),
+        // The event's own time is whatever the sender set, so it can't place this ahead of anything
+        // already filed: it counts as now.
+        submittedAt: new Date().toISOString(),
         pending: true,
       };
       list.push(entry);

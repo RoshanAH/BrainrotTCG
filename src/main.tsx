@@ -5,10 +5,11 @@ import './styles/index.css'
 import App from './App'
 import { runMigrations } from './utils/migrations'
 import { migratePullLog } from './game/history'
-import { takeMovedSave } from './game/move'
+import { receiveSave } from './game/move'
 
-// A save handed over by the site's old address goes in before anything reads storage.
-takeMovedSave().finally(() => {
+// A window the site's old address opened to hand over a save does only that (see game/move.ts).
+receiveSave().then((receiver) => {
+  if (receiver) return
   runMigrations()
   migratePullLog()
 

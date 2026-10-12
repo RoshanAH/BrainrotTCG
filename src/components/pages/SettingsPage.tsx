@@ -1,8 +1,9 @@
 import { useId, useRef, useState } from 'react';
-import { Download, Upload } from 'lucide-react';
+import { Download, History, Upload } from 'lucide-react';
 import { STORAGE_KEYS } from '../../constants';
 import { MAX_NAME_LENGTH } from '../../engine';
 import { exportPlayer, getPlayer, renamePlayer } from '../../game/player';
+import { canBringOldSave, fetchOldSave } from '../../game/move';
 import type { Settings } from '../../types';
 import Sheet from '../ui/Sheet';
 import '../../styles/Settings.css';
@@ -51,6 +52,20 @@ const SettingsPage = ({ settings, onSettingsChange, onClose, onImportSave }: Set
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
+    };
+
+    // After the site moved: fetch the save from the old address (game/move.ts).
+    const [oldSaveNote, setOldSaveNote] = useState('Played at the old address? Bring that save here.');
+    const handleBringOldSave = async () => {
+        setOldSaveNote('Opening the old address…');
+        const result = await fetchOldSave();
+        if (result === 'saved') return window.location.reload();
+        setOldSaveNote(
+            result === 'none' ? 'There was no save at the old address.'
+            : result === 'blocked' ? 'Your browser blocked the window. Allow pop-ups for this site, then try again.'
+            : result === 'kept' ? 'Kept the save you have here.'
+            : "That didn't look like a save, so nothing changed.",
+        );
     };
 
     const handleImportClick = () => {
@@ -141,6 +156,17 @@ const SettingsPage = ({ settings, onSettingsChange, onClose, onImportSave }: Set
                         </button>
                         <input ref={fileInputRef} type="file" accept=".txt,.json" onChange={handleFileChange} hidden />
                     </div>
+                    {canBringOldSave() && (
+                        <div className="settings-row">
+                            <span className="settings-text">
+                                <span className="settings-label">From the old address</span>
+                                <span className="settings-desc" role="status">{oldSaveNote}</span>
+                            </span>
+                            <button type="button" className="btn btn--secondary btn--sm" onClick={handleBringOldSave}>
+                                <History aria-hidden="true" /> Bring it
+                            </button>
+                        </div>
+                    )}
                 </div>
             </section>
         </Sheet>

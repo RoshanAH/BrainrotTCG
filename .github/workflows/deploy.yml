@@ -63,11 +63,14 @@ jobs:
           else
             { echo "host=github"; echo "url=https://$OWNER.github.io/$REPO/"; echo "base=/$REPO/"; } >> "$GITHUB_OUTPUT"
           fi
+      # After a move, the build knows the old address, so it can take saves handed over from it
+      # (src/game/move.ts); a build that hasn't moved has no old address and takes nothing.
       - run: npm run build
         env:
           BASE_PATH: ${{ steps.site.outputs.base }}
           SITE_URL: ${{ steps.site.outputs.url }}
-          VITE_OLD_ORIGIN: https://${{ github.repository_owner }}.github.io
+          VITE_OLD_ORIGIN: ${{ steps.site.outputs.host == 'cloudflare' && format('https://{0}.github.io', github.repository_owner) || '' }}
+          VITE_OLD_SITE_URL: ${{ steps.site.outputs.host == 'cloudflare' && format('https://{0}.github.io/{1}/', github.repository_owner, github.event.repository.name) || '' }}
       - name: Deploy to Cloudflare Pages
         if: steps.site.outputs.host == 'cloudflare'
         env:
@@ -89,7 +92,10 @@ jobs:
         env:
           URL: ${{ steps.site.outputs.url }}
           OLD_BASE_PATH: /${{ github.event.repository.name }}/
-        run: npx tsx scripts/redirect-site.ts "$URL" pages
+        run: |
+          npx tsx scripts/redirect-site.ts "$URL" pages
+          # Old shared links keep their card preview, and forward through the page above.
+          OUT_DIR=pages PAGES_ONLY=1 BASE_PATH="$OLD_BASE_PATH" SITE_URL="$URL" npx tsx scripts/preview-pages.ts
 
       - uses: actions/upload-pages-artifact@v3
         with:

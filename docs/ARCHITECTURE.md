@@ -69,7 +69,7 @@ src/game/          Browser glue around the engine.
   previewLinks.ts    link previews: shared links go through a static page per card and hand
   hallOfFameList.ts  the published Hall of Fame list, loaded once per visit
   nostrInbox.ts      Hall of Fame submissions over public Nostr relays (loaded only when used)
-  move.ts            takes in a save brought over from the site's old address (docs/HOSTING.md)
+  move.ts            hands a save over from the site's old address, window to window (docs/HOSTING.md)
 
 src/components/    React UI (pack opening, collection, set picker, share sheet, pull viewer, pages)
 
@@ -190,7 +190,8 @@ The path only picks the preview; the pull is still re-derived from the proof whe
 ## Hosting
 
 Static files on GitHub Pages, or on Cloudflare Pages once two secrets are set; both free with
-nothing to bill. See `docs/HOSTING.md`, including how old links and saves follow a move.
+nothing to bill. See `docs/HOSTING.md`, including how old links and saves follow a move (saves go
+window to window with origin-checked postMessage, never in a URL).
 
 ## Profiles and levels (no server)
 

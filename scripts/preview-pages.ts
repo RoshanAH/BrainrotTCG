@@ -6,7 +6,9 @@
  *   npx tsx scripts/preview-pages.ts        (part of `npm run build`)
  *
  * SITE_URL (the site's absolute address, for the image) and BASE_PATH (its path) default to the
- * GitHub Pages address, like vite.config.ts.
+ * GitHub Pages address, like vite.config.ts. After a move, the deploy also writes the pages (without
+ * images, OUT_DIR=<dir> PAGES_ONLY=1) for the old address, where they forward through its redirect
+ * page, so old shared links keep their preview.
  */
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -16,7 +18,8 @@ import { POKER_HANDS, type HandKey } from '../src/engine/index.ts';
 import { previewImagePath, previewPath, previewTitle } from '../src/game/previewLinks.ts';
 
 const ROOT = fileURLToPath(new URL('../', import.meta.url));
-const DIST = `${ROOT}dist/`;
+const DIST = process.env.OUT_DIR ? `${process.env.OUT_DIR.replace(/\/$/, '')}/` : `${ROOT}dist/`;
+const PAGES_ONLY = process.env.PAGES_ONLY === '1';
 const BASE = process.env.BASE_PATH ?? '/BrainrotTCG/';
 const SITE = process.env.SITE_URL ?? `https://evanlin23.github.io${BASE}`;
 const W = 1200;
@@ -44,7 +47,7 @@ const page = (title: string, description: string, image: string) => `<!doctype h
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#121114">
 <meta name="robots" content="noindex">
-<script>location.replace(${JSON.stringify(BASE)} + location.hash);</script>
+<script>location.replace(${JSON.stringify(BASE)} + (location.hash.indexOf('#/pull/') === 0 ? location.hash : ''));</script>
 <style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#121114;color:#f2efe9;font:16px system-ui,sans-serif}a{color:#ffd23f}</style>
 </head>
 <body><a href="${escape(BASE)}">Open Brainrot TCG</a></body>
@@ -64,12 +67,14 @@ let pages = 0;
 const written = new Map<string, string>();
 for (const card of cards.values()) {
   const imagePath = previewImagePath(card.setId, card.cardId);
-  mkdirSync(`${DIST}${imagePath.replace(/[^/]+$/, '')}`, { recursive: true });
-  const art = await sharp(`${ROOT}src/content/sets/${card.setId}/cards/${card.cardId}.webp`).resize(CARD_W, CARD_H).toBuffer();
-  await sharp(background)
-    .composite([{ input: art, left: Math.round((W - CARD_W) / 2), top: Math.round((H - CARD_H) / 2) }])
-    .jpeg({ quality: 80, mozjpeg: true })
-    .toFile(`${DIST}${imagePath}`);
+  if (!PAGES_ONLY) {
+    mkdirSync(`${DIST}${imagePath.replace(/[^/]+$/, '')}`, { recursive: true });
+    const art = await sharp(`${ROOT}src/content/sets/${card.setId}/cards/${card.cardId}.webp`).resize(CARD_W, CARD_H).toBuffer();
+    await sharp(background)
+      .composite([{ input: art, left: Math.round((W - CARD_W) / 2), top: Math.round((H - CARD_H) / 2) }])
+      .jpeg({ quality: 80, mozjpeg: true })
+      .toFile(`${DIST}${imagePath}`);
+  }
 
   const description = `${card.name} (${RARITY_NAMES[card.rarity] ?? card.rarity}). Open the link to re-check this exact pack on your own device.`;
   for (const hand of Object.keys(POKER_HANDS) as HandKey[]) {
@@ -82,4 +87,4 @@ for (const card of cards.values()) {
     pages++;
   }
 }
-console.log(`${cards.size} preview images and ${pages} preview pages in dist/p/ (images at ${SITE}p/img/)`);
+console.log(`${PAGES_ONLY ? 0 : cards.size} preview images and ${pages} preview pages in ${DIST}p/ (images at ${SITE}p/img/, forwarding to ${BASE})`);

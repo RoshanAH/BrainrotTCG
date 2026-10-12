@@ -30,21 +30,25 @@ redirect. The run's log shows the new address (if `brainrottcg` is taken, Cloudf
 What keeps working:
 
 - **Old links and QR codes.** Every page at the old address forwards to the same place at the new
-  one: pull links, profile links and link-preview pages.
-- **Saves.** A save lives in the browser's storage for the address it was made on, so the first
-  time a player opens any old link, their save comes along (`scripts/redirect-site.ts`,
-  `src/game/move.ts`). It travels in the link's `#`, which never leaves the device, and the new
-  address accepts it only from the old one. If the player already has a different save at the new
-  address, they're asked first and the replaced save is kept as a backup.
+  one: pull links, profile links and link-preview pages (which keep their card preview).
+- **Saves.** A save lives in the browser's storage for the address it was made on, and it holds the
+  player's secret key. When a player with a save opens any old link, the old address offers
+  **Bring my save and go**: one tap opens the new address in a small window and the two hand the
+  save over directly (`scripts/redirect-site.ts`, `src/game/move.ts`). Each side checks the other's
+  origin, which browsers enforce, so no other site can plant or take a save, and the save never goes
+  in a URL (URLs end up in browser history and history sync). Players who arrive through a new link
+  can do the same from **Settings → From the old address**. If a player already has a different save
+  at the new address, they're asked first and the replaced save is kept as a backup.
 - **The Hall of Fame.** The old address keeps serving `hall-of-fame.json` for the scripts, and the
   issue links it files redirect like any other link.
 
 ## Your own domain later
 
-Domains cost money (about $10–15 a year), so this is optional. Add the domain in Cloudflare
-(**Workers & Pages → brainrottcg → Custom domains**), then set a repository **variable** (not a
-secret) `SITE_URL` to it, ending in `/` (for example `https://brainrottcg.net/`), and deploy.
-Link previews and the page's own tags then use it.
+Domains cost money (about $10–15 a year), so this is optional, and it's best decided before the
+move: saves only carry over from the GitHub Pages address, not from `pages.dev` to a domain added
+later. To use one, add it in Cloudflare (**Workers & Pages → brainrottcg → Custom domains**), set a
+repository **variable** (not a secret) `SITE_URL` to it, ending in `/` (for example
+`https://brainrottcg.net/`), and deploy.
 
 ## Undoing it
 

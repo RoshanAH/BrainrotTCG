@@ -63,7 +63,8 @@ const HallOfFamePage = ({ onClose }: HallOfFamePageProps) => {
   // pull, the earliest verification keeping the credit. A pull can be signed more than once, so they
   // key on the pull id (set, key and ticket number) rather than the proof text.
   const ranked = useMemo(() => topPulls(all ?? []), [all]);
-  const firsts = useMemo(() => firstPulls(all ?? []), [all]);
+  // World firsts go by when GitHub verified them, so only filed entries can be one.
+  const firsts = useMemo(() => firstPulls(entries ?? []), [entries]);
 
   // Don't trust the JSON either: re-derive each pack here, one at a time.
   useEffect(() => {
