@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useId, useMemo, useState } from 'react';
 import { Crown, ShieldAlert, ShieldCheck } from 'lucide-react';
 import Sheet from '../ui/Sheet';
 import Tabs from '../ui/Tabs';
+import { tabPanelProps } from '../ui/tabPanel';
 import '../../styles/HallOfFame.css';
 import { getCard } from '../../data/cards';
 import { checkPull } from '../../game/pulls';
@@ -57,6 +58,7 @@ const HallOfFamePage = ({ onClose }: HallOfFamePageProps) => {
   const [entries, setEntries] = useState<HallOfFameEntry[] | null>(null);
   const [checks, setChecks] = useState<Record<number, Check>>({});
   const [tab, setTab] = useState<'top' | 'firsts' | 'legends'>('top');
+  const tabsId = useId();
 
   useEffect(() => {
     fetch(`${import.meta.env.BASE_URL}hall-of-fame.json`, { cache: 'no-cache' })
@@ -172,6 +174,7 @@ const HallOfFamePage = ({ onClose }: HallOfFamePageProps) => {
   return (
     <Sheet title="Hall of Fame" subtitle="Full Houses and better, from every player" onClose={onClose} size="lg" className="hall-of-fame">
       <Tabs
+        idBase={tabsId}
         label="Hall of Fame lists"
         value={tab}
         onChange={setTab}
@@ -182,7 +185,7 @@ const HallOfFamePage = ({ onClose }: HallOfFamePageProps) => {
         ]}
       />
 
-      <div className="hof-panel" role="tabpanel">
+      <div className="hof-panel" {...tabPanelProps(tabsId, tab)}>
         {tab === 'top' && (
           <>
             {entries === null && <p className="hof-loading">Loading…</p>}

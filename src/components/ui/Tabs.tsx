@@ -1,4 +1,4 @@
-import { useId, useRef, type KeyboardEvent, type ReactNode } from 'react';
+import { useRef, type KeyboardEvent, type ReactNode } from 'react';
 
 export interface Tab<T extends string> {
   id: T;
@@ -10,11 +10,12 @@ interface TabsProps<T extends string> {
   value: T;
   onChange: (id: T) => void;
   label: string;
+  /** From `useId()` in the parent, which gives its panel `tabPanelProps(idBase, value)`. */
+  idBase: string;
 }
 
-/** Segmented tab bar. Arrow keys move between tabs; pair each panel with `tabPanelProps`. */
-const Tabs = <T extends string>({ tabs, value, onChange, label }: TabsProps<T>) => {
-  const base = useId();
+/** Tab bar. Arrow keys move between tabs. */
+const Tabs = <T extends string>({ tabs, value, onChange, label, idBase: base }: TabsProps<T>) => {
   const refs = useRef<(HTMLButtonElement | null)[]>([]);
 
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
@@ -45,7 +46,7 @@ const Tabs = <T extends string>({ tabs, value, onChange, label }: TabsProps<T>) 
             role="tab"
             id={`${base}-${tab.id}`}
             aria-selected={selected}
-            aria-controls={`${base}-${tab.id}-panel`}
+            aria-controls={selected ? `${base}-${tab.id}-panel` : undefined}
             tabIndex={selected ? 0 : -1}
             className="tab"
             onClick={() => onChange(tab.id)}

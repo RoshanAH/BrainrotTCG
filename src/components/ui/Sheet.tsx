@@ -89,7 +89,7 @@ const Sheet = ({ title, onClose, children, size = 'md', subtitle, footer, bare =
         aria-labelledby={titleId}
         tabIndex={-1}
       >
-        <header className="sheet-header">
+        <div className="sheet-header">
           <div className="sheet-heading">
             <h2 id={titleId} className={bare ? 'sr-only' : 'sheet-title'}>
               {title}
@@ -99,7 +99,7 @@ const Sheet = ({ title, onClose, children, size = 'md', subtitle, footer, bare =
           <button type="button" className="icon-btn sheet-close" onClick={onClose} aria-label="Close">
             <X strokeWidth={2.4} />
           </button>
-        </header>
+        </div>
         <div className="sheet-body">{children}</div>
         {footer && <footer className="sheet-footer">{footer}</footer>}
       </div>
