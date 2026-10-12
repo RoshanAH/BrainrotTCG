@@ -5,7 +5,7 @@
 import { computeTicket, toHex } from '../engine';
 import type { TicketRequest, TicketResponse } from '../workers/ticket.worker';
 
-type Pending = { resolve: (t: Uint8Array) => void; reject: (e: Error) => void };
+type Pending = { resolve: (t: Uint8Array) => void; reject: (e: Error) => void; setKey: string; publicKey: Uint8Array; nonce: number };
 
 let worker: Worker | null | undefined;
 let nextId = 0;
@@ -24,6 +24,16 @@ const getWorker = (): Worker | null => {
       if ('ticket' in event.data) job.resolve(event.data.ticket);
       else job.reject(new Error(event.data.error));
     };
+    // If the worker fails to load or crashes, finish its jobs on the main thread instead of hanging.
+    worker.onerror = (event) => {
+      event.preventDefault();
+      console.warn('Ticket worker failed; mining on the main thread', event.message);
+      worker?.terminate();
+      worker = null;
+      const jobs = [...pending.values()];
+      pending.clear();
+      for (const job of jobs) computeTicket(job.setKey, job.publicKey, job.nonce).then(job.resolve, job.reject);
+    };
   } catch {
     worker = null; // no worker support: fall back to the main thread
   }
@@ -35,7 +45,7 @@ const run = (setKey: string, publicKey: Uint8Array, nonce: number): Promise<Uint
   if (!w) return computeTicket(setKey, publicKey, nonce);
   return new Promise((resolve, reject) => {
     const id = nextId++;
-    pending.set(id, { resolve, reject });
+    pending.set(id, { resolve, reject, setKey, publicKey, nonce });
     w.postMessage({ id, setKey, publicKeyHex: toHex(publicKey), nonce } satisfies TicketRequest);
   });
 };

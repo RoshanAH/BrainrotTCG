@@ -29,7 +29,10 @@ jobs:
       - run: npm ci
       - id: check
         run: npx tsx scripts/hall-of-fame.ts verify-issue
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
       - name: Comment and label
+        if: steps.check.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           ISSUE: ${{ github.event.issue.number }}
@@ -47,7 +50,7 @@ jobs:
             gh issue edit "$ISSUE" --remove-label verified 2>/dev/null || true
           fi
       - name: Redeploy so the entry goes live
-        if: steps.check.outputs.verified == 'true'
+        if: steps.check.outputs.verified == 'true' && steps.check.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh workflow run deploy.yml --ref "${{ github.event.repository.default_branch }}"

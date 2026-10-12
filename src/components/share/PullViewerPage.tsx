@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { checkPull, pullUrl, type CheckedPull } from '../../game/pulls';
 import PackCardViewer from '../ui/PackCardViewer';
 import '../../styles/Share.css';
+import { normalizeName } from '../../engine';
 
 interface PullViewerPageProps {
   proof: string;
@@ -47,7 +48,7 @@ const PullViewerPage = ({ proof, onClose }: PullViewerPageProps) => {
         <>
           <h2 className="pull-viewer-title">{state.pull.score.hand.name !== 'No Matches' ? state.pull.score.hand.name : 'A pull'} from {state.pull.set.name}</h2>
           <p className="share-owner">
-            Pulled by <strong>{state.pull.proof.name || 'Anonymous'}</strong> <span className="share-fp">#{state.pull.fingerprint}</span> · {state.pull.set.era}
+            Pulled by <strong>{normalizeName(state.pull.proof.name) || 'Anonymous'}</strong> <span className="share-fp">#{state.pull.fingerprint}</span> · {state.pull.set.era}
           </p>
           <PackCardViewer cards={state.pull.cardsWithMeta} displayMode="carousel" />
           <div className="pull-viewer-verified">

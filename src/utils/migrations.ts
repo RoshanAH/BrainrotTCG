@@ -9,7 +9,17 @@ import { getCard, scoreCards, type Card } from '../data/cards';
 import { STORAGE_KEYS } from '../constants';
 
 const DATA_VERSION_KEY = 'brainrot-data-version';
-const CURRENT_VERSION = 3;
+export const CURRENT_DATA_VERSION = 3;
+const CURRENT_VERSION = CURRENT_DATA_VERSION;
+
+/** After importing a save written by an older version: the next runMigrations() upgrades it. */
+export const setDataVersion = (version: number) => {
+  try {
+    localStorage.setItem(DATA_VERSION_KEY, String(version));
+  } catch {
+    // storage unavailable
+  }
+};
 
 const LEGACY: Record<string, string> = legacyGenesisIds;
 

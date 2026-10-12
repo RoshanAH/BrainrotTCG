@@ -4,7 +4,7 @@ import type { PackScore } from '../../engine';
 import { qualifiesForHallOfFame } from '../../engine';
 import { getLatestSet } from '../../content/sets';
 import { getPlayer } from '../../game/player';
-import { proofFor, pullUrl, type PullRef } from '../../game/pulls';
+import { canShare, proofFor, pullUrl, type PullRef } from '../../game/pulls';
 import { bragText, hallOfFameSubmitUrl } from '../../game/share';
 import { renderPoster } from '../../game/bragImage';
 import PackCardViewer from '../ui/PackCardViewer';
@@ -24,7 +24,8 @@ interface ShareSheetProps {
 const ShareSheet = ({ target, onClose }: ShareSheetProps) => {
   const player = getPlayer();
   const setName = getLatestSet(target.ref.setId)?.name ?? target.ref.setId;
-  const url = useMemo(() => pullUrl(proofFor(target.ref)), [target.ref]);
+  const shareable = canShare(target.ref);
+  const url = useMemo(() => (shareable ? pullUrl(proofFor(target.ref)) : ''), [shareable, target.ref]);
   const text = bragText(target.cards, target.score, setName, url);
   const [copied, setCopied] = useState<string | null>(null);
 
@@ -75,6 +76,21 @@ const ShareSheet = ({ target, onClose }: ShareSheetProps) => {
     }
   };
 
+  if (!shareable) {
+    return (
+      <div className="share-sheet-backdrop" onClick={onClose}>
+        <div className="share-sheet" onClick={(e) => e.stopPropagation()} role="dialog" aria-label="Can't share this pull">
+          <button className="share-close" onClick={onClose} aria-label="Close">×</button>
+          <h2>Can't share this one</h2>
+          <p className="share-note">
+            This pack was opened with a different player key than the one on this device (for example, before you imported a save),
+            so this device can't sign a proof for it. Open it on the device that has that key, or import that save again.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="share-sheet-backdrop" onClick={onClose}>
       <div className="share-sheet" onClick={(e) => e.stopPropagation()} role="dialog" aria-label="Share this pull">
@@ -97,7 +113,7 @@ const ShareSheet = ({ target, onClose }: ShareSheetProps) => {
           )}
         </div>
         <p className="share-note">
-          The link is a ~130-byte proof. Anyone who opens it re-derives this exact pack from your player key and ticket #{target.ref.nonce} on
+          The link is a ~150-byte proof. Anyone who opens it re-derives this exact pack from your player key and ticket #{target.ref.nonce} on
           their own device, so it can't be edited or faked.
         </p>
       </div>

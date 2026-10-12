@@ -4,6 +4,7 @@ import { MAX_NAME_LENGTH } from '../../engine';
 import { exportPlayer, getPlayer, renamePlayer } from '../../game/player';
 import type { Settings } from '../../types';
 import '../../styles/Settings.css';
+import { CURRENT_DATA_VERSION } from '../../utils/migrations';
 
 interface SettingsPageProps {
     settings: Settings;
@@ -43,6 +44,8 @@ const SettingsPage = ({ settings, onSettingsChange, onClose, onImportSave }: Set
             player: exportPlayer(),
             exportedAt: new Date().toISOString(),
             version: 2,
+            // Shape of the stored data, so importing an older save runs the migrations it needs.
+            dataVersion: CURRENT_DATA_VERSION,
         };
 
         const blob = new Blob([JSON.stringify(saveData, null, 2)], { type: 'text/plain' });
@@ -93,8 +96,7 @@ const SettingsPage = ({ settings, onSettingsChange, onClose, onImportSave }: Set
                         <input
                             className="settings-name-input"
                             value={nameDraft}
-                            maxLength={MAX_NAME_LENGTH}
-                            onChange={(e) => setNameDraft(e.target.value)}
+                            onChange={(e) => setNameDraft(Array.from(e.target.value).slice(0, MAX_NAME_LENGTH).join(''))}
                             onBlur={saveName}
                             onKeyDown={(e) => e.key === 'Enter' && saveName()}
                             aria-label="Player name"

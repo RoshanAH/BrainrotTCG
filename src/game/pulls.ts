@@ -23,6 +23,8 @@ export interface PullRef {
   setId: string;
   setVersion: number;
   nonce: number;
+  /** The key that opened it. Only that key can share it (refs saved before this field have none). */
+  publicKeyHex?: string;
 }
 
 export interface OpenedPack extends PullRef {
@@ -45,17 +47,28 @@ export const prefetchNextPack = (set: SetDefinition) => {
 
 /** Open a pack: consume a ticket number, mine (or reuse) its ticket, derive the cards. */
 export const openPack = async (set: SetDefinition): Promise<OpenedPack> => {
-  const player = getPlayer();
-  const nonce = allocateNonce();
+  const { nonce, player } = allocateNonce();
   const ticket = await getTicket(setKey(set), player.publicKey, nonce);
   const cards = toCardsWithMeta(generatePack(set, packSeedFromTicket(ticket)));
   prefetchTicket(setKey(set), player.publicKey, nonce + 1);
-  return { setId: set.id, setVersion: set.version, nonce, cards, score: scoreCards(cards), openedAt: Date.now() };
+  return {
+    setId: set.id,
+    setVersion: set.version,
+    nonce,
+    publicKeyHex: player.publicKeyHex,
+    cards,
+    score: scoreCards(cards),
+    openedAt: Date.now(),
+  };
 };
+
+/** Can this player share this pull? (False after importing a different player's key.) */
+export const canShare = (ref: PullRef): boolean => !ref.publicKeyHex || ref.publicKeyHex === getPlayer().publicKeyHex;
 
 /** Sign a proof for one of this player's pulls (with their current name). */
 export const proofFor = (ref: PullRef): string => {
   const player = getPlayer();
+  if (!canShare(ref)) throw new Error('This pull was opened with a different player key, so this device cannot sign it.');
   return encodeProof(
     signProof({ setId: ref.setId, setVersion: ref.setVersion, publicKey: player.publicKey, nonce: ref.nonce, name: player.name }, player.secretKey),
   );

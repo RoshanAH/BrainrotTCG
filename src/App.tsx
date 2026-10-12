@@ -20,7 +20,7 @@ import type { OpenedPack } from './game/pulls';
 import { recordPull } from './game/pullLog';
 import { importPlayer } from './game/player';
 import { getStoredData } from './utils/storage';
-import { hydrateCollection } from './utils/migrations';
+import { CURRENT_DATA_VERSION, hydrateCollection, setDataVersion } from './utils/migrations';
 import { STORAGE_KEYS } from './constants';
 import {
   checkPackMilestones,
@@ -34,6 +34,16 @@ const DEFAULT_SETTINGS: Settings = {
   soundEnabled: true,
   particlesEnabled: true,
 };
+
+/** Save-file fields and where they live in localStorage. */
+const SAVE_FIELDS = [
+  ['collection', STORAGE_KEYS.COLLECTION],
+  ['achievements', STORAGE_KEYS.ACHIEVEMENTS],
+  ['stats', STORAGE_KEYS.STATS],
+  ['hallOfFame', STORAGE_KEYS.HALL_OF_FAME],
+  ['pulls', STORAGE_KEYS.PULLS],
+  ['settings', STORAGE_KEYS.SETTINGS],
+] as const;
 
 function App() {
   const [collection, setCollection] = useState<Record<string, CollectionItem>>(() => hydrateCollection(getStoredData(STORAGE_KEYS.COLLECTION, {})));
@@ -50,6 +60,7 @@ function App() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [notificationQueue, setNotificationQueue] = useState<Achievement[]>([]);
   const [shareTarget, setShareTarget] = useState<ShareTarget | null>(null);
+  const [packBusy, setPackBusy] = useState(false);
   const [viewProof, setViewProof] = useState<string | null>(() => extractProof(window.location.hash));
 
   const playableSets = SETS.filter((s) => !s.archivedAt && (!s.draft || settings.showDraftSets));
@@ -175,40 +186,21 @@ function App() {
         return;
       }
 
-      // Import each piece of data
-      if (saveData.collection) {
-        const collectionData = JSON.parse(saveData.collection);
-        localStorage.setItem(STORAGE_KEYS.COLLECTION, saveData.collection);
-        setCollection(collectionData);
+      // Write everything, then reload: the loader runs any migrations an older save needs
+      // (saves from before timeline sets use old card ids and the old score scale).
+      for (const [field] of SAVE_FIELDS) {
+        if (typeof saveData[field] === 'string') JSON.parse(saveData[field]); // reject corrupt files before writing anything
       }
-      if (saveData.achievements) {
-        const achievementsData = JSON.parse(saveData.achievements);
-        localStorage.setItem(STORAGE_KEYS.ACHIEVEMENTS, saveData.achievements);
-        setAchievements(achievementsData);
-      }
-      if (saveData.stats) {
-        const statsData = JSON.parse(saveData.stats);
-        localStorage.setItem(STORAGE_KEYS.STATS, saveData.stats);
-        setStats(statsData);
-      }
-      if (saveData.hallOfFame) {
-        const hallOfFameData = JSON.parse(saveData.hallOfFame);
-        localStorage.setItem(STORAGE_KEYS.HALL_OF_FAME, saveData.hallOfFame);
-        setHallOfFame(hallOfFameData);
+      for (const [field, key] of SAVE_FIELDS) {
+        if (typeof saveData[field] === 'string') localStorage.setItem(key, saveData[field]);
       }
       if (typeof saveData.player === 'string' && !importPlayer(saveData.player)) {
         alert('The player key in this save is invalid; keeping your current one.');
       }
-      if (saveData.pulls) {
-        localStorage.setItem(STORAGE_KEYS.PULLS, saveData.pulls);
-      }
-      if (saveData.settings) {
-        const settingsData = JSON.parse(saveData.settings);
-        localStorage.setItem(STORAGE_KEYS.SETTINGS, saveData.settings);
-        setSettings(settingsData);
-      }
+      setDataVersion(typeof saveData.dataVersion === 'number' ? saveData.dataVersion : saveData.version === 1 ? 1 : CURRENT_DATA_VERSION);
 
       alert('Save imported successfully!');
+      window.location.reload();
     } catch {
       alert('Failed to import save file. Please check the file format.');
     }
@@ -227,7 +219,7 @@ function App() {
 
   const handlePackOpened = useCallback((pack: OpenedPack) => {
     const newCards = pack.cards;
-    const pullRef = { setId: pack.setId, setVersion: pack.setVersion, nonce: pack.nonce };
+    const pullRef = { setId: pack.setId, setVersion: pack.setVersion, nonce: pack.nonce, publicKeyHex: pack.publicKeyHex };
     const { points: packValue, hand: pokerHand, score } = scoreCards(newCards);
     recordPull(pack);
 
@@ -355,7 +347,7 @@ function App() {
   }, [stats, hallOfFame, collection, checkAllAchievements, unlockAchievement]);
 
   const sharePack = useCallback((pack: OpenedPack) => {
-    setShareTarget({ ref: { setId: pack.setId, setVersion: pack.setVersion, nonce: pack.nonce }, cards: pack.cards, score: pack.score });
+    setShareTarget({ ref: { setId: pack.setId, setVersion: pack.setVersion, nonce: pack.nonce, publicKeyHex: pack.publicKeyHex }, cards: pack.cards, score: pack.score });
   }, []);
 
   const shareBestPack = useCallback(() => {
@@ -387,12 +379,13 @@ function App() {
 
       <main>
         {!isAnyModalOpen && (
-          <SetPicker sets={playableSets} selectedId={selectedSet.id} onSelect={selectSet} collection={collection} />
+          <SetPicker sets={playableSets} selectedId={selectedSet.id} onSelect={selectSet} collection={collection} disabled={packBusy} />
         )}
         <PackOpener
           key={selectedSet.id}
           onOpen={handlePackOpened}
           onShare={sharePack}
+          onBusyChange={setPackBusy}
           set={selectedSet}
           disabled={isAnyModalOpen}
           settings={settings}

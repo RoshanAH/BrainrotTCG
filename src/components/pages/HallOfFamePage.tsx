@@ -3,7 +3,7 @@ import '../../styles/HallOfFame.css';
 import { getCard } from '../../data/cards';
 import { checkPull } from '../../game/pulls';
 import { REPO } from '../../constants';
-import { decodeProof, HALL_OF_FAME_MIN_MULTIPLIER, HALL_OF_FAME_MIN_SCORE, pullId } from '../../engine';
+import { decodeProof, HALL_OF_FAME_MIN_MULTIPLIER, HALL_OF_FAME_MIN_SCORE, normalizeName, pullId } from '../../engine';
 
 // Hackathon legends: screenshots from before pulls were verifiable.
 import adiImage from '../../assets/images/hall_of_fame/adi-four-of-a-kind.webp';
@@ -139,7 +139,7 @@ const HallOfFamePage = ({ onClose }: HallOfFamePageProps) => {
             {entry.hand} <span className="hof-flex">🧠 {entry.score.toLocaleString()}</span>
           </div>
           <div className="hof-who">
-            {entry.name} <span className="share-fp">#{entry.fingerprint}</span> ·{' '}
+            {normalizeName(entry.name) || 'Anonymous'} <span className="share-fp">#{entry.fingerprint}</span> ·{' '}
             <a href={`https://github.com/${REPO}/issues/${entry.issue}`} target="_blank" rel="noreferrer">
               @{entry.githubUser}
             </a>

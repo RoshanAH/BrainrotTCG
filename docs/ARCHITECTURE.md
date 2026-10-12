@@ -65,7 +65,7 @@ machines small compared to plain hashing.
 Known limits: you can't prove how many packs someone opened in total, or that they weren't using a
 bot. A ticket takes about 0.1 s, so a script finds a Full House in seconds and a 5 of a Kind in
 minutes of CPU. "Verified" means *these cards really came from this player's ticket*, not that a
-person was lucky; the Hall of Fame ranks world firsts by GitHub submission time for that reason.
+person was lucky; the Hall of Fame ranks world firsts by when the GitHub bot verified them for that reason.
 
 A security review (Oct 2026) found and fixed a forgery via small-order Ed25519 keys and malleable
 encodings; the rules that close them are in `spec/PULL_SPEC.md` section 7 and covered by the vectors.
@@ -84,9 +84,12 @@ player ─► Share ─► "Submit" ─► GitHub issue form (pull link)
                     Hall of Fame page re-derives each entry again in the visitor's browser
 ```
 
-Issue text is untrusted and is only parsed by the script, never put into a shell command. The
-submitter's GitHub username and the issue date come from GitHub, so they can be trusted for
-"world first" ordering.
+Issue text is untrusted: it's only parsed by the script, never put into a shell command, and only
+echoed back through a sanitiser. The submitter's GitHub username comes from GitHub. "World first"
+order uses the time the bot first verified that exact pull on the issue (a marker in its comment), not
+the issue's creation date, so a placeholder issue edited later can't claim an earlier spot. Each pull
+counts once, however many times it's submitted or re-signed. A maintainer can drop an entry by adding
+the `rejected` label to its issue.
 
 ## Invariants (CI enforces these)
 

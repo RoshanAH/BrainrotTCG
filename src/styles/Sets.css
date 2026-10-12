@@ -22,6 +22,7 @@
   padding: 0.55rem 0.8rem;
   border-radius: 0.9rem;
   border: 2px solid rgba(255, 255, 255, 0.15);
+  background: #2a0f4f; /* browsers without color-mix */
   background: linear-gradient(135deg, color-mix(in srgb, var(--set-a) 35%, #120024), color-mix(in srgb, var(--set-b) 25%, #120024));
   color: #fff;
   cursor: pointer;
@@ -29,8 +30,13 @@
   transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.set-chip:hover {
+.set-chip:hover:not(:disabled) {
   transform: translateY(-2px);
+}
+
+.set-chip:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
 }
 
 .set-chip.selected {

@@ -25,7 +25,7 @@ export interface Stats {
   highestPackHandName?: string;
   highestPackCards?: CardWithMeta[];
   /** Ticket reference of the best pack, so it can be shared as a verifiable proof. */
-  highestPackRef?: { setId: string; setVersion: number; nonce: number };
+  highestPackRef?: { setId: string; setVersion: number; nonce: number; publicKeyHex?: string };
   /** The best pack predates verifiable pulls and can't be proven. */
   highestPackLegacy?: boolean;
 }

@@ -27,12 +27,14 @@ interface PackOpenerProps {
   /** Called once every card has been revealed. */
   onOpen: (pack: OpenedPack) => void;
   onShare: (pack: OpenedPack) => void;
+  /** True while a pack is being opened (its ticket is spent but it isn't recorded yet). */
+  onBusyChange?: (busy: boolean) => void;
   set: SetDefinition;
   disabled?: boolean;
   settings: Settings;
 }
 
-const PackOpener = ({ onOpen, onShare, set, disabled = false, settings }: PackOpenerProps) => {
+const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, settings }: PackOpenerProps) => {
   const [isOpening, setIsOpening] = useState(false);
   const [openedPack, setOpenedPack] = useState<OpenedPack | null>(null);
   const [openError, setOpenError] = useState<string | null>(null);
@@ -77,6 +79,9 @@ const PackOpener = ({ onOpen, onShare, set, disabled = false, settings }: PackOp
   useEffect(() => {
     if (!isOpening) prefetchNextPack(set);
   }, [isOpening, set]);
+
+  // A pack in progress has spent its ticket, so the app must not swap sets until it's recorded.
+  useEffect(() => onBusyChange?.(isOpening), [isOpening, onBusyChange]);
 
   const handleCutComplete = useCallback(() => {
     setIsPackCut(true);

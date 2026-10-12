@@ -30,6 +30,7 @@ export const recordPull = (pack: OpenedPack) => {
     setId: pack.setId,
     setVersion: pack.setVersion,
     nonce: pack.nonce,
+    publicKeyHex: pack.publicKeyHex,
     score: pack.score.score,
     hand: pack.score.hand.name,
     openedAt: pack.openedAt,

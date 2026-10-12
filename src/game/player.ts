@@ -49,61 +49,74 @@ const write = (stored: StoredPlayer) => {
   }
 };
 
-let cached: StoredPlayer | null = null;
+/**
+ * localStorage is the source of truth, because other tabs write it too: every read and write goes
+ * through it, so a stale tab can never move the ticket counter backwards or switch keys behind
+ * another tab's back. `memory` only covers browsers where storage is unavailable.
+ */
+let memory: StoredPlayer | null = null;
 
-const stored = (): StoredPlayer => {
-  if (cached) return cached;
-  cached = read();
-  if (!cached) {
-    cached = { secretKey: toHex(generateKeypair().secretKey), name: randomName(), nextNonce: 0, createdAt: Date.now() };
-    write(cached);
-  }
-  return cached;
+const current = (): StoredPlayer => {
+  const fresh = read();
+  if (fresh) return (memory = fresh);
+  if (memory) return memory;
+  memory = { secretKey: toHex(generateKeypair().secretKey), name: randomName(), nextNonce: 0, createdAt: Date.now() };
+  write(memory);
+  return memory;
 };
+
+const update = (change: (s: StoredPlayer) => StoredPlayer): StoredPlayer => {
+  memory = change(current());
+  write(memory);
+  return memory;
+};
+
+let lastKey: { secretKeyHex: string; publicKey: Uint8Array } | null = null;
 
 const toPlayer = (s: StoredPlayer): Player => {
   const secretKey = fromHex(s.secretKey);
-  const publicKey = publicKeyFromSecret(secretKey);
+  if (lastKey?.secretKeyHex !== s.secretKey) lastKey = { secretKeyHex: s.secretKey, publicKey: publicKeyFromSecret(secretKey) };
+  const { publicKey } = lastKey;
   return { name: s.name, secretKey, publicKey, publicKeyHex: toHex(publicKey), fingerprint: fingerprint(publicKey) };
 };
 
-export const getPlayer = (): Player => toPlayer(stored());
+export const getPlayer = (): Player => toPlayer(current());
 
 /** The ticket number the next pack will use (without consuming it). */
-export const peekNonce = (): number => {
-  const fresh = read();
-  if (fresh && cached && fresh.nextNonce > cached.nextNonce) cached = fresh; // another tab moved ahead
-  return stored().nextNonce;
-};
+export const peekNonce = (): number => current().nextNonce;
 
-/** Consume the next ticket number. Every opened pack uses a new one. */
-export const allocateNonce = (): number => {
-  const nonce = peekNonce();
-  cached = { ...stored(), nextNonce: nonce + 1 };
-  write(cached);
-  return nonce;
+/**
+ * Consume the next ticket number. Every opened pack uses a new one. Returns the player it belongs
+ * to as well, read from the same record, so a pack never pairs one key with another key's nonce.
+ */
+export const allocateNonce = (): { nonce: number; player: Player } => {
+  let nonce = 0;
+  const record = update((s) => {
+    nonce = s.nextNonce;
+    return { ...s, nextNonce: s.nextNonce + 1 };
+  });
+  return { nonce, player: toPlayer(record) };
 };
 
 export const renamePlayer = (name: string): Player => {
   const clean = normalizeName(name);
   if (!clean) return getPlayer();
-  cached = { ...stored(), name: clean };
-  write(cached);
-  return toPlayer(cached);
+  return toPlayer(update((s) => ({ ...s, name: clean })));
 };
 
 /** For save export/import. The secret key is what makes pulls yours, so treat the export as private. */
-export const exportPlayer = (): string => JSON.stringify(stored());
+export const exportPlayer = (): string => JSON.stringify(current());
 
 export const importPlayer = (raw: string): boolean => {
   try {
     const incoming = JSON.parse(raw) as StoredPlayer;
     if (!/^[0-9a-f]{64}$/.test(incoming.secretKey) || !Number.isSafeInteger(incoming.nextNonce)) return false;
-    const current = read();
-    // Never move the ticket counter backwards for the same key (that would replay old packs).
-    const nextNonce = current?.secretKey === incoming.secretKey ? Math.max(current.nextNonce, incoming.nextNonce) : incoming.nextNonce;
-    cached = { ...incoming, name: normalizeName(incoming.name) || randomName(), nextNonce };
-    write(cached);
+    update((existing) => ({
+      ...incoming,
+      name: normalizeName(incoming.name) || randomName(),
+      // Never move the ticket counter backwards for the same key (that would replay old packs).
+      nextNonce: existing.secretKey === incoming.secretKey ? Math.max(existing.nextNonce, incoming.nextNonce) : incoming.nextNonce,
+    }));
     return true;
   } catch {
     return false;
