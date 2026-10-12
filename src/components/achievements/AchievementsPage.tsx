@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { ChevronRight } from 'lucide-react';
+import { Check, ChevronRight } from 'lucide-react';
 import { ACHIEVEMENTS, type Achievement } from '../../data/achievements';
 import type { AchievementData } from '../../types';
 import type { CardWithMeta } from '../cards/Card';
@@ -20,7 +20,7 @@ const normalize = (data: AchievementData | number | undefined): { unlockedAt: nu
 
 type Unlocked = { achievement: Achievement; unlockedAt: number; pack?: CardWithMeta[] };
 
-/** Unlocked first (newest on top), then everything still to get. */
+/** A checklist, like the one printed in a pack: unlocked first (newest on top), then everything still to get. */
 const AchievementsPage = ({ unlockedAchievements, onClose }: AchievementsPageProps) => {
   const [selected, setSelected] = useState<Unlocked | null>(null);
 
@@ -64,8 +64,8 @@ const AchievementsPage = ({ unlockedAchievements, onClose }: AchievementsPagePro
                 const date = new Date(unlockedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
                 const body = (
                   <>
-                    <span className="achievement-icon" aria-hidden="true">
-                      {achievement.icon}
+                    <span className="achievement-box is-checked" aria-hidden="true">
+                      <Check strokeWidth={3.5} />
                     </span>
                     <span className="achievement-text">
                       <span className="achievement-name">{achievement.name}</span>
@@ -98,9 +98,7 @@ const AchievementsPage = ({ unlockedAchievements, onClose }: AchievementsPagePro
               {locked.map((achievement) => (
                 <li key={achievement.id}>
                   <div className="achievement is-locked">
-                    <span className="achievement-icon" aria-hidden="true">
-                      {achievement.icon}
-                    </span>
+                    <span className="achievement-box" aria-hidden="true" />
                     <span className="achievement-text">
                       <span className="achievement-name">{achievement.name}</span>
                       <span className="achievement-desc">{achievement.description}</span>

@@ -55,7 +55,7 @@ const ProfileSummary = ({ stats, actions, levelNote, partial = false, onOpenPack
       <dl className="profile-stats">
         <div>
           <dd className="tabular">{stats.packs.toLocaleString()}</dd>
-          <dt>packs</dt>
+          <dt>{stats.packs === 1 ? 'pack' : 'packs'}</dt>
         </div>
         <div>
           <dd className="tabular">

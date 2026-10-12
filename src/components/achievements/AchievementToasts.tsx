@@ -42,10 +42,10 @@ const AchievementToasts = ({ queue, onDismiss, onOpen }: AchievementToastsProps)
               onDismiss(shown.map((a) => a.id));
               onOpen();
             }}
-            initial={{ y: -24, opacity: 0, scale: 0.96 }}
-            animate={{ y: 0, opacity: 1, scale: 1 }}
-            exit={{ y: -16, opacity: 0 }}
-            transition={{ type: 'spring', stiffness: 380, damping: 28 }}
+            initial={{ y: -12, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -8, opacity: 0 }}
+            transition={{ duration: 0.18, ease: 'easeOut' }}
           >
             <span className="toast-icon" aria-hidden="true">
               <Award strokeWidth={2.4} />

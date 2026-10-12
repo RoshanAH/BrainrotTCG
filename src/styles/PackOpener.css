@@ -116,25 +116,11 @@
     right: 5%;
     top: var(--tear-y);
     transform: translateY(-50%);
-    border-top: 5px dashed rgba(255, 255, 255, 0.95);
-    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.5)) drop-shadow(0 0 3px rgba(0, 0, 0, 0.8));
+    /* A printed perforation: steady, so the only thing moving is the finger showing the gesture. */
+    border-top: 4px dashed rgba(255, 255, 255, 0.95);
+    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.8));
     z-index: 4;
     pointer-events: none;
-    animation: tearGuidePulse 2s ease-in-out infinite;
-}
-
-@keyframes tearGuidePulse {
-
-    0%,
-    100% {
-        opacity: 0.7;
-        filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.5)) drop-shadow(0 0 3px rgba(0, 0, 0, 0.8));
-    }
-
-    50% {
-        opacity: 1;
-        filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.8)) drop-shadow(0 0 4px rgba(0, 0, 0, 0.8));
-    }
 }
 
 .pack-shell.is-cutting .tear-guide {
@@ -164,7 +150,6 @@
     box-shadow: var(--shadow-1);
     z-index: 6;
     pointer-events: none;
-    animation: swipeHintFade 3s ease-in-out infinite;
 }
 
 .swipe-hint-icon {
@@ -193,16 +178,7 @@
     }
 }
 
-@keyframes swipeHintFade {
 
-    0%,
-    100% {
-        opacity: 0.8;
-    }
-
-    50% {
-        opacity: 1;
-    }
 }
 
 .pack-shell.is-cutting .swipe-hint,
@@ -324,18 +300,9 @@
     font-size: var(--text-sm);
     font-weight: 600;
     text-align: center;
-    animation: fadePulse 2.4s ease-in-out infinite;
 }
 
-@keyframes fadePulse {
-    0%,
-    100% {
-        opacity: 0.8;
-    }
-    50% {
-        opacity: 1;
-    }
-}
+
 
 .mouse-hint {
     color: var(--text-subtle);

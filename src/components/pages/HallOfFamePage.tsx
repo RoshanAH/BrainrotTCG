@@ -170,7 +170,7 @@ const HallOfFamePage = ({ onClose }: HallOfFamePageProps) => {
   );
 
   return (
-    <Sheet title="Hall of Fame" subtitle="The luckiest verified pulls on Earth" onClose={onClose} size="lg" className="hall-of-fame">
+    <Sheet title="Hall of Fame" subtitle="Full Houses and better, from every player" onClose={onClose} size="lg" className="hall-of-fame">
       <Tabs
         label="Hall of Fame lists"
         value={tab}
