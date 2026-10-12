@@ -2,7 +2,7 @@
  * UI-facing card data: set definitions from the registry + built image URLs.
  * Card definitions live in `src/content/sets/<set>/set.json`.
  */
-import { isOpenable, SETS } from '../content/sets';
+import { ALL_SET_VERSIONS, getCardDefinition, isOpenable, SETS } from '../content/sets';
 import { cardImageUrl } from '../content/art';
 import { cardPoints as engineCardPoints, scorePack, type CardDefinition, type PackScore, type Rarity } from '../engine';
 
@@ -52,6 +52,13 @@ export const ALL_CARDS: Card[] = SETS.flatMap((set) => set.cards.map((def) => to
 export const COLLECTIBLE_CARDS: Card[] = ALL_CARDS.filter((card) => isOpenable(SETS.find((s) => s.id === card.setId)!));
 
 const BY_KEY = new Map(ALL_CARDS.map((c) => [c.key, c]));
+// Cards dropped in a newer version of their set still resolve, so players who own them keep them.
+for (const set of ALL_SET_VERSIONS) {
+  for (const def of set.cards) {
+    const key = `${set.id}/${def.id}`;
+    if (!BY_KEY.has(key)) BY_KEY.set(key, toCard(set.id, getCardDefinition(set.id, def.id) ?? def));
+  }
+}
 
 export const getCard = (key: string): Card | undefined => BY_KEY.get(key);
 
