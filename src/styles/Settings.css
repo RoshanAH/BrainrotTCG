@@ -62,6 +62,34 @@
   margin-top: var(--space-1);
 }
 
+.settings-slider {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.settings-slider input[type='range'] {
+  width: 8.5rem;
+  height: var(--touch-target);
+  margin: 0;
+  accent-color: var(--brand);
+  cursor: pointer;
+}
+
+.settings-value {
+  width: 2.6rem;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  text-align: right;
+}
+
+@media (max-width: 380px) {
+  .settings-slider input[type='range'] {
+    width: 6.5rem;
+  }
+}
+
 .settings-input {
   width: 100%;
   min-height: var(--touch-target);

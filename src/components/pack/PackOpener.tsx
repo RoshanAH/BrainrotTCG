@@ -9,6 +9,7 @@ import { usePackCutter } from '../../hooks/usePackCutter';
 import { useAudio } from '../../hooks/useAudio';
 import { useKeyboardControls } from '../../hooks/useKeyboardControls';
 import { BRAINROT_VOICES, EFFECT_SOUNDS, CARD_FLIP_SRC } from '../../constants/audio';
+import { effectsLevel } from '../../utils/settings';
 import PackCuttingUI from './PackCuttingUI';
 import CardRevealUI from './CardRevealUI';
 import PackSummaryUI from './PackSummaryUI';
@@ -49,6 +50,7 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
   const packDesign = packImageUrl(set.id);
   const [hasMovedMouse, setHasMovedMouse] = useState(false);
   const [autoMode, setAutoMode] = useState(false);
+  const effectsVolume = effectsLevel(settings.effectsVolume);
 
   const { playAndCleanup, preloadAudio, cleanupAudio, playRandom } = useAudio();
 
@@ -118,7 +120,7 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
     onCutComplete: handleCutComplete,
     isOpening,
     isPackCut,
-    soundEnabled: settings.soundEnabled,
+    volume: effectsVolume,
   });
 
   const finishPack = useCallback(() => {
@@ -172,9 +174,9 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
     const currentCard = openedCards[currentIndex];
     if (!currentCard || !preloadedAssets) return;
 
-    if (settings.soundEnabled) {
-      playAndCleanup(preloadedAssets.cardFlip);
-      playRandom(preloadedAssets.effects);
+    if (effectsVolume > 0) {
+      playAndCleanup(preloadedAssets.cardFlip, effectsVolume);
+      playRandom(preloadedAssets.effects, effectsVolume);
     }
 
     const newCards = [...openedCards];
@@ -192,7 +194,7 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
         triggerHoloSparkles();
       }
     }
-  }, [openedCards, currentIndex, preloadedAssets, playAndCleanup, playRandom, settings]);
+  }, [openedCards, currentIndex, preloadedAssets, playAndCleanup, playRandom, settings, effectsVolume]);
 
   const handleInteraction = useCallback(() => {
     if (!isOpening) return;
@@ -222,13 +224,13 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
 
   // Play "what kind of brainrot" when a new card appears
   useEffect(() => {
-    if (isOpening && preloadedAssets && openedCards[currentIndex] && !openedCards[currentIndex].isRevealed && settings.soundEnabled) {
+    if (isOpening && preloadedAssets && openedCards[currentIndex] && !openedCards[currentIndex].isRevealed && effectsVolume > 0) {
       const timer = setTimeout(() => {
-        playRandom(preloadedAssets.brainrotVoices);
+        playRandom(preloadedAssets.brainrotVoices, effectsVolume);
       }, 700);
       return () => clearTimeout(timer);
     }
-  }, [isOpening, currentIndex, preloadedAssets, openedCards, playRandom, settings.soundEnabled]);
+  }, [isOpening, currentIndex, preloadedAssets, openedCards, playRandom, effectsVolume]);
 
   // Hide mouse hint after user moves mouse
   useEffect(() => {

@@ -4,6 +4,8 @@ import { STORAGE_KEYS } from '../../constants';
 import { MAX_NAME_LENGTH } from '../../engine';
 import { exportPlayer, getPlayer, renamePlayer } from '../../game/player';
 import { canBringOldSave, fetchOldSave, importSave, type MoveResult } from '../../game/move';
+import { CARD_FLIP_SRC } from '../../constants/audio';
+import { effectsLevel } from '../../utils/settings';
 import type { Settings } from '../../types';
 import Sheet from '../ui/Sheet';
 import '../../styles/Settings.css';
@@ -130,11 +132,18 @@ const SettingsPage = ({ settings, onSettingsChange, onClose, onImportSave }: Set
             <section className="settings-group">
                 <h3 className="section-title">Experience</h3>
                 <div className="settings-panel">
-                    <SwitchRow
-                        label="Sound"
-                        desc="Music, card sounds and effects"
-                        checked={settings.soundEnabled}
-                        onChange={() => onSettingsChange({ ...settings, soundEnabled: !settings.soundEnabled })}
+                    <SliderRow
+                        label="Music"
+                        desc="Background music"
+                        value={settings.musicVolume}
+                        onChange={(musicVolume) => onSettingsChange({ ...settings, musicVolume })}
+                    />
+                    <SliderRow
+                        label="Sound effects"
+                        desc="Cards, the pack and voices"
+                        value={settings.effectsVolume}
+                        onChange={(effectsVolume) => onSettingsChange({ ...settings, effectsVolume })}
+                        onRelease={(effectsVolume) => playSample(effectsVolume)}
                     />
                     <SwitchRow
                         label="Particles"
@@ -198,6 +207,46 @@ const SettingsPage = ({ settings, onSettingsChange, onClose, onImportSave }: Set
                 </div>
             </section>
         </Sheet>
+    );
+};
+
+/** A card flip at the effects volume just chosen, so you hear what you picked. */
+const playSample = (value: number) => {
+    if (value === 0) return;
+    const sample = new Audio(CARD_FLIP_SRC);
+    sample.volume = effectsLevel(value);
+    sample.play().catch(() => {});
+};
+
+/** A volume slider in steps of 5%; all the way left is off. */
+const SliderRow = ({ label, desc, value, onChange, onRelease }: { label: string; desc: string; value: number; onChange: (value: number) => void; onRelease?: (value: number) => void }) => {
+    const id = useId();
+    const percent = Math.round(value * 100);
+    const text = percent === 0 ? 'Off' : `${percent}%`;
+    const release = (e: React.SyntheticEvent<HTMLInputElement>) => onRelease?.(Number(e.currentTarget.value) / 100);
+    return (
+        <div className="settings-row">
+            <span className="settings-text">
+                <label className="settings-label" htmlFor={id}>{label}</label>
+                <span className="settings-desc" id={`${id}-desc`}>{desc}</span>
+            </span>
+            <span className="settings-slider">
+                <input
+                    id={id}
+                    type="range"
+                    min={0}
+                    max={100}
+                    step={5}
+                    value={percent}
+                    aria-describedby={`${id}-desc`}
+                    aria-valuetext={text}
+                    onChange={(e) => onChange(Number(e.target.value) / 100)}
+                    onPointerUp={release}
+                    onKeyUp={release}
+                />
+                <span className="settings-value tabular" aria-hidden="true">{text}</span>
+            </span>
+        </div>
     );
 };
 

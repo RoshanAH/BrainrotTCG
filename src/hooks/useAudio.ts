@@ -13,10 +13,11 @@ export const useAudio = () => {
   const activeAudioRef = useRef<HTMLAudioElement[]>([]);
 
   /**
-   * Play audio and automatically clean up when finished
+   * Play audio (at `volume`, 0 to 1) and automatically clean up when finished
    */
-  const playAndCleanup = useCallback((audio: HTMLAudioElement) => {
+  const playAndCleanup = useCallback((audio: HTMLAudioElement, volume = 1) => {
     const clone = audio.cloneNode() as HTMLAudioElement;
+    clone.volume = volume;
     activeAudioRef.current.push(clone);
 
     clone.onended = () => {
@@ -53,10 +54,10 @@ export const useAudio = () => {
   /**
    * Play a random audio from an array
    */
-  const playRandom = useCallback((audioArray: HTMLAudioElement[]) => {
+  const playRandom = useCallback((audioArray: HTMLAudioElement[], volume = 1) => {
     if (audioArray.length === 0) return;
     const randomAudio = audioArray[Math.floor(Math.random() * audioArray.length)];
-    playAndCleanup(randomAudio);
+    playAndCleanup(randomAudio, volume);
   }, [playAndCleanup]);
 
   return {

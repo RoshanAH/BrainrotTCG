@@ -20,6 +20,7 @@ import { extractProfile, extractProof } from './engine';
 import type { OpenedPack } from './game/pulls';
 import { importPlayer } from './game/player';
 import { getStoredData } from './utils/storage';
+import { musicLevel, readSettings } from './utils/settings';
 import { CURRENT_DATA_VERSION, hydrateCollection, setDataVersion } from './utils/migrations';
 import { STORAGE_KEYS } from './constants';
 import {
@@ -29,11 +30,6 @@ import {
 } from './utils/achievementChecks';
 import type { CollectionItem, Stats, HallOfFameData, Settings, AchievementData } from './types';
 import swedenSrc from './assets/audio/Sweden.mp3';
-
-const DEFAULT_SETTINGS: Settings = {
-  soundEnabled: true,
-  particlesEnabled: true,
-};
 
 /** Save-file fields and where they live in localStorage. */
 const SAVE_FIELDS = [
@@ -52,7 +48,7 @@ function App() {
   const [stats, setStats] = useState<Stats>(() => getStoredData(STORAGE_KEYS.STATS, { packsOpened: 0, holoCards: {}, highestPackValue: 0, highestPackCards: [] }));
   const [hallOfFame, setHallOfFame] = useState<HallOfFameData>(() => getStoredData(STORAGE_KEYS.HALL_OF_FAME, {}));
 
-  const [settings, setSettings] = useState<Settings>(() => getStoredData(STORAGE_KEYS.SETTINGS, DEFAULT_SETTINGS));
+  const [settings, setSettings] = useState<Settings>(() => readSettings(getStoredData<unknown>(STORAGE_KEYS.SETTINGS, null)));
 
   const [isCollectionOpen, setIsCollectionOpen] = useState(false);
   const [isAchievementsOpen, setIsAchievementsOpen] = useState(false);
@@ -93,11 +89,11 @@ function App() {
   // Play background music on page load
   useEffect(() => {
     const bgMusic = new Audio(swedenSrc);
-    bgMusic.volume = 0.05;
+    bgMusic.volume = musicLevel(settings.musicVolume);
     bgMusic.loop = true;
     bgMusicRef.current = bgMusic;
 
-    if (settings.soundEnabled) {
+    if (settings.musicVolume > 0) {
       bgMusic.play().catch(() => { });
     }
 
@@ -107,16 +103,14 @@ function App() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Handle sound toggle for background music
+  // Follow the music slider (0 is off)
   useEffect(() => {
-    if (bgMusicRef.current) {
-      if (settings.soundEnabled) {
-        bgMusicRef.current.play().catch(() => { });
-      } else {
-        bgMusicRef.current.pause();
-      }
-    }
-  }, [settings.soundEnabled]);
+    const bgMusic = bgMusicRef.current;
+    if (!bgMusic) return;
+    bgMusic.volume = musicLevel(settings.musicVolume);
+    if (settings.musicVolume === 0) bgMusic.pause();
+    else if (bgMusic.paused) bgMusic.play().catch(() => { });
+  }, [settings.musicVolume]);
 
   // Check retroactive achievements on mount
   useEffect(() => {

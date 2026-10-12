@@ -64,7 +64,10 @@ export interface CardsByRarity {
 }
 
 export interface Settings {
-  soundEnabled: boolean;
+  /** Music volume slider, 0 (off) to 1 (utils/settings.ts). */
+  musicVolume: number;
+  /** Sound effects volume slider (cards, the pack, voices), 0 (off) to 1. */
+  effectsVolume: number;
   particlesEnabled: boolean;
   /** Show draft sets (placeholder art) in the set picker. */
   showDraftSets?: boolean;
