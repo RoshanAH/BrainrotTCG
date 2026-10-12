@@ -40,9 +40,11 @@ jobs:
           gh label create not-verified --color 999999 --description "Pull did not verify or qualify" 2>/dev/null || true
           gh issue comment "$ISSUE" --body-file hof-comment.md
           if [ "$VERIFIED" = "true" ]; then
-            gh issue edit "$ISSUE" --add-label hall-of-fame,verified --remove-label not-verified
+            gh issue edit "$ISSUE" --add-label hall-of-fame,verified
+            gh issue edit "$ISSUE" --remove-label not-verified 2>/dev/null || true
           else
-            gh issue edit "$ISSUE" --add-label hall-of-fame,not-verified --remove-label verified
+            gh issue edit "$ISSUE" --add-label hall-of-fame,not-verified
+            gh issue edit "$ISSUE" --remove-label verified 2>/dev/null || true
           fi
       - name: Redeploy so the entry goes live
         if: steps.check.outputs.verified == 'true'
