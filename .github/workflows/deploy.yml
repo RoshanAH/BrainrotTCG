@@ -53,16 +53,24 @@ jobs:
           OWNER: ${{ github.repository_owner }}
           REPO: ${{ github.event.repository.name }}
         run: |
-          if [ -n "$CLOUDFLARE_API_TOKEN" ] && [ -n "$CLOUDFLARE_ACCOUNT_ID" ]; then
-            # Creating the project fails harmlessly once it exists.
-            npx --yes wrangler@4.141.0 pages project create "$PROJECT" --production-branch=main >/dev/null 2>&1 || true
-            sub=$(curl -fsS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
-              "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/$PROJECT" | jq -r '.result.subdomain')
-            if [ -z "$sub" ] || [ "$sub" = null ]; then echo "::error::Couldn't read the Cloudflare Pages project $PROJECT"; exit 1; fi
-            { echo "host=cloudflare"; echo "url=${CUSTOM_URL:-https://$sub/}"; echo "base=/"; } >> "$GITHUB_OUTPUT"
-          else
-            { echo "host=github"; echo "url=https://$OWNER.github.io/$REPO/"; echo "base=/$REPO/"; } >> "$GITHUB_OUTPUT"
+          github() { { echo "host=github"; echo "url=https://$OWNER.github.io/$REPO/"; echo "base=/$REPO/"; } >> "$GITHUB_OUTPUT"; }
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then github; exit 0; fi
+          # The project's address, creating the project on the first run. If Cloudflare isn't ready
+          # (a wrong ID or token, or a new account, which can't create projects for 48 hours), say
+          # why and keep deploying to GitHub Pages, so the site never stops updating.
+          api="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects"
+          res=$(curl -sS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "$api/$PROJECT" || true)
+          if [ "$(echo "$res" | jq -r '.success' 2>/dev/null)" != true ]; then
+            res=$(curl -sS -X POST -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H 'Content-Type: application/json' \
+              -d "{\"name\":\"$PROJECT\",\"production_branch\":\"main\"}" "$api" || true)
           fi
+          sub=$(echo "$res" | jq -r '.result.subdomain // empty' 2>/dev/null || true)
+          if [ -z "$sub" ]; then
+            echo "::warning::Cloudflare Pages isn't ready, so this deploy stays on GitHub Pages. Cloudflare said: $(echo "$res" | jq -c '.errors // .' 2>/dev/null || echo "$res")"
+            github; exit 0
+          fi
+          echo "Cloudflare Pages project $PROJECT: https://$sub/"
+          { echo "host=cloudflare"; echo "url=${CUSTOM_URL:-https://$sub/}"; echo "base=/"; } >> "$GITHUB_OUTPUT"
       # After a move, the build knows the old address, so it can take saves handed over from it
       # (src/game/move.ts); a build that hasn't moved has no old address and takes nothing.
       - run: npm run build
