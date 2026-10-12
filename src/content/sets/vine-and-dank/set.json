@@ -1,0 +1,134 @@
+{
+  "id": "vine-and-dank",
+  "version": 1,
+  "name": "Vine & Dank",
+  "era": "2013–2019",
+  "tagline": "6 seconds. Infinite dank.",
+  "releasedAt": "2026-10-12",
+  "draft": true,
+  "palette": [
+    "#00BF8F",
+    "#FF6A00",
+    "#8A2BE2"
+  ],
+  "packSize": 5,
+  "odds": {
+    "COMMON": 5000,
+    "UNCOMMON": 2500,
+    "RARE": 1500,
+    "EPIC": 700,
+    "LEGENDARY": 250,
+    "BRAINROT": 50
+  },
+  "holoOdds": 500,
+  "cards": [
+    {
+      "id": "fidget-spinner",
+      "name": "Fidget Spinner",
+      "rarity": "COMMON",
+      "caption": "Spin to win (nothing)",
+      "flavor": "2017: in every pocket and every classroom. Teachers still have nightmares.",
+      "year": 2017,
+      "art": "Three-lobed fidget spinner with a cheeky face on the center bearing, motion-blur arcs around it, one sweat drop. Background: bright yellow. Colors: electric blue, yellow, white, black."
+    },
+    {
+      "id": "ok-boomerang",
+      "name": "OK Boomerang",
+      "rarity": "COMMON",
+      "caption": "OK boomer",
+      "flavor": "2019's two-word comeback, now a boomerang that always comes back around.",
+      "year": 2019,
+      "art": "Wooden boomerang with a smug half-lidded face mid-spin, dotted curved flight path looping back toward it. Background: retro orange-to-pink sunset. Colors: wood tan, orange, pink, black."
+    },
+    {
+      "id": "dancing-hot-dog",
+      "name": "Dancing Hot Dog",
+      "rarity": "COMMON",
+      "caption": "Look at him go",
+      "flavor": "2017: a dancing hot dog lens crashed every selfie. Still the best dancer online.",
+      "year": 2017,
+      "art": "Hot dog in a bun with a mustard zigzag, tiny headphones, stubby arms in a disco pose, one leg kicked high. Background: pastel blue with sparkles. Colors: bun tan, sausage red, mustard yellow, sky blue."
+    },
+    {
+      "id": "croissant-panic",
+      "name": "Croissant Panic",
+      "rarity": "COMMON",
+      "caption": "I COULDA DROPPED IT!!",
+      "flavor": "Vine, 2015: someone almost drops their croissant and the outrage is legendary.",
+      "year": 2015,
+      "art": "Golden croissant with stick arms hugging itself, huge shocked eyes, screaming mouth, shaking motion lines, a blurry sneaker whooshing past. Background: café pink. Colors: golden yellow, cream, pink, black."
+    },
+    {
+      "id": "moth-lamp",
+      "name": "Moth Lamp",
+      "rarity": "UNCOMMON",
+      "caption": "Brother, may I have lamp",
+      "flavor": "2018: a moth's forbidden love for lamps became the internet's purest obsession.",
+      "year": 2018,
+      "art": "Fluffy cream moth with huge round black eyes and feathery antennae hugging a glowing table lamp, little hearts floating. Background: dark navy night. Colors: cream, warm yellow, navy, black."
+    },
+    {
+      "id": "totally-chickens",
+      "name": "Totally Chickens",
+      "rarity": "UNCOMMON",
+      "caption": "Look at all those chickens",
+      "flavor": "2016 Vine: a confident narrator, a pond full of geese, and zero chickens.",
+      "year": 2016,
+      "art": "Five white-and-gray geese in a row by a pond, each wearing a tiny fake paper chicken comb, side-eyeing the viewer. Background: green grass and blue pond. Colors: white, gray, orange, green, blue."
+    },
+    {
+      "id": "mr-skeltal",
+      "name": "Mr. Skeltal",
+      "rarity": "UNCOMMON",
+      "caption": "Doot doot",
+      "flavor": "Good bones and calcium for all: 2014's trumpet skeleton. Thank Mr. Skeltal.",
+      "year": 2014,
+      "art": "Grinning cartoon skeleton in a tiny top hat blowing a brass trumpet, 'doot' music notes, a milk carton at its feet. Background: purple. Colors: bone white, brass gold, purple, black."
+    },
+    {
+      "id": "galaxy-brain",
+      "name": "Galaxy Brain",
+      "rarity": "RARE",
+      "caption": "Big brain time",
+      "flavor": "2017's expanding-brain chart: each idea dumber, each brain glowier.",
+      "year": 2017,
+      "art": "Pink brain filled with stars and a swirling galaxy, radiating cosmic light rays, tiny smug face. Background: deep space nebula. Colors: pink, cyan, purple, white."
+    },
+    {
+      "id": "area-51-runner",
+      "name": "Area 51 Runner",
+      "rarity": "RARE",
+      "caption": "They can't stop all of us",
+      "flavor": "2019: two million RSVP'd to storm Area 51 arms-back. A tiny crowd actually went.",
+      "year": 2019,
+      "art": "Faceless runner in a tinfoil hat sprinting with both arms stretched straight back, motion lines, a generic 'KEEP OUT' sign and cacti. Background: orange desert dusk. Colors: silver, sand orange, purple sky, black."
+    },
+    {
+      "id": "road-work-sign",
+      "name": "Road Work Ahead",
+      "rarity": "EPIC",
+      "caption": "I sure hope it does",
+      "flavor": "2016 Vine: a driver reads a road sign and delivers the decade's greatest pun.",
+      "year": 2016,
+      "art": "Orange diamond road sign with a goofy grin and tiny arms giving a thumbs-up on the road shoulder, traffic cones beside it. Background: bright blue sky. Colors: safety orange, black, asphalt gray, sky blue."
+    },
+    {
+      "id": "dat-boi",
+      "name": "Dat Boi",
+      "rarity": "LEGENDARY",
+      "caption": "Here come dat boi!",
+      "flavor": "2016: a frog on a unicycle. Nobody knows why. Everybody knows the greeting.",
+      "year": 2016,
+      "art": "Cheerful green frog riding a red unicycle, one webbed hand waving, big grin, pedaling motion lines. Background: sunny yellow. Colors: frog green, red, yellow, white."
+    },
+    {
+      "id": "such-shibe",
+      "name": "Such Shibe",
+      "rarity": "BRAINROT",
+      "caption": "Much wow. Very pack.",
+      "flavor": "2013's Doge: a side-eyeing Shiba plus floating thoughts. Wow. To the moon.",
+      "year": 2013,
+      "art": "Tan-and-cream Shiba Inu sitting with body turned, side-eyeing the viewer with raised brows, scattered multicolor floating words ('wow', 'such', 'very'). Background: light gray. Colors: shiba orange, cream, magenta, lime, cyan."
+    }
+  ]
+}

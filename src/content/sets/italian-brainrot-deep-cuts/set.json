@@ -1,0 +1,133 @@
+{
+  "id": "italian-brainrot-deep-cuts",
+  "version": 1,
+  "name": "Italian Brainrot Deep Cuts",
+  "era": "2025",
+  "tagline": "Mamma mia, che brainrot!",
+  "releasedAt": "2026-10-12",
+  "palette": [
+    "#2E8B57",
+    "#F4E1C1",
+    "#E63946"
+  ],
+  "packSize": 5,
+  "odds": {
+    "COMMON": 5000,
+    "UNCOMMON": 2500,
+    "RARE": 1500,
+    "EPIC": 700,
+    "LEGENDARY": 250,
+    "BRAINROT": 50
+  },
+  "holoOdds": 500,
+  "cards": [
+    {
+      "id": "lirili-larila",
+      "name": "Lirilì Larilà",
+      "rarity": "COMMON",
+      "caption": "Time stops for no cactus",
+      "flavor": "2025: an elephant-cactus in sandals who can freeze time with a little clock.",
+      "year": 2025,
+      "art": "Green cactus-bodied elephant with spines, big flappy ears and brown sandals, holding a small pocket clock. Background: desert sand and a big sun. Colors: cactus green, sandal brown, sand, gold."
+    },
+    {
+      "id": "trippi-troppi",
+      "name": "Trippi Troppi",
+      "rarity": "COMMON",
+      "caption": "Shrimp body. Cat brain.",
+      "flavor": "2025: a cat's head on a shrimp's body. The brainrot ocean is a strange place.",
+      "year": 2025,
+      "art": "Coral-orange shrimp body with curled tail and little legs, topped with a grumpy tabby cat head with whiskers. Background: bubbly sea blue. Colors: coral orange, tabby brown, sea blue, white."
+    },
+    {
+      "id": "frigo-camelo",
+      "name": "Frigo Camelo",
+      "rarity": "COMMON",
+      "caption": "Cold drinks, warm humps",
+      "flavor": "2025: a camel built into a refrigerator, stomping around in boots. Stay frosty.",
+      "year": 2025,
+      "art": "Tan camel whose body is a white fridge with a door handle, two humps on top, chunky boots, frosty mist puffing out. Background: desert dunes. Colors: tan, white, steel gray, sky blue."
+    },
+    {
+      "id": "rhino-toasterino",
+      "name": "Rhino Toasterino",
+      "rarity": "COMMON",
+      "caption": "Breakfast is charging",
+      "flavor": "2025: half rhino, half toaster, always about to pop. Do not insert fork.",
+      "year": 2025,
+      "art": "Gray rhino with a chrome toaster body, two slices of toast sticking out of slots on its back, steam from its horn. Background: kitchen yellow. Colors: rhino gray, chrome silver, toast brown, yellow."
+    },
+    {
+      "id": "bananita-dolphinita",
+      "name": "Bananita Dolphinita",
+      "rarity": "UNCOMMON",
+      "caption": "Splash. Slip. Repeat.",
+      "flavor": "2025: a dolphin wearing a banana peel like a wetsuit. Potassium-powered swimming.",
+      "year": 2025,
+      "art": "Blue-gray dolphin leaping, wrapped in an open yellow banana peel like a jacket, big friendly grin. Background: ocean waves. Colors: dolphin blue, banana yellow, teal, white."
+    },
+    {
+      "id": "burbaloni-loliloli",
+      "name": "Burbaloni Loliloli",
+      "rarity": "UNCOMMON",
+      "caption": "Coconut? Capybara? Yes.",
+      "flavor": "2025: a chill capybara living inside a cracked coconut. Peak tropical brainrot.",
+      "year": 2025,
+      "art": "Brown capybara peeking out of a cracked coconut shell like a cozy hut, relaxed half-closed eyes. Background: beach with a palm tree. Colors: coconut brown, capybara tan, cream, turquoise."
+    },
+    {
+      "id": "cappuccino-assassino",
+      "name": "Cappuccino Assassino",
+      "rarity": "UNCOMMON",
+      "caption": "Silent. Deadly. Foamy.",
+      "flavor": "2025: a ninja cappuccino and Ballerina Cappuccina's heartbroken ex. He brews revenge.",
+      "year": 2025,
+      "art": "White cappuccino cup in a black ninja mask, foam swirl on top, holding two rounded cartoon blades crossed. Background: dark red with a crescent moon. Colors: white, coffee brown, black, red."
+    },
+    {
+      "id": "trenostruzzo-3000",
+      "name": "Trenostruzzo 3000",
+      "rarity": "RARE",
+      "caption": "Choo choo! Honk honk!",
+      "flavor": "2025: an ostrich fused with a locomotive. Top speed: 3000. Brakes: unclear.",
+      "year": 2025,
+      "art": "Ostrich head and long neck on a chunky red steam locomotive body, wheels spinning, steam puffs, feathery tail. Background: railway and green hills. Colors: locomotive red, black, ostrich beige, sky blue."
+    },
+    {
+      "id": "chicleteira-bicicleta",
+      "name": "Chicleteira Bicicleta",
+      "rarity": "RARE",
+      "caption": "Gumball on wheels, baby",
+      "flavor": "2025: a bubblegum machine riding a bicycle, raining gumballs and confetti.",
+      "year": 2025,
+      "art": "Red-capped glass gumball machine full of colorful gumballs pedaling a little bicycle, gumballs bouncing out, confetti. Background: striped street. Colors: red, glass blue, rainbow gumballs, yellow."
+    },
+    {
+      "id": "la-vacca-saturnita",
+      "name": "La Vacca Saturnita",
+      "rarity": "EPIC",
+      "caption": "Moo-ving in orbit",
+      "flavor": "2025: a cow whose body is the planet Saturn, rings and all. Grazes on stardust.",
+      "year": 2025,
+      "art": "Black-and-white cow head and legs attached to a round tan planet body with a tilted golden ring, floating in space, chewing a star. Background: navy starfield. Colors: white/black, Saturn tan, ring gold, navy."
+    },
+    {
+      "id": "dragon-cannelloni",
+      "name": "Dragon Cannelloni",
+      "rarity": "LEGENDARY",
+      "caption": "Al dente and on fire",
+      "flavor": "Steal a Brainrot's 2025 top-tier secret: a dragon made of pasta with blazing wings.",
+      "year": 2025,
+      "art": "Yellow dragon whose body segments are ribbed pasta tubes with ricotta ends, wings made of flame, smug smirk, a tomato-sauce drip. Background: dark red with ember sparks. Colors: pasta yellow, flame orange, sauce red, charcoal."
+    },
+    {
+      "id": "strawberry-elephant",
+      "name": "Strawberry Elephant",
+      "rarity": "BRAINROT",
+      "caption": "Berry rare. Berry OG.",
+      "flavor": "Steal a Brainrot's OG legend: when this strawberry elephant spawns, the server goes pink.",
+      "year": 2025,
+      "art": "Pink elephant whose body is a giant strawberry with yellow seed dots, a leafy green crown on its head, trunk raised in triumph, glowing aura. Background: pink sparkles. Colors: strawberry pink-red, seed yellow, leaf green, white."
+    }
+  ]
+}

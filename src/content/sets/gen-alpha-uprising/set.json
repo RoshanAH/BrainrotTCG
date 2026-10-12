@@ -1,0 +1,133 @@
+{
+  "id": "gen-alpha-uprising",
+  "version": 1,
+  "name": "Gen Alpha Uprising",
+  "era": "2023–2024",
+  "tagline": "Rizz, aura & sigma inside",
+  "releasedAt": "2026-10-12",
+  "palette": [
+    "#B6FF00",
+    "#FF2E88",
+    "#1A1A2E"
+  ],
+  "packSize": 5,
+  "odds": {
+    "COMMON": 5000,
+    "UNCOMMON": 2500,
+    "RARE": 1500,
+    "EPIC": 700,
+    "LEGENDARY": 250,
+    "BRAINROT": 50
+  },
+  "holoOdds": 500,
+  "cards": [
+    {
+      "id": "sad-hamster",
+      "name": "Sad Hamster",
+      "rarity": "COMMON",
+      "caption": "*sad violin plays*",
+      "flavor": "2023: a hamster with huge glossy eyes became the face of every tiny heartbreak.",
+      "year": 2023,
+      "art": "Round golden hamster with enormous watery sparkling eyes, tiny paws pressed together, a miniature violin floating beside it. Background: soft blue with raindrops. Colors: golden tan, white, pale blue, pink."
+    },
+    {
+      "id": "side-eye-pug",
+      "name": "Side-Eye Pug",
+      "rarity": "COMMON",
+      "caption": "Bombastic side eye",
+      "flavor": "2023 TikTok audio: 'Bombastic side eye! Criminal offensive side eye!' Judging you.",
+      "year": 2023,
+      "art": "Fawn pug giving an extreme dramatic side-eye, one brow raised, lips pursed, arms crossed. Background: hot pink with dramatic speed lines. Colors: fawn, black, hot pink, white."
+    },
+    {
+      "id": "mewing-kitten",
+      "name": "Mewing Kitten",
+      "rarity": "COMMON",
+      "caption": "Can't talk. Mewing.",
+      "flavor": "2024: kids went silent mid-sentence to show off a jawline. This kitten is committed.",
+      "year": 2024,
+      "art": "Gray kitten with an absurdly sharp chiseled jawline, one paw doing a 'shh' finger-to-lips gesture, confident half-closed eyes. Background: mint. Colors: gray, white, mint, black."
+    },
+    {
+      "id": "pedro-raccoon",
+      "name": "Pedro Raccoon",
+      "rarity": "COMMON",
+      "caption": "Pedro pedro pedro",
+      "flavor": "2024: a raccoon spinning in circles to an Italian dance remix, forever.",
+      "year": 2024,
+      "art": "Gray raccoon with a bandit mask spinning on its hind legs, arms out, swirl lines, music notes. Background: disco purple. Colors: gray, black, purple, yellow."
+    },
+    {
+      "id": "pull-up-capybara",
+      "name": "Pull-Up Capybara",
+      "rarity": "UNCOMMON",
+      "caption": "Ok I pull up",
+      "flavor": "2023: the internet's chillest animal got a theme song, and it always pulls up.",
+      "year": 2023,
+      "art": "Capybara in tiny sunglasses with an orange balanced on its head, sitting in a tiny red convertible, totally calm. Background: sunny teal. Colors: capybara brown, orange, red, teal."
+    },
+    {
+      "id": "low-taper-fade",
+      "name": "Low Taper Fade",
+      "rarity": "UNCOMMON",
+      "caption": "The meme is still massive",
+      "flavor": "2024: 'Imagine if he got a low taper fade.' The haircut grew bigger than the joke.",
+      "year": 2024,
+      "art": "Hair-clipper character with a crisp gradient fade haircut on its own top, smug face, sparkles, a barber pole beside it. Background: black-and-white checker floor. Colors: silver, red/white stripes, black, cyan."
+    },
+    {
+      "id": "bouncy-baby-hippo",
+      "name": "Bouncy Baby Hippo",
+      "rarity": "UNCOMMON",
+      "caption": "Bouncy, wet, sassy",
+      "flavor": "2024: a baby pygmy hippo in Thailand bit, bounced and conquered the internet.",
+      "year": 2024,
+      "art": "Tiny shiny pinkish-gray baby pygmy hippo mid-bounce with attitude, mouth open in a tiny chomp, water droplets flying. Background: mint green. Colors: pinkish gray, rose, mint, white."
+    },
+    {
+      "id": "snack-tax-gull",
+      "name": "Snack Tax Gull",
+      "rarity": "RARE",
+      "caption": "Fanum tax. Hand it over.",
+      "flavor": "2023: any snack in reach gets taxed. The collector is always watching your fries.",
+      "year": 2023,
+      "art": "White seagull in a green accountant's visor and tie snatching a french fry from a red carton, holding a tiny receipt. Background: bright red. Colors: white, green, red, yellow."
+    },
+    {
+      "id": "aura-farmer",
+      "name": "Aura Farmer",
+      "rarity": "RARE",
+      "caption": "+1000 aura",
+      "flavor": "2024–25: you don't earn aura, you farm it. Pose calmly. Let the boat do the rest.",
+      "year": 2024,
+      "art": "Faceless, adult-proportioned dark-navy silhouette in sunglasses standing on the tip of a long wooden boat, one arm swung in a cool wave, glowing golden aura outline. Background: river at sunset. Colors: deep navy, gold glow, orange sky, teal water."
+    },
+    {
+      "id": "sigma-wolf",
+      "name": "Sigma Wolf",
+      "rarity": "EPIC",
+      "caption": "Erm, what the sigma?",
+      "flavor": "2023–24: the lone-wolf 'sigma' grindset, turned into Gen Alpha's favorite word.",
+      "year": 2024,
+      "art": "Gray wolf with an impossibly square jaw, one raised eyebrow, sunglasses pushed down its snout, arms crossed. Background: black-and-white with one red slash. Colors: gray, black, white, red."
+    },
+    {
+      "id": "the-rizzard",
+      "name": "The Rizzard",
+      "rarity": "LEGENDARY",
+      "caption": "Unspoken rizz",
+      "flavor": "Oxford's 2023 Word of the Year. This lizard has rizz and never says a word.",
+      "year": 2023,
+      "art": "Green lizard in a tiny open-collar shirt, one eyebrow raised, hand on chin, sparkle on its smile, floating hearts. Background: hot pink. Colors: lizard green, pink, gold, white."
+    },
+    {
+      "id": "ohio-final-boss",
+      "name": "Ohio Final Boss",
+      "rarity": "BRAINROT",
+      "caption": "Only in Ohio",
+      "flavor": "2022–23: anything weird 'only happens in Ohio.' Its final boss is weirder.",
+      "year": 2023,
+      "art": "Towering chaos creature: a corn-cob body with a red cardinal-bird head, three mismatched googly eyes, a tiny traffic-cone hat, glowing purple aura. Background: ominous gray cornfield. Colors: corn yellow, cardinal red, purple, gray."
+    }
+  ]
+}

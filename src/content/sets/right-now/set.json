@@ -1,0 +1,133 @@
+{
+  "id": "right-now",
+  "version": 1,
+  "name": "Right Now",
+  "era": "Jul–Oct 2026",
+  "tagline": "Fresh off the For You page",
+  "releasedAt": "2026-10-12",
+  "palette": [
+    "#FFD60A",
+    "#00B4D8",
+    "#FF4D6D"
+  ],
+  "packSize": 5,
+  "odds": {
+    "COMMON": 5000,
+    "UNCOMMON": 2500,
+    "RARE": 1500,
+    "EPIC": 700,
+    "LEGENDARY": 250,
+    "BRAINROT": 50
+  },
+  "holoOdds": 500,
+  "cards": [
+    {
+      "id": "egg-bandit",
+      "name": "Egg Bandit",
+      "rarity": "COMMON",
+      "caption": "Steal an egg. Run.",
+      "flavor": "Aug–Oct 2026: Roblox's Steal an Egg peaked near 14M players at once. Grab. Hatch. Run.",
+      "year": 2026,
+      "art": "Chubby speckled egg in a black bandit eye-mask with tiny legs, sprinting while carrying a smaller golden egg, sweat drops, a treadmill behind. Background: grassy farm. Colors: cream, black, gold, grass green."
+    },
+    {
+      "id": "huss-valley-runner",
+      "name": "Huss Valley Runner",
+      "rarity": "COMMON",
+      "caption": "Why he keep coming back?",
+      "flavor": "July 2026: frantic running clips got a name, 'hussing', and their own Roblox valley.",
+      "year": 2026,
+      "art": "Faceless blue stick-figure runner with exaggerated pumping arms and knees, big sweat drops and breath puffs, racing down a winding green valley road past an arrow signpost. Colors: blue, valley green, road gray, white."
+    },
+    {
+      "id": "round-raccoon",
+      "name": "Round Raccoon",
+      "rarity": "COMMON",
+      "caption": "Built like a dinner roll",
+      "flavor": "July 2026's Meme of the Month: Jimothy, the round (and healthy) Seattle raccoon.",
+      "year": 2026,
+      "art": "Very round, compact raccoon like a fluffy ball on short legs, bandit mask, calm unbothered face, waddling across a lawn. Background: green lawn and wooden fence. Colors: gray, black, cream, green."
+    },
+    {
+      "id": "nothing-special",
+      "name": "The Nothing Special",
+      "rarity": "COMMON",
+      "caption": "For example, nothing",
+      "flavor": "World Cup summer 2026: a star's 'special' recipe was 'for example, nothing.'",
+      "year": 2026,
+      "art": "Fancy silver cloche lifted by a tiny chef's hat with stick arms, revealing a completely empty white plate with one sparkle. Background: red-check tablecloth. Colors: silver, white, red, black."
+    },
+    {
+      "id": "la-peace-stone",
+      "name": "La Peace Stone",
+      "rarity": "UNCOMMON",
+      "caption": "La peace be with you",
+      "flavor": "Aug 2026: a Minecraft stream misread 'lapis lazuli' and gave the world 'la peace.'",
+      "year": 2026,
+      "art": "Deep blue gemstone with gold flecks meditating cross-legged with serene closed eyes and a soft halo, floating above a plain gray cube. Background: calm lavender gradient. Colors: lapis blue, gold, lavender, white."
+    },
+    {
+      "id": "hippo-jacuzzo",
+      "name": "Hippo Jacuzzo",
+      "rarity": "UNCOMMON",
+      "caption": "Do not disturb. Bubbling.",
+      "flavor": "Sept 2026: Steal a Brainrot's OG Craft event added a hippo with its own hot tub.",
+      "year": 2026,
+      "art": "Lavender-gray hippo lounging in a round bubbling hot tub, cucumber slices on its eyes, a rubber duck floating, steam swirls. Background: tiled spa. Colors: hippo lavender, aqua, white bubbles, yellow."
+    },
+    {
+      "id": "car-from-chile",
+      "name": "Car From Chile",
+      "rarity": "UNCOMMON",
+      "caption": "Cars in Chile be like",
+      "flavor": "Sept 2026: Chile is long and thin, so the internet decided everything there is too.",
+      "year": 2026,
+      "art": "Absurdly long, skinny cartoon car stretching diagonally across the whole card, tiny wheels every few inches, a driver window at each end, mountains behind. Colors: cherry red, road gray, sky blue, snowy white."
+    },
+    {
+      "id": "bukangi",
+      "name": "Bukangi",
+      "rarity": "RARE",
+      "caption": "Won't leave the harbor",
+      "flavor": "Busan, Sept 2026: a shark parked in a harbor canal, got a cute name and 10k fans a day.",
+      "year": 2026,
+      "art": "Friendly gray shark with rosy cheeks and a tiny sailor cap poking its head out of a narrow canal, crowd of tiny phone-camera flashes on the bank, harbor bridge silhouette. Colors: shark gray, sea blue, pink, yellow."
+    },
+    {
+      "id": "totally-not-verity",
+      "name": "Totally Not Verity",
+      "rarity": "RARE",
+      "caption": "Every smiley is Verity",
+      "flavor": "Summer 2026: a Minecraft horror series made kids yell 'Verity!' at every smiley face.",
+      "year": 2026,
+      "art": "Plain yellow ball smiley with dot eyes and a slightly-too-wide smile, faint suspicious glow, surrounded by ordinary smileys. Background: dark forest green. Colors: smiley yellow, black, forest green, white."
+    },
+    {
+      "id": "clapback-cat",
+      "name": "Clapback Cat",
+      "rarity": "EPIC",
+      "caption": "Wow. Great job. Really.",
+      "flavor": "Late Sept 2026: an AI black cat with human hands slowly applauding your bad choices.",
+      "year": 2026,
+      "art": "Glossy black cat with big yellow eyes and a smug closed-mouth smile, two oversized white cartoon hands clapping, clap marks. Background: flat chroma-key green. Colors: black, yellow, white, bright green."
+    },
+    {
+      "id": "november-bear",
+      "name": "November Bear",
+      "rarity": "LEGENDARY",
+      "caption": "Remember November...",
+      "flavor": "Sept 2026: an AI polar bear sings a cryptic 'prophecy' about November 2026. Why?",
+      "year": 2026,
+      "art": "White polar bear standing in snow at night, singing with eyes closed and one paw raised dramatically, a calendar page reading 'NOV' floating behind, aurora in the sky. Colors: white, navy, aurora green, red."
+    },
+    {
+      "id": "tiptoe-stiltskin",
+      "name": "Tiptoe Stiltskin",
+      "rarity": "BRAINROT",
+      "caption": "Tip-toein' in my kicks",
+      "flavor": "Oct 2026: a fake-80s AI fairy-tale imp tiptoe-dances while straw turns to gold.",
+      "year": 2026,
+      "art": "Small bearded imp in a pointy felt hat and patched tunic tiptoeing with knees high and arms swinging, straw pile turning into gold coins behind him. Background: sepia castle room. Colors: brown, gold, forest green, sepia."
+    }
+  ]
+}

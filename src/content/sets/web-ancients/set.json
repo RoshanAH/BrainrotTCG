@@ -1,0 +1,134 @@
+{
+  "id": "web-ancients",
+  "version": 1,
+  "name": "Web Ancients",
+  "era": "2007–2012",
+  "tagline": "LOL, I can has pack?",
+  "releasedAt": "2026-10-12",
+  "draft": true,
+  "palette": [
+    "#0645AD",
+    "#FFDD00",
+    "#7CFC00"
+  ],
+  "packSize": 5,
+  "odds": {
+    "COMMON": 5000,
+    "UNCOMMON": 2500,
+    "RARE": 1500,
+    "EPIC": 700,
+    "LEGENDARY": 250,
+    "BRAINROT": 50
+  },
+  "holoOdds": 500,
+  "cards": [
+    {
+      "id": "ceiling-cat",
+      "name": "Ceiling Cat",
+      "rarity": "COMMON",
+      "caption": "Ceiling Cat is watching u",
+      "flavor": "Lolcat scripture, 2007: a cat peeks through a hole in the ceiling and judges you.",
+      "year": 2007,
+      "art": "White cat head and two front paws poking down through a jagged round hole in a beige drop ceiling, wide curious eyes, tiny pink nose. Background: simple ceiling-tile grid. Colors: white, beige, pink, charcoal outline."
+    },
+    {
+      "id": "keyboard-kitty",
+      "name": "Keyboard Kitty",
+      "rarity": "COMMON",
+      "caption": "Play him off",
+      "flavor": "2009's ultimate closer: a cat in a shirt plays every fail video off the stage.",
+      "year": 2009,
+      "art": "Gray tabby cat in a red-and-white striped T-shirt, paws on a chunky retro synth keyboard, deadpan half-lidded stare, music notes floating up. Background: flat teal with a stage-curtain edge. Colors: gray, red, white, teal."
+    },
+    {
+      "id": "y-u-no-yeti",
+      "name": "Y U NO Yeti",
+      "rarity": "COMMON",
+      "caption": "Y U NO PULL LEGENDARY",
+      "flavor": "Rage comics, 2010: arms up, mouth wide, grammar optional. Y U NO?",
+      "year": 2010,
+      "art": "Shaggy white yeti with both arms thrown up in exasperation, huge oval screaming mouth, simple black-line rage-comic eyes. Background: white comic panel with a thick black border. Colors: white, ice blue, black."
+    },
+    {
+      "id": "planking-plank",
+      "name": "Planking Plank",
+      "rarity": "COMMON",
+      "caption": "Born to plank",
+      "flavor": "2011's least athletic sport: lie face-down, stiff as a board, somewhere weird.",
+      "year": 2011,
+      "art": "A wooden plank with a tiny smug face lying perfectly stiff across the top of a fridge, arms glued to its sides. Background: flat kitchen wall with a simple window. Colors: warm wood brown, white, teal, black outline."
+    },
+    {
+      "id": "dramatic-prairie-dog",
+      "name": "Dramatic Prairie Dog",
+      "rarity": "UNCOMMON",
+      "caption": "DUN DUN DUNNNN",
+      "flavor": "2007's five-second epic: a 'chipmunk' (it's a prairie dog) turns and stares.",
+      "year": 2007,
+      "art": "Tan prairie dog snapping its head toward the viewer, eyes huge and intense, three motion lines by its head, dramatic purple spotlight cone. Background: near-black. Colors: tan, purple, black, white."
+    },
+    {
+      "id": "longcat",
+      "name": "Longcat",
+      "rarity": "UNCOMMON",
+      "caption": "Longcat is looooong",
+      "flavor": "Imageboard legend, 2007: a white cat held up so long it never seems to end.",
+      "year": 2007,
+      "art": "An absurdly tall, skinny white cat stretched vertically across the whole card, front paws dangling at the top, back paws at the bottom, sleepy content face. Background: sky blue with tiny clouds for scale. Colors: white, pink, sky blue."
+    },
+    {
+      "id": "arrow-knee-guard",
+      "name": "Knee Arrow Guard",
+      "rarity": "UNCOMMON",
+      "caption": "Took an arrow to the knee",
+      "flavor": "2011: every town guard 'used to be an adventurer like you.' Then... ouch.",
+      "year": 2011,
+      "art": "Chunky cartoon town guard in a round helmet and plain tabard sitting on a crate, sheepishly pointing at a cartoon arrow stuck in his bandaged knee. Background: gray stone wall. Colors: steel gray, red, tan, brown."
+    },
+    {
+      "id": "philosoraptor",
+      "name": "Philosoraptor",
+      "rarity": "RARE",
+      "caption": "Are we the memes now?",
+      "flavor": "2008 advice animal: a velociraptor stroking its chin over unanswerable questions.",
+      "year": 2008,
+      "art": "Green velociraptor with one claw on its chin, eyes rolled up in deep thought, a single thought bubble with a question mark. Background: flat mustard yellow. Colors: lime green, mustard, cream, black."
+    },
+    {
+      "id": "gallop-style-pony",
+      "name": "Gallop Style Pony",
+      "rarity": "RARE",
+      "caption": "Oppa gallop style!",
+      "flavor": "2012: the first video to hit 1 billion YouTube views had the whole planet horse-dancing.",
+      "year": 2012,
+      "art": "Chubby brown pony in tiny black sunglasses and a blue tux jacket doing the invisible-rider dance: knees bent, one hoof circling an imaginary lasso. Background: disco floor tiles and spotlights. Colors: brown, royal blue, gold, black."
+    },
+    {
+      "id": "problem-goblin",
+      "name": "Problem Goblin",
+      "rarity": "EPIC",
+      "caption": "Problem?",
+      "flavor": "Trollface era, 2008: the grin behind every prank, bait link and 'u mad?'",
+      "year": 2008,
+      "art": "Lanky green goblin face with an enormous wraparound grin of square teeth, scrunched mischievous eyes, raised brows, hands rubbing together. Background: dark charcoal. Colors: goblin green, white, black, charcoal."
+    },
+    {
+      "id": "nyam-cat",
+      "name": "Nyam Cat",
+      "rarity": "LEGENDARY",
+      "caption": "Nyam nyam nyam nyam nyam",
+      "flavor": "2011's 10-hour loop: a snack-bodied cat zooming through space on a rainbow.",
+      "year": 2011,
+      "art": "Chunky pixel-style gray cat whose body is a square golden waffle with syrup dots, flying right, six-stripe rainbow trail behind, twinkling stars. Background: navy space. Colors: waffle gold, gray, rainbow stripes, navy."
+    },
+    {
+      "id": "rickroll-bun",
+      "name": "Rickroll Bun",
+      "rarity": "BRAINROT",
+      "caption": "Never gonna give you up",
+      "flavor": "Since 2007 every link might be a trap. This bread roll in a trench coat? Also a trap.",
+      "year": 2007,
+      "art": "Round golden bread roll with a tall swoopy pompadour, wearing a beige trench coat, doing an awkward side-step dance with fists pumping. Background: hyperlink blue with a giant mouse cursor. Colors: golden brown, beige, link blue, black."
+    }
+  ]
+}
