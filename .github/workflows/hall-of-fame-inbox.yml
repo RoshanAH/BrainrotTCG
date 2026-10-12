@@ -85,3 +85,4 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         # Scheduled runs are on the default branch, and their event has no repository field.
         run: gh workflow run deploy.yml --ref "${{ github.ref_name }}"
+        
