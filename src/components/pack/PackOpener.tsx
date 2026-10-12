@@ -153,7 +153,9 @@ const PackOpener = ({ onOpen, cards, disabled = false, settings }: PackOpenerPro
   }, [isOpening, openedCards, currentIndex, handleFlip, nextCard]);
 
   // Keep ref updated for use in intervals (avoids stale closure)
-  handleInteractionRef.current = handleInteraction;
+  useEffect(() => {
+    handleInteractionRef.current = handleInteraction;
+  }, [handleInteraction]);
 
   // Use keyboard controls hook
   useKeyboardControls({
@@ -210,12 +212,10 @@ const PackOpener = ({ onOpen, cards, disabled = false, settings }: PackOpenerPro
     };
   }, [autoMode, disabled, showSummary, isOpening, isPackCut, closeSummary, completeCut, handleInteraction]);
 
-  // Stop auto mode when disabled
-  useEffect(() => {
-    if (disabled && autoMode) {
-      setAutoMode(false);
-    }
-  }, [disabled, autoMode]);
+  // Stop auto mode when disabled (adjusting state during render avoids an extra effect pass)
+  if (disabled && autoMode) {
+    setAutoMode(false);
+  }
 
   // Pointer event listeners for cutting
   useEffect(() => {

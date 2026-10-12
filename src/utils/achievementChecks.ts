@@ -1,9 +1,9 @@
 import { INITIAL_CARDS, getCardValue, RarityKey } from '../data/cards';
 import type { CollectionItem, Stats, CardsByRarity, RarityCount } from '../types';
-import type { CardWithMeta } from '../components/Card';
-import { MILESTONES } from '../constants';
+import type { CardWithMeta } from '../components/cards/Card';
+import type { AchievementData } from '../types';
 
-type AchievementMap = Record<string, number>;
+type AchievementMap = Record<string, AchievementData | number>;
 
 /**
  * Helper to add achievement if not already unlocked

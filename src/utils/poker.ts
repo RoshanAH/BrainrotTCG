@@ -1,4 +1,4 @@
-import { CardWithMeta } from '../components/Card';
+import { CardWithMeta } from '../components/cards/Card';
 import { POKER_HANDS, PokerHand } from '../data/pokerHands';
 
 export type PokerHandResult = PokerHand;

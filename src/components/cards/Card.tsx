@@ -47,12 +47,10 @@ const Card = ({ card, isFlipped, onFlip, slowFlip = false }: CardProps) => {
         return () => window.removeEventListener('mousemove', handleMouseMove);
     }, []);
 
-    // Trigger shine animation when card is flipped and is holo
-    useEffect(() => {
-        if (isFlipped && card.isHolo && !hasShined) {
-            setHasShined(true);
-        }
-    }, [isFlipped, card.isHolo, hasShined]);
+    // Trigger shine animation once, the first time a holo card is flipped
+    if (isFlipped && card.isHolo && !hasShined) {
+        setHasShined(true);
+    }
 
     const cardClasses = [
         'card-wrapper',

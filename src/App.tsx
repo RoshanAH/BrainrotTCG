@@ -41,7 +41,6 @@ function App() {
   const [isBestPackOpen, setIsBestPackOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [notificationQueue, setNotificationQueue] = useState<Achievement[]>([]);
-  const [currentPack, setCurrentPack] = useState<CardWithMeta[] | null>(null);
 
   const bgMusicRef = useRef<HTMLAudioElement | null>(null);
 
@@ -262,7 +261,7 @@ function App() {
     });
 
     // Check Hall of Fame milestones
-    let updatedHallOfFame = { ...hallOfFame };
+    const updatedHallOfFame = { ...hallOfFame };
     const cardCounts: Record<string, number> = {};
     newCards.forEach(c => {
       cardCounts[c.id] = (cardCounts[c.id] || 0) + 1;
@@ -298,9 +297,6 @@ function App() {
       localStorage.setItem(STORAGE_KEYS.HALL_OF_FAME, JSON.stringify(updatedHallOfFame));
     }
 
-    // Store current pack for achievement viewing
-    setCurrentPack(newCards);
-
     // Check pack value achievements - unlockAchievement handles duplicates internally
     const packValueAchievements: string[] = [];
     if (flexValue === 5) packValueAchievements.push('pack_value_5');
@@ -325,7 +321,7 @@ function App() {
       checkAllAchievements(newCards, updatedCollection || collection, updatedStats, currentAchievements);
       return currentAchievements;
     });
-  }, [hallOfFame, collection, checkAllAchievements, unlockAchievement]);
+  }, [stats, hallOfFame, collection, checkAllAchievements, unlockAchievement]);
 
   const isAnyModalOpen = isCollectionOpen || isAchievementsOpen || isHallOfFameOpen || isBestPackOpen || isSettingsOpen;
 

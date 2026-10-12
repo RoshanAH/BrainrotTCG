@@ -135,7 +135,7 @@ export const usePackCutter = ({ onCutComplete, isOpening, isPackCut, soundEnable
     if (touchedLeft && touchedRight && coveredDistance >= point.width * REQUIRED_CUT_RATIO) {
       completeCut();
     }
-  }, [isCutting, isOpening, isPackCut, getLocalPoint, emitSpark, completeCut]);
+  }, [isCutting, isOpening, isPackCut, getLocalPoint, emitSpark, completeCut, soundEnabled]);
 
   const endCutAttempt = useCallback(() => {
     setIsCutting(false);

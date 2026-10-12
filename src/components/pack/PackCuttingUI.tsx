@@ -3,7 +3,7 @@ import type { CutPoint } from '../../hooks/usePackCutter';
 import type { Spark } from '../../hooks/useSparks';
 
 interface PackCuttingUIProps {
-  packRef: RefObject<HTMLDivElement>;
+  packRef: RefObject<HTMLDivElement | null>;
   packDesign: string;
   isCutting: boolean;
   isPackCut: boolean;

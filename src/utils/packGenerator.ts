@@ -1,5 +1,5 @@
 import type { Card as CardType, RarityKey } from '../data/cards';
-import type { CardWithMeta } from '../components/Card';
+import type { CardWithMeta } from '../components/cards/Card';
 import { RARITY_THRESHOLDS, PACK_CONFIG } from '../constants';
 
 /**
