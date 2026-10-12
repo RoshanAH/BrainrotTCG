@@ -20,6 +20,7 @@ for (const set of SETS) {
   const older = ALL_SET_VERSIONS.filter((s) => s.id === set.id && s !== set).flatMap((s) => s.cards);
   const result = await buildSetCards(set, older, force);
   result.built.forEach((b) => console.log(`built ${b}`));
+  result.removed.forEach((r) => console.log(`removed ${r} (no longer in the set)`));
   built += result.built.length;
   skipped += result.skipped;
   missing.push(...result.missing);

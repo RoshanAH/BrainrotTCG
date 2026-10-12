@@ -22,13 +22,13 @@
   "holoOdds": 500,
   "cards": [
     {
-      "id": "mbappe-special",
-      "name": "Mbappé Special",
+      "id": "pirate-gaster",
+      "name": "Pirate Gaster",
       "rarity": "COMMON",
-      "caption": "For example, nothing",
-      "flavor": "July 2026, World Cup: asked for his signature dish, Mbappé said 'for example, nothing.'",
+      "caption": "Always bet on the Captain",
+      "flavor": "June 2026: Deltarune fans made W.D. Gaster a pirate captain, sea shanty and all.",
       "year": 2026,
-      "art": "Close-up frame of Kylian Mbappé smiling in the July 2026 Vanity Fair interview clip (Know Your Meme's main image)."
+      "art": "LeanaLeabian's fan art of W.D. Gaster as a pirate captain, with tricorn, hook, parrot and green cape (KYM's main image)."
     },
     {
       "id": "niu-lai",

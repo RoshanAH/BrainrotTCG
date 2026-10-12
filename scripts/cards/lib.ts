@@ -8,7 +8,7 @@
  *   <card>.svg                       hand-made SVG illustration, framed by code
  */
 import { createHash } from 'node:crypto';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import sharp, { type Sharp } from 'sharp';
 import type { CardDefinition, SetDefinition } from '../../src/engine/index.ts';
@@ -41,6 +41,8 @@ export interface BuildResult {
   built: string[];
   skipped: number;
   missing: string[];
+  /** Built images of cards that are in no version of the set any more (deleted). */
+  removed: string[];
 }
 
 /**
@@ -52,9 +54,10 @@ export const buildSetCards = async (set: SetDefinition, extraCards: CardDefiniti
   mkdirSync(outDir, { recursive: true });
   const manifestPath = `${outDir}/.manifest.json`;
   const manifest: Record<string, string> = existsSync(manifestPath) ? JSON.parse(readFileSync(manifestPath, 'utf8')) : {};
-  const result: BuildResult = { built: [], skipped: 0, missing: [] };
+  const result: BuildResult = { built: [], skipped: 0, missing: [], removed: [] };
+  const cards = [...set.cards, ...extraCards.filter((c) => !set.cards.some((s) => s.id === c.id))];
 
-  for (const card of [...set.cards, ...extraCards.filter((c) => !set.cards.some((s) => s.id === c.id))]) {
+  for (const card of cards) {
     const art = findArt(set.id, card.id);
     if (!art) {
       result.missing.push(`${set.id}/${card.id}`);
@@ -81,6 +84,16 @@ export const buildSetCards = async (set: SetDefinition, extraCards: CardDefiniti
     await image.webp({ quality: 84 }).toFile(outPath);
     manifest[card.id] = inputHash;
     result.built.push(`${set.id}/${card.id} (${art.kind})`);
+  }
+  // Don't ship images of cards that were removed before release (no proof can contain them).
+  const keep = new Set(cards.map((c) => c.id));
+  for (const file of readdirSync(outDir)) {
+    const id = file.replace(/\.webp$/, '');
+    if (file.endsWith('.webp') && !keep.has(id)) {
+      rmSync(`${outDir}/${file}`);
+      delete manifest[id];
+      result.removed.push(`${set.id}/${id}`);
+    }
   }
   writeFileSync(manifestPath, JSON.stringify(manifest, null, 2) + '\n');
   return result;
