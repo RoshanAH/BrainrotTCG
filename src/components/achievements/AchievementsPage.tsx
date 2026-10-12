@@ -10,6 +10,8 @@ import '../../styles/Achievements.css';
 interface AchievementsPageProps {
   unlockedAchievements: Record<string, AchievementData | number>;
   onClose: () => void;
+  /** How far along the counting achievements are, e.g. { packs_10: [3, 10, 'packs'] }. */
+  progress?: Record<string, [have: number, need: number, unit: string]>;
 }
 
 /** Older saves stored just the unlock time. */
@@ -21,7 +23,7 @@ const normalize = (data: AchievementData | number | undefined): { unlockedAt: nu
 type Unlocked = { achievement: Achievement; unlockedAt: number; pack?: CardWithMeta[] };
 
 /** A checklist, like the one printed in a pack: unlocked first (newest on top), then everything still to get. */
-const AchievementsPage = ({ unlockedAchievements, onClose }: AchievementsPageProps) => {
+const AchievementsPage = ({ unlockedAchievements, onClose, progress = {} }: AchievementsPageProps) => {
   const [selected, setSelected] = useState<Unlocked | null>(null);
 
   const { unlocked, locked } = useMemo(() => {
@@ -60,8 +62,7 @@ const AchievementsPage = ({ unlockedAchievements, onClose }: AchievementsPagePro
             <h3 className="section-title">Unlocked</h3>
             <ul className="achievement-list">
               {unlocked.map((entry) => {
-                const { achievement, unlockedAt, pack } = entry;
-                const date = new Date(unlockedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+                const { achievement, pack } = entry;
                 const body = (
                   <>
                     <span className="achievement-box is-checked" aria-hidden="true">
@@ -71,7 +72,6 @@ const AchievementsPage = ({ unlockedAchievements, onClose }: AchievementsPagePro
                       <span className="achievement-name">{achievement.name}</span>
                       <span className="achievement-desc">{achievement.description}</span>
                     </span>
-                    <span className="achievement-date tabular">{date}</span>
                   </>
                 );
                 return (
@@ -103,6 +103,12 @@ const AchievementsPage = ({ unlockedAchievements, onClose }: AchievementsPagePro
                       <span className="achievement-name">{achievement.name}</span>
                       <span className="achievement-desc">{achievement.description}</span>
                     </span>
+                    {progress[achievement.id] && (
+                      <span className="achievement-progress tabular">
+                        {Math.min(progress[achievement.id][0], progress[achievement.id][1]).toLocaleString()}/
+                        {progress[achievement.id][1].toLocaleString()}
+                      </span>
+                    )}
                   </div>
                 </li>
               ))}
@@ -112,7 +118,12 @@ const AchievementsPage = ({ unlockedAchievements, onClose }: AchievementsPagePro
       </Sheet>
 
       {selected?.pack && (
-        <Sheet title={selected.achievement.name} subtitle="The pack that unlocked it" onClose={() => setSelected(null)} size="md">
+        <Sheet
+          title={selected.achievement.name}
+          subtitle={`The pack that unlocked it, ${new Date(selected.unlockedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}`}
+          onClose={() => setSelected(null)}
+          size="md"
+        >
           <PackCardViewer cards={selected.pack} displayMode="carousel" />
         </Sheet>
       )}

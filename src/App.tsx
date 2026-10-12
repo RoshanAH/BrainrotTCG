@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import './styles/index.css';
 import PackOpener from './components/pack/PackOpener';
 import AchievementToasts from './components/achievements/AchievementToasts';
@@ -365,6 +365,19 @@ function App() {
     setShareTarget({ ref: { setId: pack.setId, setVersion: pack.setVersion, nonce: pack.nonce, publicKeyHex: pack.publicKeyHex }, cards: pack.cards, score: pack.score });
   }, []);
 
+  // Progress shown on the counting achievements that are still locked.
+  const achievementProgress = useMemo(() => {
+    const packs = stats.packsOpened || 0;
+    const items = Object.values(collection);
+    const unique = items.length;
+    const holos = items.reduce((n, item) => n + (item?.holoCount || 0), 0);
+    const out: Record<string, [number, number, string]> = {};
+    for (const n of [10, 41, 67, 100, 420, 1000]) out[`packs_${n}`] = [packs, n, 'packs'];
+    for (const n of [5, 10]) out[`collect_${n}`] = [unique, n, 'cards'];
+    for (const n of [25, 100]) out[`total_holos_${n}`] = [holos, n, 'holos'];
+    return out;
+  }, [stats.packsOpened, collection]);
+
   const isAnyModalOpen = isCollectionOpen || isAchievementsOpen || isHallOfFameOpen || isProfileOpen || isSettingsOpen || !!shareTarget || !!viewProof || !!viewProfile;
 
   return (
@@ -404,6 +417,7 @@ function App() {
         <AchievementsPage
           unlockedAchievements={achievements}
           onClose={() => setIsAchievementsOpen(false)}
+          progress={achievementProgress}
         />
       )}
 

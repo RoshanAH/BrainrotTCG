@@ -215,18 +215,14 @@ a {
 
 /* ---- Set code ---- */
 
-/* The set's code, printed in its colour like a set symbol. */
+/* A set's code, printed the way a real card prints it next to the collector number. */
 .set-code {
   flex: none;
-  padding: 1px 4px;
-  border-radius: 3px;
-  background: var(--set-a, var(--text-muted));
-  color: #111;
+  color: var(--text-muted);
   font-stretch: var(--stretch-label);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 800;
-  letter-spacing: 0.04em;
-  line-height: 1.4;
+  letter-spacing: 0.06em;
 }
 
 /* A slab-label style for the few things that are labels (verified stamp, card numbers). */

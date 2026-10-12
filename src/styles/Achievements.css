@@ -32,7 +32,7 @@
 }
 
 button.achievement {
-  grid-template-columns: auto 1fr auto auto;
+  grid-template-columns: auto 1fr auto;
   transition: background-color var(--dur) var(--ease-out);
 }
 
@@ -51,8 +51,8 @@ button.achievement:hover {
 }
 
 .achievement-box.is-checked {
-  border-color: var(--brand);
-  background: var(--brand);
+  border-color: var(--text);
+  background: var(--text);
   color: var(--brand-ink);
 }
 
@@ -75,9 +75,10 @@ button.achievement:hover {
   font-size: var(--text-sm);
 }
 
-.achievement-date {
-  color: var(--text-subtle);
-  font-size: var(--text-xs);
+.achievement-progress {
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  font-weight: 700;
   white-space: nowrap;
 }
 

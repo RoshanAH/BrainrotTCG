@@ -24,7 +24,8 @@
 
 @media (min-width: 1200px) {
   .set-picker-list {
-    justify-content: center;
+    /* "safe" so a row wider than the screen starts at the left instead of being cut off there. */
+    justify-content: safe center;
   }
 }
 

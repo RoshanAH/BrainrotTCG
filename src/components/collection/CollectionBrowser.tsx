@@ -88,16 +88,17 @@ const CollectionBrowser = ({ collection, onClose }: CollectionBrowserProps) => {
                   .filter(({ card }) => owned.has(card.key) || isOpenable(set))
                   .map(({ card, number }) => {
                     const counts = owned.get(card.key);
+                    // Under every pocket, owned or not: its collector number and rarity, like a sleeve label.
+                    const label = (
+                      <span className="collection-label tabular" aria-hidden="true">
+                        {number} <span className={`collection-label-rarity ${card.rarity.toLowerCase()}`}>{CARD_RARITIES[card.rarity].symbol}</span>
+                      </span>
+                    );
                     if (!counts) {
-                      // An empty binder pocket: the collector number and rarity, like a set checklist.
                       return (
-                        <li key={card.key} className="collection-slot" aria-label={`${number}, ${CARD_RARITIES[card.rarity].name}, not collected yet`}>
-                          <span className="collection-slot-number tabular" aria-hidden="true">
-                            {number}
-                          </span>
-                          <span className={`collection-slot-rarity ${card.rarity.toLowerCase()}`} aria-hidden="true">
-                            {CARD_RARITIES[card.rarity].symbol}
-                          </span>
+                        <li key={card.key} aria-label={`${number}, ${CARD_RARITIES[card.rarity].name}, not collected yet`}>
+                          <span className="collection-slot" />
+                          {label}
                         </li>
                       );
                     }
@@ -108,7 +109,7 @@ const CollectionBrowser = ({ collection, onClose }: CollectionBrowserProps) => {
                           type="button"
                           className={`collection-item ${card.rarity.toLowerCase()} ${counts.holoCount > 0 ? 'holo' : ''}`}
                           onClick={() => setSelected({ card, ...counts })}
-                          aria-label={`${card.name}, ${total} owned${counts.holoCount ? `, ${counts.holoCount} holo` : ''}`}
+                          aria-label={`${card.name}, ${number}, ${CARD_RARITIES[card.rarity].name}, ${total} owned${counts.holoCount ? `, ${counts.holoCount} holo` : ''}`}
                         >
                           <img src={card.image} alt="" loading="lazy" />
                           {(total > 1 || counts.holoCount > 0) && (
@@ -117,6 +118,7 @@ const CollectionBrowser = ({ collection, onClose }: CollectionBrowserProps) => {
                             </span>
                           )}
                         </button>
+                        {label}
                       </li>
                     );
                   })}

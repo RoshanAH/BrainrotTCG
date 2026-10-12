@@ -58,6 +58,8 @@
 }
 
 .app-nav-label {
+  /* Condensed so five labels fit a phone without touching. */
+  font-stretch: var(--stretch-label);
   white-space: nowrap;
 }
 

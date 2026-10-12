@@ -72,7 +72,8 @@
 }
 
 .pull-row-thumbs img.holo {
-  box-shadow: 0 0 0 1.5px var(--bg-elevated), 0 0 0 3px #ffd23f;
+  padding: 1.5px;
+  background: var(--foil);
 }
 
 .pull-row-blank {

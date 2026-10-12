@@ -123,6 +123,10 @@
   display: none;
 }
 
+.sheet-root--bare .sheet-backdrop {
+  background: rgba(10, 9, 12, 0.95);
+}
+
 .sheet-root--bare .sheet-header {
   position: absolute;
   top: calc(var(--safe-top) + var(--space-2));
@@ -138,7 +142,8 @@
 }
 
 .sheet-root--bare .sheet-body {
-  padding: var(--space-6) var(--space-4);
+  /* Clear of the close button above the card. */
+  padding: calc(var(--safe-top) + 60px) var(--space-4) var(--space-6);
   overflow: visible;
 }
 

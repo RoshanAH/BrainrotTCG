@@ -54,7 +54,7 @@
 .profile-stats {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2) var(--space-6);
+  gap: var(--space-2) var(--space-4);
 }
 
 .profile-stats > div {
@@ -150,10 +150,11 @@
   height: 16px;
 }
 
-/* Done: the same graded-slab label as a verified pull. */
+/* Done: the same cream graded-card label as a verified pull. */
 .profile-verify.is-done {
-  border-color: var(--success);
-  color: var(--success);
+  border-color: transparent;
+  background: var(--text);
+  color: var(--brand-ink);
 }
 
 .profile-verify.is-done .profile-verify-line {

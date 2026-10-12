@@ -1,6 +1,6 @@
 .toast-region {
   position: fixed;
-  top: calc(var(--safe-top) + var(--space-3));
+  top: calc(var(--safe-top) + var(--header-height) + var(--space-2));
   left: 50%;
   z-index: var(--z-toast);
   width: min(92vw, 380px);

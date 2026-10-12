@@ -153,7 +153,9 @@
 }
 
 .swipe-hint-icon {
-    font-size: 1.25rem;
+    width: 18px;
+    height: 18px;
+    color: #fff;
     animation: swipeMotion 1.5s ease-in-out infinite;
 }
 

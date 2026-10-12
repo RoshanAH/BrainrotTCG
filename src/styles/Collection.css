@@ -114,17 +114,44 @@
 
 .collection-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(86px, 1fr));
-  gap: var(--space-2);
+  /* Binder pages: 3, 4 or 6 across, so a 12-card set fills whole rows. */
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3) var(--space-2);
   margin-top: var(--space-3);
   list-style: none;
 }
 
-@media (min-width: 720px) {
+@media (min-width: 560px) {
   .collection-grid {
-    grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
-    gap: var(--space-3);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
+}
+
+@media (min-width: 820px) {
+  .collection-grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: var(--space-4) var(--space-3);
+  }
+}
+
+.collection-grid li {
+  display: grid;
+  align-content: start;
+  gap: 4px;
+}
+
+.collection-label {
+  color: var(--text-subtle);
+  font-stretch: var(--stretch-label);
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.collection-label-rarity {
+  --r: var(--rarity-common);
+  color: var(--r);
+  letter-spacing: -0.05em;
 }
 
 .collection-item,
@@ -157,13 +184,18 @@
   object-fit: cover;
 }
 
-.collection-item.common,.collection-slot-rarity.common { --r: var(--rarity-common); }
-.collection-item.uncommon,.collection-slot-rarity.uncommon { --r: var(--rarity-uncommon); }
-.collection-item.rare,.collection-slot-rarity.rare { --r: var(--rarity-rare); }
-.collection-item.epic,.collection-slot-rarity.epic { --r: var(--rarity-epic); }
-.collection-item.legendary,.collection-slot-rarity.legendary { --r: var(--rarity-legendary); }
+.collection-item.common,
+.collection-label-rarity.common { --r: var(--rarity-common); }
+.collection-item.uncommon,
+.collection-label-rarity.uncommon { --r: var(--rarity-uncommon); }
+.collection-item.rare,
+.collection-label-rarity.rare { --r: var(--rarity-rare); }
+.collection-item.epic,
+.collection-label-rarity.epic { --r: var(--rarity-epic); }
+.collection-item.legendary,
+.collection-label-rarity.legendary { --r: var(--rarity-legendary); }
 .collection-item.brainrot { box-shadow: 0 0 0 2px #ffd23f; }
-.collection-slot-rarity.brainrot { --r: #ffd23f; }
+.collection-label-rarity.brainrot { --r: #ffd23f; }
 
 .collection-count {
   position: absolute;
@@ -193,28 +225,10 @@
 
 /* A card you don't have yet: an empty slot hinting at its rarity. */
 .collection-slot {
-  display: grid;
-  grid-template-rows: auto 1fr;
-  padding: 6px;
   border: 1px solid var(--border);
   background: rgba(243, 239, 230, 0.025);
-  /* A sleeve's inner edge. */
+  /* An empty sleeve's inner edge. */
   box-shadow: inset 0 0 0 3px var(--bg-elevated);
-}
-
-.collection-slot-number {
-  color: var(--text-subtle);
-  font-stretch: var(--stretch-label);
-  font-size: 10px;
-  font-weight: 700;
-}
-
-.collection-slot-rarity {
-  place-self: center;
-  color: var(--r);
-  font-size: 0.95rem;
-  letter-spacing: -0.05em;
-  opacity: 0.65;
 }
 
 .collection-empty {

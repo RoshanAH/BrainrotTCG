@@ -73,10 +73,10 @@ const PullViewerPage = ({ proof, onClose }: PullViewerPageProps) => {
   const hand = pull.score.hand.name !== 'No Matches' ? pull.score.hand.name : 'A pull';
   return (
     <Sheet
-      title={`${hand} from ${pull.set.name}`}
+      title={hand}
       subtitle={
         <>
-          {normalizeName(pull.proof.name) || 'Anonymous'} <span className="share-fp">#{pull.fingerprint}</span> · {pull.set.era}
+          {pull.set.name} · {normalizeName(pull.proof.name) || 'Anonymous'} <span className="share-fp">#{pull.fingerprint}</span>
         </>
       }
       onClose={onClose}

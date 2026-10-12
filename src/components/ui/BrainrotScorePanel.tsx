@@ -20,7 +20,14 @@ const BrainrotScorePanel = ({ points, multiplier, handName, score, setId }: Brai
     <div className="score-panel">
       <div className="score-panel-total">{score.toLocaleString()}</div>
       <div className="score-panel-math">
-        Brainrot Score · {points.toLocaleString()} pts × <strong>{multiplier.toLocaleString()}</strong> for {handName}
+        Brainrot Score
+        {multiplier > 1 ? (
+          <>
+            {' '}· {points.toLocaleString()} pts × <strong>{multiplier.toLocaleString()}</strong> for {handName}
+          </>
+        ) : (
+          <> · {handName}</>
+        )}
       </div>
       {set && (
         <button type="button" className="score-panel-help" onClick={(e) => { e.stopPropagation(); setShowGuide(true); }}>

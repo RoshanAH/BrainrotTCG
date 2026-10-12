@@ -81,7 +81,7 @@ const HallOfFamePage = ({ onClose }: HallOfFamePageProps) => {
     return [...(entries ?? [])]
       .sort((a, b) => a.submittedAt.localeCompare(b.submittedAt))
       .filter((e) => !seen.has(idOf(e)) && !!seen.add(idOf(e)))
-      .sort((a, b) => b.multiplier - a.multiplier || b.score - a.score || a.submittedAt.localeCompare(b.submittedAt));
+      .sort((a, b) => b.score - a.score || a.submittedAt.localeCompare(b.submittedAt));
   }, [entries]);
 
   /** First verified submission of each hand in each set. */
@@ -149,7 +149,9 @@ const HallOfFamePage = ({ onClose }: HallOfFamePageProps) => {
               {who} <span className="share-fp">#{entry.fingerprint}</span>
             </span>
             <span className="hof-meta">
-              {entry.setName} · {formatDate(entry.submittedAt)}
+              {entry.setName}
+              {/* On world firsts, when matters. */}
+              {rank === undefined && ` · ${formatDate(entry.submittedAt)}`}
             </span>
           </span>
           <span className="hof-side">
@@ -193,7 +195,7 @@ const HallOfFamePage = ({ onClose }: HallOfFamePageProps) => {
             {ranked.length > 0 && (
               <>
                 <p className="hof-note">
-                  <ShieldCheck aria-hidden="true" /> The top {VERIFY_LIMIT} are re-checked on your device. Tap one to see it.
+                  <ShieldCheck aria-hidden="true" /> Ranked by Brainrot Score. The top {VERIFY_LIMIT} are re-checked on your device; open one to see it.
                 </p>
                 <ol className="hof-list">{ranked.map((e, i) => renderEntry(e, i))}</ol>
               </>
@@ -232,12 +234,8 @@ const HallOfFamePage = ({ onClose }: HallOfFamePageProps) => {
 };
 
 const CheckBadge = ({ check }: { check?: Check }) => {
-  if (check === 'verified')
-    return (
-      <span className="hof-check is-verified">
-        <ShieldCheck aria-hidden="true" /> Verified
-      </span>
-    );
+  // Verified is the normal case and the note above says so; only exceptions get a mark.
+  if (check === 'verified') return null;
   if (check === 'failed')
     return (
       <span className="hof-check is-failed">

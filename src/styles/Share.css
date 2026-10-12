@@ -1,6 +1,7 @@
 /* Share sheet (ShareSheet.tsx) and the shared-pull viewer (PullViewerPage.tsx). */
 
 .share-fp {
+  white-space: nowrap;
   color: var(--text-subtle);
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 0.9em;
@@ -158,7 +159,7 @@
   }
 }
 
-/* Like the label on a graded card: what was checked, and a cert number to quote. */
+/* Like the label on a graded card: cream stock, dark print, a cert number to quote. */
 .pull-viewer-badge {
   display: flex;
   flex-wrap: wrap;
@@ -167,9 +168,9 @@
   gap: var(--space-1) var(--space-3);
   padding: var(--space-2) var(--space-3);
   margin-bottom: var(--space-4);
-  border: 1px solid var(--success);
   border-radius: 3px;
-  color: var(--success);
+  background: var(--text);
+  color: var(--brand-ink);
   font-stretch: var(--stretch-label);
   font-size: var(--text-xs);
   font-weight: 800;
@@ -190,12 +191,13 @@
 }
 
 .pull-viewer-cert {
-  color: var(--text-muted);
-  font-weight: 600;
+  opacity: 0.7;
+  font-weight: 700;
 }
 
 .pull-viewer-badge.is-invalid {
-  border-color: var(--danger);
+  background: none;
+  border: 1px solid var(--danger);
   color: var(--danger);
   font-stretch: normal;
   font-size: var(--text-sm);

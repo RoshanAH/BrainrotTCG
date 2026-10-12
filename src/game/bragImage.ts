@@ -106,7 +106,6 @@ const INK = '#121114';
 const PAPER = '#f3efe6';
 const MUTED = '#b6b0ba';
 const YELLOW = '#ffd23f';
-const GREEN = '#5fd38d';
 const LOGO_FONT = '"RubikGlitch", system-ui, sans-serif';
 const DISPLAY_FONT = '"Lilita One", system-ui, sans-serif';
 const BODY_FONT = '"Archivo Variable", system-ui, -apple-system, "Segoe UI", sans-serif';
@@ -139,17 +138,17 @@ const drawHeader = (ctx: CanvasRenderingContext2D, setName: string, code: string
 
   ctx.font = `700 44px ${BODY_FONT}`;
   const nameWidth = ctx.measureText(setName).width;
-  ctx.font = `800 30px ${BODY_FONT}`;
-  const codeWidth = code ? ctx.measureText(code).width + 24 : 0;
-  let x = (W - (codeWidth + (code ? 18 : 0) + nameWidth)) / 2;
+  ctx.font = `800 34px ${BODY_FONT}`;
+  const codeWidth = code ? ctx.measureText(code).width : 0;
+  let x = (W - (codeWidth + (code ? 22 : 0) + nameWidth)) / 2;
   ctx.textAlign = 'left';
+  // The set code is printed plainly, the way a card prints it; the set's colour is a thin rule under it.
   if (code) {
+    ctx.fillStyle = MUTED;
+    ctx.fillText(code, x, 236);
     ctx.fillStyle = setColor ?? MUTED;
-    roundRect(ctx, x, 200, codeWidth, 46, 6);
-    ctx.fill();
-    ctx.fillStyle = '#111111';
-    ctx.fillText(code, x + 12, 234);
-    x += codeWidth + 18;
+    ctx.fillRect(x, 248, codeWidth, 5);
+    x += codeWidth + 22;
   }
   ctx.fillStyle = PAPER;
   ctx.font = `700 44px ${BODY_FONT}`;
@@ -165,19 +164,28 @@ const drawLabel = (
   const y = 1570;
   const w = W - 140;
   const h = 290;
-  ctx.strokeStyle = label.verified ? GREEN : MUTED;
-  ctx.lineWidth = 4;
-  roundRect(ctx, x, y, w, h, 6);
-  ctx.stroke();
+  // Verified: cream label stock with dark print, like a graded card. Otherwise an outline.
+  const ink = label.verified ? INK : PAPER;
+  const soft = label.verified ? '#5c5660' : MUTED;
+  if (label.verified) {
+    ctx.fillStyle = PAPER;
+    roundRect(ctx, x, y, w, h, 6);
+    ctx.fill();
+  } else {
+    ctx.strokeStyle = MUTED;
+    ctx.lineWidth = 4;
+    roundRect(ctx, x, y, w, h, 6);
+    ctx.stroke();
+  }
   ctx.textAlign = 'left';
-  ctx.fillStyle = label.verified ? GREEN : MUTED;
+  ctx.fillStyle = soft;
   ctx.font = `800 30px ${BODY_FONT}`;
   ctx.fillText(label.kind.toUpperCase(), x + 40, y + 64);
   const textWidth = label.url ? 520 : w - 80;
-  ctx.fillStyle = PAPER;
+  ctx.fillStyle = ink;
   fitFont(ctx, label.name, textWidth, 52, '800', BODY_FONT);
   ctx.fillText(label.name, x + 40, y + 134);
-  ctx.fillStyle = MUTED;
+  ctx.fillStyle = soft;
   ctx.font = `600 32px ${BODY_FONT}`;
   ctx.fillText(label.cert, x + 40, y + 186);
   ctx.font = `500 28px ${BODY_FONT}`;

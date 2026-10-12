@@ -1,3 +1,4 @@
+import { MoveHorizontal } from 'lucide-react';
 import { RefObject } from 'react';
 import { useCoarsePointer } from '../../hooks/useCoarsePointer';
 import type { CutPoint } from '../../hooks/usePackCutter';
@@ -55,7 +56,7 @@ const PackCuttingUI = ({
           </div>
           <div className="tear-guide" />
           <div className="swipe-hint">
-            <span className="swipe-hint-icon" aria-hidden="true">👆</span>
+            <MoveHorizontal className="swipe-hint-icon" aria-hidden="true" />
             <span className="swipe-hint-text">{touch ? 'Swipe across to open' : 'Drag across to open'}</span>
           </div>
           {cutPoints.length > 1 && (
