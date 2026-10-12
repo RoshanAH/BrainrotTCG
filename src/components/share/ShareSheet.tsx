@@ -118,10 +118,10 @@ const HallOfFameSubmit = ({ proof, id, githubUrl }: { proof: string; id: string;
 
   const note =
     state === 'sent'
-      ? `${detail ? `${detail} ` : ''}It's checked and added to the Hall of Fame within about 15 minutes.`
+      ? `${detail ? `${detail} ` : ''}It shows in the Hall of Fame now, checked on each visitor's device, and is filed for good within the hour.`
       : state === 'failed'
         ? "Couldn't reach any relay. Try again, or submit on GitHub."
-        : "No account needed. It's checked and added within about 15 minutes.";
+        : 'No account needed. It shows in the Hall of Fame right away.';
 
   return (
     <div className="share-hof">

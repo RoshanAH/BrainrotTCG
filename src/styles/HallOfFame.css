@@ -232,3 +232,9 @@
     margin-left: -12px;
   }
 }
+
+/* Sent, checked on this device, not filed yet. */
+.hof-pending {
+  color: var(--brand);
+  font-weight: 600;
+}
