@@ -16,7 +16,7 @@
 import { appendFileSync, existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { getSet } from '../src/content/sets/index.ts';
-import { extractProof, HALL_OF_FAME_MIN_SCORE, qualifiesForHallOfFame, toHex, verifyProof, type VerifiedPull } from '../src/engine/index.ts';
+import { extractProof, HALL_OF_FAME_MIN_SCORE, pullId, qualifiesForHallOfFame, verifyProof, type VerifiedPull } from '../src/engine/index.ts';
 
 const ROOT = fileURLToPath(new URL('../', import.meta.url));
 const OUTPUT = `${ROOT}public/hall-of-fame.json`;
@@ -132,7 +132,7 @@ const build = async () => {
       console.log(`#${issue.number}: skipped (${result.reason})`);
       continue;
     }
-    const key = `${toHex(result.pull.proof.publicKey)}|${result.entry.setId}@${result.entry.setVersion}|${result.pull.proof.nonce}`;
+    const key = pullId(result.pull.proof);
     if (seen.has(key)) continue;
     seen.add(key);
     entries.push(result.entry);

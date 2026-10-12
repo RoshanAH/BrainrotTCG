@@ -617,6 +617,88 @@
       "multiplier": 250,
       "score": 15000,
       "hallOfFame": true
+    },
+    {
+      "note": "name not in NFC (valid; UIs normalise for display)",
+      "proof": "AQlyaWdodC1ub3cAAcgklFOmlHeFiPZ1XIUIRr3ARo67BTbINmtTwGnVKqjSBQVab2XMiFLSnrRLrmjKRD-OcaokLgd0fxOE93lYaECxw64eBQ1c5Kl50XnGMCDID_LfFu2VRgK8gtt8RjnJy6DwL9xw7wA",
+      "set": "right-now@1",
+      "publicKey": "c8249453a694778588f6755c850846bdc0468ebb0536c8366b53c069d52aa8d2",
+      "nonce": 5,
+      "name": "Zoë",
+      "fingerprint": "CD2A-WMBX",
+      "cards": [
+        {
+          "cardId": "huss-valley",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "black-cat-clapping",
+          "rarity": "RARE",
+          "isHolo": false
+        },
+        {
+          "cardId": "mbappe-special",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "niu-lai",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "bukangi",
+          "rarity": "COMMON",
+          "isHolo": false
+        }
+      ],
+      "points": 75,
+      "hand": "No Matches",
+      "multiplier": 1,
+      "score": 75,
+      "hallOfFame": false
+    },
+    {
+      "note": "name with an unassigned code point (valid in every Unicode version)",
+      "proof": "AQlyaWdodC1ub3cAAcgklFOmlHeFiPZ1XIUIRr3ARo67BTbINmtTwGnVKqjSBQZFzbh2YW4ZKRh7DA420uCx78iTEOvxzpfEVOS4iuMt2He6Y_N5UmOnsp21T1Tq3cJEizP_eqhyHF8zZbP7fr56CYX_ulUF",
+      "set": "right-now@1",
+      "publicKey": "c8249453a694778588f6755c850846bdc0468ebb0536c8366b53c069d52aa8d2",
+      "nonce": 5,
+      "name": "E͸van",
+      "fingerprint": "CD2A-WMBX",
+      "cards": [
+        {
+          "cardId": "huss-valley",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "black-cat-clapping",
+          "rarity": "RARE",
+          "isHolo": false
+        },
+        {
+          "cardId": "mbappe-special",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "niu-lai",
+          "rarity": "COMMON",
+          "isHolo": false
+        },
+        {
+          "cardId": "bukangi",
+          "rarity": "COMMON",
+          "isHolo": false
+        }
+      ],
+      "points": 75,
+      "hand": "No Matches",
+      "multiplier": 1,
+      "score": 75,
+      "hallOfFame": false
     }
   ],
   "invalid": [
@@ -686,14 +768,29 @@
       "proof": "AQlyaWdodC1ub3cAAcgklFOmlHeFiPZ1XIUIRr3ARo67BTbINmtTwGnVKqjSBQlFdmFuICBMaW71ZNr-CzeNkuLduIAg5LCNrAqfpkmcrAKDM46fB3qCKVU5n6JVqKGeTvCPSYBBAfIvgXtujP-qrQMW8wuma8IH"
     },
     {
+      "note": "name with a byte order mark",
+      "rule": "name",
+      "proof": "AQlyaWdodC1ub3cAAcgklFOmlHeFiPZ1XIUIRr3ARo67BTbINmtTwGnVKqjSBQfvu79FdmFu3JIvgHpquS5Y65IROJnHvObHh5-MQ1rWIrPrIrex-drvi8hU0iX-FYXJ7H6fp_nuOwhxHmedWi18oIsppVB4CA"
+    },
+    {
+      "note": "name with a zero-width joiner",
+      "rule": "name",
+      "proof": "AQlyaWdodC1ub3cAAcgklFOmlHeFiPZ1XIUIRr3ARo67BTbINmtTwGnVKqjSBQdFduKAjWFuzvxYD0_cewPMv6ZlvDnM0Px2a9MwtbiuDVTcvD58JAICzuHS48nE0TXHCtLbMVgbeY__0UvykWG33kIks3JLAg"
+    },
+    {
+      "note": "name with a no-break space",
+      "rule": "name",
+      "proof": "AQlyaWdodC1ub3cAAcgklFOmlHeFiPZ1XIUIRr3ARo67BTbINmtTwGnVKqjSBQZFdsKgYW5NNfcKs4djjBNv0ZgTnJzYiuqcbcScw2X5ffF1LQJYLkdLiiN1lA9jxaaeuZTvrXBqMFqLddwwAmHx5HTXEsgP"
+    },
+    {
+      "note": "name with a trailing space",
+      "rule": "name",
+      "proof": "AQlyaWdodC1ub3cAAcgklFOmlHeFiPZ1XIUIRr3ARo67BTbINmtTwGnVKqjSBQVFdmFuIC89MLppS8AxI0_dkCL3YvHQr-PPQ66wqGrfkFjHrZSOL3i2oj7RemtK32SwqREoHosxR-DUirNMKD2E3U6FGQU"
+    },
+    {
       "note": "name with right-to-left override",
       "rule": "name",
       "proof": "AQlyaWdodC1ub3cAAcgklFOmlHeFiPZ1XIUIRr3ARo67BTbINmtTwGnVKqjSBQ5FdmFu4oCuZ25wLmV4ZRap-FxQhJsKnc_TjqHcPJdNQ2RFR9oaotO32zSJMDSN2w0MZ-q5VEoWmCv13H7do0rb7e7yYzr5iUEmXV4xmwc"
-    },
-    {
-      "note": "name not NFC",
-      "rule": "name",
-      "proof": "AQlyaWdodC1ub3cAAcgklFOmlHeFiPZ1XIUIRr3ARo67BTbINmtTwGnVKqjSBQVab2XMiFLSnrRLrmjKRD-OcaokLgd0fxOE93lYaECxw64eBQ1c5Kl50XnGMCDID_LfFu2VRgK8gtt8RjnJy6DwL9xw7wA"
     },
     {
       "note": "name over 24 code points",

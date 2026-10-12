@@ -5,9 +5,10 @@ import {
   fromBase64Url,
   fromUtf8,
   toBase64Url,
+  toHex,
   utf8,
 } from './bytes';
-import { fingerprint, normalizeName, sign, verifySignature } from './identity';
+import { fingerprint, isValidName, isValidPublicKey, normalizeName, sign, verifySignature } from './identity';
 import { generatePack, packSeedFromTicket } from './pack';
 import { scorePack, type PackScore } from './scoring';
 import { computeTicket } from './ticket';
@@ -15,6 +16,7 @@ import { setKey, type PulledCard, type SetDefinition } from './types';
 
 /**
  * A pull proof: everything needed to re-derive a pack and attribute it to a player.
+ * spec/PULL_SPEC.md is the normative description; spec/vectors.json pins this implementation to it.
  *
  * Binary layout (v1), then base64url-encoded:
  *   u8      proof version (1)
@@ -38,6 +40,23 @@ export interface PullProof {
 }
 
 export type UnsignedProof = Omit<PullProof, 'signature'>;
+
+/** Which verification rule a proof broke (spec section 7), checked in this order. */
+export type ProofRule = 'decode' | 'name' | 'publicKey' | 'signature' | 'set';
+
+export class ProofError extends Error {
+  constructor(
+    readonly rule: ProofRule,
+    message: string,
+  ) {
+    super(message);
+    this.name = 'ProofError';
+  }
+}
+
+/** The same pull, however many times it was signed (spec section 7): use this to deduplicate. */
+export const pullId = (p: Pick<PullProof, 'setId' | 'setVersion' | 'publicKey' | 'nonce'>): string =>
+  `${p.setId}@${p.setVersion}/${toHex(p.publicKey)}/${p.nonce}`;
 
 const encodeUnsigned = (p: UnsignedProof): Uint8Array => {
   const setId = utf8(p.setId);
@@ -64,26 +83,39 @@ export const signProof = (unsigned: UnsignedProof, secretKey: Uint8Array): PullP
 
 export const encodeProof = (proof: PullProof): string => toBase64Url(concatBytes(encodeUnsigned(proof), proof.signature));
 
-export const decodeProof = (text: string): PullProof => {
-  const bytes = fromBase64Url(text.trim());
-  let o = 0;
-  const take = (n: number) => {
-    if (o + n > bytes.length) throw new Error('Proof is truncated');
-    const out = bytes.subarray(o, o + n);
-    o += n;
-    return out;
-  };
-  const [version] = take(1);
-  if (version !== PROOF_VERSION) throw new Error(`Unsupported proof version ${version}`);
-  const setId = fromUtf8(take(take(1)[0]));
-  const [hi, lo] = take(2);
-  const publicKey = take(32).slice();
-  const { value: nonce, next } = decodeVarint(bytes, o);
-  o = next;
-  const name = fromUtf8(take(take(1)[0]));
-  const signature = take(64).slice();
-  if (o !== bytes.length) throw new Error('Proof has trailing bytes');
-  return { setId, setVersion: (hi << 8) | lo, publicKey, nonce, name, signature };
+const MAX_SET_ID_BYTES = 64;
+
+/** Strict decoding (spec sections 2 and 6). Throws a ProofError with rule "decode". */
+export const decodeProof = (text: string): PullProof => decodeProofBytes(text).proof;
+
+const decodeProofBytes = (text: string): { proof: PullProof; signed: Uint8Array } => {
+  try {
+    const bytes = fromBase64Url(text.trim());
+    let o = 0;
+    const take = (n: number) => {
+      if (o + n > bytes.length) throw new Error('Proof is truncated');
+      const out = bytes.subarray(o, o + n);
+      o += n;
+      return out;
+    };
+    const [version] = take(1);
+    if (version !== PROOF_VERSION) throw new Error(`Unsupported proof version ${version}`);
+    const setIdLength = take(1)[0];
+    if (setIdLength === 0 || setIdLength > MAX_SET_ID_BYTES) throw new Error('Invalid set id length');
+    const setId = fromUtf8(take(setIdLength));
+    const [hi, lo] = take(2);
+    const publicKey = take(32).slice();
+    const { value: nonce, next } = decodeVarint(bytes, o);
+    o = next;
+    const name = fromUtf8(take(take(1)[0]));
+    const signedLength = o;
+    const signature = take(64).slice();
+    if (o !== bytes.length) throw new Error('Proof has trailing bytes');
+    return { proof: { setId, setVersion: (hi << 8) | lo, publicKey, nonce, name, signature }, signed: bytes.subarray(0, signedLength) };
+  } catch (error) {
+    if (error instanceof ProofError) throw error;
+    throw new ProofError('decode', error instanceof Error ? error.message : 'Malformed proof');
+  }
 };
 
 /** Pull the proof out of a share link, a bare proof string, or text that contains a link. */
@@ -117,16 +149,18 @@ export const derivePack = async (
 };
 
 /**
- * Verify a proof completely: signature, set, and the pack itself (by recomputing the ticket).
- * Throws with a human-readable reason if anything is off.
+ * Verify a proof completely (spec section 7): strict decoding, name, public key, signature, set, then
+ * re-derive the pack. Throws a ProofError naming the first rule that failed.
  */
 export const verifyProof = async (proofText: string, lookup: SetLookup, ticketFn: TicketFn = computeTicket): Promise<VerifiedPull> => {
-  const proof = decodeProof(proofText);
-  if (normalizeName(proof.name) !== proof.name) throw new Error('Proof name is not normalised');
-  const message = concatBytes(SIGNATURE_DOMAIN, encodeUnsigned(proof));
-  if (!verifySignature(proof.signature, message, proof.publicKey)) throw new Error('Signature does not match');
+  const { proof, signed } = decodeProofBytes(proofText);
+  if (!isValidName(proof.name)) throw new ProofError('name', 'Player name contains characters that are not allowed');
+  if (!isValidPublicKey(proof.publicKey)) throw new ProofError('publicKey', 'Not a valid player key');
+  if (!verifySignature(proof.signature, concatBytes(SIGNATURE_DOMAIN, signed), proof.publicKey)) {
+    throw new ProofError('signature', 'Signature does not match');
+  }
   const set = lookup(proof.setId, proof.setVersion);
-  if (!set) throw new Error(`Unknown set ${proof.setId}@${proof.setVersion}`);
+  if (!set) throw new ProofError('set', `Unknown set ${proof.setId}@${proof.setVersion}`);
   const cards = await derivePack(set, proof.publicKey, proof.nonce, ticketFn);
   const score = scorePack(cards.map((c) => ({ ...c, cardId: `${c.setId}/${c.cardId}` })));
   return { proof, set, cards, score, fingerprint: fingerprint(proof.publicKey) };

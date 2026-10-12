@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { sha256 } from '@noble/hashes/sha2.js';
 import { decodeVarint, encodeVarint, fromBase64Url, toBase64Url, toHex, utf8 } from './bytes';
-import { fingerprint, generateKeypair, normalizeName } from './identity';
+import { fingerprint, generateKeypair, isValidName, normalizeName } from './identity';
 import { createRng, generatePack } from './pack';
 import { decodeProof, derivePack, encodeProof, extractProof, signProof, verifyProof } from './proof';
 import { getPokerHand, POKER_HANDS, scorePack, type HandKey } from './scoring';
@@ -156,6 +156,16 @@ describe('tickets and proofs', () => {
     await expect(verifyProof(tamperedName, lookup)).rejects.toThrow(/Signature/);
     const other = signProof({ setId: 'nope', setVersion: 1, publicKey, nonce: 7, name: 'Evan' }, secretKey);
     await expect(verifyProof(encodeProof(other), lookup)).rejects.toThrow(/Unknown set/);
+  });
+
+  it('every normalised name is a valid proof name', () => {
+    const pool = ['a', 'Z', ' ', '  ', '\t', '\n', '\u00A0', '\u200D', '\u202E', '\uFEFF', '\u0301', '\u{1F9E0}', '\u{E0067}', '\u3000', 'é', '\u0000'];
+    let seed = 1;
+    const rand = (n: number) => ((seed = (seed * 1103515245 + 12345) % 2 ** 31) % n);
+    for (let i = 0; i < 2000; i++) {
+      const raw = Array.from({ length: rand(40) }, () => pool[rand(pool.length)]).join('');
+      expect(isValidName(normalizeName(raw)), JSON.stringify(raw)).toBe(true);
+    }
   });
 
   it('normalises names', () => {

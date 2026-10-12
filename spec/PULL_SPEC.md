@@ -20,7 +20,8 @@ A proof never contains cards. The verifier derives them, so a proof can't claim 
 ## 2. Primitives
 
 - **UTF-8**: strings are encoded as UTF-8. A decoder MUST reject invalid UTF-8 (overlong forms,
-  surrogates, truncated sequences).
+  surrogates, code points above U+10FFFF, truncated sequences) and MUST NOT strip a leading byte order
+  mark (U+FEFF is kept as a character).
 - **Hex**: lowercase, two digits per byte.
 - **base64url**: RFC 4648 §5 alphabet `A–Z a–z 0–9 - _`, **no padding**. A decoder MUST reject
   `=`, any other character, a length ≡ 1 (mod 4), and **non-canonical input**: the unused low bits of
@@ -41,12 +42,12 @@ A set is a JSON document (`src/content/sets/<id>/set.json`; older versions are k
 | `packSize` | cards per pack (1 … 15) |
 | `odds` | integer weight per rarity, summing to **10000** |
 | `holoOdds` | chance of holo per card, out of 10000 |
-| `cards` | ordered list of `{ id, rarity }`. **Order matters.** |
+| `cards` | ordered list of `{ id, rarity }`. **Order matters.** Every rarity with a non-zero weight has at least one card. |
 
 Rarities, rarest first (this order is normative): `BRAINROT, LEGENDARY, EPIC, RARE, UNCOMMON, COMMON`.
 
-A released `set@version` never changes; `src/content/sets.lock.json` pins a hash of these fields.
-Archived sets (`archivedAt`) still verify.
+A released `set@version` never changes (the repository's `src/content/sets.lock.json` guards this;
+take set files from a commit you trust). Archived sets (`archivedAt`) still verify.
 
 ## 4. Ticket (proof of work)
 
@@ -76,7 +77,7 @@ ticket = Argon2id(
      return t
    ```
    Call `next()` 15 times and discard the results. Then `int(n) = floor(next() × n / 2³²)`
-   (exact integer arithmetic).
+   (exact integer arithmetic). (The `rng` test vectors list the outputs after these 15.)
 3. For each slot `0 … packSize−1`, in order:
    1. `roll = int(10000)`. Walk the rarities rarest first, adding each rarity's weight to a running
       total; the slot's rarity is the first whose running total is greater than `roll`.
@@ -103,41 +104,46 @@ Share links look like `https://…/#/pull/<proof>`.
 
 ## 7. Verification
 
-A verifier MUST reject the proof (and SHOULD say why) unless all of these hold:
+A verifier MUST apply these checks **in this order** and reject the proof at the first one that fails,
+reporting that rule (the `rule` of each invalid test vector):
 
-1. **Strict decoding.** base64url, varint and UTF-8 are canonical (section 2), the version byte is 1,
-   lengths are in range, and there are no bytes after the signature.
-2. **Normalised name.** The name is NFC, contains no code point of Unicode general category C
-   (Cc, Cf, Cs, Co, Cn), uses U+0020 as its only whitespace (none of U+0009–U+000D, U+00A0, U+1680,
-   U+2000–U+200A, U+2028, U+2029, U+202F, U+205F, U+3000, U+FEFF), has no leading, trailing or
-   doubled spaces, and is at most 24 code points.
-3. **Public key.** A canonical point encoding (y < 2²⁵⁵−19, and not x = 0 with the sign bit set)
-   that is **not of small order**. These are the eight small-order points (hex):
-   ```
-   0100000000000000000000000000000000000000000000000000000000000000
-   ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f
-   0000000000000000000000000000000000000000000000000000000000000000
-   0000000000000000000000000000000000000000000000000000000000000080
-   26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc05
-   26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc85
-   c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac037a
-   c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac03fa
-   ```
-   Small-order keys are rejected because anyone can forge signatures for them.
-4. **Signature.** Ed25519 per RFC 8032 §5.1.7 with strict decoding: `S < L`, and `R` and `A`
-   canonical. (A ZIP-215 verifier is too permissive here.)
-5. **Known set.** `set@version` exists.
+1. **`decode`.** base64url, varint and UTF-8 are canonical (section 2), the version byte is 1, the
+   set id is 1 … 64 bytes, and there are no bytes after the signature.
+2. **`name`.** The name (it's signed, so these rules use only fixed lists, never Unicode tables that
+   change between versions):
+   - at most 24 code points;
+   - no control characters: U+0000–U+001F, U+007F–U+009F;
+   - no invisible or bidirectional format characters: U+00AD, U+061C, U+180E, U+200B–U+200F,
+     U+202A–U+202E, U+2060–U+2064, U+2066–U+206F, U+FEFF, U+FFF9–U+FFFB, U+E0001, U+E0020–U+E007F;
+   - U+0020 is the only space: none of U+00A0, U+1680, U+2000–U+200A, U+2028, U+2029, U+202F, U+205F,
+     U+3000;
+   - no leading or trailing U+0020, and never two in a row.
+3. **`publicKey`.** The key decodes as a point per RFC 8032 §5.1.3 (y < 2²⁵⁵−19, the point is on the
+   curve, and not x = 0 with the sign bit set), and the point has **prime order L**: `[L]A` is the
+   identity and A is not the identity. (This rules out the eight small-order points, for which anyone
+   can forge signatures, and keys with a hidden small-order component.)
+4. **`signature`.** With `R` = the signature's first 32 bytes and `S` = its last 32 bytes as a
+   little-endian integer: `S < L`; `k = SHA-512(R || A || message) mod L` (A as the 32 key bytes,
+   message as in section 6); and the **cofactorless** equation holds: the encoding of `[S]B − [k]A` is
+   byte-for-byte equal to `R`. Use exactly this check: a cofactored verifier (`[8][S]B = [8]R + [8][k]A`)
+   accepts signatures this rejects. `R` is not otherwise checked.
+5. **`set`.** `set@version` exists.
 
-Then derive the pack (sections 4–5) and score it (section 8). Two proofs are **the same pull** when
-they have the same set key, public key and nonce, even if the names or signatures differ (an owner
-can sign many times). Leaderboards MUST deduplicate on that triple.
+Here `L = 2²⁵² + 27742317777372353535851937790883648493` and `B` is the Ed25519 base point.
+
+Then derive the pack (sections 4–5) and score it (section 8).
+
+**Same pull.** Two valid proofs with the same set key, public key and nonce are the same pull, even if
+their names or signatures differ (an owner can sign many times). Its **pull id** is
+`` `${setKey}/${hex(publicKey)}/${nonce}` ``. Leaderboards MUST deduplicate on the pull id.
 
 ## 8. Score
 
 - Card points: `COMMON 10, UNCOMMON 20, RARE 35, EPIC 70, LEGENDARY 200, BRAINROT 1000`; ×20 if holo.
-- Combo, by how many copies of each card id the pack holds (counts sorted, largest first):
-  5+ → **5 of a Kind ×10000**; 4 → **4 of a Kind ×250**; 3 and 2 → **Full House ×150**;
-  3 → **3 of a Kind ×15**; 2 and 2 → **Two Pair ×10**; 2 → **Pair ×2**; else **No Matches ×1**.
+- Combo, from how many copies of each card id the pack holds, largest count `c1`, second `c2` (0 if
+  none): `c1 ≥ 5` → **5 of a Kind ×10000**; `c1 = 4` → **4 of a Kind ×250**; `c1 = 3, c2 = 2` →
+  **Full House ×150**; `c1 = 3` (any other `c2`) → **3 of a Kind ×15**; `c1 = 2, c2 = 2` →
+  **Two Pair ×10**; `c1 = 2` → **Pair ×2**; otherwise **No Matches ×1**.
 - **Brainrot Score = (sum of card points) × combo multiplier.**
 
 **Hall of Fame:** a pull qualifies with a multiplier of at least 150 (Full House or better), or a
@@ -146,8 +152,10 @@ score of at least 20000.
 ## 9. Display (not part of verification)
 
 - **Fingerprint**: the first 40 bits of SHA-256(public key) as 8 Crockford base32 characters
-  (`0123456789ABCDEFGHJKMNPQRSTVWXYZ`), most significant first, shown as `#XXXX-XXXX`. Names are
-  not unique; the name plus fingerprint identifies a player.
+  (`0123456789ABCDEFGHJKMNPQRSTVWXYZ`), most significant first, written `XXXX-XXXX` (UIs show it
+  after a `#`). Names are not unique; the name plus fingerprint identifies a player.
+- **Names**: UIs SHOULD display names after NFC normalisation and removing Unicode category C
+  characters, so look-alike names stay readable. This never affects whether a proof is valid.
 
 ## 10. What a valid proof does and doesn't show
 

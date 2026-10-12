@@ -1,7 +1,8 @@
 /** Small byte helpers shared by the engine. No DOM or Node APIs, so it runs in the browser, workers and CI scripts. */
 
 const encoder = new TextEncoder();
-const decoder = new TextDecoder('utf-8', { fatal: true });
+// fatal: reject invalid UTF-8. ignoreBOM: keep a leading U+FEFF as a character (spec section 2).
+const decoder = new TextDecoder('utf-8', { fatal: true, ignoreBOM: true });
 
 export const utf8 = (text: string): Uint8Array => encoder.encode(text);
 export const fromUtf8 = (bytes: Uint8Array): string => decoder.decode(bytes);
@@ -39,8 +40,11 @@ export const toBase64Url = (bytes: Uint8Array): string => {
   return out;
 };
 
+/** Strict base64url: no padding, and the unused bits of the last character must be zero (canonical). */
 export const fromBase64Url = (text: string): Uint8Array => {
   if (!/^[A-Za-z0-9_-]*$/.test(text) || text.length % 4 === 1) throw new Error('Invalid base64url string');
+  const spare = text.length % 4 === 2 ? 15 : text.length % 4 === 3 ? 3 : 0;
+  if (spare && (B64.indexOf(text[text.length - 1]) & spare) !== 0) throw new Error('Non-canonical base64url string');
   const out = new Uint8Array(Math.floor((text.length * 3) / 4));
   let o = 0;
   for (let i = 0; i < text.length; i += 4) {
@@ -67,13 +71,14 @@ export const encodeVarint = (value: number): Uint8Array => {
   return Uint8Array.from(out);
 };
 
+/** Strict LEB128: at most 8 bytes, at most 2^53-1, and minimal (no trailing zero group). */
 export const decodeVarint = (bytes: Uint8Array, offset: number): { value: number; next: number } => {
   let value = 0;
   let scale = 1;
   for (let i = offset; i < bytes.length && i < offset + 8; i++) {
     value += (bytes[i] & 127) * scale;
     if ((bytes[i] & 128) === 0) {
-      if (!Number.isSafeInteger(value)) break;
+      if (!Number.isSafeInteger(value) || (bytes[i] === 0 && i > offset)) break;
       return { value, next: i + 1 };
     }
     scale *= 128;

@@ -3,7 +3,7 @@ import '../../styles/HallOfFame.css';
 import { getCard } from '../../data/cards';
 import { checkPull } from '../../game/pulls';
 import { REPO } from '../../constants';
-import { HALL_OF_FAME_MIN_MULTIPLIER, HALL_OF_FAME_MIN_SCORE } from '../../engine';
+import { decodeProof, HALL_OF_FAME_MIN_MULTIPLIER, HALL_OF_FAME_MIN_SCORE, pullId } from '../../engine';
 
 // Hackathon legends: screenshots from before pulls were verifiable.
 import adiImage from '../../assets/images/hall_of_fame/adi-four-of-a-kind.webp';
@@ -62,12 +62,20 @@ const HallOfFamePage = ({ onClose }: HallOfFamePageProps) => {
       .catch(() => setEntries([]));
   }, []);
 
-  // One entry per proof (earliest submission keeps the credit), best first.
+  // One entry per pull (earliest submission keeps the credit), best first. A pull can be signed
+  // more than once, so this keys on set, key and ticket number rather than the proof text.
   const ranked = useMemo(() => {
     const seen = new Set<string>();
+    const idOf = (e: HallOfFameEntry) => {
+      try {
+        return pullId(decodeProof(e.proof));
+      } catch {
+        return e.proof; // fails verification below and shows as such
+      }
+    };
     return [...(entries ?? [])]
       .sort((a, b) => a.submittedAt.localeCompare(b.submittedAt))
-      .filter((e) => !seen.has(e.proof) && !!seen.add(e.proof))
+      .filter((e) => !seen.has(idOf(e)) && !!seen.add(idOf(e)))
       .sort((a, b) => b.multiplier - a.multiplier || b.score - a.score || a.submittedAt.localeCompare(b.submittedAt));
   }, [entries]);
 
@@ -154,7 +162,10 @@ const HallOfFamePage = ({ onClose }: HallOfFamePageProps) => {
     <div className="hall-of-fame-page">
       <div className="hall-of-fame-header">
         <h2>Hall of Fame</h2>
-        <p>The luckiest verified pulls on Earth. Every entry is re-checked on your device, so none of them can be faked.</p>
+        <p>
+          The luckiest verified pulls on Earth. GitHub Actions verified every entry, and the top {VERIFY_LIMIT} are re-checked on
+          your device right now. Open any pull to check it yourself.
+        </p>
         <button className="hall-of-fame-close-btn" onClick={onClose}>&times;</button>
       </div>
 

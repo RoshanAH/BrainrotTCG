@@ -107,7 +107,7 @@ const addValid = async (set: SetDefinition, sk: Uint8Array, nonce: number, name:
   return proof;
 };
 await addValid(must('right-now', 1), KEYS[0], 0, 'Evan', 'simple');
-await addValid(must('web-ancients', 1), KEYS[0], 1, 'Zoë 🧠 Brainrot', 'non-ASCII name');
+await addValid(must('web-ancients', 1), KEYS[0], 1, 'Zo\u00EB \u{1F9E0} Brainrot', 'non-ASCII name');
 await addValid(must('genesis', 1), KEYS[1], 300, '', 'empty name, archived set');
 await addValid(must('vine-and-dank', 1), KEYS[1], 2 ** 40 + 3, 'Big Nonce', 'multi-byte varint');
 // A mined combo, so scoring multipliers get exercised.
@@ -202,8 +202,11 @@ const invalid = [
   { note: 'base64url padding', rule: 'decode', proof: `${b64(good)}=` },
   { note: 'invalid UTF-8 in name', rule: 'decode', proof: b64(signed({ name: Uint8Array.of(0x45, 0xc3, 0x28) })) },
   { note: 'name not normalised (double space)', rule: 'name', proof: b64(signed({ name: utf8('Evan  Lin') })) },
-  { note: 'name with right-to-left override', rule: 'name', proof: b64(signed({ name: utf8('Evan‮gnp.exe') })) },
-  { note: 'name not NFC', rule: 'name', proof: b64(signed({ name: utf8('Zoë') })) },
+  { note: 'name with a byte order mark', rule: 'name', proof: b64(signed({ name: utf8('\uFEFFEvan') })) },
+  { note: 'name with a zero-width joiner', rule: 'name', proof: b64(signed({ name: utf8('Ev\u200Dan') })) },
+  { note: 'name with a no-break space', rule: 'name', proof: b64(signed({ name: utf8('Ev\u00A0an') })) },
+  { note: 'name with a trailing space', rule: 'name', proof: b64(signed({ name: utf8('Evan ') })) },
+  { note: 'name with right-to-left override', rule: 'name', proof: b64(signed({ name: utf8('Evan\u202Egnp.exe') })) },
   { note: 'name over 24 code points', rule: 'name', proof: b64(signed({ name: utf8('x'.repeat(25)) })) },
   { note: 'small-order public key with a forged signature', rule: 'publicKey', proof: b64(smallOrderForgery) },
   { note: 'non-canonical public key encoding', rule: 'publicKey', proof: b64(signed({ publicKey: Uint8Array.from({ length: 32 }, (_, i) => (i === 31 ? 0x7f : i === 0 ? 0xee : 0xff)) })) },
@@ -214,6 +217,31 @@ const invalid = [
 // Sanity: everything decodes as base64url-ish text the way we intended.
 for (const v of invalid) if (!/^[A-Za-z0-9_=-]+$/.test(v.proof)) throw new Error(`bad vector ${v.note}`);
 void fromBase64Url;
+
+// Names are checked against fixed lists only (no NFC, no Unicode categories), so these are valid.
+for (const [note, name] of [
+  ['name not in NFC (valid; UIs normalise for display)', 'Zoe\u0308'],
+  ['name with an unassigned code point (valid in every Unicode version)', 'E\u0378van'],
+] as const) {
+  const set = must('right-now', 1);
+  const cards = await derivePack(set, pk, 5);
+  const score = scorePack(cards);
+  valid.push({
+    note,
+    proof: b64(signed({ name: utf8(name) })),
+    set: setKey(set),
+    publicKey: toHex(pk),
+    nonce: 5,
+    name,
+    fingerprint: fingerprint40(pk),
+    cards: cards.map(({ cardId, rarity, isHolo }) => ({ cardId, rarity, isHolo })),
+    points: score.points,
+    hand: score.hand.name,
+    multiplier: score.hand.multiplier,
+    score: score.score,
+    hallOfFame: qualifiesForHallOfFame(score),
+  });
+}
 
 // --- the same pull, signed twice with different names ---
 const a = signProof({ setId: 'right-now', setVersion: 1, publicKey: pk, nonce: 9, name: 'First' }, sk);
