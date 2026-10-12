@@ -25,3 +25,6 @@ dist-ssr
 # Local Claude Code settings stay private; shared skills are committed
 .claude/*
 !.claude/skills/
+
+# Python
+__pycache__/
