@@ -3,6 +3,42 @@
 Brainrot TCG is a static site (Vite + React on GitHub Pages) with **no backend**. Every pull is
 still verifiable by anyone, because packs are derived from proofs rather than stored anywhere.
 
+## Verification at a glance
+
+No server decides what anyone pulled. Your device does a fixed amount of work per pack and signs the
+result; anyone's device redoes the same work from the link and gets the same pack. Opening and
+verifying are the same function, `derivePack(set, key, ticket#)`.
+
+```mermaid
+flowchart LR
+  subgraph You["Your device"]
+    K["Player key (Ed25519, stays local)"]
+    N["Ticket counter #0, #1, ..."]
+    T["Ticket: Argon2id(set@v, key, #n), 32 MiB"]
+    P["Pack: SHA-256 -> sfc32 -> 5 cards"]
+    H["Pack history (every ticket)"]
+    S["Sign"]
+    K --> T
+    N --> T --> P --> H --> S
+    K --> S
+  end
+  Sets[("Card sets: published, hash-locked, old versions kept")]
+  Sets -. rules .-> P
+  S -->|"#/pull/proof or #/profile/proof"| L(["Link, shared anywhere"])
+  subgraph Viewer["Anyone's device"]
+    D["Strict decode"] --> C["Name, key, signature"] --> R["Redo the ticket(s)"] --> V{"Same pack? Claims match?"}
+  end
+  L --> D
+  Sets -. same rules .-> R
+  V -->|yes| OK["Verified"]
+  V -->|no| BAD["Rejected, naming the rule"]
+```
+
+GitHub only hosts the site and acts as a public inbox for the Hall of Fame: it could drop a
+submission, but every visitor re-checks the entries, so it can't add a fake one. `spec/verify_pull.py`
+re-implements all of this from the spec with different libraries, and CI checks both implementations
+against both sets of test vectors.
+
 ## Layers
 
 ```

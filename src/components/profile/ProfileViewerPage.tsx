@@ -115,7 +115,7 @@ const ProfileViewerPage = ({ proof, onClose }: ProfileViewerPageProps) => {
             </>
           ) : done ? (
             <>
-              <ShieldCheck aria-hidden="true" /> Verified: all {total.toLocaleString()} packs re-opened on this device
+              <ShieldCheck aria-hidden="true" /> Verified: {total === 1 ? 'its pack was' : `all ${total.toLocaleString()} packs`} re-opened on this device
             </>
           ) : (
             <>
