@@ -22,112 +22,112 @@
   "holoOdds": 500,
   "cards": [
     {
-      "id": "egg-bandit",
-      "name": "Egg Bandit",
-      "rarity": "COMMON",
-      "caption": "Steal an egg. Run.",
-      "flavor": "Aug–Oct 2026: Roblox's Steal an Egg peaked near 14M players at once. Grab. Hatch. Run.",
-      "year": 2026,
-      "art": "Chubby speckled egg in a black bandit eye-mask with tiny legs, sprinting while carrying a smaller golden egg, sweat drops, a treadmill behind. Background: grassy farm. Colors: cream, black, gold, grass green."
-    },
-    {
-      "id": "huss-valley-runner",
-      "name": "Huss Valley Runner",
-      "rarity": "COMMON",
-      "caption": "Why he keep coming back?",
-      "flavor": "July 2026: frantic running clips got a name, 'hussing', and their own Roblox valley.",
-      "year": 2026,
-      "art": "Faceless blue stick-figure runner with exaggerated pumping arms and knees, big sweat drops and breath puffs, racing down a winding green valley road past an arrow signpost. Colors: blue, valley green, road gray, white."
-    },
-    {
-      "id": "round-raccoon",
-      "name": "Round Raccoon",
-      "rarity": "COMMON",
-      "caption": "Built like a dinner roll",
-      "flavor": "July 2026's Meme of the Month: Jimothy, the round (and healthy) Seattle raccoon.",
-      "year": 2026,
-      "art": "Very round, compact raccoon like a fluffy ball on short legs, bandit mask, calm unbothered face, waddling across a lawn. Background: green lawn and wooden fence. Colors: gray, black, cream, green."
-    },
-    {
-      "id": "nothing-special",
-      "name": "The Nothing Special",
+      "id": "mbappe-special",
+      "name": "Mbappé Special",
       "rarity": "COMMON",
       "caption": "For example, nothing",
-      "flavor": "World Cup summer 2026: a star's 'special' recipe was 'for example, nothing.'",
+      "flavor": "July 2026, World Cup: asked for his signature dish, Mbappé said 'for example, nothing.'",
       "year": 2026,
-      "art": "Fancy silver cloche lifted by a tiny chef's hat with stick arms, revealing a completely empty white plate with one sparkle. Background: red-check tablecloth. Colors: silver, white, red, black."
+      "art": "Close-up frame of Kylian Mbappé smiling in the July 2026 Vanity Fair interview clip (Know Your Meme's main image)."
     },
     {
-      "id": "la-peace-stone",
-      "name": "La Peace Stone",
-      "rarity": "UNCOMMON",
-      "caption": "La peace be with you",
-      "flavor": "Aug 2026: a Minecraft stream misread 'lapis lazuli' and gave the world 'la peace.'",
+      "id": "niu-lai",
+      "name": "Niu Lai",
+      "rarity": "COMMON",
+      "caption": "Here comes the cow",
+      "flavor": "Aug 2026: a mother-and-son Chinese cartoon about a scared calf, so bad it became a hit.",
       "year": 2026,
-      "art": "Deep blue gemstone with gold flecks meditating cross-legged with serene closed eyes and a soft halo, floating above a plain gray cube. Background: calm lavender gradient. Colors: lapis blue, gold, lavender, white."
-    },
-    {
-      "id": "hippo-jacuzzo",
-      "name": "Hippo Jacuzzo",
-      "rarity": "UNCOMMON",
-      "caption": "Do not disturb. Bubbling.",
-      "flavor": "Sept 2026: Steal a Brainrot's OG Craft event added a hippo with its own hot tub.",
-      "year": 2026,
-      "art": "Lavender-gray hippo lounging in a round bubbling hot tub, cucumber slices on its eyes, a rubber duck floating, steam swirls. Background: tiled spa. Colors: hippo lavender, aqua, white bubbles, yellow."
-    },
-    {
-      "id": "car-from-chile",
-      "name": "Car From Chile",
-      "rarity": "UNCOMMON",
-      "caption": "Cars in Chile be like",
-      "flavor": "Sept 2026: Chile is long and thin, so the internet decided everything there is too.",
-      "year": 2026,
-      "art": "Absurdly long, skinny cartoon car stretching diagonally across the whole card, tiny wheels every few inches, a driver window at each end, mountains behind. Colors: cherry red, road gray, sky blue, snowy white."
+      "art": "Still of the red cow hero's deadpan face from the 2026 Chinese animated film Niu Lai (Know Your Meme's main image)."
     },
     {
       "id": "bukangi",
       "name": "Bukangi",
-      "rarity": "RARE",
+      "rarity": "COMMON",
       "caption": "Won't leave the harbor",
-      "flavor": "Busan, Sept 2026: a shark parked in a harbor canal, got a cute name and 10k fans a day.",
+      "flavor": "Busan, Sept 2026: a 3 m shark moved into a harbor canal and drew a million visitors.",
       "year": 2026,
-      "art": "Friendly gray shark with rosy cheeks and a tiny sailor cap poking its head out of a narrow canal, crowd of tiny phone-camera flashes on the bank, harbor bridge silhouette. Colors: shark gray, sea blue, pink, yellow."
+      "art": "Yonhap aerial news photo of Bukangi the shark swimming past stone bollards in the Busan North Port waterfront canal."
     },
     {
-      "id": "totally-not-verity",
-      "name": "Totally Not Verity",
+      "id": "huss-valley",
+      "name": "Huss Valley",
+      "rarity": "COMMON",
+      "caption": "Why he keep coming back?",
+      "flavor": "July 2026: clips of YouTuber Daniel LaBelle fleeing costumed chasers became 'Huss Valley.'",
+      "year": 2026,
+      "art": "Deep-fried meme frame of Daniel LaBelle as a mailman running from a red dog costume (left panel of Know Your Meme's image)."
+    },
+    {
+      "id": "la-peace",
+      "name": "La Peace",
+      "rarity": "UNCOMMON",
+      "caption": "That's la peace",
+      "flavor": "Aug 2026: Kai Cenat said 'lapis' on a Minecraft stream and it came out 'la peace.'",
+      "year": 2026,
+      "art": "The meme edit of Kai Cenat as a white-bearded sage raising one finger in a Minecraft cave (Know Your Meme's main image)."
+    },
+    {
+      "id": "chile-memes",
+      "name": "Chile Memes",
+      "rarity": "UNCOMMON",
+      "caption": "Cars in Chile be like",
+      "flavor": "Sept 2026: Chile is long and thin, so the internet decided everything there is too.",
+      "year": 2026,
+      "art": "The squeezed-thin teal car in a night parking lot beside a map of Chile (middle panel of Know Your Meme's image)."
+    },
+    {
+      "id": "remember-november",
+      "name": "Remember November",
+      "rarity": "UNCOMMON",
+      "caption": "Remember November 2026",
+      "flavor": "Aug 28, 2026: an AI polar bear sings a cryptic prophecy that November 2026 is coming.",
+      "year": 2026,
+      "art": "Close-up frame of the AI polar bear singing, mouth open, from the viral video (Know Your Meme's main image)."
+    },
+    {
+      "id": "steal-an-egg",
+      "name": "Steal an Egg",
       "rarity": "RARE",
-      "caption": "Every smiley is Verity",
-      "flavor": "Summer 2026: a Minecraft horror series made kids yell 'Verity!' at every smiley face.",
+      "caption": "Steal an egg. Run.",
+      "flavor": "July 2026: Roblox's Steal an Egg launched and hit 14M players at once by September.",
       "year": 2026,
-      "art": "Plain yellow ball smiley with dot eyes and a slightly-too-wide smile, faint suspicious glow, surrounded by ordinary smileys. Background: dark forest green. Colors: smiley yellow, black, forest green, white."
+      "art": "The game's official Roblox icon: a blocky avatar hoisting a giant golden egg next to a snarling robot jaguar."
     },
     {
-      "id": "clapback-cat",
-      "name": "Clapback Cat",
-      "rarity": "EPIC",
+      "id": "black-cat-clapping",
+      "name": "Black Cat Clapping",
+      "rarity": "RARE",
       "caption": "Wow. Great job. Really.",
-      "flavor": "Late Sept 2026: an AI black cat with human hands slowly applauding your bad choices.",
+      "flavor": "Sept 2026: an AI black cat with human hands slowly applauds. Green-screened everywhere.",
       "year": 2026,
-      "art": "Glossy black cat with big yellow eyes and a smug closed-mouth smile, two oversized white cartoon hands clapping, clap marks. Background: flat chroma-key green. Colors: black, yellow, white, bright green."
+      "art": "Frame of the AI black cat grinning with human teeth and clapping its human hands on a tiled floor (Know Your Meme's main image)."
     },
     {
-      "id": "november-bear",
-      "name": "November Bear",
+      "id": "verity",
+      "name": "Verity",
+      "rarity": "EPIC",
+      "caption": "It's me, it's Verity!",
+      "flavor": "May 2026: a Minecraft horror series made Gen Alpha yell 'Verity!' at every smiley face.",
+      "year": 2026,
+      "art": "Screenshot of Verity, the round yellow smiley, floating over Minecraft grass in ThatMob's series (Know Your Meme's main image)."
+    },
+    {
+      "id": "ai-rumpelstiltskin",
+      "name": "AI Rumpelstiltskin",
       "rarity": "LEGENDARY",
-      "caption": "Remember November...",
-      "flavor": "Sept 2026: an AI polar bear sings a cryptic 'prophecy' about November 2026. Why?",
+      "caption": "Tip-toein' in my Jordans",
+      "flavor": "Aug 2026: an AI 'lost 80s film' imp dances in a barn. Set to Riff Raff, it tip-toed viral.",
       "year": 2026,
-      "art": "White polar bear standing in snow at night, singing with eyes closed and one paw raised dramatically, a calendar page reading 'NOV' floating behind, aurora in the sky. Colors: white, navy, aurora green, red."
+      "art": "Frame of the AI Rumpelstiltskin imp in a velvet tailcoat mid tip-toe dance in a hay barn (NBC News screenshot of the clip)."
     },
     {
-      "id": "tiptoe-stiltskin",
-      "name": "Tiptoe Stiltskin",
+      "id": "jimothy",
+      "name": "Jimothy",
       "rarity": "BRAINROT",
-      "caption": "Tip-toein' in my kicks",
-      "flavor": "Oct 2026: a fake-80s AI fairy-tale imp tiptoe-dances while straw turns to gold.",
+      "caption": "Praise Jimothy!",
+      "flavor": "July 14, 2026: a round little Seattle raccoon waddled across a backyard into history.",
       "year": 2026,
-      "art": "Small bearded imp in a pointy felt hat and patched tunic tiptoeing with knees high and arms swinging, straw pile turning into gold coins behind him. Background: sepia castle room. Colors: brown, gold, forest green, sepia."
+      "art": "Frame from the original July 2026 video of Jimothy the round raccoon on a backyard lawn by a tree (Know Your Meme's main image)."
     }
   ]
 }
