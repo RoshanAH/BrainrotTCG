@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link2, ShieldAlert, ShieldCheck } from 'lucide-react';
-import { checkPull, pullUrl, type CheckedPull } from '../../game/pulls';
+import { checkPull, previewFor, pullUrl, type CheckedPull } from '../../game/pulls';
 import { normalizeName } from '../../engine';
 import { setCode } from '../../content/sets';
 import PackCardViewer from '../ui/PackCardViewer';
@@ -30,12 +30,14 @@ const PullViewerPage = ({ proof, onClose }: PullViewerPageProps) => {
   }, [proof]);
 
   const copyLink = async () => {
+    // Once the pack is checked, the link previews as its best card.
+    const link = pullUrl(proof, state.status === 'ok' ? previewFor(state.pull.cardsWithMeta, state.pull.score.hand.name) : undefined);
     try {
-      await navigator.clipboard.writeText(pullUrl(proof));
+      await navigator.clipboard.writeText(link);
       setCopied(true);
       setTimeout(() => setCopied(false), 1800);
     } catch {
-      window.prompt('Copy this:', pullUrl(proof));
+      window.prompt('Copy this:', link);
     }
   };
 

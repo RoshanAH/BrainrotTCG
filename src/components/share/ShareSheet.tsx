@@ -6,7 +6,7 @@ import { decodeProof, pullId, qualifiesForHallOfFame, wouldJoinHallOfFame } from
 import { loadHallOfFame, type HallOfFameEntry } from '../../game/hallOfFameList';
 import { getLatestSet, setCode } from '../../content/sets';
 import { getPlayer } from '../../game/player';
-import { canShare, proofFor, pullUrl, type PullRef } from '../../game/pulls';
+import { canShare, previewFor, proofFor, pullUrl, type PullRef } from '../../game/pulls';
 import { bragText, hallOfFameSubmitUrl, submitToHallOfFame, wasSubmitted } from '../../game/share';
 import { renderPoster } from '../../game/bragImage';
 import Sheet from '../ui/Sheet';
@@ -31,7 +31,10 @@ const ShareSheet = ({ target, onClose }: ShareSheetProps) => {
   const setName = set?.name ?? target.ref.setId;
   const shareable = canShare(target.ref);
   const proof = useMemo(() => (shareable ? proofFor(target.ref) : ''), [shareable, target.ref]);
+  // The QR code opens the pull directly; the link people paste goes through the best card's
+  // preview page, so chat apps show that card.
   const url = proof ? pullUrl(proof) : '';
+  const link = proof ? pullUrl(proof, previewFor(target.cards, target.score.hand.name)) : '';
   const id = useMemo(() => (proof ? pullId(decodeProof(proof)) : ''), [proof]);
   // Submit only what would make the list (the top pulls, or a first); until it loads, anything that qualifies.
   const [list, setList] = useState<HallOfFameEntry[] | null>(null);
@@ -73,8 +76,8 @@ const ShareSheet = ({ target, onClose }: ShareSheetProps) => {
         })
       }
       imageName={`brainrot-pull-${target.ref.setId}-${target.ref.nonce}.png`}
-      url={url}
-      text={bragText(target.cards, target.score, setName, url)}
+      url={link}
+      text={bragText(target.cards, target.score, setName, link)}
       onClose={onClose}
     >
       {listed ? (

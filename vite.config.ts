@@ -1,8 +1,8 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// https://vite.dev/config/
+// The site's path: GitHub Pages serves it under /BrainrotTCG/; another host can set BASE_PATH=/.
 export default defineConfig({
-  base: '/BrainrotTCG/',
+  base: process.env.BASE_PATH ?? '/BrainrotTCG/',
   plugins: [react()],
 })
