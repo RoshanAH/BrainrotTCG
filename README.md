@@ -49,7 +49,7 @@ We would love to expand the card selection to include more brainrot characters a
 - **Pack Opening Experience** - Cards revealed with smooth animations and confetti effects for rare pulls
 - **Collection Browser** - Track your found cards with counts and rarity-colored borders
 - **Rarity System** - Common, Uncommon, Rare, Epic, Legendary and Brainrot cards, plus holos
-- **Brainrot value** - Poker hands (pairs up to 5 of a Kind) multiply your pack's value
+- **Brainrot Score** - Card points by rarity times combo multipliers (pairs up to 5 of a Kind); every number follows the real odds, so rarer always pays more
 - **Achievements** - 70+ achievements for milestones, lucky packs and collections
 - **3D Card Tilt** - Cards tilt based on mouse position for an interactive feel
 

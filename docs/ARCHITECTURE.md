@@ -11,7 +11,8 @@ src/engine/        Pure TypeScript. No React, no DOM, no Vite. Runs in the brows
   ticket.ts          Argon2id proof-of-work: the cost of one pack
   identity.ts        Ed25519 player keys, fingerprints, name rules
   proof.ts           pull proofs: encode / decode / sign / verify
-  scoring.ts         poker hands + brainrot value
+  scoring.ts         Brainrot Score: rarity points x combo multipliers, all derived from the odds
+  odds.ts            exact combo odds for any set (powers the in-game scoring guide)
   hallOfFame.ts      what qualifies for the Hall of Fame (shared by UI and CI)
 
 src/content/       Data. Adding content never needs code changes.
