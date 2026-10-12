@@ -11,7 +11,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "cards": "tsx scripts/cards/build.ts",
-    "check:sets": "tsx scripts/check-sets.ts"
+    "check:sets": "tsx scripts/check-sets.ts",
+    "check": "npm run lint && npm run typecheck && npm test && npm run check:sets"
   },
   "dependencies": {
     "@noble/ed25519": "^3.2.0",

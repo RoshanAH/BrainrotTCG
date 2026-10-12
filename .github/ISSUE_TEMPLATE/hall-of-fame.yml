@@ -1,0 +1,23 @@
+name: Hall of Fame submission
+description: Submit a verified pull to the global Brainrot TCG Hall of Fame
+title: "[Hall of Fame] "
+labels: ["hall-of-fame"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Paste the link from **Share this pull** in the game. A bot re-opens the pack from the link's proof.
+        If it's real and qualifies (**Full House or better**, or **2,000+ brainrot value**), it joins the
+        Hall of Fame on the next deploy, credited to you. Fakes and edited links simply don't verify.
+  - type: input
+    id: pull
+    attributes:
+      label: Pull link
+      placeholder: https://evanlin23.github.io/BrainrotTCG/#/pull/...
+    validations:
+      required: true
+  - type: textarea
+    id: story
+    attributes:
+      label: The story (optional)
+      description: How many packs did it take? What did you yell?
