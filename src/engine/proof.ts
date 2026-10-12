@@ -102,9 +102,17 @@ export interface VerifiedPull {
 
 export type SetLookup = (setId: string, version: number) => SetDefinition | undefined;
 
+/** Computes a ticket; the browser passes a Web Worker-backed version. */
+export type TicketFn = (setKey: string, publicKey: Uint8Array, nonce: number) => Promise<Uint8Array>;
+
 /** Derive the pack for a (set, key, nonce) triple. This is what both opening and verifying do. */
-export const derivePack = async (set: SetDefinition, publicKey: Uint8Array, nonce: number): Promise<PulledCard[]> => {
-  const ticket = await computeTicket(setKey(set), publicKey, nonce);
+export const derivePack = async (
+  set: SetDefinition,
+  publicKey: Uint8Array,
+  nonce: number,
+  ticketFn: TicketFn = computeTicket,
+): Promise<PulledCard[]> => {
+  const ticket = await ticketFn(setKey(set), publicKey, nonce);
   return generatePack(set, packSeedFromTicket(ticket));
 };
 
@@ -112,14 +120,14 @@ export const derivePack = async (set: SetDefinition, publicKey: Uint8Array, nonc
  * Verify a proof completely: signature, set, and the pack itself (by recomputing the ticket).
  * Throws with a human-readable reason if anything is off.
  */
-export const verifyProof = async (proofText: string, lookup: SetLookup): Promise<VerifiedPull> => {
+export const verifyProof = async (proofText: string, lookup: SetLookup, ticketFn: TicketFn = computeTicket): Promise<VerifiedPull> => {
   const proof = decodeProof(proofText);
   if (normalizeName(proof.name) !== proof.name) throw new Error('Proof name is not normalised');
   const message = concatBytes(SIGNATURE_DOMAIN, encodeUnsigned(proof));
   if (!verifySignature(proof.signature, message, proof.publicKey)) throw new Error('Signature does not match');
   const set = lookup(proof.setId, proof.setVersion);
   if (!set) throw new Error(`Unknown set ${proof.setId}@${proof.setVersion}`);
-  const cards = await derivePack(set, proof.publicKey, proof.nonce);
+  const cards = await derivePack(set, proof.publicKey, proof.nonce, ticketFn);
   const score = scorePack(cards.map((c) => ({ ...c, cardId: `${c.setId}/${c.cardId}` })));
   return { proof, set, cards, score, fingerprint: fingerprint(proof.publicKey) };
 };

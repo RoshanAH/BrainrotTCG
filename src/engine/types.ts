@@ -27,6 +27,8 @@ export interface SetDefinition {
   tagline?: string;
   /** ISO date the set became openable. */
   releasedAt: string;
+  /** Draft sets (e.g. placeholder art) are hidden unless the player opts into previews. */
+  draft?: boolean;
   palette?: string[];
   packSize: number;
   /** Weight per rarity, summing to ODDS_TOTAL. */

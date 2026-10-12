@@ -5,3 +5,4 @@ export * from './scoring';
 export * from './ticket';
 export * from './identity';
 export * from './proof';
+export * from './hallOfFame';
