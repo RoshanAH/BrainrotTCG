@@ -4,7 +4,6 @@
  * derived itself, so trusting it is trusting this device.
  */
 import type { PulledCard, SetDefinition } from '../engine';
-import { getCardDefinition } from '../content/sets';
 
 const KEY = 'brainrot-reopened-v1';
 const MAX_ENTRIES = 5000;
@@ -44,7 +43,8 @@ export const getReopened = (set: SetDefinition, publicKeyHex: string, nonce: num
   if (!stored) return null;
   const cards = stored.split(',').map((c, slot) => {
     const cardId = c.replace(/\*$/, '');
-    const rarity = getCardDefinition(set.id, cardId)?.rarity;
+    // This exact version's rarity: a later version may change it (spec section 12).
+    const rarity = set.cards.find((card) => card.id === cardId)?.rarity;
     return rarity ? { setId: set.id, cardId, rarity, isHolo: c.endsWith('*'), slot } : null;
   });
   return cards.every((c) => c) ? (cards as PulledCard[]) : null;

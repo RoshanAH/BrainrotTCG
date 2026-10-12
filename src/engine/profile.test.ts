@@ -6,6 +6,7 @@ import { derivePack, ProofError } from './proof';
 import {
   checkClaims,
   checkProfile,
+  claimsTracker,
   claimsFor,
   createProfile,
   decodeProfile,
@@ -171,10 +172,72 @@ describe('profile proofs', () => {
   });
 });
 
+describe('early claims checks', () => {
+  /** Every pack of a profile, in the order the live verifier re-opens them: highlights, then the rest. */
+  const reopen = async (proof: ProfileProof) => {
+    const { packs, checked } = await verifyProfile(encodeProfile(proof), lookup, fastTicket);
+    const order = [...proof.highlights, ...packs.map((p) => p.nonce).filter((n) => !proof.highlights.includes(n))];
+    return { tickets: checked.tickets, inOrder: order.map((n) => packs[n]) };
+  };
+  const firstReason = (claims: Parameters<typeof claimsTracker>[0], tickets: SetDefinition[], packs: ProfilePack[]) => {
+    const tracker = claimsTracker(claims, tickets);
+    const initial = tracker.initial();
+    if (initial) return { reason: initial, at: 0 };
+    for (const [i, pack] of packs.entries()) {
+      const reason = tracker.add(pack);
+      if (reason) return { reason, at: i + 1 };
+    }
+    return null;
+  };
+
+  it('never rules out a real profile, whatever order its packs arrive in', async () => {
+    for (const count of [1, 4, 30]) {
+      const proof = await make('Evan', [{ setId: 'set-a', setVersion: 1, count }, { setId: 'set-b', setVersion: 1, count: 7 }]);
+      const { tickets, inOrder } = await reopen(proof);
+      expect(firstReason(proof, tickets, inOrder)).toBeNull();
+      expect(firstReason(proof, tickets, [...inOrder].reverse())).toBeNull();
+    }
+  });
+
+  it('rules out impossible XP before re-opening anything, and too little XP as soon as it shows', async () => {
+    const proof = await make('Evan', [{ setId: 'set-a', setVersion: 1, count: 30 }]);
+    const { tickets, inOrder } = await reopen(proof);
+    expect(firstReason({ ...proof, xp: Number.MAX_SAFE_INTEGER }, tickets, inOrder)?.at).toBe(0);
+    expect(firstReason({ ...proof, xp: 30 * XP_PER_PACK - 1 }, tickets, inOrder)?.at).toBe(0);
+    const short = firstReason({ ...proof, xp: proof.xp - 100 }, tickets, inOrder);
+    expect(short?.reason).toMatch(/at least/);
+    expect(short!.at).toBeLessThan(30);
+  });
+
+  it('rules out made-up highlights once a better pack turns up', async () => {
+    const proof = await make('Evan', [{ setId: 'set-a', setVersion: 1, count: 30 }]);
+    const { tickets } = await reopen(proof);
+    // Name the five worst packs as the best, in a consistent order, then re-open in the live order.
+    const { packs } = await verifyProfile(encodeProfile(proof), lookup, fastTicket);
+    const worst = [...packs].sort((a, b) => a.score.score - b.score.score || b.nonce - a.nonce).slice(0, 5).reverse().map((p) => p.nonce);
+    const fake = { ...proof, highlights: worst };
+    const order = [...worst, ...packs.map((p) => p.nonce).filter((n) => !worst.includes(n))].map((n) => packs[n]);
+    const result = firstReason(fake, tickets, order);
+    expect(result?.reason).toMatch(/best/);
+    expect(result!.at).toBeLessThan(30);
+    expect(firstReason({ ...proof, highlights: [...proof.highlights].reverse() }, tickets, order)?.reason).toMatch(/order/);
+  });
+});
+
 describe('levels', () => {
   it('follows 50 x L x (L - 1)', () => {
     expect([1, 2, 3, 4, 5, 10].map(xpForLevel)).toEqual([0, 100, 300, 600, 1000, 4500]);
     expect([0, 99, 100, 299, 300, 4499, 4500].map(levelForXp)).toEqual([1, 1, 2, 2, 3, 9, 10]);
+  });
+
+  it('finds the level directly, even for huge XP', () => {
+    for (let level = 1; level < 3000; level++) {
+      expect(levelForXp(xpForLevel(level))).toBe(level);
+      expect(levelForXp(xpForLevel(level + 1) - 1)).toBe(level);
+    }
+    const huge = levelForXp(Number.MAX_SAFE_INTEGER);
+    expect(xpForLevel(huge)).toBeLessThanOrEqual(Number.MAX_SAFE_INTEGER);
+    expect(xpForLevel(huge + 1)).toBeGreaterThan(Number.MAX_SAFE_INTEGER);
   });
 
   it('counts packs, new cards and hands', () => {

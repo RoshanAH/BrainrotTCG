@@ -6,6 +6,7 @@ import {
   fromUtf8,
   toBase64Url,
   toHex,
+  trimAsciiSpace,
   utf8,
 } from './bytes';
 import { fingerprint, isValidName, isValidPublicKey, normalizeName, sign, verifySignature } from './identity';
@@ -90,7 +91,7 @@ export const decodeProof = (text: string): PullProof => decodeProofBytes(text).p
 
 const decodeProofBytes = (text: string): { proof: PullProof; signed: Uint8Array } => {
   try {
-    const bytes = fromBase64Url(text.trim());
+    const bytes = fromBase64Url(trimAsciiSpace(text));
     let o = 0;
     const take = (n: number) => {
       if (o + n > bytes.length) throw new Error('Proof is truncated');

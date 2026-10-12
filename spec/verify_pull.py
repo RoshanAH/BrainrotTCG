@@ -340,6 +340,8 @@ def generate_pack(set_def: SetDef, seed: bytes) -> list[Card]:
 PROOF_VERSION = 0x01
 SIGNED_PREFIX = b"brainrot-tcg/proof/v1"
 SHARE_LINK_MARKER = "#/pull/"
+# §2: only these may be ignored around a pasted proof or profile.
+ASCII_SPACE = " \t\r\n"
 
 
 @dataclass(frozen=True)
@@ -365,7 +367,7 @@ class Proof:
 def proof_text_from_input(text: str) -> str:
     """Accept a bare proof or a share link `https://.../#/pull/<proof>` (§6). Only whitespace
     around the whole argument is trimmed; the proof itself is decoded strictly."""
-    text = text.strip()
+    text = text.strip(ASCII_SPACE)
     if "#" in text:
         fragment = "#" + text.split("#", 1)[1]
         if not fragment.startswith(SHARE_LINK_MARKER):
@@ -738,7 +740,7 @@ class Profile:
 
 def profile_text_from_input(text: str) -> str:
     """Accept a bare profile or a link `https://.../#/profile/<profile>` (§11)."""
-    text = text.strip()
+    text = text.strip(ASCII_SPACE)
     if "#" in text:
         fragment = "#" + text.split("#", 1)[1]
         if not fragment.startswith(PROFILE_LINK_MARKER):

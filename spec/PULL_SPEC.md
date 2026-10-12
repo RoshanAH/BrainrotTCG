@@ -26,6 +26,9 @@ A proof never contains cards. The verifier derives them, so a proof can't claim 
 - **base64url**: RFC 4648 §5 alphabet `A–Z a–z 0–9 - _`, **no padding**. A decoder MUST reject
   `=`, any other character, a length ≡ 1 (mod 4), and **non-canonical input**: the unused low bits of
   the last character MUST be zero. (Equivalently: re-encoding the decoded bytes gives the same text.)
+  A verifier MAY ignore ASCII space, tab, CR and LF before and after the whole text (what a paste
+  tends to add) and MUST treat any other character there, including other Unicode whitespace and
+  U+FEFF, as part of the text (so it fails `decode`).
 - **varint**: unsigned LEB128, 7 bits per byte, least significant group first, high bit set on every
   byte but the last. Values are 0 … 2⁵³−1 (at most 8 bytes). The encoding MUST be minimal: no
   trailing `0x80`-continued zero groups (the last byte of a multi-byte varint is never `0x00`).

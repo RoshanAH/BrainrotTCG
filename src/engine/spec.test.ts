@@ -120,3 +120,17 @@ describe.each([
     }
   });
 });
+
+describe('text around a proof (section 2)', () => {
+  const pull = engineVectors.valid[0].proof;
+  const profile = engineVectors.profiles[0].profile;
+
+  it('ignores ASCII space, tab, CR and LF around it, and nothing else', () => {
+    expect(() => decodeProof(` \t\r\n${pull}\n `)).not.toThrow();
+    expect(() => checkProfile(`\n${profile}\r\n`, getSet)).not.toThrow();
+    for (const extra of ['﻿', '\u0085', '\u001C', ' ', ' ']) {
+      expect(() => decodeProof(`${extra}${pull}`)).toThrow(expect.objectContaining({ rule: 'decode' }));
+      expect(() => checkProfile(`${profile}${extra}`, getSet)).toThrow(expect.objectContaining({ rule: 'decode' }));
+    }
+  });
+});

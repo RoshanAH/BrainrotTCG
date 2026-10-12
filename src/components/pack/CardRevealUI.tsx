@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { motion, AnimatePresence, type PanInfo } from 'framer-motion';
 import { FastForward } from 'lucide-react';
 import Card from '../cards/Card';
@@ -41,8 +42,14 @@ const CardRevealUI = ({ currentCard, currentIndex, totalCards, hasMovedMouse, on
       ? 'Click or press Space for the next card'
       : 'Click or press Space to flip';
 
+  // A mouse drag ends with a click on the card; that click isn't a tap, so it mustn't advance again.
+  const draggedAt = useRef(0);
   const onDragEnd = (_: unknown, info: PanInfo) => {
+    draggedAt.current = performance.now();
     if (Math.abs(info.offset.x) > SWIPE_DISTANCE || Math.abs(info.velocity.x) > SWIPE_SPEED) onInteraction();
+  };
+  const onTap = () => {
+    if (performance.now() - draggedAt.current > 300) onInteraction();
   };
 
   return (
@@ -79,7 +86,7 @@ const CardRevealUI = ({ currentCard, currentIndex, totalCards, hasMovedMouse, on
               dragElastic={0.6}
               onDragEnd={onDragEnd}
             >
-              <Card card={currentCard} isFlipped={currentCard.isRevealed} onFlip={onInteraction} tell={big} slowFlip={slow} />
+              <Card card={currentCard} isFlipped={currentCard.isRevealed} onFlip={onTap} tell={big} slowFlip={slow} />
             </Motion.div>
           )}
         </AnimatePresence>

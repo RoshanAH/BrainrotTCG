@@ -1,4 +1,4 @@
-import { concatBytes, decodeVarint, encodeVarint, fromBase64Url, fromUtf8, toBase64Url, utf8 } from './bytes';
+import { concatBytes, decodeVarint, encodeVarint, fromBase64Url, fromUtf8, toBase64Url, trimAsciiSpace, utf8 } from './bytes';
 import { fingerprint, isValidName, isValidPublicKey, normalizeName, sign, verifySignature } from './identity';
 import { derivePack, ProofError, type SetLookup, type TicketFn } from './proof';
 import { POKER_HANDS, scorePack, type HandKey, type PackScore } from './scoring';
@@ -132,7 +132,7 @@ export const decodeProfile = (text: string): ProfileProof => decodeProfileBytes(
 
 const decodeProfileBytes = (text: string): { profile: ProfileProof; signed: Uint8Array } => {
   try {
-    const bytes = fromBase64Url(text.trim());
+    const bytes = fromBase64Url(trimAsciiSpace(text));
     let o = 0;
     const take = (n: number) => {
       if (o + n > bytes.length) throw new Error('Profile is truncated');
@@ -326,10 +326,83 @@ const handKeyOf = (score: PackScore): HandKey =>
 /** XP to reach a level: 0, 100, 300, 600, 1000, ... (50 x L x (L - 1)). */
 export const xpForLevel = (level: number): number => 50 * level * (level - 1);
 
+/** The highest level whose XP is reached (closed form, so a huge claimed XP costs nothing). */
 export const levelForXp = (xp: number): number => {
-  let level = 1;
+  if (!(xp > 0)) return 1;
+  let level = Math.max(1, Math.floor((1 + Math.sqrt(1 + 0.08 * xp)) / 2));
+  while (level > 1 && xpForLevel(level) > xp) level--;
   while (xpForLevel(level + 1) <= xp) level++;
   return level;
+};
+
+/** Ranking for a profile's best packs: highest score first; ties go to the earlier ticket. */
+const ranksAbove = (a: ProfilePack, b: ProfilePack) => a.score.score > b.score.score || (a.score.score === b.score.score && a.nonce < b.nonce);
+
+/**
+ * Not part of the spec: an early answer to step 6 while packs are still being re-opened. `add` each
+ * pack as it comes in (any order) and it returns why the claims can no longer come out right, or
+ * null. It never rules out claims that `checkClaims` would accept, so a verifier can stop at the
+ * first reason instead of re-opening every pack of a profile whose claims are made up.
+ *
+ * XP is bounded both ways: each pack earns exactly 10 plus its hand's bonus (0 to 1000), and each
+ * distinct card earns 25 once, whatever order the packs are in. The highlights are re-opened first;
+ * once they're in, any other pack that outranks the last of them proves them wrong.
+ */
+export const claimsTracker = (profile: ProfileClaims, tickets: readonly SetDefinition[]) => {
+  const total = tickets.length;
+  const possibleCards = new Set<string>();
+  let maxPerPack = 0;
+  for (const set of new Set(tickets)) {
+    for (const card of set.cards) possibleCards.add(`${set.id}/${card.id}`);
+    maxPerPack = Math.max(maxPerPack, set.packSize);
+  }
+  const highlightSet = new Set(profile.highlights);
+  const highlightPacks = new Map<number, ProfilePack>();
+  const others: ProfilePack[] = [];
+  const seenCards = new Set<string>();
+  let opened = 0;
+  let bonuses = 0;
+  let worstHighlight: ProfilePack | null = null;
+
+  const xpReason = (): string | null => {
+    const unopened = total - opened;
+    const low = XP_PER_PACK * total + bonuses + XP_PER_NEW_CARD * seenCards.size;
+    const newCardsLeft = Math.min(possibleCards.size - seenCards.size, maxPerPack * unopened);
+    const high = low + XP_PER_HAND.FIVE_OF_A_KIND * unopened + XP_PER_NEW_CARD * newCardsLeft;
+    if (profile.xp < low) return `Claims ${profile.xp} XP, but the packs re-opened so far already earn at least ${low}`;
+    if (profile.xp > high) return `Claims ${profile.xp} XP, but these packs can earn at most ${high}`;
+    return null;
+  };
+
+  const highlightReason = (pack: ProfilePack): string | null =>
+    worstHighlight && ranksAbove(pack, worstHighlight) ? "The packs it names as its best aren't its best" : null;
+
+  return {
+    /** Reasons visible before any pack is re-opened (an impossible XP claim). */
+    initial: xpReason,
+    add: (pack: ProfilePack): string | null => {
+      opened++;
+      bonuses += XP_PER_HAND[handKeyOf(pack.score)];
+      for (const card of pack.cards) seenCards.add(`${card.setId}/${card.cardId}`);
+      if (highlightSet.has(pack.nonce)) {
+        highlightPacks.set(pack.nonce, pack);
+        if (highlightPacks.size === highlightSet.size) {
+          const listed = profile.highlights.map((n) => highlightPacks.get(n)!);
+          if (listed.some((p, i) => i > 0 && !ranksAbove(listed[i - 1], p))) return "The packs it names as its best aren't in order";
+          worstHighlight = listed[listed.length - 1] ?? null;
+          for (const other of others) if (highlightReason(other)) return highlightReason(other);
+        }
+      } else {
+        others.push(pack);
+        if (worstHighlight) {
+          const reason = highlightReason(pack);
+          if (reason) return reason;
+        }
+      }
+      if (worstHighlight) others.length = 0; // checked; no need to keep them
+      return xpReason();
+    },
+  };
 };
 
 export interface ProfileStats {

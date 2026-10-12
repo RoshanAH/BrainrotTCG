@@ -4,6 +4,7 @@
  */
 import {
   checkClaims,
+  claimsTracker,
   checkProfile,
   claimsFor,
   derivePack,
@@ -22,7 +23,7 @@ import {
   type PulledCard,
   type SetDefinition,
 } from '../engine';
-import { DEFAULT_SET_ID, getCardDefinition, getLatestSet, getSet } from '../content/sets';
+import { DEFAULT_SET_ID, getLatestSet, getSet } from '../content/sets';
 import { getPlayer, peekNonce } from './player';
 import { addDerivedPacks, historyForKey, type HistoryEntry } from './history';
 import { getReopened, putReopened } from './reopenCache';
@@ -34,7 +35,8 @@ export const profileUrl = (profile: string): string => `${window.location.origin
 const toPulled = (entry: HistoryEntry, set: SetDefinition): PulledCard[] | null => {
   if (!entry.cards) return null;
   const cards = entry.cards.map((c, slot) => {
-    const rarity = getCardDefinition(set.id, c.id)?.rarity;
+    // This exact version's rarity: a later version may change it (spec section 12).
+    const rarity = set.cards.find((card) => card.id === c.id)?.rarity;
     return rarity ? { setId: set.id, cardId: c.id, rarity, isHolo: c.holo, slot } : null;
   });
   return cards.every((c) => c) ? (cards as PulledCard[]) : null;
@@ -167,6 +169,9 @@ export const verifyProfileLive = (text: string, onProgress: (p: ProfileProgress)
   let next = 0;
   let finished = 0;
   let lastReport = 0;
+  // Made-up claims usually show long before the last pack: stop re-opening as soon as they do.
+  const tracker = claimsTracker(profile, tickets);
+  let ruledOut: string | null = tracker.initial();
 
   const snapshot = (extra: Partial<ProfileProgress> = {}): ProfileProgress => {
     const highlights = profile.highlights.map((n) => results[n]);
@@ -196,10 +201,12 @@ export const verifyProfileLive = (text: string, onProgress: (p: ProfileProgress)
   };
 
   const work = async () => {
-    while (!signal.aborted && next < total) {
+    while (!signal.aborted && !ruledOut && next < total) {
       const nonce = order[next++];
-      results[nonce] = await open(nonce);
+      const pack = await open(nonce);
+      results[nonce] = pack;
       finished++;
+      ruledOut ??= tracker.add(pack);
       report(finished <= profile.highlights.length);
     }
   };
@@ -209,6 +216,10 @@ export const verifyProfileLive = (text: string, onProgress: (p: ProfileProgress)
   Promise.all(Array.from({ length: workers }, work))
     .then(() => {
       if (signal.aborted) return;
+      if (ruledOut) {
+        onProgress(snapshot({ error: { rule: 'claims', message: ruledOut } }));
+        return;
+      }
       try {
         checkClaims(profile, results as ProfilePack[]);
         onProgress(snapshot({ done: true }));

@@ -22,8 +22,12 @@ export const useKeyboardControls = ({
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Ignore if disabled
+      // Ignore if disabled, or if a sheet is open over the pack (its buttons need Space), or if focus
+      // is on a control that Space already activates.
       if (disabled) return;
+      if (document.querySelector('[role="dialog"][aria-modal="true"]')) return;
+      const target = e.target as HTMLElement | null;
+      if (target?.closest('button, a, input, select, textarea, [contenteditable="true"]') && e.code === 'Space') return;
 
       // Secret key 'a' - toggle auto mode
       if (e.code === 'KeyA' && !e.repeat) {

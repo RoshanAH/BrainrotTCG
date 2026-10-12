@@ -61,6 +61,9 @@ export const createTicketPool = (size = poolSize()): TicketPool => {
       busy.delete(worker);
       worker.terminate();
       workers.splice(workers.indexOf(worker), 1);
+      // A worker that failed to load was never busy: take it off the idle list too, or pump() would
+      // hand it a job that never finishes.
+      if (idle.includes(worker)) idle.splice(idle.indexOf(worker), 1);
       if (job) computeTicket(job.request.setKey, job.publicKey, job.request.nonce).then(job.resolve, job.reject);
       if (workers.length === 0) {
         for (const j of queue.splice(0)) computeTicket(j.request.setKey, j.publicKey, j.request.nonce).then(j.resolve, j.reject);

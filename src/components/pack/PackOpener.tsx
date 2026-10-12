@@ -55,6 +55,8 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
   const autoIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const openTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const handleInteractionRef = useRef<() => void>(() => {});
+  /** Whether this pack has been handed to onOpen; a pack is recorded once, however it's finished. */
+  const recordedRef = useRef(false);
 
   const startOpening = useCallback(async () => {
     let pack: OpenedPack;
@@ -72,6 +74,7 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
     const effects = preloadAudio(EFFECT_SOUNDS);
 
     setPreloadedAssets({ brainrotVoices, cardFlip, effects });
+    recordedRef.current = false;
     setOpenedPack(pack);
     // Shown rarest last, with NEW on cards the collection didn't have yet. The pack itself (and its
     // proof and history) keeps the engine's order.
@@ -135,22 +138,31 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
     resetCutState();
   }, [resetCutState, preloadedAssets, cleanupAudio]);
 
+  /** The pack as the engine dealt it, face up: what's recorded and shared (the reveal order is only for show). */
+  const dealtPack = useCallback((): OpenedPack | null => (openedPack ? { ...openedPack, cards: openedPack.cards.map((card) => ({ ...card, isRevealed: true })) } : null), [openedPack]);
+
+  const recordPack = useCallback(() => {
+    const pack = dealtPack();
+    if (!pack || recordedRef.current) return;
+    recordedRef.current = true;
+    onOpen(pack);
+  }, [dealtPack, onOpen]);
+
   const nextCard = useCallback(() => {
     if (currentIndex < openedCards.length - 1) {
       setCurrentIndex(currentIndex + 1);
     } else {
-      if (openedPack) onOpen({ ...openedPack, cards: openedCards });
+      recordPack();
       setShowSummary(true);
     }
-  }, [currentIndex, openedCards, openedPack, onOpen]);
+  }, [currentIndex, openedCards, recordPack]);
 
   /** Reveal everything at once and go to the summary. */
   const skipAll = useCallback(() => {
-    const all = openedCards.map((card) => ({ ...card, isRevealed: true }));
-    setOpenedCards(all);
-    if (openedPack) onOpen({ ...openedPack, cards: all });
+    setOpenedCards(openedCards.map((card) => ({ ...card, isRevealed: true })));
+    recordPack();
     setShowSummary(true);
-  }, [openedCards, openedPack, onOpen]);
+  }, [openedCards, recordPack]);
 
   const closeSummary = useCallback(() => {
     finishPack();
@@ -334,7 +346,7 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
                 openedCards={openedCards}
                 set={set}
                 onClose={closeSummary}
-                onShare={openedPack ? () => onShare({ ...openedPack, cards: openedCards }) : undefined}
+                onShare={openedPack ? () => onShare(dealtPack()!) : undefined}
               />
             )}
           </Motion.div>
