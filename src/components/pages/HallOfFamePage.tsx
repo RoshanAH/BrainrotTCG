@@ -6,9 +6,9 @@ import { REPO } from '../../constants';
 import { HALL_OF_FAME_MIN_FLEX } from '../../engine';
 
 // Hackathon legends: screenshots from before pulls were verifiable.
-import adiImage from '../../assets/images/hall_of_fame/image.png';
-import danielImage from '../../assets/images/hall_of_fame/Screenshot_2026-03-01_at_10.00.18_AM.png';
-import squidImage from '../../assets/images/hall_of_fame/image copy.png';
+import adiImage from '../../assets/images/hall_of_fame/adi-four-of-a-kind.webp';
+import danielImage from '../../assets/images/hall_of_fame/daniel-full-house.webp';
+import squidImage from '../../assets/images/hall_of_fame/tehsquid-full-house.webp';
 
 interface LegendEntry {
   name: string;

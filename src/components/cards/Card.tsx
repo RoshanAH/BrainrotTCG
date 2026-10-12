@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import '../../styles/Card.css';
-import cardBackImage from '../../assets/images/card_back.png';
+import cardBackImage from '../../assets/images/card_back.webp';
 import type { Card as CardType } from '../../data/cards';
 
 export interface CardWithMeta extends CardType {

@@ -12,8 +12,8 @@ import { BRAINROT_VOICES, EFFECT_SOUNDS, CARD_FLIP_SRC } from '../../constants/a
 import PackCuttingUI from './PackCuttingUI';
 import CardRevealUI from './CardRevealUI';
 import PackSummaryUI from './PackSummaryUI';
-import pack1 from '../../assets/packs/pack1.png';
-import pack2 from '../../assets/packs/pack2.png';
+import pack1 from '../../assets/packs/pack1.webp';
+import pack2 from '../../assets/packs/pack2.webp';
 import '../../styles/PackOpener.css';
 
 const PACK_DESIGNS = [pack1, pack2];
