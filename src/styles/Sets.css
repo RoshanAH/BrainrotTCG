@@ -97,11 +97,24 @@
   text-overflow: ellipsis;
 }
 
+/* The era gives way first, so the count and Complete/New tags always show. */
 .set-current-meta {
-  overflow: hidden;
+  display: flex;
+  align-items: center;
+  min-width: 0;
   color: var(--text-muted);
   font-size: var(--text-xs);
   white-space: nowrap;
+}
+
+.set-current-meta > * {
+  flex: none;
+}
+
+.set-current-meta > .set-current-era {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
   text-overflow: ellipsis;
 }
 

@@ -37,7 +37,8 @@
 
 @media (max-width: 700px) {
     .pack-shell-wrap {
-        --pack-w: min(115vw, (100cqh - 7rem) * 4);
+        /* The full width of the phone: big, without running off both sides. */
+        --pack-w: min(100vw, (100cqh - 7rem) * 4);
     }
 }
 
@@ -617,4 +618,22 @@
 .pack-shell:focus-visible {
     outline: 3px solid var(--brand);
     outline-offset: 6px;
+}
+
+/* Phones: the card at about five sixths of the width, the summary a size down. (Last in the file so
+   it wins over the rules above.) */
+@media (max-width: 700px) {
+    .active-card-container .card-wrapper,
+    .reveal-stack-card {
+        height: min(100cqh - 28px, 46rem, 100cqw * 0.84 * 1024 / 687);
+    }
+
+    .summary-title {
+        font-size: var(--text-2xl);
+    }
+
+    .summary-actions .btn--lg {
+        min-height: 46px;
+        font-size: var(--text-base);
+    }
 }

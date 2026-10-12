@@ -66,8 +66,10 @@ const SetPicker = ({ sets, selectedId, onSelect, collection, disabled = false }:
             <span className="set-current-name">{set.name}</span>
           </span>
           <span className="set-current-meta">
-            {set.era}
-            {set.draft && <span className="set-draft"> · preview</span>}
+            <span className="set-current-era">
+              {set.era}
+              {set.draft && <span className="set-draft"> · preview</span>}
+            </span>
             <span className="tabular">
               {' '}
               · {owned}/{size}
