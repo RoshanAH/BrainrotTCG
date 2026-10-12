@@ -4,7 +4,9 @@ import { decodeVarint, encodeVarint, fromBase64Url, toBase64Url, toHex, utf8 } f
 import { fingerprint, generateKeypair, normalizeName } from './identity';
 import { createRng, generatePack } from './pack';
 import { decodeProof, derivePack, encodeProof, extractProof, signProof, verifyProof } from './proof';
-import { getPokerHand, scorePack } from './scoring';
+import { getPokerHand, POKER_HANDS, scorePack, type HandKey } from './scoring';
+import { handOdds } from './odds';
+import { handFromCounts } from './scoring';
 import { computeTicket } from './ticket';
 import { validateSet, type SetDefinition } from './types';
 
@@ -93,8 +95,35 @@ describe('scoring', () => {
     expect(getPokerHand([card('a'), card('a'), card('a'), card('a'), card('b')]).name).toBe('4 of a Kind');
     expect(getPokerHand([card('a'), card('b'), card('c'), card('d'), card('e')]).name).toBe('No Matches');
   });
-  it('multiplies value by the hand', () => {
-    expect(scorePack([card('a'), card('a'), card('b'), card('c'), card('d', true)]).flexValue).toBe((4 + 20) * 2);
+  it('multiplies points by the combo', () => {
+    // 4 commons (10 each) + a holo common (10 x 20), with a pair
+    expect(scorePack([card('a'), card('a'), card('b'), card('c'), card('d', true)])).toMatchObject({ points: 240, score: 480 });
+  });
+});
+
+describe('odds', () => {
+  it('sums to 1 and matches a simulation', () => {
+    const exact = handOdds(TEST_SET);
+    expect(Object.values(exact).reduce((a, b) => a + b, 0)).toBeCloseTo(1, 10);
+    const counts: Record<string, number> = {};
+    const packs = 200_000;
+    for (let i = 0; i < packs; i++) {
+      const pack = generatePack(TEST_SET, sha256(utf8(`hand-${i}`)));
+      const key = handFromCounts([...new Set(pack.map((c) => c.cardId))].map((id) => pack.filter((c) => c.cardId === id).length));
+      counts[key] = (counts[key] ?? 0) + 1;
+    }
+    for (const [hand, chance] of Object.entries(exact)) {
+      expect(Math.abs((counts[hand] ?? 0) / packs - chance)).toBeLessThan(0.004);
+    }
+  });
+
+  it('pays rarer combos more (rarity corresponds to reward)', () => {
+    const exact = handOdds(TEST_SET);
+    const order: HandKey[] = ['PAIR', 'TWO_PAIR', 'THREE_OF_A_KIND', 'FULL_HOUSE', 'FOUR_OF_A_KIND', 'FIVE_OF_A_KIND'];
+    for (let i = 1; i < order.length; i++) {
+      expect(exact[order[i]]).toBeLessThan(exact[order[i - 1]]);
+      expect(POKER_HANDS[order[i]].multiplier).toBeGreaterThan(POKER_HANDS[order[i - 1]].multiplier);
+    }
   });
 });
 
