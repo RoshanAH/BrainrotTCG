@@ -168,3 +168,19 @@ export const findPackWithCard = (publicKeyHex: string, setId: string, cardId: st
   const has = (e: HistoryEntry, wantHolo: boolean) => e.cards!.some((c) => c.id === cardId && (!wantHolo || c.holo));
   return (holo ? mine.find((e) => has(e, true)) : undefined) ?? mine.find((e) => has(e, false)) ?? null;
 };
+
+/**
+ * The pack with exactly these cards (in order, with holo, finish and misprint), opened nearest to
+ * `at`, for records that kept a pack's cards but not its ticket. Within six hours, since the same
+ * five cards can come up twice.
+ */
+export const findPackByCards = (cards: readonly StoredCard[], setId: string, at: number): HistoryEntry | null => {
+  const want = cards.map(encodeCard).join(',');
+  let best: HistoryEntry | null = null;
+  for (const e of getHistory()) {
+    if (e.setId !== setId || !e.cards || Math.abs(e.openedAt - at) > 6 * 3600_000) continue;
+    if (e.cards.map(encodeCard).join(',') !== want) continue;
+    if (!best || Math.abs(e.openedAt - at) < Math.abs(best.openedAt - at)) best = e;
+  }
+  return best;
+};

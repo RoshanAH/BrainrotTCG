@@ -1,10 +1,13 @@
 import type { Finish } from '../engine';
 import type { Card } from '../data/cards';
 import type { CardWithMeta } from '../components/cards/Card';
+import type { PullRef } from '../game/pulls';
 
 export interface AchievementData {
   unlockedAt: number;
   pack?: CardWithMeta[];
+  /** The pack's ticket, so it can be shared. Achievements unlocked before this was kept don't have it. */
+  ref?: PullRef;
 }
 
 export interface CollectionItem {

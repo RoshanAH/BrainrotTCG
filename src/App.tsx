@@ -17,7 +17,7 @@ import { getAchievementById, Achievement } from './data/achievements';
 import { CardWithMeta } from './components/cards/Card';
 import { DEFAULT_SET_ID, SETS } from './content/sets';
 import { extractProfile, extractProof } from './engine';
-import type { OpenedPack } from './game/pulls';
+import type { OpenedPack, PullRef } from './game/pulls';
 import { importPlayer } from './game/player';
 import { getStoredData } from './utils/storage';
 import { musicLevel, readSettings } from './utils/settings';
@@ -146,7 +146,7 @@ function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Only run on mount
 
-  const unlockAchievement = useCallback((achievementId: string, pack?: CardWithMeta[]) => {
+  const unlockAchievement = useCallback((achievementId: string, pack?: CardWithMeta[], ref?: PullRef) => {
     const achievement = getAchievementById(achievementId);
     if (!achievement) return;
 
@@ -159,6 +159,7 @@ function App() {
       const achievementData: AchievementData = {
         unlockedAt: Date.now(),
         pack: pack,
+        ...(ref ? { ref } : {}),
       };
       const next = { ...prev, [achievementId]: achievementData };
       localStorage.setItem(STORAGE_KEYS.ACHIEVEMENTS, JSON.stringify(next));
@@ -227,7 +228,7 @@ function App() {
     }
   }, []);
 
-  const checkAllAchievements = useCallback((newCards: CardWithMeta[], updatedCollection: Record<string, CollectionItem>, updatedStats: Stats, currentAchievements: Record<string, AchievementData | number>) => {
+  const checkAllAchievements = useCallback((newCards: CardWithMeta[], pullRef: PullRef, updatedCollection: Record<string, CollectionItem>, updatedStats: Stats, currentAchievements: Record<string, AchievementData | number>) => {
     // Use shared achievement checking functions - pass current achievements to avoid stale state
     const packMilestones = checkPackMilestones(updatedStats.packsOpened, currentAchievements);
     const collectionAchievements = checkCollectionAchievements(updatedCollection, updatedStats, currentAchievements);
@@ -235,7 +236,7 @@ function App() {
 
     // Combine all achievements and unlock them with the pack data
     const allNewAchievements = [...packMilestones, ...collectionAchievements, ...packAchievements];
-    allNewAchievements.forEach(id => unlockAchievement(id, newCards));
+    allNewAchievements.forEach(id => unlockAchievement(id, newCards, pullRef));
   }, [unlockAchievement]);
 
   const handlePackOpened = useCallback((pack: OpenedPack) => {
@@ -368,11 +369,11 @@ function App() {
       [100_000, 'pack_value_10000'], [100_000_000, 'pack_value_max'],
     ];
     PACK_SCORE_ACHIEVEMENTS.forEach(([min, id]) => score >= min && packValueAchievements.push(id));
-    packValueAchievements.forEach(id => unlockAchievement(id, newCards));
+    packValueAchievements.forEach(id => unlockAchievement(id, newCards, pullRef));
 
     // Check other achievements - get current state to avoid stale closure
     setAchievements(currentAchievements => {
-      checkAllAchievements(newCards, updatedCollection || collection, updatedStats, currentAchievements);
+      checkAllAchievements(newCards, pullRef, updatedCollection || collection, updatedStats, currentAchievements);
       return currentAchievements;
     });
   }, [stats, hallOfFame, collection, checkAllAchievements, unlockAchievement]);
@@ -438,6 +439,7 @@ function App() {
           unlockedAchievements={achievements}
           onClose={() => setIsAchievementsOpen(false)}
           progress={achievementProgress}
+          onSharePull={(ref, cards) => setShareTarget({ ref, cards, score: scoreCards(cards) })}
         />
       )}
 

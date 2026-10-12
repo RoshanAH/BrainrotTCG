@@ -95,3 +95,7 @@ button.achievement:hover {
 .achievement.is-locked .achievement-desc {
   color: var(--text-subtle);
 }
+
+.achievement-share {
+  margin-top: var(--space-4);
+}
