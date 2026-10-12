@@ -45,8 +45,11 @@ export const toCard = (setId: string, def: CardDefinition): Card => ({
   flavor: def.flavor,
 });
 
-/** Every card in every current set. */
+/** Every card in every current set (including drafts, so preview pulls still resolve). */
 export const ALL_CARDS: Card[] = SETS.flatMap((set) => set.cards.map((def) => toCard(set.id, def)));
+
+/** Cards in released (non-draft) sets: what collection totals and completion achievements count. */
+export const COLLECTIBLE_CARDS: Card[] = ALL_CARDS.filter((card) => !SETS.find((s) => s.id === card.setId)?.draft);
 
 const BY_KEY = new Map(ALL_CARDS.map((c) => [c.key, c]));
 
@@ -54,7 +57,7 @@ export const getCard = (key: string): Card | undefined => BY_KEY.get(key);
 
 export const getSetCards = (setId: string): Card[] => ALL_CARDS.filter((c) => c.setId === setId);
 
-export const getCardsByRarity = (rarity: RarityKey): Card[] => ALL_CARDS.filter((card) => card.rarity === rarity);
+export const getCardsByRarity = (rarity: RarityKey): Card[] => COLLECTIBLE_CARDS.filter((card) => card.rarity === rarity);
 
 export const getCardValue = engineCardValue;
 

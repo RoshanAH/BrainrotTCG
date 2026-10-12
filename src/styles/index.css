@@ -583,3 +583,46 @@ main {
         font-size: 0.8rem;
     }
 }
+
+/* Collection grouped by set */
+.collection-set {
+    margin-bottom: 2rem;
+}
+
+.collection-set-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 0.75rem;
+    margin: 0 0 0.75rem;
+}
+
+.collection-set-header h3 {
+    margin: 0;
+    color: #fff;
+    font-size: 1.25rem;
+}
+
+.collection-set-era {
+    color: #aaa;
+    font-size: 0.85rem;
+}
+
+.collection-set-progress {
+    margin-left: auto;
+    color: #ffd700;
+    font-weight: 700;
+}
+
+.collection-set-bar {
+    flex-basis: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.12);
+    overflow: hidden;
+}
+
+.collection-set-bar > div {
+    height: 100%;
+    background: linear-gradient(90deg, #ff3df2, #29f0ff);
+}
