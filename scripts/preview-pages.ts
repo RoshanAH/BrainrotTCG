@@ -61,6 +61,7 @@ for (const set of ALL_SET_VERSIONS) {
 }
 
 let pages = 0;
+const written = new Map<string, string>();
 for (const card of cards.values()) {
   const imagePath = previewImagePath(card.setId, card.cardId);
   mkdirSync(`${DIST}${imagePath.replace(/[^/]+$/, '')}`, { recursive: true });
@@ -73,6 +74,9 @@ for (const card of cards.values()) {
   const description = `${card.name} (${RARITY_NAMES[card.rarity] ?? card.rarity}). Open the link to re-check this exact pack on your own device.`;
   for (const hand of Object.keys(POKER_HANDS) as HandKey[]) {
     const path = previewPath(card.setId, card.cardId, hand);
+    const what = `${card.setId}/${card.cardId}/${hand}`;
+    if (written.has(path)) throw new Error(`Preview code collision: ${what} and ${written.get(path)} both map to ${path}`);
+    written.set(path, what);
     mkdirSync(`${DIST}${path.replace(/[^/]+$/, '')}`, { recursive: true });
     writeFileSync(`${DIST}${path}`, page(previewTitle(hand, card.setName), description, `${SITE}${imagePath}`));
     pages++;

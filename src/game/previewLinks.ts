@@ -2,24 +2,24 @@
  * Link previews for shared pulls. A pull link carries its proof after the '#', which link-preview
  * bots (chat apps, social sites) never see, so every link used to preview as the generic site.
  * Share links now go through a small static page per card and hand, built by
- * scripts/preview-pages.ts: p/<set>/<card>-<hand>.html#/pull/<proof>. Its preview is that card,
- * and opening it forwards to the pull.
+ * scripts/preview-pages.ts: p/<code>.html#/pull/<proof>, where the code is 8 hex characters of
+ * sha256("set/card/HAND"), so it's short and never changes (set and card ids never do). Its
+ * preview is that card, and opening it forwards to the pull.
  *
  * The card and hand in the path only choose the preview. The pull itself is re-derived from the
  * proof when the link is opened, as always, so a hand-edited path can dress up a preview but can't
  * change what the link proves.
  */
-import { POKER_HANDS, type HandKey } from '../engine';
+import { sha256 } from '@noble/hashes/sha2.js';
+import { POKER_HANDS, toHex, utf8, type HandKey } from '../engine';
 
 /** The hand's key from its display name (as a score or a history entry carries it). */
 export const handKeyFromName = (name: string): HandKey =>
   (Object.keys(POKER_HANDS) as HandKey[]).find((k) => POKER_HANDS[k].name === name) ?? 'NO_MATCH';
 
-/** e.g. FULL_HOUSE -> full-house */
-export const handSlug = (hand: HandKey): string => hand.toLowerCase().replace(/_/g, '-');
-
 /** The preview page for a card and hand, relative to the site root. */
-export const previewPath = (setId: string, cardId: string, hand: HandKey): string => `p/${setId}/${cardId}-${handSlug(hand)}.html`;
+export const previewPath = (setId: string, cardId: string, hand: HandKey): string =>
+  `p/${toHex(sha256(utf8(`${setId}/${cardId}/${hand}`))).slice(0, 8)}.html`;
 
 /** The preview image for a card, relative to the site root. */
 export const previewImagePath = (setId: string, cardId: string): string => `p/img/${setId}/${cardId}.jpg`;
