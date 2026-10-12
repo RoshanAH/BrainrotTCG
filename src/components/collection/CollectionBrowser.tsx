@@ -1,119 +1,157 @@
 import { useMemo, useState } from 'react';
 import CardViewerModal from '../cards/CardViewerModal';
-import { cardPoints, getSetCards, type Card } from '../../data/cards';
+import Sheet from '../ui/Sheet';
+import { CARD_RARITIES, cardPoints, COLLECTIBLE_CARDS, getSetCards, type Card } from '../../data/cards';
 import { isOpenable, SETS } from '../../content/sets';
 import type { CollectionItem } from '../../types';
+import '../../styles/Collection.css';
 
 interface CollectionBrowserProps {
   collection: Record<string, CollectionItem>;
   onClose: () => void;
 }
 
-const RARITY_ORDER: Record<string, number> = { BRAINROT: 0, LEGENDARY: 1, EPIC: 2, RARE: 3, UNCOMMON: 4, COMMON: 5 };
+type Owned = { normalCount: number; holoCount: number };
 
+/**
+ * Eras you've started, in timeline order, with every card (the missing ones as empty slots);
+ * then the eras you haven't started, one line each.
+ */
 const CollectionBrowser = ({ collection, onClose }: CollectionBrowserProps) => {
-  const [selectedCard, setSelectedCard] = useState<{ card: Card; normalCount: number; holoCount: number } | null>(null);
+  const [selected, setSelected] = useState<{ card: Card } & Owned | null>(null);
 
-  const items = useMemo(
+  const owned = useMemo(() => {
+    const map = new Map<string, Owned>();
+    for (const item of Object.values(collection)) {
+      if (!item?.card?.key) continue;
+      map.set(item.card.key, { normalCount: item.normalCount || item.count || 0, holoCount: item.holoCount || 0 });
+    }
+    return map;
+  }, [collection]);
+
+  const score = useMemo(
     () =>
-      Object.values(collection)
-        .filter((item) => item?.card?.rarity)
-        .map((item) => ({ ...item, normalCount: item.normalCount || 0, holoCount: item.holoCount || 0 })),
+      Object.values(collection).reduce(
+        (sum, item) =>
+          item?.card?.rarity
+            ? sum + (item.normalCount || item.count || 0) * cardPoints(item.card.rarity, false) + (item.holoCount || 0) * cardPoints(item.card.rarity, true)
+            : sum,
+        0,
+      ),
     [collection],
   );
 
-  /** One section per set the player owns cards from (openable sets always shown), in timeline order. */
-  const sections = useMemo(
-    () =>
-      SETS.map((set) => {
-        const owned = items
-          .filter((item) => item.card.setId === set.id)
-          .sort(
-            (a, b) =>
-              (RARITY_ORDER[a.card.rarity] ?? 99) - (RARITY_ORDER[b.card.rarity] ?? 99) ||
-              b.normalCount + b.holoCount - (a.normalCount + a.holoCount) ||
-              a.card.name.localeCompare(b.card.name),
-          );
-        return { set, owned, total: getSetCards(set.id).length };
-      }).filter((s) => s.owned.length > 0 || isOpenable(s.set)),
-    [items],
-  );
+  const sections = SETS.map((set) => {
+    const cards = getSetCards(set.id);
+    const have = cards.filter((c) => owned.has(c.key)).length;
+    return { set, cards, have };
+  }).filter((s) => s.have > 0 || isOpenable(s.set));
+  // What you own first (in timeline order), then the eras you haven't opened yet as one short list.
+  const started = sections.filter((s) => s.have > 0);
+  const notStarted = sections.filter((s) => s.have === 0);
 
-  const totalFound = items.reduce((sum, item) => sum + item.normalCount + item.holoCount, 0);
-  const accountValue = items.reduce(
-    (sum, item) => sum + item.normalCount * cardPoints(item.card.rarity, false) + item.holoCount * cardPoints(item.card.rarity, true),
-    0,
-  );
+  const uniqueOwned = COLLECTIBLE_CARDS.filter((c) => owned.has(c.key)).length;
 
   return (
     <>
-      <section className="collection-browser">
-        <div className="collection-header">
-          <h2>Collection</h2>
-          <p>
-            {items.length} unique • {totalFound} total
-          </p>
-          <p style={{ color: '#ffd700', fontWeight: 'bold', margin: '0.5rem 0' }}>
-            🧠 Collection Brainrot Score: {accountValue.toLocaleString()}
-            {totalFound > 0 && (
-              <span style={{ color: '#aaa', fontWeight: 'normal', marginLeft: '0.75rem' }}>
-                (average {Math.round(accountValue / totalFound).toLocaleString()} pts/card)
-              </span>
-            )}
-          </p>
-          <button className="collection-close-btn" onClick={onClose}>&times;</button>
-        </div>
-
-        {items.length === 0 ? (
-          <p className="collection-empty">Open packs to start your collection.</p>
-        ) : (
-          sections.map(({ set, owned, total }) => (
-            <div key={set.id} className="collection-set">
-              <div className="collection-set-header">
+      <Sheet
+        title="Collection"
+        subtitle={
+          <span className="tabular">
+            {uniqueOwned}/{COLLECTIBLE_CARDS.length} cards · {score.toLocaleString()} Brainrot Score
+          </span>
+        }
+        onClose={onClose}
+        size="lg"
+        className="collection"
+      >
+        {started.map(({ set, cards, have }) => {
+          const [a = '#ff3df2', b = '#29f0ff'] = set.palette ?? [];
+          return (
+            <section key={set.id} className="collection-set" style={{ '--set-a': a, '--set-b': b } as React.CSSProperties}>
+              <header className="collection-set-header">
                 <h3>{set.name}</h3>
-                <span className="collection-set-era">{set.era}</span>
-                {set.archivedAt && (
-                  <span className="collection-set-archived" title="No new packs. Your cards and pull links still work.">
-                    Archived
-                  </span>
-                )}
-                <span className="collection-set-progress">
-                  {owned.length}/{total} · {Math.round((owned.length / total) * 100)}%
+                <span className="collection-set-era">
+                  {set.era}
+                  {set.archivedAt && <span className="collection-set-archived">Archived</span>}
                 </span>
-                <div className="collection-set-bar">
-                  <div style={{ width: `${(owned.length / total) * 100}%` }} />
-                </div>
-              </div>
-              {owned.length > 0 && (
-                <div className="collection-grid">
-                  {owned.map(({ card, normalCount, holoCount }) => (
-                    <article
-                      key={card.key}
-                      className={['collection-item', card.rarity.toLowerCase(), holoCount > 0 ? 'holo' : ''].filter(Boolean).join(' ')}
-                      onClick={() => setSelectedCard({ card, normalCount, holoCount })}
-                    >
-                      <img src={card.image} alt={card.name} />
-                      <span className="collection-count">
-                        {normalCount > 0 && `x${normalCount}`}
-                        {normalCount > 0 && holoCount > 0 && ' • '}
-                        {holoCount > 0 && `✨x${holoCount}`}
+                <span className="collection-set-count tabular">
+                  {have}/{cards.length}
+                </span>
+                <span className="collection-set-bar" aria-hidden="true">
+                  <span style={{ width: `${(have / cards.length) * 100}%` }} />
+                </span>
+              </header>
+              <ul className="collection-grid">
+                {cards
+                  .map((card, index) => ({ card, number: `${String(index + 1).padStart(3, '0')}/${String(cards.length).padStart(3, '0')}` }))
+                  .filter(({ card }) => owned.has(card.key) || isOpenable(set))
+                  .map(({ card, number }) => {
+                    const counts = owned.get(card.key);
+                    // Under every pocket, owned or not: its collector number and rarity, like a sleeve label.
+                    const label = (
+                      <span className="collection-label tabular" aria-hidden="true">
+                        {number} <span className={`collection-label-rarity ${card.rarity.toLowerCase()}`}>{CARD_RARITIES[card.rarity].symbol}</span>
                       </span>
-                    </article>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))
-        )}
-      </section>
+                    );
+                    if (!counts) {
+                      return (
+                        <li key={card.key} aria-label={`${number}, ${CARD_RARITIES[card.rarity].name}, not collected yet`}>
+                          <span className="collection-slot" />
+                          {label}
+                        </li>
+                      );
+                    }
+                    const total = counts.normalCount + counts.holoCount;
+                    return (
+                      <li key={card.key}>
+                        <button
+                          type="button"
+                          className={`collection-item ${card.rarity.toLowerCase()} ${counts.holoCount > 0 ? 'holo' : ''}`}
+                          onClick={() => setSelected({ card, ...counts })}
+                          aria-label={`${card.name}, ${number}, ${CARD_RARITIES[card.rarity].name}, ${total} owned${counts.holoCount ? `, ${counts.holoCount} holo` : ''}`}
+                        >
+                          <img src={card.image} alt="" loading="lazy" />
+                          {(total > 1 || counts.holoCount > 0) && (
+                            <span className="collection-count tabular">
+                              ×{total}
+                            </span>
+                          )}
+                        </button>
+                        {label}
+                      </li>
+                    );
+                  })}
+              </ul>
+            </section>
+          );
+        })}
 
-      {selectedCard && (
+        {notStarted.length > 0 && (
+          <section className="collection-later">
+            <h3 className="section-title">{started.length > 0 ? 'Not started yet' : 'Eras'}</h3>
+            <ul>
+              {notStarted.map(({ set, cards }) => (
+                <li key={set.id}>
+                  <span className="collection-later-name">{set.name}</span>
+                  <span className="collection-later-era">{set.era}</span>
+                  <span className="collection-later-count tabular">0/{cards.length}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+        {uniqueOwned === 0 && <p className="collection-empty">Open packs to start your collection.</p>}
+      </Sheet>
+
+      {selected && (
         <CardViewerModal
-          card={selectedCard.card}
-          hasNormal={selectedCard.normalCount > 0}
-          hasHolo={selectedCard.holoCount > 0}
-          initialHolo={selectedCard.holoCount > 0 && selectedCard.normalCount === 0}
-          onClose={() => setSelectedCard(null)}
+          card={selected.card}
+          hasNormal={selected.normalCount > 0}
+          hasHolo={selected.holoCount > 0}
+          initialHolo={selected.holoCount > 0 && selected.normalCount === 0}
+          onClose={() => setSelected(null)}
+          canShare
         />
       )}
     </>

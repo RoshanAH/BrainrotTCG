@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { HOLO_MULTIPLIER, POKER_HANDS, RARITIES_RAREST_FIRST, RARITY_POINTS, handOdds, oneIn, type HandKey, type SetDefinition } from '../../engine';
 import RarityBadge from './RarityBadge';
+import Sheet from './Sheet';
 import '../../styles/Scoring.css';
 
 interface ScoringGuideProps {
@@ -18,10 +19,7 @@ const ScoringGuide = ({ set, onClose }: ScoringGuideProps) => {
   const rarities = [...RARITIES_RAREST_FIRST].reverse().filter((r) => set.odds[r] > 0);
 
   return (
-    <div className="scoring-guide-backdrop" onClick={onClose}>
-      <div className="scoring-guide" onClick={(e) => e.stopPropagation()} role="dialog" aria-label="How Brainrot Score works">
-        <button className="share-close" onClick={onClose} aria-label="Close">×</button>
-        <h2>How Brainrot Score works</h2>
+    <Sheet title="How Brainrot Score works" onClose={onClose} size="sm" className="scoring-guide">
         <p className="scoring-formula">
           Brainrot Score = <strong>card points</strong> × <strong>combo multiplier</strong>
         </p>
@@ -41,7 +39,7 @@ const ScoringGuide = ({ set, onClose }: ScoringGuideProps) => {
               </tr>
             ))}
             <tr>
-              <td><span className="rarity-pill holo-pill">✨ Holo</span></td>
+              <td><span className="rarity-pill holo-pill"><span className="rarity-pill-gem" aria-hidden="true">◆</span>Holo</span></td>
               <td>{(set.holoOdds / 100).toLocaleString()}%</td>
               <td>×{HOLO_MULTIPLIER} points</td>
             </tr>
@@ -63,8 +61,7 @@ const ScoringGuide = ({ set, onClose }: ScoringGuideProps) => {
             ))}
           </tbody>
         </table>
-      </div>
-    </div>
+    </Sheet>
   );
 };
 

@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
+import { Link2, ShieldAlert, ShieldCheck } from 'lucide-react';
 import { checkPull, pullUrl, type CheckedPull } from '../../game/pulls';
-import PackCardViewer from '../ui/PackCardViewer';
-import '../../styles/Share.css';
 import { normalizeName } from '../../engine';
+import { setCode } from '../../content/sets';
+import PackCardViewer from '../ui/PackCardViewer';
+import Sheet from '../ui/Sheet';
+import '../../styles/Share.css';
 
 interface PullViewerPageProps {
   proof: string;
@@ -14,6 +17,7 @@ type State = { status: 'checking' } | { status: 'ok'; pull: CheckedPull } | { st
 /** Opened from a shared `#/pull/<proof>` link. Everything is verified right here, on the viewer's device. */
 const PullViewerPage = ({ proof, onClose }: PullViewerPageProps) => {
   const [state, setState] = useState<State>({ status: 'checking' });
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -25,43 +29,86 @@ const PullViewerPage = ({ proof, onClose }: PullViewerPageProps) => {
     };
   }, [proof]);
 
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(pullUrl(proof));
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1800);
+    } catch {
+      window.prompt('Copy this:', pullUrl(proof));
+    }
+  };
+
+  const openOwn = (
+    <button type="button" className="btn btn--primary btn--block" onClick={onClose}>
+      Open your own packs
+    </button>
+  );
+
+  if (state.status === 'checking') {
+    return (
+      <Sheet title="Checking this pull" onClose={onClose} size="sm">
+        <div className="pull-viewer-checking" role="status">
+          <span className="pull-viewer-spinner" aria-hidden="true" />
+          <p>Re-opening the pack on your device…</p>
+        </div>
+      </Sheet>
+    );
+  }
+
+  if (state.status === 'error') {
+    return (
+      <Sheet title="Not a valid pull" onClose={onClose} size="sm" footer={openOwn}>
+        <p className="pull-viewer-badge is-invalid">
+          <span>
+            <ShieldAlert aria-hidden="true" /> {state.reason}
+          </span>
+        </p>
+        <p className="share-note">The link was edited, cut off or made up. Real pulls always check out.</p>
+      </Sheet>
+    );
+  }
+
+  const { pull } = state;
+  const hand = pull.score.hand.name !== 'No Matches' ? pull.score.hand.name : 'A pull';
   return (
-    <div className="pull-viewer-page">
-      <button className="share-close" onClick={onClose} aria-label="Close">×</button>
-      {state.status === 'checking' && (
-        <div className="pull-viewer-checking">
-          <div className="pull-viewer-spinner" />
-          <p>Re-opening this pack on your device to check it…</p>
-        </div>
-      )}
-
-      {state.status === 'error' && (
-        <div className="pull-viewer-invalid">
-          <h2>✗ Not a valid pull</h2>
-          <p>{state.reason}</p>
-          <p className="share-note">This link was edited, cut off, or made up. Real pulls always verify.</p>
-          <button className="summary-close-btn" onClick={onClose}>Open your own packs</button>
-        </div>
-      )}
-
-      {state.status === 'ok' && (
+    <Sheet
+      title={hand}
+      subtitle={
         <>
-          <h2 className="pull-viewer-title">{state.pull.score.hand.name !== 'No Matches' ? state.pull.score.hand.name : 'A pull'} from {state.pull.set.name}</h2>
-          <p className="share-owner">
-            Pulled by <strong>{normalizeName(state.pull.proof.name) || 'Anonymous'}</strong> <span className="share-fp">#{state.pull.fingerprint}</span> · {state.pull.set.era}
-          </p>
-          <PackCardViewer cards={state.pull.cardsWithMeta} displayMode="carousel" />
-          <div className="pull-viewer-verified">
-            <strong>✓ Verified on this device.</strong> This is exactly what ticket #{state.pull.proof.nonce} of this player's key produces in{' '}
-            {state.pull.set.name} v{state.pull.set.version}. Each ticket costs real work to mine, so a pull like this can't be faked or edited.
-          </div>
-          <div className="share-actions">
-            <button onClick={() => navigator.clipboard?.writeText(pullUrl(proof))}>Copy link</button>
-            <button className="summary-close-btn" onClick={onClose}>Open your own packs</button>
-          </div>
+          {pull.set.name} · {normalizeName(pull.proof.name) || 'Anonymous'} <span className="share-fp">#{pull.fingerprint}</span>
         </>
-      )}
-    </div>
+      }
+      onClose={onClose}
+      size="md"
+      className="pull-viewer"
+      footer={
+        <div className="pull-viewer-actions">
+          <button type="button" className="btn btn--secondary" onClick={copyLink}>
+            <Link2 aria-hidden="true" /> {copied ? 'Copied' : 'Copy link'}
+          </button>
+          {openOwn}
+        </div>
+      }
+    >
+      <p className="pull-viewer-badge">
+        <span>
+          <ShieldCheck aria-hidden="true" /> Verified on this device
+        </span>
+        <span className="pull-viewer-cert">
+          Cert {pull.fingerprint} · {setCode(pull.set)} #{pull.proof.nonce}
+        </span>
+      </p>
+      <PackCardViewer cards={pull.cardsWithMeta} displayMode="carousel" />
+      <details className="pull-viewer-how">
+        <summary>How do we know?</summary>
+        <p>
+          Your device just re-derived ticket #{pull.proof.nonce} of this player's key and opened it in {pull.set.name} v
+          {pull.set.version}. It came out exactly as shown, and the player's signature matches. Each ticket costs real work to
+          mine, so a pull can't be edited or picked from a pile of fakes.
+        </p>
+      </details>
+    </Sheet>
   );
 };
 

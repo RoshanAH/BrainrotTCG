@@ -10,6 +10,7 @@ import { getSet } from '../content/sets';
 import { fromHex, toHex } from './bytes';
 import { createRng, generatePack } from './pack';
 import { decodeProof, pullId, verifyProof, type ProofRule } from './proof';
+import { checkProfile, profileStats, verifyProfile } from './profile';
 import { computeTicket } from './ticket';
 
 const lookup = (id: string, version: number) => getSet(id, version);
@@ -72,6 +73,64 @@ describe.each([
       const ids = s.proofs.map((p) => pullId(decodeProof(p)));
       expect(new Set(ids).size).toBe(1);
       expect(ids[0]).toBe(s.pullId);
+    }
+  });
+
+  interface ProfileVector {
+    note: string;
+    profile: string;
+    publicKey: string;
+    name: string;
+    fingerprint: string;
+    tickets: string[];
+    packs: { cards: unknown[]; hand: string; score: number }[];
+    xp: number;
+    level: number;
+    highlights: number[];
+  }
+  const { profiles = [], invalidProfiles = [] } = vectors as { profiles?: ProfileVector[]; invalidProfiles?: { note: string; rule: ProofRule; profile: string }[] };
+
+  it('valid profiles re-open to the listed packs and level', async () => {
+    expect(profiles.length).toBeGreaterThan(0);
+    for (const v of profiles) {
+      const { checked, packs } = await verifyProfile(v.profile, lookup);
+      expect(checked.profile.name, v.note).toBe(v.name);
+      expect(toHex(checked.profile.publicKey)).toBe(v.publicKey);
+      expect(checked.fingerprint).toBe(v.fingerprint);
+      expect(checked.tickets.map((s) => `${s.id}@${s.version}`)).toEqual(v.tickets);
+      expect(packs.map((p) => ({ cards: p.cards.map(({ cardId, rarity, isHolo }) => ({ cardId, rarity, isHolo })), hand: p.score.hand.name, score: p.score.score }))).toEqual(v.packs);
+      const stats = profileStats(packs);
+      expect([stats.xp, stats.level], v.note).toEqual([v.xp, v.level]);
+      expect(checked.profile.highlights).toEqual(v.highlights);
+    }
+  });
+
+  it('invalid profiles are rejected for the right reason', async () => {
+    expect(invalidProfiles.length).toBeGreaterThan(0);
+    for (const v of invalidProfiles) {
+      let rule: ProofRule | 'accepted' = 'accepted';
+      try {
+        // Claims need every pack re-opened; everything else fails before that.
+        if (v.rule === 'claims') await verifyProfile(v.profile, lookup);
+        else checkProfile(v.profile, lookup);
+      } catch (error) {
+        rule = (error as { rule: ProofRule }).rule;
+      }
+      expect(rule, v.note).toBe(v.rule);
+    }
+  });
+});
+
+describe('text around a proof (section 2)', () => {
+  const pull = engineVectors.valid[0].proof;
+  const profile = engineVectors.profiles[0].profile;
+
+  it('ignores ASCII space, tab, CR and LF around it, and nothing else', () => {
+    expect(() => decodeProof(` \t\r\n${pull}\n `)).not.toThrow();
+    expect(() => checkProfile(`\n${profile}\r\n`, getSet)).not.toThrow();
+    for (const extra of ['﻿', '\u0085', '\u001C', ' ', ' ']) {
+      expect(() => decodeProof(`${extra}${pull}`)).toThrow(expect.objectContaining({ rule: 'decode' }));
+      expect(() => checkProfile(`${profile}${extra}`, getSet)).toThrow(expect.objectContaining({ rule: 'decode' }));
     }
   });
 });

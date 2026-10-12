@@ -1,4 +1,6 @@
+import { MoveHorizontal } from 'lucide-react';
 import { RefObject } from 'react';
+import { useCoarsePointer } from '../../hooks/useCoarsePointer';
 import type { CutPoint } from '../../hooks/usePackCutter';
 import type { Spark } from '../../hooks/useSparks';
 import type { SetDefinition } from '../../engine';
@@ -24,6 +26,7 @@ const PackCuttingUI = ({
   cutPoints,
   sparks,
 }: PackCuttingUIProps) => {
+  const touch = useCoarsePointer();
   return (
     <>
       <div className="pack-shell-wrap">
@@ -53,8 +56,8 @@ const PackCuttingUI = ({
           </div>
           <div className="tear-guide" />
           <div className="swipe-hint">
-            <span className="swipe-hint-icon">👆</span>
-            <span className="swipe-hint-text">Swipe to open</span>
+            <MoveHorizontal className="swipe-hint-icon" aria-hidden="true" />
+            <span className="swipe-hint-text">{touch ? 'Swipe across to open' : 'Drag across to open'}</span>
           </div>
           {cutPoints.length > 1 && (
             <svg className="cut-line-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
@@ -65,7 +68,11 @@ const PackCuttingUI = ({
             </svg>
           )}
         </div>
-        <p className="pack-hint">{error ?? 'nothing to see here!'}</p>
+        {error && (
+          <p className="pack-hint is-error" role="alert">
+            {error}
+          </p>
+        )}
       </div>
       <div className="spark-layer" aria-hidden="true">
         {sparks.map((spark) => (

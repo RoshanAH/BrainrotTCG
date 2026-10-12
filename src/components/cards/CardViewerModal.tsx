@@ -1,6 +1,9 @@
-import { useState, useRef, useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { Share2, Sparkles } from 'lucide-react';
+import CardShareSheet from '../share/CardShareSheet';
 import type { Card } from '../../data/cards';
 import RarityBadge from '../ui/RarityBadge';
+import Sheet from '../ui/Sheet';
 
 interface CardViewerModalProps {
   card: Card;
@@ -8,111 +11,65 @@ interface CardViewerModalProps {
   hasHolo: boolean;
   initialHolo: boolean;
   onClose: () => void;
+  /** Only for cards the player owns (not someone else's shared pull). */
+  canShare?: boolean;
 }
 
-const CardViewerModal = ({ card, hasNormal, hasHolo, initialHolo, onClose }: CardViewerModalProps) => {
+const MAX_TILT = 12;
+
+/** One card, big, tilting with the pointer. */
+const CardViewerModal = ({ card, hasNormal, hasHolo, initialHolo, onClose, canShare = false }: CardViewerModalProps) => {
   const [isHolo, setIsHolo] = useState(initialHolo);
+  const [sharing, setSharing] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
-  const [tilt, setTilt] = useState({ rotateX: 0, rotateY: 0 });
+  const [tilt, setTilt] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!cardRef.current) return;
-
-      const rect = cardRef.current.getBoundingClientRect();
-      const centerX = rect.left + rect.width / 2;
-      const centerY = rect.top + rect.height / 2;
-
-      const percentX = (e.clientX - centerX) / (rect.width / 2);
-      const percentY = (e.clientY - centerY) / (rect.height / 2);
-
-      const clampedX = Math.max(-2, Math.min(2, percentX));
-      const clampedY = Math.max(-2, Math.min(2, percentY));
-
-      const maxTilt = 15;
-      setTilt({
-        rotateX: -clampedY * maxTilt,
-        rotateY: clampedX * maxTilt
-      });
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const onMove = (clientX: number, clientY: number) => {
+      const rect = cardRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      const px = Math.max(-1.5, Math.min(1.5, (clientX - (rect.left + rect.width / 2)) / (rect.width / 2)));
+      const py = Math.max(-1.5, Math.min(1.5, (clientY - (rect.top + rect.height / 2)) / (rect.height / 2)));
+      setTilt({ x: -py * MAX_TILT, y: px * MAX_TILT });
     };
-
-    const handleTouchMove = (e: TouchEvent) => {
-      if (!cardRef.current || e.touches.length === 0) return;
-
-      const touch = e.touches[0];
-      const rect = cardRef.current.getBoundingClientRect();
-      const centerX = rect.left + rect.width / 2;
-      const centerY = rect.top + rect.height / 2;
-
-      const percentX = (touch.clientX - centerX) / (rect.width / 2);
-      const percentY = (touch.clientY - centerY) / (rect.height / 2);
-
-      const clampedX = Math.max(-2, Math.min(2, percentX));
-      const clampedY = Math.max(-2, Math.min(2, percentY));
-
-      const maxTilt = 15;
-      setTilt({
-        rotateX: -clampedY * maxTilt,
-        rotateY: clampedX * maxTilt
-      });
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('touchmove', handleTouchMove);
+    const mouse = (e: MouseEvent) => onMove(e.clientX, e.clientY);
+    const touch = (e: TouchEvent) => e.touches[0] && onMove(e.touches[0].clientX, e.touches[0].clientY);
+    window.addEventListener('mousemove', mouse);
+    window.addEventListener('touchmove', touch, { passive: true });
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('mousemove', mouse);
+      window.removeEventListener('touchmove', touch);
     };
   }, []);
 
-  const classes = [
-    'card-viewer-card',
-    card.rarity.toLowerCase(),
-    isHolo ? 'holo' : ''
-  ].filter(Boolean).join(' ');
-
   return (
-    <div className="card-viewer-overlay" onClick={onClose}>
-      <div className="card-viewer-content" onClick={(e) => e.stopPropagation()}>
-        <div
-          ref={cardRef}
-          className={classes}
-          style={{
-            transform: `perspective(1000px) rotateX(${tilt.rotateX}deg) rotateY(${tilt.rotateY}deg)`,
-            transition: 'transform 0.1s ease-out',
-            transformStyle: 'preserve-3d'
-          }}
-        >
-          <img src={card.image} alt={card.name} draggable="false" />
-        </div>
-
-        <div className="card-viewer-info" style={{ textAlign: 'center', marginTop: '1rem', color: 'white', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>
-          <RarityBadge rarity={card.rarity} isHolo={isHolo} />
-          {card.caption && <p style={{ margin: '0.6rem 0 0', opacity: 0.85 }}>{card.caption}</p>}
+    <Sheet title={card.name} onClose={onClose} bare className="card-viewer">
+      <div
+        ref={cardRef}
+        className={`card-viewer-card ${card.rarity.toLowerCase()} ${isHolo ? 'holo' : ''}`}
+        style={{ transform: `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)` }}
+      >
+        <img src={card.image} alt={card.name} draggable="false" />
+      </div>
+      <div className="card-viewer-info">
+        <RarityBadge rarity={card.rarity} isHolo={isHolo} />
+        {card.flavor && <p className="card-viewer-flavor">{card.flavor}</p>}
+        <div className="card-viewer-actions">
           {hasNormal && hasHolo && (
-            <button
-              onClick={(e) => { e.stopPropagation(); setIsHolo(!isHolo); }}
-              style={{
-                marginTop: '0.5rem',
-                padding: '0.5rem 1rem',
-                background: isHolo ? 'linear-gradient(45deg, #ffd700, #ff8c00)' : 'rgba(255, 255, 255, 0.2)',
-                border: 'none',
-                borderRadius: '8px',
-                color: isHolo ? '#000' : '#fff',
-                fontWeight: 'bold',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                boxShadow: isHolo ? '0 0 10px rgba(255, 215, 0, 0.5)' : 'none'
-              }}
-            >
-              {isHolo ? 'Show Normal' : 'Show Shiny'}
+            <button type="button" className="btn btn--secondary btn--sm" onClick={() => setIsHolo(!isHolo)} aria-pressed={isHolo}>
+              <Sparkles aria-hidden="true" /> {isHolo ? 'Show normal' : 'Show holo'}
+            </button>
+          )}
+          {canShare && (
+            <button type="button" className="btn btn--primary btn--sm" onClick={() => setSharing(true)}>
+              <Share2 aria-hidden="true" /> Share card
             </button>
           )}
         </div>
-
-        <button className="card-viewer-close" onClick={onClose}>&times;</button>
       </div>
-    </div>
+      {sharing && <CardShareSheet card={card} isHolo={isHolo} onClose={() => setSharing(false)} />}
+    </Sheet>
   );
 };
 

@@ -40,6 +40,9 @@ export const toBase64Url = (bytes: Uint8Array): string => {
   return out;
 };
 
+/** Spec section 2: only ASCII space, tab, CR and LF around encoded text may be ignored. */
+export const trimAsciiSpace = (text: string): string => text.replace(/^[ \t\r\n]+|[ \t\r\n]+$/g, '');
+
 /** Strict base64url: no padding, and the unused bits of the last character must be zero (canonical). */
 export const fromBase64Url = (text: string): Uint8Array => {
   if (!/^[A-Za-z0-9_-]*$/.test(text) || text.length % 4 === 1) throw new Error('Invalid base64url string');

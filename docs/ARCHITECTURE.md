@@ -3,6 +3,43 @@
 Brainrot TCG is a static site (Vite + React on GitHub Pages) with **no backend**. Every pull is
 still verifiable by anyone, because packs are derived from proofs rather than stored anywhere.
 
+## Verification at a glance
+
+No server decides what anyone pulled. Your device does a fixed amount of work per pack and signs the
+result; anyone's device redoes the same work from the link and gets the same pack. Opening and
+verifying are the same function, `derivePack(set, key, ticket#)`.
+
+```mermaid
+flowchart LR
+  subgraph You["Your device"]
+    K["Player key (Ed25519, stays local)"]
+    N["Ticket counter #0, #1, ..."]
+    T["Ticket: Argon2id(set@v, key, #n), 32 MiB"]
+    P["Pack: SHA-256 -> sfc32 -> 5 cards"]
+    H["Pack history (every ticket)"]
+    S["Sign"]
+    K --> T
+    N --> T --> P --> H --> S
+    K --> S
+  end
+  Sets[("Card sets: published, hash-locked, old versions kept")]
+  Sets -. rules .-> P
+  S -->|"#/pull/proof or #/profile/proof"| L(["Link, shared anywhere"])
+  subgraph Viewer["Anyone's device"]
+    D["Strict decode"] --> C["Name, key, signature"] --> R["Redo the ticket(s)"] --> V{"Same pack? Claims match?"}
+  end
+  L --> D
+  Sets -. same rules .-> R
+  V -->|yes| OK["Verified"]
+  V -->|no| BAD["Rejected, naming the rule"]
+```
+
+GitHub only hosts the site and keeps the Hall of Fame list; public Nostr relays carry submissions from
+players without a GitHub account. Either could drop a submission, but every visitor re-checks the
+entries, so neither can add a fake one. `spec/verify_pull.py`
+re-implements all of this from the spec with different libraries, and CI checks both implementations
+against both sets of test vectors.
+
 ## Layers
 
 ```
@@ -27,7 +64,8 @@ src/game/          Browser glue around the engine.
   player.ts          the local player key, name and ticket counter (localStorage)
   ticketMiner.ts     mines tickets in workers/ticket.worker.ts, pre-mining the next pack
   pulls.ts           openPack(), proofFor(), pullUrl(), checkPull()
-  share.ts, bragImage.ts   brag text, Hall of Fame link, 9:16 poster with QR
+  share.ts, bragImage.ts   brag text, Hall of Fame submit, 9:16 poster with QR
+  nostrInbox.ts      Hall of Fame submissions over public Nostr relays (loaded only when used)
 
 src/components/    React UI (pack opening, collection, set picker, share sheet, pull viewer, pages)
 
@@ -37,7 +75,8 @@ spec/              The proof spec (PULL_SPEC.md), test vectors, and verify_pull.
 scripts/           Node tools (run with tsx)
   cards/             card compositor (Genesis frame + art + text), pack wrappers, previews, prompt sheets
   check-sets.ts      set lock guard
-  hall-of-fame.ts    verifies Hall of Fame issues; builds public/hall-of-fame.json
+  hall-of-fame.ts    verifies Hall of Fame issues; files Nostr submissions; builds public/hall-of-fame.json
+  hof-inbox.ts       the inbox rules: verify, dedupe, budget, retry
 ```
 
 ## How a pull works
@@ -72,11 +111,18 @@ encodings; the rules that close them are in `spec/PULL_SPEC.md` section 7 and co
 
 ## Hall of Fame (no server)
 
+There are two ways in. Most players don't have a GitHub account, so the default needs none.
+
 ```
-player ─► Share ─► "Submit" ─► GitHub issue form (pull link)
+player ─► Share ─► "Submit"  ─► signed Nostr event ─► 5 public relays
+                                                          │  every 15 min
+                    .github/workflows/hall-of-fame-inbox.yml
+                    scripts/hall-of-fame.ts inbox  ─► bot-filed issue + comment + labels (+ redeploy)
+                                   │
+player ─► Share ─► "on GitHub" ─► GitHub issue form (pull link; needs an account)
                                    │
                     .github/workflows/hall-of-fame.yml
-                    scripts/hall-of-fame.ts verify-issue  ─► comment + label (+ redeploy)
+                    scripts/hall-of-fame.ts verify-issue  ─► comment + labels (+ redeploy)
                                    │
                     .github/workflows/deploy.yml
                     scripts/hall-of-fame.ts build  ─► public/hall-of-fame.json (re-verified, deduped)
@@ -84,12 +130,53 @@ player ─► Share ─► "Submit" ─► GitHub issue form (pull link)
                     Hall of Fame page re-derives each entry again in the visitor's browser
 ```
 
+**Without an account** (`src/game/nostrInbox.ts`): the game wraps the pull proof in a Nostr event
+(NIP-78 application data, kind 30078, so it never shows up in anyone's feed), signs it with a
+throwaway key made for that one submission, and sends it to five open relays. The throwaway key is
+only a transport: who pulled it comes from the proof's own signature. The inbox job reads the last
+week of events, checks each event's signature, verifies the pull with the same engine as everything
+else, and files the ones that qualify as issues in the same verified state the GitHub path ends in.
+Each run checks at most 300 pulls and files at most 20, skips pulls already verified in the list,
+and remembers events it has checked (in the Actions cache) so junk isn't re-checked every run;
+anything over the limits waits for the next run. It keeps paging each relay back to the start of the
+window, so a burst of junk can't push a real submission out of reach, and keeps only copies whose
+signature checks out, so one bad relay can't hide another's good copy. Only the exact proof text a
+link carries is accepted, so what's filed always reads back as the same pull. A filing that stops
+halfway (issue opened, not yet labelled `verified`) is finished on the next run.
+It costs nothing: the relays are free, and Actions minutes on a public repository are free. GitHub
+pauses scheduled workflows after 60 days without a commit; if that happens, re-enable "Hall of Fame
+inbox" in the Actions tab (submissions from the last week are still picked up).
+
+A relay can drop a submission (that's why there are five) or flood the inbox with junk (each run
+checks a bounded number, and junk is skipped), but it can't forge an entry: the deploy and every
+visitor re-derive each pull from its proof. A maintainer can drop an entry the same way as any other
+(the `rejected` label below).
+
 Issue text is untrusted: it's only parsed by the script, never put into a shell command, and only
 echoed back through a sanitiser. The submitter's GitHub username comes from GitHub. "World first"
 order uses the time the bot first verified that exact pull on the issue (a marker in its comment), not
 the issue's creation date, so a placeholder issue edited later can't claim an earlier spot. Each pull
 counts once, however many times it's submitted or re-signed. A maintainer can drop an entry by adding
 the `rejected` label to its issue.
+
+## Profiles and levels (no server)
+
+A profile link (`#/profile/<proof>`, spec section 11) is the player's signed list of which set every
+ticket went to, from ticket #0 with no gaps, plus two claims: their XP and their five best tickets.
+It carries no cards; the viewer re-opens every pack (`src/game/profiles.ts`), so nothing in it can be
+edited, and bad packs can't be left out (a ticket's pack is fixed, and every ticket is listed).
+
+Speed, for a profile of N packs (each pack is one ~0.1 s ticket):
+
+- the signature and the claimed level: instant;
+- the best pulls: about a second (re-opened first);
+- everything: N tickets across a pool of workers (`src/game/ticketPool.ts`, up to 8). If the packs
+  don't match the claims, the profile is marked fake;
+- a second view, or the same profile with more packs: only the new packs (`src/game/reopenCache.ts`).
+
+The game records every pack the moment it's derived (`src/game/history.ts`), and signs profiles from
+that history, so sharing one is instant. Levels come from the packs alone (spec section 11.3), so a
+level is exactly as trustworthy as the packs.
 
 ## Invariants (CI enforces these)
 

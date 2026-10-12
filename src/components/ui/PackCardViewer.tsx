@@ -14,6 +14,8 @@ interface PackCardViewerProps {
     showValue?: boolean;
     onCardClick?: (card: CardWithMeta) => void;
     className?: string;
+    /** The player's own pack: its cards can be shared one by one. */
+    canShareCards?: boolean;
 }
 
 const PackCardViewer = ({
@@ -22,6 +24,7 @@ const PackCardViewer = ({
     showValue = true,
     onCardClick,
     className = '',
+    canShareCards = false,
 }: PackCardViewerProps) => {
     const [selectedCard, setSelectedCard] = useState<CardWithMeta | null>(null);
 
@@ -64,14 +67,16 @@ const PackCardViewer = ({
                         : 0;
 
                     return (
-                        <div
+                        <button
+                            type="button"
                             key={card.uniqueId || index}
                             className={getCardClasses(card)}
                             style={displayMode === 'carousel' ? { '--offset': offset } as React.CSSProperties : undefined}
                             onClick={() => handleCardClick(card)}
+                            aria-label={`${card.name}${card.isHolo ? ' (holo)' : ''}`}
                         >
-                            <img src={card.image} alt={card.name} />
-                        </div>
+                            <img src={card.image} alt="" />
+                        </button>
                     );
                 })}
             </div>
@@ -84,6 +89,7 @@ const PackCardViewer = ({
                     hasHolo={selectedCard.isHolo}
                     initialHolo={selectedCard.isHolo}
                     onClose={() => setSelectedCard(null)}
+                    canShare={canShareCards}
                 />
             )}
         </div>

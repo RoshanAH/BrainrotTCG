@@ -1,0 +1,131 @@
+.pulls-legacy,
+.pulls-history {
+  margin-top: var(--space-6);
+}
+
+.pulls-note {
+  margin-top: var(--space-3);
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
+
+.pulls-empty {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-4);
+  padding: var(--space-7) 0;
+  color: var(--text-muted);
+}
+
+.pulls-history-title {
+  margin-bottom: var(--space-2);
+}
+
+.pulls-list {
+  list-style: none;
+  margin-bottom: var(--space-3);
+}
+
+.pull-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  min-height: 64px;
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  text-align: left;
+  transition: background-color var(--dur) var(--ease-out);
+}
+
+.pull-row:hover:not(:disabled) {
+  background: rgba(243, 239, 230, 0.05);
+}
+
+.pulls-list li + li .pull-row {
+  border-top: 1px solid var(--border);
+  border-radius: 0;
+}
+
+.pull-row:disabled {
+  cursor: default;
+}
+
+
+
+.pull-row-thumbs {
+  display: flex;
+}
+
+.pull-row-thumbs img,
+.pull-row-blank {
+  width: 26px;
+  aspect-ratio: 687 / 1024;
+  border-radius: 3px;
+  box-shadow: 0 0 0 1.5px var(--bg-elevated);
+  object-fit: cover;
+}
+
+.pull-row-thumbs > * + * {
+  margin-left: -8px;
+}
+
+.pull-row-thumbs img.holo {
+  padding: 1.5px;
+  background: var(--foil);
+}
+
+.pull-row-blank {
+  background: var(--surface-3);
+}
+
+.pull-row-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.pull-row-hand {
+  font-weight: 700;
+}
+
+.pull-row-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pull-row-score {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+}
+
+.pull-row-chevron {
+  width: 18px;
+  height: 18px;
+  color: var(--text-subtle);
+}
+
+/* On phones the coloured set code is enough. */
+@media (max-width: 480px) {
+  .pull-row-setname {
+    display: none;
+  }
+}
+
+@media (max-width: 420px) {
+  .pull-row-thumbs img,
+  .pull-row-blank {
+    width: 20px;
+  }
+
+  .pull-row-thumbs > * + * {
+    margin-left: -10px;
+  }
+}

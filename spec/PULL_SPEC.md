@@ -26,6 +26,9 @@ A proof never contains cards. The verifier derives them, so a proof can't claim 
 - **base64url**: RFC 4648 §5 alphabet `A–Z a–z 0–9 - _`, **no padding**. A decoder MUST reject
   `=`, any other character, a length ≡ 1 (mod 4), and **non-canonical input**: the unused low bits of
   the last character MUST be zero. (Equivalently: re-encoding the decoded bytes gives the same text.)
+  A verifier MAY ignore ASCII space, tab, CR and LF before and after the whole text (what a paste
+  tends to add) and MUST treat any other character there, including other Unicode whitespace and
+  U+FEFF, as part of the text (so it fails `decode`).
 - **varint**: unsigned LEB128, 7 bits per byte, least significant group first, high bit set on every
   byte but the last. Values are 0 … 2⁵³−1 (at most 8 bytes). The encoding MUST be minimal: no
   trailing `0x80`-continued zero groups (the last byte of a multi-byte varint is never `0x00`).
@@ -166,3 +169,102 @@ score of at least 20000.
 It shows that the holder of that key pulled exactly these cards from that set by spending the ticket
 with that number, and that nothing was edited. It doesn't show how many packs the player opened
 (including in a script), so the Hall of Fame says who pulled something first, not who was luckiest.
+
+## 11. Profiles
+
+A **profile proof** is a player's signed list of which set each of their tickets went to, from ticket 0
+with no gaps. It doesn't list cards: a verifier re-opens every pack itself (sections 4–5), so a profile
+shows exactly what those tickets hold. It also **claims** its XP and its best few packs, so a viewer can
+show the level at once and re-open the best packs first; once every pack is re-opened, the claims must
+be exactly right. Share links look like `https://…/#/profile/<profile>`.
+
+### 11.1 Format
+
+base64url (section 2) of these bytes:
+
+| Bytes | Field |
+| --- | --- |
+| 1 | profile version, `0x01` |
+| 32 | player public key (Ed25519) |
+| 1 + n | display name: length byte `n` (0 … 255), then UTF-8 |
+| 1 | number of sets in the table, `t` (1 … 64) |
+| t × (1 + n + 2) | each set: id length byte `n` (1 … 64), UTF-8 id, u16be version |
+| varint | number of runs, `r` (≥ 1) |
+| r × (varint, varint) | each run: set index into the table, then ticket count (≥ 1) |
+| varint | claimed XP (section 11.3) |
+| 1 | number of highlights, `h` = min(5, N) |
+| h × varint | highlights: ticket numbers of the best packs, best first |
+| 64 | Ed25519 signature |
+
+The signed message is `UTF-8("brainrot-tcg/profile/v1") || <every byte before the signature>`. (The
+different prefix means a pull proof's signature never verifies as a profile, or the other way round.)
+
+Runs cover tickets in order: the first run's `count` tickets are tickets `0 … count−1` in its set, the
+next run continues from there, and so on. The profile covers tickets `0 … N−1`, where N is the sum of
+the counts.
+
+### 11.2 Verification
+
+Apply these checks in this order and reject at the first that fails, reporting the rule (the `rule`
+of each `invalidProfiles` vector):
+
+1. **`decode`.** base64url, varints and UTF-8 are canonical (section 2); the version byte is 1; every
+   field is present and nothing follows the signature; and the encoding is canonical:
+   - the table has 1 … 64 entries, each set id is 1 … 64 bytes, and no `(id, version)` appears twice;
+   - there is at least one run; every run's index is less than `t` and its count is at least 1;
+   - sets appear in the table **in order of first use**: walking the runs, each index is at most the
+     number of distinct indexes seen so far;
+   - two consecutive runs never have the same index (they would be one run);
+   - every table entry is used by some run;
+   - N, the total ticket count, is at most **100 000** (this bounds a verifier's work);
+   - `h` is exactly min(5, N), every highlight is less than N, and no highlight appears twice.
+2. **`name`**, 3. **`publicKey`**, 4. **`signature`**: exactly as in section 7, with this section's
+   signed message.
+5. **`set`.** Every `id@version` in the table exists.
+
+Then for each ticket `n` in `0 … N−1`, derive its pack in its run's set (sections 4–5) and score it
+(section 8). Finally:
+
+6. **`claims`.** The claimed XP equals the XP of the derived packs (section 11.3), and the highlights
+   are exactly the `h` best packs in order: by score, highest first, and for equal scores the lower
+   ticket number first.
+
+A verifier MAY re-open the highlights first and show the claimed level before step 6, as long as it
+says the level is only claimed until step 6 passes.
+
+### 11.3 Level
+
+Computed from the derived packs only:
+
+- **XP** = 10 per pack, + 25 per distinct card (by set id and card id; a holo and a normal copy are
+  the same card), + a bonus per pack by its combo: Two Pair 5, 3 of a Kind 5, Full House 50, 4 of a
+  Kind 100, 5 of a Kind 1000 (others 0).
+- **Level** = the largest `L ≥ 1` with `50 × L × (L − 1) ≤ XP` (level 2 at 100 XP, 3 at 300, 4 at
+  600, …).
+
+### 11.4 What a valid profile does and doesn't show
+
+It shows every pack that key opened from its first ticket up to ticket N−1, with nothing left out
+or edited, and the level those packs earn. It can't show packs opened after the profile was made
+(only stop early, which can only make it smaller), that ticket `n` was opened in that set and no other
+(re-mining one ticket in several sets costs a full ticket each), or that two keys belong to different
+people.
+
+## 12. Versions
+
+Every link that has ever verified must keep verifying, so nothing here is ever changed in place.
+
+- **Formats.** A pull proof starts with version byte `0x01` and a profile with its own `0x01`. A
+  verifier MUST reject any version it doesn't implement (rule `decode`), never guess. A new format gets
+  the next version byte **and** a new signed-message prefix (`brainrot-tcg/proof/v2`), so a signature
+  made for one format can never verify as another. Verifiers keep accepting every older version.
+- **Tickets.** The ticket preimage starts with `brainrot-tcg/ticket/v1` and the salt is fixed
+  (section 4). Changing the Argon2id parameters, the preimage or the salt means a new ticket version,
+  chosen per set version, so existing set versions keep v1 tickets forever.
+- **Sets.** `id@version` is immutable once released: anything that changes which pack a ticket yields
+  (cards, their order, rarities, odds, pack size) needs a new version, and every released version stays
+  available for verification (enforced by `src/content/sets.lock.json` in CI). Names, captions, flavor
+  text and art may change freely; they don't affect packs.
+- **Rules.** Scoring (section 8), Hall of Fame thresholds and levels (section 11.3) can only change
+  with a new spec version, published alongside the old one; leaderboards say which they use.
+- **Test vectors** for a version are never edited, only added to.

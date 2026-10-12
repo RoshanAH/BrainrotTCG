@@ -1,183 +1,95 @@
-/* Pack Card Viewer - Reusable component for displaying pack cards */
+/* The five cards of a pack: a fan (summary, best pull) or a compact row (share sheet, history). */
 
 .pack-card-viewer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  /* Cards size to the space they're given (a sheet, the summary), not the viewport. */
+  container-type: inline-size;
 }
 
-/* Carousel Layout (fan-out) */
+/* The fan spans 4.2 card widths, plus a little for the tilt. */
+.pack-viewer-cards {
+  --w: clamp(60px, 22cqw, 190px);
+}
+
 .pack-viewer-carousel {
-    position: relative;
-    width: 100%;
-    height: 50vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: 1rem;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  height: calc(var(--w) * 1024 / 687 + var(--space-5));
+  padding-top: var(--space-2);
+}
+
+.pack-viewer-grid {
+  --w: clamp(44px, calc((100cqw - 4 * var(--space-2)) / 5), 104px);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+.pack-viewer-card-carousel,
+.pack-viewer-card-grid {
+  --r: var(--rarity-common);
+  position: relative;
+  width: var(--w);
+  aspect-ratio: 687 / 1024;
+  padding: 0;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--surface);
+  box-shadow: 0 0 0 2px var(--r), var(--shadow-2);
+  cursor: pointer;
+}
+
+.pack-viewer-card-carousel img,
+.pack-viewer-card-grid img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .pack-viewer-card-carousel {
-    position: absolute;
-    width: 20vw;
-    min-width: 140px;
-    max-width: 250px;
-    border-radius: 8px;
-    overflow: hidden;
-    background: rgba(255, 255, 255, 0.05);
-    border: 3px solid #333;
-    transform: translateX(calc(var(--offset) * 15vw));
-    transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-        box-shadow 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-        z-index 0s 0.25s;
-    cursor: pointer;
+  position: absolute;
+  transform: translateX(calc(var(--offset) * var(--w) * 0.8)) rotate(calc(var(--offset) * 2.5deg));
+  transform-origin: 50% 120%;
+  transition:
+    transform var(--dur-slow) var(--ease-out),
+    box-shadow var(--dur) var(--ease-out);
 }
 
-.pack-viewer-card-carousel:hover {
-    transform: translateX(calc(var(--offset) * 15vw)) scale(1.15);
-    z-index: 10;
-    transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-        box-shadow 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-        z-index 0s;
-}
-
-/* Grid Layout */
-.pack-viewer-grid {
-    display: flex;
-    justify-content: center;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-    margin-top: 1rem;
+.pack-viewer-card-carousel:hover,
+.pack-viewer-card-carousel:focus-visible {
+  z-index: 10;
+  transform: translateX(calc(var(--offset) * var(--w) * 0.8)) translateY(-8px) scale(1.08);
 }
 
 .pack-viewer-card-grid {
-    width: 100px;
-    aspect-ratio: 5 / 7;
-    border-radius: 8px;
-    overflow: hidden;
-    cursor: pointer;
-    transition: transform 0.2s;
-    border: 2px solid var(--glass-border);
+  transition: transform var(--dur-fast) var(--ease-out);
 }
 
-.pack-viewer-card-grid:hover {
-    transform: scale(1.05);
+.pack-viewer-card-grid:hover,
+.pack-viewer-card-grid:focus-visible {
+  transform: translateY(-3px);
 }
 
-/* Shared card styles */
-.pack-viewer-card-carousel img,
-.pack-viewer-card-grid img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 5px;
-    display: block;
-}
+.pack-viewer-cards .common { --r: var(--rarity-common); }
+.pack-viewer-cards .uncommon { --r: var(--rarity-uncommon); }
+.pack-viewer-cards .rare { --r: var(--rarity-rare); }
+.pack-viewer-cards .epic { --r: var(--rarity-epic); }
+.pack-viewer-cards .legendary { --r: var(--rarity-legendary); }
 
-/* Rarity styles - Carousel */
-.pack-viewer-card-carousel.common {
-    border-color: var(--rarity-common);
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4), 0 0 15px rgba(170, 170, 170, 0.3);
-}
-
-.pack-viewer-card-carousel.common:hover {
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 25px rgba(170, 170, 170, 0.5);
-}
-
-.pack-viewer-card-carousel.uncommon {
-    border-color: var(--rarity-uncommon);
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4), 0 0 15px rgba(30, 255, 0, 0.4);
-}
-
-.pack-viewer-card-carousel.uncommon:hover {
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 28px rgba(30, 255, 0, 0.55);
-}
-
-.pack-viewer-card-carousel.rare {
-    border-color: var(--rarity-rare);
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4), 0 0 15px rgba(0, 112, 221, 0.4);
-}
-
-.pack-viewer-card-carousel.rare:hover {
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(0, 112, 221, 0.6);
-}
-
-.pack-viewer-card-carousel.epic {
-    border-color: var(--rarity-epic);
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4), 0 0 15px rgba(163, 53, 238, 0.5);
-}
-
-.pack-viewer-card-carousel.epic:hover {
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 35px rgba(163, 53, 238, 0.7);
-}
-
-.pack-viewer-card-carousel.legendary {
-    border-color: var(--rarity-legendary);
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 128, 0, 0.6);
-}
-
-.pack-viewer-card-carousel.legendary:hover {
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 40px rgba(255, 128, 0, 0.8);
-}
-
-.pack-viewer-card-carousel.brainrot {
-    border: 2px solid transparent;
-    background: linear-gradient(rgba(26, 26, 30, 1), rgba(26, 26, 30, 1)) padding-box,
-        linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3, #ff0000) border-box;
-    background-size: 100% 100%, 200% 100%;
-    animation: packViewerRainbowBorder 3s linear infinite;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4), 0 0 25px rgba(255, 0, 255, 0.5), 0 0 40px rgba(0, 255, 255, 0.3);
-}
-
-.pack-viewer-card-carousel.brainrot:hover {
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 40px rgba(255, 0, 255, 0.7), 0 0 60px rgba(0, 255, 255, 0.5);
-}
-
-/* Rarity styles - Grid */
-.pack-viewer-card-grid.common {
-    border-color: var(--rarity-common);
-}
-
-.pack-viewer-card-grid.uncommon {
-    border-color: var(--rarity-uncommon);
-}
-
-.pack-viewer-card-grid.rare {
-    border-color: var(--rarity-rare);
-}
-
-.pack-viewer-card-grid.epic {
-    border-color: var(--rarity-epic);
-}
-
-.pack-viewer-card-grid.legendary {
-    border-color: var(--rarity-legendary);
-}
-
+.pack-viewer-card-carousel.brainrot,
 .pack-viewer-card-grid.brainrot {
-    border: 2px solid transparent;
-    background: linear-gradient(var(--card-bg), var(--card-bg)) padding-box,
-        linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3, #ff0000) border-box;
-    background-size: 100% 100%, 200% 100%;
-    animation: packViewerRainbowBorder 3s linear infinite;
+  box-shadow: 0 0 0 2px #ffe14d, 0 0 18px rgba(255, 225, 77, 0.55), var(--shadow-2);
 }
 
-@keyframes packViewerRainbowBorder {
-    0% { background-position: 0 0, 0% 0; }
-    100% { background-position: 0 0, 200% 0; }
-}
-
-/* Holo effects - Carousel */
-.pack-viewer-card-carousel.holo {
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4),
-        0 0 20px rgba(255, 0, 255, 0.3),
-        0 0 40px rgba(0, 255, 255, 0.2);
-}
-
-.pack-viewer-card-carousel.holo:hover {
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5),
-        0 0 30px rgba(255, 0, 255, 0.4),
-        0 0 50px rgba(0, 255, 255, 0.3);
+.pack-viewer-card-carousel:focus-visible,
+.pack-viewer-card-grid:focus-visible {
+  box-shadow: 0 0 0 2px var(--r), var(--focus-ring);
 }
 
 /* Rainbow shimmer for holo cards */
@@ -241,29 +153,11 @@
     100% { left: 150%; }
 }
 
-/* Holo effects - Grid */
-.pack-viewer-card-grid.holo {
-    position: relative;
-    box-shadow: 0 0 10px rgba(255, 0, 255, 0.3),
-        0 0 20px rgba(0, 255, 255, 0.2);
-}
-
-/* Responsive */
-@media (max-width: 640px) {
-    .pack-viewer-carousel {
-        height: 40vh;
-    }
-
-    .pack-viewer-card-carousel {
-        min-width: 100px;
-        max-width: 160px;
-    }
-
-    .pack-viewer-card-carousel:hover {
-        transform: translateX(calc(var(--offset) * 15vw)) scale(1.05);
-    }
-
-    .pack-viewer-card-grid {
-        width: 80px;
-    }
+@media (prefers-reduced-motion: reduce) {
+  .pack-viewer-card-carousel.holo::before,
+  .pack-viewer-card-grid.holo::before,
+  .pack-viewer-card-carousel.holo::after,
+  .pack-viewer-card-grid.holo::after {
+    animation: none;
+  }
 }

@@ -7,3 +7,4 @@ export * from './identity';
 export * from './proof';
 export * from './hallOfFame';
 export * from './odds';
+export * from './profile';

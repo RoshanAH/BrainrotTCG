@@ -1,8 +1,10 @@
-import { useRef, useState } from 'react';
+import { useId, useRef, useState } from 'react';
+import { Download, Upload } from 'lucide-react';
 import { STORAGE_KEYS } from '../../constants';
 import { MAX_NAME_LENGTH } from '../../engine';
 import { exportPlayer, getPlayer, renamePlayer } from '../../game/player';
 import type { Settings } from '../../types';
+import Sheet from '../ui/Sheet';
 import '../../styles/Settings.css';
 import { CURRENT_DATA_VERSION } from '../../utils/migrations';
 
@@ -24,14 +26,6 @@ const SettingsPage = ({ settings, onSettingsChange, onClose, onImportSave }: Set
         setNameDraft(updated.name);
     };
 
-    const handleToggleSound = () => {
-        onSettingsChange({ ...settings, soundEnabled: !settings.soundEnabled });
-    };
-
-    const handleToggleParticles = () => {
-        onSettingsChange({ ...settings, particlesEnabled: !settings.particlesEnabled });
-    };
-
     const handleExportSave = () => {
         const saveData = {
             collection: localStorage.getItem(STORAGE_KEYS.COLLECTION),
@@ -39,7 +33,7 @@ const SettingsPage = ({ settings, onSettingsChange, onClose, onImportSave }: Set
             stats: localStorage.getItem(STORAGE_KEYS.STATS),
             hallOfFame: localStorage.getItem(STORAGE_KEYS.HALL_OF_FAME),
             settings: localStorage.getItem(STORAGE_KEYS.SETTINGS),
-            pulls: localStorage.getItem(STORAGE_KEYS.PULLS),
+            history: localStorage.getItem(STORAGE_KEYS.HISTORY),
             // Your secret player key: it's what makes your pulls yours. Don't share this file.
             player: exportPlayer(),
             exportedAt: new Date().toISOString(),
@@ -79,108 +73,97 @@ const SettingsPage = ({ settings, onSettingsChange, onClose, onImportSave }: Set
     };
 
     return (
-        <div className="settings-page">
-            <div className="settings-header">
-                <h2>Settings</h2>
-                <button className="settings-close-btn" onClick={onClose}>×</button>
-            </div>
-
-            <div className="settings-content">
-                <div className="settings-section">
-                    <h3>Player</h3>
-                    <div className="settings-option">
-                        <div className="settings-option-info">
-                            <span className="settings-option-label">Name</span>
-                            <span className="settings-option-desc">Shown on pulls you share. Your ID #{player.fingerprint} comes from your player key.</span>
-                        </div>
+        <Sheet title="Settings" onClose={onClose} size="sm" className="settings">
+            <section className="settings-group">
+                <h3 className="section-title" id="settings-player">Player</h3>
+                <div className="settings-panel">
+                    <label className="settings-field">
+                        <span className="settings-label">Name</span>
                         <input
-                            className="settings-name-input"
+                            className="settings-input"
                             value={nameDraft}
                             onChange={(e) => setNameDraft(Array.from(e.target.value).slice(0, MAX_NAME_LENGTH).join(''))}
                             onBlur={saveName}
                             onKeyDown={(e) => e.key === 'Enter' && saveName()}
-                            aria-label="Player name"
+                            autoComplete="nickname"
+                            spellCheck={false}
                         />
+                        <span className="settings-desc">
+                            Shown on pulls you share, next to your ID <span className="share-fp">#{player.fingerprint}</span>.
+                        </span>
+                    </label>
+                </div>
+            </section>
+
+            <section className="settings-group">
+                <h3 className="section-title">Experience</h3>
+                <div className="settings-panel">
+                    <SwitchRow
+                        label="Sound"
+                        desc="Music, card sounds and effects"
+                        checked={settings.soundEnabled}
+                        onChange={() => onSettingsChange({ ...settings, soundEnabled: !settings.soundEnabled })}
+                    />
+                    <SwitchRow
+                        label="Particles"
+                        desc="Sparks and confetti"
+                        checked={settings.particlesEnabled}
+                        onChange={() => onSettingsChange({ ...settings, particlesEnabled: !settings.particlesEnabled })}
+                    />
+                    <SwitchRow
+                        label="Preview upcoming sets"
+                        desc="Sets still waiting for their final art"
+                        checked={!!settings.showDraftSets}
+                        onChange={() => onSettingsChange({ ...settings, showDraftSets: !settings.showDraftSets })}
+                    />
+                </div>
+            </section>
+
+            <section className="settings-group">
+                <h3 className="section-title">Save data</h3>
+                <div className="settings-panel">
+                    <div className="settings-row">
+                        <span className="settings-text">
+                            <span className="settings-label">Back up</span>
+                            <span className="settings-desc">Includes your secret player key. Keep the file private.</span>
+                        </span>
+                        <button type="button" className="btn btn--secondary btn--sm" onClick={handleExportSave}>
+                            <Download aria-hidden="true" /> Export
+                        </button>
+                    </div>
+                    <div className="settings-row">
+                        <span className="settings-text">
+                            <span className="settings-label">Restore</span>
+                            <span className="settings-desc">Load a backup file</span>
+                        </span>
+                        <button type="button" className="btn btn--secondary btn--sm" onClick={handleImportClick}>
+                            <Upload aria-hidden="true" /> Import
+                        </button>
+                        <input ref={fileInputRef} type="file" accept=".txt,.json" onChange={handleFileChange} hidden />
                     </div>
                 </div>
+            </section>
+        </Sheet>
+    );
+};
 
-                <div className="settings-section">
-                    <h3>Audio & Visuals</h3>
-
-                    <div className="settings-option">
-                        <div className="settings-option-info">
-                            <span className="settings-option-label">Sound Effects</span>
-                            <span className="settings-option-desc">Card sounds, music, and effects</span>
-                        </div>
-                        <button
-                            className={`settings-toggle ${settings.soundEnabled ? 'active' : ''}`}
-                            onClick={handleToggleSound}
-                        >
-                            <span className="toggle-slider" />
-                        </button>
-                    </div>
-
-                    <div className="settings-option">
-                        <div className="settings-option-info">
-                            <span className="settings-option-label">Particles</span>
-                            <span className="settings-option-desc">Sparks, confetti, and visual effects</span>
-                        </div>
-                        <button
-                            className={`settings-toggle ${settings.particlesEnabled ? 'active' : ''}`}
-                            onClick={handleToggleParticles}
-                        >
-                            <span className="toggle-slider" />
-                        </button>
-                    </div>
-                </div>
-
-                <div className="settings-section">
-                    <h3>Packs</h3>
-                    <div className="settings-option">
-                        <div className="settings-option-info">
-                            <span className="settings-option-label">Preview upcoming sets</span>
-                            <span className="settings-option-desc">Open sets that are still waiting for their final art</span>
-                        </div>
-                        <button
-                            className={`settings-toggle ${settings.showDraftSets ? 'active' : ''}`}
-                            onClick={() => onSettingsChange({ ...settings, showDraftSets: !settings.showDraftSets })}
-                        >
-                            <span className="toggle-slider" />
-                        </button>
-                    </div>
-                </div>
-
-                <div className="settings-section">
-                    <h3>Save Data</h3>
-
-                    <div className="settings-option">
-                        <div className="settings-option-info">
-                            <span className="settings-option-label">Export Save</span>
-                            <span className="settings-option-desc">Download your progress, including your secret player key. Keep it private.</span>
-                        </div>
-                        <button className="settings-btn" onClick={handleExportSave}>
-                            Export
-                        </button>
-                    </div>
-
-                    <div className="settings-option">
-                        <div className="settings-option-info">
-                            <span className="settings-option-label">Import Save</span>
-                            <span className="settings-option-desc">Load progress from a text file</span>
-                        </div>
-                        <button className="settings-btn" onClick={handleImportClick}>
-                            Import
-                        </button>
-                        <input
-                            ref={fileInputRef}
-                            type="file"
-                            accept=".txt,.json"
-                            onChange={handleFileChange}
-                            style={{ display: 'none' }}
-                        />
-                    </div>
-                </div>
-            </div>
+const SwitchRow = ({ label, desc, checked, onChange }: { label: string; desc: string; checked: boolean; onChange: () => void }) => {
+    const id = useId();
+    return (
+        <div className="settings-row">
+            <span className="settings-text">
+                <span className="settings-label" id={`${id}-label`}>{label}</span>
+                <span className="settings-desc" id={`${id}-desc`}>{desc}</span>
+            </span>
+            <button
+                type="button"
+                role="switch"
+                className="switch"
+                aria-checked={checked}
+                aria-labelledby={`${id}-label`}
+                aria-describedby={`${id}-desc`}
+                onClick={onChange}
+            />
         </div>
     );
 };

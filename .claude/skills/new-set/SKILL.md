@@ -1,6 +1,6 @@
 ---
 name: new-set
-description: Research current meme trends and draft a new Brainrot TCG card set end to end (card list, set.json, real meme images with credits, previews), ready for a draft PR. Use when asked to add, draft or update a card set, era, or monthly "Right Now" drop.
+description: Research current meme trends and draft a new Brainrot TCG card set end to end (card list, set.json, real meme images with credits, previews), ready for a draft PR. Use when asked to add, draft or update a card set, era, or monthly drop.
 ---
 
 # Drafting a new Brainrot TCG set
@@ -31,7 +31,8 @@ hate-associated, and pick another from the same era. PG-13. Flag anything risky 
 ## 3. Files
 
 1. `src/content/sets/<id>/set.json` with `"draft": true` (template in `docs/ADDING_A_SET.md`). A monthly
-   drop is a new set with id `drop-YYYY-MM` named "Right Now"; rename the previous drop to its window.
+   drop is a new set with id `drop-YYYY-MM` and a permanent name for its window and theme (e.g. "Summer of
+   Slop"); never a relative name like "Right Now", which goes stale. The app marks the newest set "New".
 2. Real images: for every card, the meme's canonical image from the web saved as
    `src/content/sets/<id>/art/<card-id>.png`, following "Real images only" in `docs/ART_STYLE.md`
    (download into an empty folder, validate and re-encode with `python3 -I` + Pillow, crop to 6:7).

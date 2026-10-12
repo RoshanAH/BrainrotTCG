@@ -27,13 +27,9 @@ const SLOTS = [
 ];
 const order = [0, 4, 1, 3, 2];
 
+// Binder black, like the app (docs/DESIGN.md): the cards bring the colour.
 const background = Buffer.from(
-  `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">
-    <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#7a1fa2"/><stop offset="0.55" stop-color="#2a0f4f"/><stop offset="1" stop-color="#0f4a5c"/>
-    </linearGradient></defs>
-    <rect width="100%" height="100%" fill="url(#g)"/>
-  </svg>`,
+  `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}"><rect width="100%" height="100%" fill="#121114"/></svg>`,
 );
 
 const layers: OverlayOptions[] = [];

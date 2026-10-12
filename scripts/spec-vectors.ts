@@ -15,7 +15,9 @@ import {
   computeTicket,
   concatBytes,
   createRng,
+  createProfile,
   derivePack,
+  encodeProfile,
   encodeProof,
   encodeVarint,
   fromBase64Url,
@@ -23,9 +25,12 @@ import {
   publicKeyFromSecret,
   qualifiesForHallOfFame,
   scorePack,
+  profileStats,
+  scorePulled,
   setKey,
   sign,
   signProof,
+  type ProfileRun,
   toBase64Url,
   toHex,
   utf8,
@@ -248,8 +253,118 @@ const a = signProof({ setId: 'right-now', setVersion: 1, publicKey: pk, nonce: 9
 const bSame = signProof({ setId: 'right-now', setVersion: 1, publicKey: pk, nonce: 9, name: 'Second' }, sk);
 const samePull = [{ note: 'same set, key and nonce: one pull for leaderboards', proofs: [encodeProof(a), encodeProof(bSame)], pullId: `right-now@1/${toHex(pk)}/9` }];
 
+// --- profiles (section 11) ---
+const profiles: unknown[] = [];
+const addProfile = async (secret: Uint8Array, name: string, runs: ProfileRun[], note: string) => {
+  const publicKey = publicKeyFromSecret(secret);
+  const profile = await createProfile({ publicKey, name, runs }, secret, getSet);
+  const tickets = profile.runs.flatMap((r) => Array.from({ length: r.count }, () => `${r.setId}@${r.setVersion}`));
+  const packs = [];
+  for (let nonce = 0; nonce < tickets.length; nonce++) {
+    const [id, version] = tickets[nonce].split('@');
+    const set = must(id, Number(version));
+    const cards = await derivePack(set, publicKey, nonce);
+    packs.push({ nonce, set, cards, score: scorePulled(cards) });
+  }
+  const stats = profileStats(packs);
+  profiles.push({
+    note,
+    profile: encodeProfile(profile),
+    publicKey: toHex(publicKey),
+    name: profile.name,
+    fingerprint: fingerprint40(publicKey),
+    tickets,
+    packs: packs.map((p) => ({ cards: p.cards.map(({ cardId, rarity, isHolo }) => ({ cardId, rarity, isHolo })), hand: p.score.hand.name, score: p.score.score })),
+    xp: stats.xp,
+    level: stats.level,
+    highlights: profile.highlights,
+  });
+  return profile;
+};
+const evanProfile = await addProfile(KEYS[0], 'Evan', [{ setId: 'right-now', setVersion: 1, count: 3 }], 'one set');
+await addProfile(
+  KEYS[1],
+  'Zo\u00EB \u{1F9E0}',
+  [
+    { setId: 'web-ancients', setVersion: 1, count: 2 },
+    { setId: 'lockdown-lore', setVersion: 1, count: 1 },
+    { setId: 'web-ancients', setVersion: 1, count: 2 },
+    { setId: 'genesis', setVersion: 1, count: 1 },
+  ],
+  'several runs, a set used twice, an archived set',
+);
+
+const PROFILE_DOMAIN = utf8('brainrot-tcg/profile/v1');
+const profileHeader = (o: { version?: number; publicKey?: Uint8Array; name?: Uint8Array } = {}) => {
+  const name = o.name ?? utf8('Evan');
+  return concatBytes(Uint8Array.of(o.version ?? 1), o.publicKey ?? pk, Uint8Array.of(name.length), name);
+};
+const entry = (id: string, version = 1) => concatBytes(Uint8Array.of(utf8(id).length), utf8(id), Uint8Array.of(version >> 8, version & 255));
+const table = (...entries: Uint8Array[]) => concatBytes(Uint8Array.of(entries.length), ...entries);
+/** Runs, then claims: XP 0 and highlights 0..h-1 (decoding doesn't check claims against packs). */
+const runsOf = (...runs: [number, number][]) => {
+  const total = runs.reduce((sum, [, n]) => sum + n, 0);
+  const h = Math.min(5, total);
+  return concatBytes(
+    encodeVarint(runs.length),
+    ...runs.map(([i, n]) => concatBytes(encodeVarint(i), encodeVarint(n))),
+    encodeVarint(0),
+    Uint8Array.of(h),
+    ...Array.from({ length: h }, (_, i) => encodeVarint(i)),
+  );
+};
+const runsWithClaims = (runs: [number, number][], xp: number, highlights: number[]) =>
+  concatBytes(
+    encodeVarint(runs.length),
+    ...runs.map(([i, n]) => concatBytes(encodeVarint(i), encodeVarint(n))),
+    encodeVarint(xp),
+    Uint8Array.of(highlights.length),
+    ...highlights.map((n) => encodeVarint(n)),
+  );
+const signProfileBytes = (b: Uint8Array, domain = PROFILE_DOMAIN) => concatBytes(b, sign(concatBytes(domain, b), sk));
+const goodProfileBody = concatBytes(profileHeader(), table(entry('right-now'), entry('web-ancients')), runsOf([0, 2], [1, 1]));
+const goodProfile = signProfileBytes(goodProfileBody);
+const invalidProfiles = [
+  { note: 'signature byte flipped', rule: 'signature', profile: b64(flip(goodProfile, -1)) },
+  {
+    note: 'a run count changed after signing',
+    rule: 'signature',
+    profile: b64(concatBytes(profileHeader(), table(entry('right-now'), entry('web-ancients')), runsOf([0, 3], [1, 1]), goodProfile.subarray(goodProfile.length - 64))),
+  },
+  { note: 'signed as a pull proof (wrong prefix)', rule: 'signature', profile: b64(signProfileBytes(goodProfileBody, PROOF_DOMAIN)) },
+  { note: 'trailing byte', rule: 'decode', profile: b64(concatBytes(goodProfile, Uint8Array.of(0))) },
+  { note: 'truncated', rule: 'decode', profile: b64(goodProfile.subarray(0, goodProfile.length - 1)) },
+  { note: 'unsupported profile version', rule: 'decode', profile: b64(signProfileBytes(concatBytes(profileHeader({ version: 2 }), table(entry('right-now')), runsOf([0, 1])))) },
+  { note: 'empty set table', rule: 'decode', profile: b64(signProfileBytes(concatBytes(profileHeader(), table(), runsOf([0, 1])))) },
+  { note: 'set listed twice', rule: 'decode', profile: b64(signProfileBytes(concatBytes(profileHeader(), table(entry('right-now'), entry('right-now')), runsOf([0, 1], [1, 1])))) },
+  { note: 'set never used', rule: 'decode', profile: b64(signProfileBytes(concatBytes(profileHeader(), table(entry('right-now'), entry('web-ancients')), runsOf([0, 1])))) },
+  { note: 'sets not in order of first use', rule: 'decode', profile: b64(signProfileBytes(concatBytes(profileHeader(), table(entry('right-now'), entry('web-ancients')), runsOf([1, 1], [0, 1])))) },
+  { note: 'two runs in a row in the same set', rule: 'decode', profile: b64(signProfileBytes(concatBytes(profileHeader(), table(entry('right-now')), runsOf([0, 1], [0, 1])))) },
+  { note: 'empty run', rule: 'decode', profile: b64(signProfileBytes(concatBytes(profileHeader(), table(entry('right-now'), entry('web-ancients')), runsOf([0, 0], [1, 1])))) },
+  { note: 'set index out of range', rule: 'decode', profile: b64(signProfileBytes(concatBytes(profileHeader(), table(entry('right-now')), runsOf([1, 1])))) },
+  { note: 'no runs', rule: 'decode', profile: b64(signProfileBytes(concatBytes(profileHeader(), table(entry('right-now')), runsOf()))) },
+  { note: 'more than 100000 tickets', rule: 'decode', profile: b64(signProfileBytes(concatBytes(profileHeader(), table(entry('right-now'), entry('web-ancients')), runsOf([0, 60_000], [1, 40_001])))) },
+  { note: 'name with right-to-left override', rule: 'name', profile: b64(signProfileBytes(concatBytes(profileHeader({ name: utf8('Evan\u202Egnp') }), table(entry('right-now')), runsOf([0, 1])))) },
+  { note: 'small-order public key with a forged signature', rule: 'publicKey', profile: b64(concatBytes(profileHeader({ publicKey: identity }), table(entry('right-now')), runsOf([0, 1]), identity, new Uint8Array(32))) },
+  { note: 'unknown set version', rule: 'set', profile: b64(signProfileBytes(concatBytes(profileHeader(), table(entry('right-now', 99)), runsOf([0, 1])))) },
+  { note: 'too few highlights', rule: 'decode', profile: b64(signProfileBytes(concatBytes(profileHeader(), table(entry('right-now')), runsWithClaims([[0, 3]], 0, [0, 1])))) },
+  { note: 'highlight past the last ticket', rule: 'decode', profile: b64(signProfileBytes(concatBytes(profileHeader(), table(entry('right-now')), runsWithClaims([[0, 1]], 0, [1])))) },
+  { note: 'highlight listed twice', rule: 'decode', profile: b64(signProfileBytes(concatBytes(profileHeader(), table(entry('right-now')), runsWithClaims([[0, 2]], 0, [1, 1])))) },
+  // Claims are only checked once every pack is re-opened.
+  {
+    note: 'claims 1 XP more than the packs earn',
+    rule: 'claims',
+    profile: b64(signProfileBytes(concatBytes(profileHeader(), table(entry('right-now')), runsWithClaims([[0, 3]], evanProfile.xp + 1, evanProfile.highlights)))),
+  },
+  {
+    note: 'highlights in the wrong order',
+    rule: 'claims',
+    profile: b64(signProfileBytes(concatBytes(profileHeader(), table(entry('right-now')), runsWithClaims([[0, 3]], evanProfile.xp, [...evanProfile.highlights].reverse())))),
+  },
+];
+
 writeFileSync(
   OUT,
-  JSON.stringify({ spec: 'spec/PULL_SPEC.md', version: 1, tickets, rng, packs, valid, invalid, samePull }, null, 2) + '\n',
+  JSON.stringify({ spec: 'spec/PULL_SPEC.md', version: 1, tickets, rng, packs, valid, invalid, samePull, profiles, invalidProfiles }, null, 2) + '\n',
 );
-console.log(`wrote ${OUT}: ${tickets.length} tickets, ${packs.length} packs, ${valid.length} valid, ${invalid.length} invalid`);
+console.log(`wrote ${OUT}: ${tickets.length} tickets, ${packs.length} packs, ${valid.length} valid, ${invalid.length} invalid, ${profiles.length} profiles, ${invalidProfiles.length} invalid profiles`);

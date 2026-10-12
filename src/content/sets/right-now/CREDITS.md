@@ -1,4 +1,4 @@
-# Right Now: image credits
+# Summer of Slop: image credits
 
 Each card shows a real meme image. I downloaded each one once on 2026-10-12 and checked it with Pillow. I then
 re-encoded it to PNG, which strips metadata, and cropped it to the art window's 6:7 portrait shape. Code adds the

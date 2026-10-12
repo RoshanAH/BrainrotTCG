@@ -9,7 +9,9 @@ export const STORAGE_KEYS = {
   HALL_OF_FAME: 'brainrot-hall-of-fame-v1',
   SETTINGS: 'brainrot-settings-v1',
   SELECTED_SET: 'brainrot-selected-set-v1',
+  /** Old notable-pulls log; migrated into HISTORY on load. */
   PULLS: 'brainrot-pulls-v1',
+  HISTORY: 'brainrot-history-v1',
 } as const;
 
 // Achievement milestone thresholds

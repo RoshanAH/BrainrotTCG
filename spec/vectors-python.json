@@ -990,5 +990,371 @@
       ],
       "pullId": "right-now@1/beb5d23f1a487720cb83e6f6f0baec51efd0a577f6e1e86bee69652134971072/9"
     }
+  ],
+  "profiles": [
+    {
+      "note": "three runs, name not in NFC (valid)",
+      "profile": "Ab610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByBVpvZcyIAg12aW5lLWFuZC1kYW5rAAESZ2VuLWFscGhhLXVwcmlzaW5nAAEDAAEBAgAEswMFAQYDAAL05Yr8oVRcmxMSCqZCUnf8PqOsoh0Z_43v_Z3w3-Q5OM8tGjA9crHCtL4n2PLaeotIcJR7HIVOqnP9FI5F9McJ",
+      "publicKey": "beb5d23f1a487720cb83e6f6f0baec51efd0a577f6e1e86bee69652134971072",
+      "name": "Zoë",
+      "fingerprint": "YH48-X752",
+      "tickets": [
+        "vine-and-dank@1",
+        "gen-alpha-uprising@1",
+        "gen-alpha-uprising@1",
+        "vine-and-dank@1",
+        "vine-and-dank@1",
+        "vine-and-dank@1",
+        "vine-and-dank@1"
+      ],
+      "packs": [
+        {
+          "cards": [
+            {
+              "cardId": "all-those-chickens",
+              "rarity": "COMMON",
+              "isHolo": false
+            },
+            {
+              "cardId": "dancing-hot-dog",
+              "rarity": "COMMON",
+              "isHolo": false
+            },
+            {
+              "cardId": "fidget-spinner",
+              "rarity": "COMMON",
+              "isHolo": false
+            },
+            {
+              "cardId": "dancing-hot-dog",
+              "rarity": "COMMON",
+              "isHolo": false
+            },
+            {
+              "cardId": "dancing-hot-dog",
+              "rarity": "COMMON",
+              "isHolo": false
+            }
+          ],
+          "hand": "3 of a Kind",
+          "score": 750
+        },
+        {
+          "cards": [
+            {
+              "cardId": "sad-hamster",
+              "rarity": "COMMON",
+              "isHolo": false
+            },
+            {
+              "cardId": "pesto-the-penguin",
+              "rarity": "COMMON",
+              "isHolo": false
+            },
+            {
+              "cardId": "low-taper-fade",
+              "rarity": "RARE",
+              "isHolo": true
+            },
+            {
+              "cardId": "pesto-the-penguin",
+              "rarity": "COMMON",
+              "isHolo": false
+            },
+            {
+              "cardId": "smurf-cat",
+              "rarity": "EPIC",
+              "isHolo": false
+            }
+          ],
+          "hand": "Pair",
+          "score": 1600
+        },
+        {
+          "cards": [
+            {
+              "cardId": "side-eye-cat",
+              "rarity": "COMMON",
+              "isHolo": false
+            },
+            {
+              "cardId": "pedro-raccoon",
+              "rarity": "RARE",
+              "isHolo": false
+            },
+            {
+              "cardId": "side-eye-cat",
+              "rarity": "COMMON",
+              "isHolo": false
+            },
+            {
+              "cardId": "sad-hamster",
+              "rarity": "COMMON",
+              "isHolo": false
+            },
+            {
+              "cardId": "smurf-cat",
+              "rarity": "EPIC",
+              "isHolo": false
+            }
+          ],
+          "hand": "Pair",
+          "score": 270
+        },
+        {
+          "cards": [
+            {
+              "cardId": "mr-skeltal",
+              "rarity": "UNCOMMON",
+              "isHolo": false
+            },
+            {
+              "cardId": "mocking-spongebob",
+              "rarity": "UNCOMMON",
+              "isHolo": false
+            },
+            {
+              "cardId": "mocking-spongebob",
+              "rarity": "UNCOMMON",
+              "isHolo": false
+            },
+            {
+              "cardId": "fidget-spinner",
+              "rarity": "COMMON",
+              "isHolo": false
+            },
+            {
+              "cardId": "mr-skeltal",
+              "rarity": "UNCOMMON",
+              "isHolo": false
+            }
+          ],
+          "hand": "Two Pair",
+          "score": 900
+        },
+        {
+          "cards": [
+            {
+              "cardId": "dancing-hot-dog",
+              "rarity": "COMMON",
+              "isHolo": false
+            },
+            {
+              "cardId": "all-those-chickens",
+              "rarity": "COMMON",
+              "isHolo": false
+            },
+            {
+              "cardId": "fidget-spinner",
+              "rarity": "COMMON",
+              "isHolo": false
+            },
+            {
+              "cardId": "galaxy-brain",
+              "rarity": "RARE",
+              "isHolo": false
+            },
+            {
+              "cardId": "ok-boomer",
+              "rarity": "COMMON",
+              "isHolo": false
+            }
+          ],
+          "hand": "No Matches",
+          "score": 75
+        },
+        {
+          "cards": [
+            {
+              "cardId": "mr-skeltal",
+              "rarity": "UNCOMMON",
+              "isHolo": false
+            },
+            {
+              "cardId": "mr-skeltal",
+              "rarity": "UNCOMMON",
+              "isHolo": false
+            },
+            {
+              "cardId": "moth-lamp",
+              "rarity": "UNCOMMON",
+              "isHolo": false
+            },
+            {
+              "cardId": "fidget-spinner",
+              "rarity": "COMMON",
+              "isHolo": false
+            },
+            {
+              "cardId": "galaxy-brain",
+              "rarity": "RARE",
+              "isHolo": false
+            }
+          ],
+          "hand": "Pair",
+          "score": 210
+        },
+        {
+          "cards": [
+            {
+              "cardId": "moth-lamp",
+              "rarity": "UNCOMMON",
+              "isHolo": false
+            },
+            {
+              "cardId": "dancing-hot-dog",
+              "rarity": "COMMON",
+              "isHolo": false
+            },
+            {
+              "cardId": "dancing-hot-dog",
+              "rarity": "COMMON",
+              "isHolo": false
+            },
+            {
+              "cardId": "galaxy-brain",
+              "rarity": "RARE",
+              "isHolo": false
+            },
+            {
+              "cardId": "dancing-hot-dog",
+              "rarity": "COMMON",
+              "isHolo": false
+            }
+          ],
+          "hand": "3 of a Kind",
+          "score": 1275
+        }
+      ],
+      "xp": 435,
+      "level": 3,
+      "highlights": [
+        1,
+        6,
+        3,
+        0,
+        2
+      ]
+    },
+    {
+      "note": "empty name, one ticket",
+      "profile": "Ab610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByAAEJcmlnaHQtbm93AAEBAAFaAQBs2OvY7u2Ccauc1RoFlbWSZAAQNAPfYeQPAe22qS78FwHVO2n2QrX-ozYdW634-lZ2YiKVGR6wsP_07WX4V0UA",
+      "publicKey": "beb5d23f1a487720cb83e6f6f0baec51efd0a577f6e1e86bee69652134971072",
+      "name": "",
+      "fingerprint": "YH48-X752",
+      "tickets": [
+        "right-now@1"
+      ],
+      "packs": [
+        {
+          "cards": [
+            {
+              "cardId": "la-peace",
+              "rarity": "UNCOMMON",
+              "isHolo": false
+            },
+            {
+              "cardId": "niu-lai",
+              "rarity": "COMMON",
+              "isHolo": false
+            },
+            {
+              "cardId": "la-peace",
+              "rarity": "UNCOMMON",
+              "isHolo": true
+            },
+            {
+              "cardId": "chile-memes",
+              "rarity": "UNCOMMON",
+              "isHolo": false
+            },
+            {
+              "cardId": "la-peace",
+              "rarity": "UNCOMMON",
+              "isHolo": false
+            }
+          ],
+          "hand": "3 of a Kind",
+          "score": 7050
+        }
+      ],
+      "xp": 90,
+      "level": 1,
+      "highlights": [
+        0
+      ]
+    }
+  ],
+  "invalidProfiles": [
+    {
+      "note": "non-minimal varint for the run count (81 00)",
+      "rule": "decode",
+      "profile": "Ab610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByBEV2YW4BCXJpZ2h0LW5vdwABgQAAAgACAAEMjiMZDQtS72Yn7ZnBVXMwPKjGw_1OtvUdSIPojHJ16oz639ebCMsyS440n5eA3e9R4qb1aBjiNm8IjTs0wskA"
+    },
+    {
+      "note": "base64url padding",
+      "rule": "decode",
+      "profile": "Ab610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByBEV2YW4BCXJpZ2h0LW5vdwABAQACAAIAAVzD7ohrsivrbv5TTmcW1RY5zYc665oGoAtq-IJfSmBdPG0mJ9mxMezWApcL60el_G5Llv_nISK7-_MWHae5iwk="
+    },
+    {
+      "note": "set id of 0 bytes",
+      "rule": "decode",
+      "profile": "Ab610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByBEV2YW4BAAABAQACAAIAAc4u_W9Vg4FIsztnkHFoCkAPxuHkl8ttYnlHWUvjTRyhcxKy99Q8G6RWkT8kABRYxswHWnVkkBOqVOEaNdKgFgs"
+    },
+    {
+      "note": "set id of 65 bytes",
+      "rule": "decode",
+      "profile": "Ab610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByBEV2YW4BQXh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4AAEBAAIAAgABXUPtLI3BYavYMu5MHTo5Dmf0RlWJbjhWK3MsBhVk_n_6I8bl-rs6IgGLbu-iuvjznKeG3r6vfwdhQi65r91UDg"
+    },
+    {
+      "note": "65 sets in the table",
+      "rule": "decode",
+      "profile": "Ab610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByBEV2YW5BAnMwAAECczEAAQJzMgABAnMzAAECczQAAQJzNQABAnM2AAECczcAAQJzOAABAnM5AAEDczEwAAEDczExAAEDczEyAAEDczEzAAEDczE0AAEDczE1AAEDczE2AAEDczE3AAEDczE4AAEDczE5AAEDczIwAAEDczIxAAEDczIyAAEDczIzAAEDczI0AAEDczI1AAEDczI2AAEDczI3AAEDczI4AAEDczI5AAEDczMwAAEDczMxAAEDczMyAAEDczMzAAEDczM0AAEDczM1AAEDczM2AAEDczM3AAEDczM4AAEDczM5AAEDczQwAAEDczQxAAEDczQyAAEDczQzAAEDczQ0AAEDczQ1AAEDczQ2AAEDczQ3AAEDczQ4AAEDczQ5AAEDczUwAAEDczUxAAEDczUyAAEDczUzAAEDczU0AAEDczU1AAEDczU2AAEDczU3AAEDczU4AAEDczU5AAEDczYwAAEDczYxAAEDczYyAAEDczYzAAEDczY0AAFBAAEBAQIBAwEEAQUBBgEHAQgBCQEKAQsBDAENAQ4BDwEQAREBEgETARQBFQEWARcBGAEZARoBGwEcAR0BHgEfASABIQEiASMBJAElASYBJwEoASkBKgErASwBLQEuAS8BMAExATIBMwE0ATUBNgE3ATgBOQE6ATsBPAE9AT4BPwFAAQAFAAECAwS2Q9jEhKprp5KUsOklf_lPmIU45pzc6Ofgdvxx8xIogt3Ug_GbMq3qpb0jQMIafgik060A_56W8Ka2cszXxFcP"
+    },
+    {
+      "note": "same id, two versions, used out of order",
+      "rule": "decode",
+      "profile": "Ab610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByBEV2YW4CCXJpZ2h0LW5vdwABCXJpZ2h0LW5vdwACAgEBAAEAAgAB3LTOl-KpfdsjCR9-gdqDzEry4GHA6Jfz9l4x4zZTCeR4-fDzP3MPi5UUb_7QEflzC8dVbzmVxTRLYRxuAcjWCw"
+    },
+    {
+      "note": "pull-proof bytes signed as a profile",
+      "rule": "decode",
+      "profile": "AQlyaWdodC1ub3cAAb610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByBQRFdmFuuZ46RVNC8-4Y807UaH09RTe_y_4NMFOFpuTRZJvBieZ09rnBMkuljUKKbcenK_eTWVD6JjFfCJGuvUxu74hiDA"
+    },
+    {
+      "note": "name of 25 code points",
+      "rule": "name",
+      "profile": "Ab610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByGXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXkBCXJpZ2h0LW5vdwABAQACAAIAAUrVMwKm9aczrXwSH_Ob6rB7ke9ajDOq8iAExB0kbZV868qbcc8BGYWc5S_Lul-c8oXZI2l2MB_6XRKH_Y-YQQI"
+    },
+    {
+      "note": "mixed-order public key (A + order-8 point)",
+      "rule": "publicKey",
+      "profile": "AWGVSns08hPbErGbbwwWWfBqGa7LnXkTAVzDrJGO0pzRBEV2YW4BCXJpZ2h0LW5vdwABAQACAAIAAcQSe3UxTxAwbsmEzTxNTCUO3Q6_bABzxTMzuJ0N_G2S3EekG5w_ZzsUPckovoCtQV1xDJFhlZGy3ZcmnFSDVww"
+    },
+    {
+      "note": "signature with S + L (malleated)",
+      "rule": "signature",
+      "profile": "Ab610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByBEV2YW4BCXJpZ2h0LW5vdwABAQACAAIAAVzD7ohrsivrbv5TTmcW1RY5zYc665oGoAtq-IJfSmBdKUEchPMUREStn46uyUGEEW9Llv_nISK7-_MWHae5ixk"
+    },
+    {
+      "note": "R plus an order-8 point: passes only the cofactored equation",
+      "rule": "signature",
+      "profile": "Ab610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByBEV2YW4BCXJpZ2h0LW5vdwABAQACAAIAAXFjiJz-wFjxvzUmSO29gNIOhZRku6JsuG_Eb-Ggx3fBfFWU6iTufY05o9_wFs6fFTaSUPaHHahZUzuh2TDPcAI"
+    },
+    {
+      "note": "unknown set id",
+      "rule": "set",
+      "profile": "Ab610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByBEV2YW4BC25vLXN1Y2gtc2V0AAEBAAIAAgABYCeAYAL8LoIFq3SpBgTC41g36m24gR9IEUgFgWr69l7mnI_G3VrXTHpCtPuoNkOfvHf8E0btt7Kx1LJkgY8zCA"
+    },
+    {
+      "note": "claims 1 XP less than the packs earn",
+      "rule": "claims",
+      "profile": "Ab610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByBEV2YW4BCXJpZ2h0LW5vdwABAQAG0wIFAAEDAgXjCBCrlILb4Df9DeoHTTdtALhv7Bhj1Br_jRBkWED15ldGOUE4s6IkcL3rH9sD87oFVcPsAhLs4fQ-BBL1Kp4E"
+    },
+    {
+      "note": "names a non-best pack as a highlight",
+      "rule": "claims",
+      "profile": "Ab610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByBEV2YW4BCXJpZ2h0LW5vdwABAQAG1AIFBAABAwJk5RxkHtWTfDpsRALSaVmq9jbf3j1E8MwC6OOfMK--JSt0XZWO4Hwq_VRFA86sGpeaz0bWdI4pmUb-b1kuaLkG"
+    }
   ]
 }

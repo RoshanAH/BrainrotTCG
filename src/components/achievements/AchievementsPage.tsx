@@ -1,81 +1,134 @@
-import { useState } from 'react';
-import { createPortal } from 'react-dom';
-import { ACHIEVEMENTS } from '../../data/achievements';
+import { useMemo, useState } from 'react';
+import { Check, ChevronRight } from 'lucide-react';
+import { ACHIEVEMENTS, type Achievement } from '../../data/achievements';
 import type { AchievementData } from '../../types';
 import type { CardWithMeta } from '../cards/Card';
 import PackCardViewer from '../ui/PackCardViewer';
+import Sheet from '../ui/Sheet';
 import '../../styles/Achievements.css';
 
 interface AchievementsPageProps {
-    unlockedAchievements: Record<string, AchievementData | number>;
-    onClose: () => void;
+  unlockedAchievements: Record<string, AchievementData | number>;
+  onClose: () => void;
+  /** How far along the counting achievements are, e.g. { packs_10: [3, 10, 'packs'] }. */
+  progress?: Record<string, [have: number, need: number, unit: string]>;
 }
 
-// Helper to get achievement data in new format
-const getAchievementData = (data: AchievementData | number | undefined): { unlockedAt: number; pack?: CardWithMeta[] } | null => {
-    if (!data) return null;
-    if (typeof data === 'number') {
-        return { unlockedAt: data };
-    }
-    return data;
+/** Older saves stored just the unlock time. */
+const normalize = (data: AchievementData | number | undefined): { unlockedAt: number; pack?: CardWithMeta[] } | null => {
+  if (!data) return null;
+  return typeof data === 'number' ? { unlockedAt: data } : data;
 };
 
-const AchievementsPage = ({ unlockedAchievements, onClose }: AchievementsPageProps) => {
-    const [selectedPack, setSelectedPack] = useState<CardWithMeta[] | null>(null);
+type Unlocked = { achievement: Achievement; unlockedAt: number; pack?: CardWithMeta[] };
 
-    const unlockedCount = Object.keys(unlockedAchievements).length;
+/** A checklist, like the one printed in a pack: unlocked first (newest on top), then everything still to get. */
+const AchievementsPage = ({ unlockedAchievements, onClose, progress = {} }: AchievementsPageProps) => {
+  const [selected, setSelected] = useState<Unlocked | null>(null);
 
-    return (
-        <div className="achievements-page">
-            <div className="achievements-header">
-                <h2>Achievements</h2>
-                <p>{unlockedCount} / {ACHIEVEMENTS.length} unlocked</p>
-                <button className="achievements-close-btn" onClick={onClose}>×</button>
-            </div>
+  const { unlocked, locked } = useMemo(() => {
+    const unlocked: Unlocked[] = [];
+    const locked: Achievement[] = [];
+    for (const achievement of ACHIEVEMENTS) {
+      const data = normalize(unlockedAchievements[achievement.id]);
+      if (data) unlocked.push({ achievement, ...data });
+      else locked.push(achievement);
+    }
+    unlocked.sort((a, b) => b.unlockedAt - a.unlockedAt);
+    return { unlocked, locked };
+  }, [unlockedAchievements]);
 
-            <div className="achievements-grid">
-                {ACHIEVEMENTS.map(achievement => {
-                    const achievementData = getAchievementData(unlockedAchievements[achievement.id]);
-                    const unlocked = !!achievementData;
-                    const unlockedDate = achievementData ? new Date(achievementData.unlockedAt).toLocaleDateString() : null;
-                    const hasPack = achievementData?.pack && achievementData.pack.length > 0;
+  const percent = Math.round((unlocked.length / ACHIEVEMENTS.length) * 100);
 
-                    return (
-                        <div
-                            key={achievement.id}
-                            className={`achievement-card ${unlocked ? 'unlocked' : 'locked'} ${hasPack ? 'has-pack' : ''}`}
-                            onClick={() => hasPack && setSelectedPack(achievementData!.pack!)}
-                        >
-                            <div className="achievement-icon">{achievement.icon}</div>
-                            <div className="achievement-info">
-                                <div className="achievement-name">{achievement.name}</div>
-                                <div className="achievement-description">{achievement.description}</div>
-                                {unlockedDate && (
-                                    <div className="achievement-date">Unlocked: {unlockedDate}</div>
-                                )}
-                                {hasPack && (
-                                    <div className="achievement-pack-hint">Click to view pack</div>
-                                )}
-                            </div>
-                            {unlocked && <div className="achievement-check">✓</div>}
-                        </div>
-                    );
-                })}
-            </div>
-
-            {/* Pack Viewer Modal - rendered via portal to avoid scroll issues */}
-            {selectedPack && createPortal(
-                <div className="achievement-pack-modal" onClick={() => setSelectedPack(null)}>
-                    <div className="achievement-pack-content" onClick={e => e.stopPropagation()}>
-                        <button className="achievement-pack-close" onClick={() => setSelectedPack(null)}>×</button>
-                        <h3>Pack that unlocked this achievement</h3>
-                        <PackCardViewer cards={selectedPack} displayMode="grid" />
-                    </div>
-                </div>,
-                document.body
-            )}
+  return (
+    <>
+      <Sheet
+        title="Achievements"
+        subtitle={
+          <span className="tabular">
+            {unlocked.length}/{ACHIEVEMENTS.length} unlocked · {percent}%
+          </span>
+        }
+        onClose={onClose}
+        size="lg"
+        className="achievements"
+      >
+        <div className="progress achievements-progress" aria-hidden="true">
+          <span style={{ width: `${percent}%` }} />
         </div>
-    );
+
+        {unlocked.length > 0 && (
+          <section>
+            <h3 className="section-title">Unlocked</h3>
+            <ul className="achievement-list">
+              {unlocked.map((entry) => {
+                const { achievement, pack } = entry;
+                const body = (
+                  <>
+                    <span className="achievement-box is-checked" aria-hidden="true">
+                      <Check strokeWidth={3.5} />
+                    </span>
+                    <span className="achievement-text">
+                      <span className="achievement-name">{achievement.name}</span>
+                      <span className="achievement-desc">{achievement.description}</span>
+                    </span>
+                  </>
+                );
+                return (
+                  <li key={achievement.id}>
+                    {pack?.length ? (
+                      <button type="button" className="achievement is-unlocked" onClick={() => setSelected(entry)} aria-label={`${achievement.name}: view the pack`}>
+                        {body}
+                        <ChevronRight className="achievement-chevron" aria-hidden="true" />
+                      </button>
+                    ) : (
+                      <div className="achievement is-unlocked">{body}</div>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        )}
+
+        {locked.length > 0 && (
+          <section>
+            <h3 className="section-title">Still to get</h3>
+            <ul className="achievement-list">
+              {locked.map((achievement) => (
+                <li key={achievement.id}>
+                  <div className="achievement is-locked">
+                    <span className="achievement-box" aria-hidden="true" />
+                    <span className="achievement-text">
+                      <span className="achievement-name">{achievement.name}</span>
+                      <span className="achievement-desc">{achievement.description}</span>
+                    </span>
+                    {progress[achievement.id] && (
+                      <span className="achievement-progress tabular">
+                        {Math.min(progress[achievement.id][0], progress[achievement.id][1]).toLocaleString()}/
+                        {progress[achievement.id][1].toLocaleString()}
+                      </span>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+      </Sheet>
+
+      {selected?.pack && (
+        <Sheet
+          title={selected.achievement.name}
+          subtitle={`The pack that unlocked it, ${new Date(selected.unlockedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}`}
+          onClose={() => setSelected(null)}
+          size="md"
+        >
+          <PackCardViewer cards={selected.pack} displayMode="carousel" />
+        </Sheet>
+      )}
+    </>
+  );
 };
 
 export default AchievementsPage;

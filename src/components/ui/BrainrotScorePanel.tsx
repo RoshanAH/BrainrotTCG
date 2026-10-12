@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Info } from 'lucide-react';
 import { DEFAULT_SET_ID, getLatestSet } from '../../content/sets';
 import ScoringGuide from './ScoringGuide';
 import '../../styles/Scoring.css';
@@ -17,15 +18,20 @@ const BrainrotScorePanel = ({ points, multiplier, handName, score, setId }: Brai
   const set = getLatestSet(setId ?? DEFAULT_SET_ID) ?? getLatestSet(DEFAULT_SET_ID);
   return (
     <div className="score-panel">
+      <div className="score-panel-total">{score.toLocaleString()}</div>
       <div className="score-panel-math">
-        {points.toLocaleString()} pts × {multiplier.toLocaleString()} ({handName})
-      </div>
-      <div className="score-panel-total">
-        🧠 {score.toLocaleString()} <span>Brainrot Score</span>
+        Brainrot Score
+        {multiplier > 1 ? (
+          <>
+            {' '}· {points.toLocaleString()} pts × <strong>{multiplier.toLocaleString()}</strong> for {handName}
+          </>
+        ) : (
+          <> · {handName}</>
+        )}
       </div>
       {set && (
-        <button className="score-panel-help" onClick={(e) => { e.stopPropagation(); setShowGuide(true); }}>
-          How scoring works
+        <button type="button" className="score-panel-help" onClick={(e) => { e.stopPropagation(); setShowGuide(true); }}>
+          <Info aria-hidden="true" /> How scoring works
         </button>
       )}
       {showGuide && set && <ScoringGuide set={set} onClose={() => setShowGuide(false)} />}

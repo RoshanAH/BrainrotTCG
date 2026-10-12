@@ -270,6 +270,94 @@ def make_invalid() -> list[dict]:
     ]
 
 
+# ---------------------------------------------------------------------------------------------
+# §11 Profiles
+# ---------------------------------------------------------------------------------------------
+
+
+def profile_body(*, runs=((0, 2),), table=(b"right-now",), versions=None, public_key: bytes = PK,
+                 name: bytes = b"Evan", version: int = 1, run_count_bytes: bytes | None = None,
+                 xp: int = 0, highlights=None) -> bytes:
+    """Byte by byte, no normalisation: `runs` are (table index, count) pairs. Default claims are
+    XP 0 and highlights 0 ... h-1, which decode fine (claims are only checked against the packs)."""
+    versions = versions or [1] * len(table)
+    out = bytes([version]) + public_key + bytes([len(name)]) + name + bytes([len(table)])
+    for set_id, set_version in zip(table, versions):
+        out += bytes([len(set_id)]) + set_id + set_version.to_bytes(2, "big")
+    out += varint(len(runs)) if run_count_bytes is None else run_count_bytes
+    for index, count in runs:
+        out += varint(index) + varint(count)
+    if highlights is None:
+        highlights = list(range(min(5, sum(count for _, count in runs))))
+    out += varint(xp) + bytes([len(highlights)]) + b"".join(varint(n) for n in highlights)
+    return out
+
+
+def with_true_claims(**fields) -> dict:
+    """The same profile with the claims its packs actually earn (found with our own verifier)."""
+    profile = vp.parse_profile(make_profile(**fields))
+    verified = vp.derive_profile(profile, SETS)
+    return dict(fields, xp=verified.xp, highlights=verified.best)
+
+
+def make_profile(signer=None, **fields) -> str:
+    body = profile_body(**fields)
+    return base64.urlsafe_b64encode(body + (signer or sign)(vp.PROFILE_SIGNED_PREFIX + body)).decode().rstrip("=")
+
+
+def valid_profile(note: str, profile: str) -> dict:
+    j = vp.verify_profile(profile, SETS).as_json()  # raises if our own verifier disagrees
+    return {"note": note, "profile": profile, **{k: j[k] for k in vp.PROFILE_FIELDS}}
+
+
+def invalid_profile(note: str, rule: str, profile: str) -> dict:
+    try:
+        vp.verify_profile(profile, SETS) if rule == "claims" else vp.check_profile(profile, SETS)
+    except vp.ProofError as err:
+        assert err.rule == rule, (note, err.rule, err.reason)
+        return {"note": note, "rule": rule, "profile": profile}
+    raise AssertionError(f"{note}: accepted, expected {rule}")
+
+
+def make_profiles() -> list[dict]:
+    return [
+        valid_profile("three runs, name not in NFC (valid)",
+                      make_profile(**with_true_claims(table=(b"vine-and-dank", b"gen-alpha-uprising"),
+                                                      runs=((0, 1), (1, 2), (0, 4)), name="Zoe\u0308".encode()))),
+        valid_profile("empty name, one ticket", make_profile(**with_true_claims(runs=((0, 1),), name=b""))),
+    ]
+
+
+def make_invalid_profiles() -> list[dict]:
+    good = profile_body()
+    good_sig = sign(vp.PROFILE_SIGNED_PREFIX + good)
+    b64 = lambda raw: base64.urlsafe_b64encode(raw).decode().rstrip("=")  # noqa: E731
+    s_plus_l = good_sig[:32] + (int.from_bytes(good_sig[32:], "little") + vp.ED_L).to_bytes(32, "little")
+    mixed = lambda message: sign(message, public_key=PK_MIXED)  # noqa: E731
+    return [
+        invalid_profile("non-minimal varint for the run count (81 00)", "decode", make_profile(run_count_bytes=b"\x81\x00")),
+        invalid_profile("base64url padding", "decode", b64(good + good_sig) + "="),
+        invalid_profile("set id of 0 bytes", "decode", make_profile(table=(b"",))),
+        invalid_profile("set id of 65 bytes", "decode", make_profile(table=(b"x" * 65,))),
+        invalid_profile("65 sets in the table", "decode",
+                        make_profile(table=tuple(f"s{i}".encode() for i in range(65)), runs=tuple((i, 1) for i in range(65)))),
+        invalid_profile("same id, two versions, used out of order", "decode",
+                        make_profile(table=(b"right-now", b"right-now"), versions=[1, 2], runs=((1, 1), (0, 1)))),
+        invalid_profile("pull-proof bytes signed as a profile", "decode", make_proof(lambda m: sign(vp.PROFILE_SIGNED_PREFIX + m[len(vp.SIGNED_PREFIX):]))),
+        invalid_profile("name of 25 code points", "name", make_profile(name=b"y" * 25)),
+        invalid_profile("mixed-order public key (A + order-8 point)", "publicKey", make_profile(mixed, public_key=PK_MIXED)),
+        invalid_profile("signature with S + L (malleated)", "signature", b64(good + s_plus_l)),
+        invalid_profile("R plus an order-8 point: passes only the cofactored equation", "signature",
+                        make_profile(lambda message: sign(message, r_extra=T8))),
+        invalid_profile("unknown set id", "set", make_profile(table=(b"no-such-set",))),
+        invalid_profile("claims 1 XP less than the packs earn", "claims",
+                        make_profile(**dict(with_true_claims(runs=((0, 6),)), xp=with_true_claims(runs=((0, 6),))["xp"] - 1))),
+        invalid_profile("names a non-best pack as a highlight", "claims",
+                        make_profile(**dict(true6 := with_true_claims(runs=((0, 6),)),
+                                            highlights=[n for n in range(6) if n not in true6["highlights"]] + true6["highlights"][:4]))),
+    ]
+
+
 def make_same_pull() -> list[dict]:
     proofs = [make_proof(nonce=9, name="Zoë".encode()), make_proof(nonce=9, name="Zoë".encode()),
               make_proof(nonce=9, name=b"")]
@@ -292,6 +380,8 @@ def build() -> dict:
         "valid": make_valid(),
         "invalid": make_invalid(),
         "samePull": make_same_pull(),
+        "profiles": make_profiles(),
+        "invalidProfiles": make_invalid_profiles(),
     }
 
 
@@ -301,7 +391,7 @@ def main() -> int:
     args = parser.parse_args()
     doc = build()
     args.out.write_text(json.dumps(doc, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-    counts = ", ".join(f"{len(doc[s])} {s}" for s in ("tickets", "rng", "packs", "valid", "invalid", "samePull"))
+    counts = ", ".join(f"{len(doc[s])} {s}" for s in ("tickets", "rng", "packs", "valid", "invalid", "samePull", "profiles", "invalidProfiles"))
     print(f"wrote {args.out}: {counts}")
     return 0
 

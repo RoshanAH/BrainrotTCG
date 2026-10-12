@@ -7,6 +7,14 @@
  *     hof-comment.md plus `verified`, `changed` to $GITHUB_OUTPUT. A verified
  *     comment carries a marker with the pull id.
  *
+ *   npx tsx scripts/hall-of-fame.ts inbox           (Actions, on a schedule)
+ *     Reads submissions sent without a GitHub account through public Nostr relays
+ *     (src/game/nostrInbox.ts), verifies each pull, and files every one that
+ *     qualifies as a bot-authored Hall of Fame issue with the same verified
+ *     marker, so `build` treats it like any other entry. Writes `added` to
+ *     $GITHUB_OUTPUT. Event ids it has seen are kept in hof-inbox-seen.json
+ *     (cached between runs) so junk isn't re-checked every time.
+ *
  *   npx tsx scripts/hall-of-fame.ts build           (deploy, before vite build)
  *     Lists verified Hall of Fame issues, re-verifies each proof, and writes
  *     public/hall-of-fame.json. Without a token, or if GitHub is down, it keeps
@@ -23,6 +31,8 @@ import { appendFileSync, existsSync, readFileSync, writeFileSync } from 'node:fs
 import { fileURLToPath } from 'node:url';
 import { getSet } from '../src/content/sets/index.ts';
 import { decodeProof, extractProof, HALL_OF_FAME_MIN_SCORE, pullId, qualifiesForHallOfFame, verifyProof, type VerifiedPull } from '../src/engine/index.ts';
+import { fetchEvents, HOF_KIND, HOF_TAG } from '../src/game/nostrInbox.ts';
+import { processInbox } from './hof-inbox.ts';
 
 const ROOT = fileURLToPath(new URL('../', import.meta.url));
 const OUTPUT = `${ROOT}public/hall-of-fame.json`;
@@ -81,7 +91,8 @@ const toEntry = (pull: VerifiedPull, proof: string, issue: Issue, verifiedAt: st
   score: pull.score.score,
   cards: pull.cards.map((c) => ({ cardId: c.cardId, isHolo: c.isHolo })),
   issue: issue.number,
-  githubUser: issue.user?.login ?? 'unknown',
+  // Entries the inbox filed came from Nostr, not from this GitHub account.
+  githubUser: issue.user?.login === BOT ? 'nostr' : (issue.user?.login ?? 'unknown'),
   submittedAt: verifiedAt,
 });
 
@@ -102,9 +113,11 @@ const checkIssue = async (issue: Issue): Promise<Checked> => {
   }
 };
 
-const github = async <T>(path: string, token: string): Promise<T> => {
+const github = async <T>(path: string, token: string, body?: unknown): Promise<T> => {
   const res = await fetch(`${API}${path}`, {
+    method: body === undefined ? 'GET' : 'POST',
     headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' },
+    body: body === undefined ? undefined : JSON.stringify(body),
   });
   if (!res.ok) throw new Error(`GitHub API ${res.status} on ${path}: ${await res.text()}`);
   return (await res.json()) as T;
@@ -127,6 +140,12 @@ const firstVerifiedAt = async (issue: number, id: string, token: string): Promis
   return null;
 };
 
+const FOOTER = '\n\n---\n_Verified automatically by re-deriving the pack from its proof (`scripts/hall-of-fame.ts`)._';
+
+/** The bot's comment on a verified pull; its marker is what `build` looks for. */
+const verifiedComment = (entry: HallOfFameEntry, pull: VerifiedPull) =>
+  `✅ **Verified!** ${safe(entry.name)} \\#${entry.fingerprint} pulled a **${entry.hand}** in ${safe(entry.setName)} with a Brainrot Score of **${entry.score.toLocaleString('en-US')}**.\n\nIt will appear in the Hall of Fame after the next deploy (started automatically).${FOOTER}\n${markerFor(pullId(pull.proof))}`;
+
 const verifyIssue = async () => {
   const event = JSON.parse(readFileSync(process.env.GITHUB_EVENT_PATH ?? '', 'utf8')) as { issue: Issue };
   const result = await checkIssue(event.issue);
@@ -140,10 +159,7 @@ const verifyIssue = async () => {
       console.warn(`Could not read earlier comments; treating this as a new verification. ${error}`);
     }
   }
-  const footer = '\n\n---\n_Verified automatically by re-deriving the pack from its proof (`scripts/hall-of-fame.ts`)._';
-  const body = result.ok
-    ? `✅ **Verified!** ${safe(result.entry.name)} \\#${result.entry.fingerprint} pulled a **${result.entry.hand}** in ${safe(result.entry.setName)} with a Brainrot Score of **${result.entry.score.toLocaleString('en-US')}**.\n\nIt will appear in the Hall of Fame after the next deploy (started automatically).${footer}\n${markerFor(pullId(result.pull.proof))}`
-    : `❌ **Not added.** ${result.reason}${footer}`;
+  const body = result.ok ? verifiedComment(result.entry, result.pull) : `❌ **Not added.** ${result.reason}${FOOTER}`;
   writeFileSync('hof-comment.md', body);
   if (process.env.GITHUB_OUTPUT) appendFileSync(process.env.GITHUB_OUTPUT, `verified=${result.ok}\nchanged=${!already}\n`);
   console.log(already ? 'Already verified this pull on this issue; nothing to do.' : body);
@@ -206,10 +222,95 @@ const build = async () => {
   console.log(`${entries.length} verified entries -> public/hall-of-fame.json`);
 };
 
+const SEEN_PATH = 'hof-inbox-seen.json';
+/** How far back to read the relays. Seen events are skipped, so a long window only costs a download. */
+const INBOX_WINDOW_S = 7 * 24 * 60 * 60;
+/** Pulls re-derived per run (about 0.1 s each), so a flood of submissions can't run the job forever. */
+const INBOX_BUDGET = 300;
+/** Entries filed per run (two GitHub requests each), well under GitHub's limits on creating content. */
+const INBOX_MAX_FILED = 20;
+/** Requests per relay for older events, so a burst of junk can't push real submissions out of reach. */
+const INBOX_PAGES = 20;
+
+const siteUrl = () => {
+  const [owner, name] = REPO.split('/');
+  return `https://${owner}.github.io/${name}/`;
+};
+
+const inbox = async () => {
+  const token = process.env.GITHUB_TOKEN;
+  if (!token) throw new Error('inbox needs GITHUB_TOKEN to file issues');
+  const seen = new Set<string>(existsSync(SEEN_PATH) ? (JSON.parse(readFileSync(SEEN_PATH, 'utf8')) as string[]) : []);
+
+  const since = Math.floor(Date.now() / 1000) - INBOX_WINDOW_S;
+  const { events, perRelay } = await fetchEvents({ kinds: [HOF_KIND], '#t': [HOF_TAG], since, limit: 500 }, undefined, 30000, undefined, INBOX_PAGES);
+  for (const r of perRelay) console.log(`${r.relay}: ${r.count} events${r.error ? ` (${r.error})` : ''}`);
+
+  // Pulls already in the Hall of Fame: only verified issues count, so an issue that never verified
+  // (wrong title, a failed run, or a copy someone opened to block it) can't keep a pull out.
+  const filed = new Set<string>();
+  // Issues this job opened but didn't finish (it stopped before labelling them): finished next.
+  const unfinished = new Map<string, Issue>();
+  for (let page = 1; page < 100; page++) {
+    const batch = await github<Issue[]>(`/repos/${REPO}/issues?state=all&labels=hall-of-fame&per_page=100&page=${page}`, token);
+    for (const issue of batch) {
+      const proof = extractProof(issue.body ?? '');
+      if (!proof || issue.pull_request) continue;
+      let id: string;
+      try {
+        id = pullId(decodeProof(proof));
+      } catch {
+        continue; // not a valid proof; nothing to dedupe against
+      }
+      if (labelNames(issue).includes('verified')) filed.add(id);
+      else if (issue.user?.login === BOT && !unfinished.has(id)) unfinished.set(id, issue);
+    }
+    if (batch.length < 100) break;
+  }
+
+  const { added, deferred } = await processInbox(events, {
+    seen,
+    filed,
+    budget: INBOX_BUDGET,
+    maxFiled: INBOX_MAX_FILED,
+    lookup: getSet,
+    log: console.log,
+    // Filed by the bot, so the issue-opened workflow doesn't run on it again; the marker comment is
+    // the "first verified" time, exactly as for issues people open themselves. The marker goes on
+    // before the `verified` label (`build` only reads labelled issues), and a run that stops between
+    // steps finishes the same issue next time rather than opening another.
+    file: async (proof, pull, event) => {
+      const id = pullId(pull.proof);
+      const earlier = unfinished.get(id);
+      const issue =
+        earlier ??
+        (await github<Issue>(`/repos/${REPO}/issues`, token, {
+          title: `[Hall of Fame] ${pull.score.hand.name} by ${safe(pull.proof.name) || 'Anonymous'}`,
+          body: `${siteUrl()}#/pull/${proof}\n\nSubmitted without a GitHub account, through public Nostr relays (event \`${event.id}\`).`,
+          labels: ['hall-of-fame'],
+        }));
+      const entry = toEntry(pull, proof, issue, issue.created_at);
+      if (!earlier || !(await firstVerifiedAt(issue.number, id, token))) {
+        await github(`/repos/${REPO}/issues/${issue.number}/comments`, token, { body: verifiedComment(entry, pull) });
+      }
+      await github(`/repos/${REPO}/issues/${issue.number}/labels`, token, { labels: ['verified'] });
+      unfinished.delete(id);
+      console.log(`#${issue.number}: ${entry.hand} (${entry.score}) from Nostr event ${event.id}`);
+    },
+  });
+  if (deferred) console.log(`${deferred} events left for the next run`);
+
+  // Keep the cache bounded; the newest ids matter (older events fall out of the window anyway).
+  writeFileSync(SEEN_PATH, JSON.stringify([...seen].slice(-20000)));
+  if (process.env.GITHUB_OUTPUT) appendFileSync(process.env.GITHUB_OUTPUT, `added=${added}\n`);
+  console.log(`${events.length} events read, ${added} added`);
+};
+
 const mode = process.argv[2];
 if (mode === 'verify-issue') await verifyIssue();
+else if (mode === 'inbox') await inbox();
 else if (mode === 'build') await build();
 else {
-  console.error('Usage: npx tsx scripts/hall-of-fame.ts <verify-issue|build>');
+  console.error('Usage: npx tsx scripts/hall-of-fame.ts <verify-issue|inbox|build>');
   process.exit(2);
 }

@@ -1,0 +1,137 @@
+/*
+ * Design tokens: the only place colours, type, spacing, radii, shadows and motion are defined.
+ * Components use these variables, never raw values. See docs/DESIGN.md.
+ */
+@import '@fontsource-variable/archivo/wdth.css';
+
+@font-face {
+  font-family: 'RubikGlitch';
+  /* Only drawn for the logo, so just Basic Latin (56 KB instead of 407 KB). */
+  src: url('../assets/fonts/RubikGlitch-Latin.woff2') format('woff2');
+  unicode-range: U+0020-007E;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Lilita One';
+  src: url('../assets/fonts/LilitaOne-Regular.woff2') format('woff2');
+  font-display: swap;
+}
+
+:root {
+  color-scheme: dark;
+
+  /*
+   * The look comes from card collecting, not from "gaming app": a binder-black table, card-stock
+   * white text, one loud price-sticker yellow for the thing to do next, and foil only on holo cards.
+   */
+  --bg: #121114;
+  --bg-elevated: #18171b;
+  --surface: #1f1e23;
+  --surface-2: #27262c;
+  --surface-3: #323037;
+  --scrim: rgba(8, 7, 10, 0.8);
+  --border: rgba(243, 239, 230, 0.1);
+  --border-strong: rgba(243, 239, 230, 0.2);
+
+  /* Text (all pass WCAG AA on --bg-elevated) */
+  --text: #f3efe6;
+  --text-muted: #b6b0ba;
+  --text-subtle: #8c8692;
+
+  /* Accent: price-sticker yellow, with dark ink on it. Used for primary actions and progress only. */
+  --brand: #ffd23f;
+  --brand-strong: #f2c214;
+  --brand-ink: #17130a;
+  --brand-2: #ffd23f;
+  --brand-3: #ffd23f;
+  /* Kept for old references: the accent is flat now. */
+  --brand-gradient: var(--brand);
+  --focus-ring: 0 0 0 2px var(--bg), 0 0 0 4px var(--brand);
+  /* Holo foil: only ever on holo cards. */
+  --foil: linear-gradient(115deg, #ff7ac8, #ffd23f 30%, #6ff2c6 55%, #7ab8ff 80%, #d38bff);
+
+  /* Feedback */
+  --success: #5fd38d;
+  --danger: #ff6b6b;
+  --warning: #ffb547;
+
+  /* Rarity: the same colours everywhere a rarity appears, always with its symbol too */
+  --rarity-common: #b8b4bd;
+  --rarity-uncommon: #5fd38d;
+  --rarity-rare: #6aa8ff;
+  --rarity-epic: #c08bff;
+  --rarity-legendary: #ffa24d;
+  --rarity-brainrot: linear-gradient(90deg, #ff6b6b, #ffa24d, #ffd23f, #5fd38d, #6aa8ff, #c08bff);
+
+  /*
+   * Type: Lilita One (the face printed on the cards) for headings and big numbers, Archivo for
+   * everything else; Archivo's condensed widths set labels like a grading slab. Rubik Glitch is the
+   * logo only.
+   */
+  --font-body: 'Archivo Variable', Archivo, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Lilita One', 'Archivo Variable', system-ui, sans-serif;
+  --stretch-label: 82%;
+  --font-logo: 'RubikGlitch', 'Lilita One', system-ui, sans-serif;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.375rem;
+  --text-2xl: clamp(1.5rem, 1.2rem + 1.2vw, 1.875rem);
+  --text-3xl: clamp(1.875rem, 1.4rem + 2vw, 2.5rem);
+  --leading-tight: 1.15;
+  --leading: 1.5;
+
+  /* Space: 4px grid */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --gutter: clamp(1rem, 4vw, 2rem);
+
+  /* Shape: tight corners, like card stock and sleeves */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+  --radius-xl: 14px;
+  --radius-pill: 999px;
+
+  /* Depth */
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.25);
+  --shadow-2: 0 8px 24px rgba(0, 0, 0, 0.45);
+  --shadow-3: 0 24px 64px rgba(0, 0, 0, 0.6);
+  /* No glows: depth comes from shadows and borders only. */
+  --glow-brand: none;
+
+  /* Motion: short and purposeful; disabled under prefers-reduced-motion */
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur-fast: 120ms;
+  --dur: 200ms;
+  --dur-slow: 320ms;
+
+  /* Layout */
+  --touch-target: 44px;
+  --nav-height: 64px;
+  --header-height: 56px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --content-max: 1120px;
+
+  /* Layers */
+  --z-nav: 50;
+  --z-sheet: 100;
+  --z-toast: 200;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0ms;
+    --dur: 0ms;
+    --dur-slow: 0ms;
+  }
+}

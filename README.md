@@ -41,10 +41,11 @@ We would love to expand the card selection to include more brainrot characters a
 
 ## Features
 
-- **Timeline packs** - Each meme era is its own set, from Web Ancients (2007–2012) and Vine & Dank to Lockdown Lore, Gen Alpha Uprising, Italian Brainrot and Right Now. Every card shows the real meme. The original hackathon set, Genesis, is archived: its pulls still verify
+- **Timeline packs** - Each meme era is its own set, from Web Ancients (2007–2012) and Vine & Dank to Lockdown Lore, Gen Alpha Uprising, Italian Brainrot and Summer of Slop (2026). Every card shows the real meme. The original hackathon set, Genesis, is archived: its pulls still verify
 - **Verifiable pulls** - Every pack is derived from a proof-of-work ticket tied to your player key, so pulls can't be faked or edited, with no server
 - **Show it off** - Share any pull as a link that anyone can verify, copy a Wordle-style brag line, or save a 9:16 poster with a QR code
 - **Global Hall of Fame** - Submit a Full House or better; GitHub Actions verifies it and the page re-checks every entry on your device
+- **Verifiable profiles and levels** - Share one link with every pack you've ever opened; anyone's browser re-opens them all to confirm your level, best pulls and collection
 - **Interactive Pack Tearing** - Drag across the tear line to open packs with sparks and sound effects
 - **Pack Opening Experience** - Cards revealed with smooth animations and confetti effects for rare pulls
 - **Collection Browser** - Track your found cards with counts and rarity-colored borders

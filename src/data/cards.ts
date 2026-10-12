@@ -11,15 +11,17 @@ export type RarityKey = Rarity;
 export interface RarityInfo {
   name: string;
   color: string;
+  /** Printed next to the name, like a TCG rarity mark, so rarity never relies on colour alone. */
+  symbol: string;
 }
 
 export const CARD_RARITIES: Record<RarityKey, RarityInfo> = {
-  COMMON: { name: 'Common', color: '#aaaaaa' },
-  UNCOMMON: { name: 'Uncommon', color: '#1eff00' },
-  RARE: { name: 'Rare', color: '#0070dd' },
-  EPIC: { name: 'Epic', color: '#a335ee' },
-  LEGENDARY: { name: 'Legendary', color: '#ff8000' },
-  BRAINROT: { name: 'Brainrot', color: 'rainbow' },
+  COMMON: { name: 'Common', color: '#aaaaaa', symbol: '\u25CF' },
+  UNCOMMON: { name: 'Uncommon', color: '#1eff00', symbol: '\u25C6' },
+  RARE: { name: 'Rare', color: '#0070dd', symbol: '\u2605' },
+  EPIC: { name: 'Epic', color: '#a335ee', symbol: '\u2605\u2605' },
+  LEGENDARY: { name: 'Legendary', color: '#ff8000', symbol: '\u2605\u2605\u2605' },
+  BRAINROT: { name: 'Brainrot', color: 'rainbow', symbol: '\u2726' },
 };
 
 export interface Card {
