@@ -6,9 +6,10 @@ Standard library plus the `cryptography` package (Argon2id and Ed25519). Single 
 imports, so it runs under `python3 -I`.
 
 Usage:
-  python3 spec/verify_pull.py <proof or share link>            human summary, exit 0 / 1
+  python3 spec/verify_pull.py <proof or share link>            human summary; exit 0 valid, 1 invalid
+                                                               (2 bad set data, 3 internal error)
   python3 spec/verify_pull.py --json <proof or share link>     same, as JSON
-  python3 spec/verify_pull.py --vectors spec/vectors.json      check the test vectors
+  python3 spec/verify_pull.py --vectors FILE [FILE ...]        check test vectors files
   --sets DIR  use DIR instead of src/content/sets for set lookup
 """
 
@@ -129,7 +130,7 @@ def utf8_decode(data: bytes, what: str) -> str:
             raise ProofError("decode", f"invalid UTF-8 in {what}: byte 0x{lead:02x} at offset {i} cannot start a character")
         for k in range(1, length):
             if i + k >= n or data[i + k] & 0xC0 != 0x80:
-                raise ProofError("decode", f"invalid UTF-8 in {what}: truncated sequence at offset {i}")
+                raise ProofError("decode", f"invalid UTF-8 in {what}: truncated sequence or missing continuation byte at offset {i}")
             cp = (cp << 6) | (data[i + k] & 0x3F)
         if cp < minimum:
             raise ProofError("decode", f"invalid UTF-8 in {what}: overlong encoding at offset {i}")
@@ -159,7 +160,6 @@ class SetDef:
     odds: dict[str, int]
     holo_odds: int
     pools: dict[str, list[str]]  # rarity -> card ids of that rarity, in set order
-    card_names: dict[str, str]  # display only
     archived: bool
     path: Path
 
@@ -200,12 +200,10 @@ def parse_set(doc: object, path: Path) -> SetDef:
     if not isinstance(cards, list):
         raise bad("cards must be a list")
     pools: dict[str, list[str]] = {r: [] for r in RARITIES}
-    names: dict[str, str] = {}
     for card in cards:
         if not isinstance(card, dict) or not isinstance(card.get("id"), str) or card.get("rarity") not in RARITIES:
             raise bad(f"bad card entry {card!r}")
         pools[card["rarity"]].append(card["id"])
-        names[card["id"]] = str(card.get("name", card["id"]))
     for rarity in RARITIES:
         if odds.get(rarity, 0) > 0 and not pools[rarity]:
             raise bad(f"rarity {rarity} has weight {odds[rarity]} but no cards")
@@ -217,7 +215,6 @@ def parse_set(doc: object, path: Path) -> SetDef:
         odds={r: odds.get(r, 0) for r in RARITIES},
         holo_odds=holo_odds,
         pools=pools,
-        card_names=names,
         archived="archivedAt" in doc,
         path=path,
     )
@@ -359,13 +356,13 @@ class Proof:
 
     @property
     def pull_id(self) -> str:
-        # §7: same pull = same (set key, public key, nonce). The spec does not define a string
-        # form; this "set/hex(key)/nonce" layout follows the samePull vectors' pullId.
+        # §7 "Same pull": `${setKey}/${hex(publicKey)}/${nonce}`.
         return f"{self.set_key}/{self.public_key.hex()}/{self.nonce}"
 
 
 def proof_text_from_input(text: str) -> str:
-    """Accept a bare proof or a share link `https://.../#/pull/<proof>` (§6)."""
+    """Accept a bare proof or a share link `https://.../#/pull/<proof>` (§6). Only whitespace
+    around the whole argument is trimmed; the proof itself is decoded strictly."""
     text = text.strip()
     if "#" in text:
         fragment = "#" + text.split("#", 1)[1]
@@ -424,99 +421,166 @@ def parse_proof(text: str) -> Proof:
 # §7 Verification
 # ---------------------------------------------------------------------------------------------
 
-# §7.2 The whitespace the spec lists; only U+0020 is allowed.
-FORBIDDEN_WHITESPACE = frozenset(
-    [*range(0x0009, 0x000E), 0x00A0, 0x1680, *range(0x2000, 0x200B), 0x2028, 0x2029, 0x202F, 0x205F, 0x3000, 0xFEFF]
-)
+# §7.2 Name rules. Fixed code point lists only (no Unicode tables), as (first, last, what).
 NAME_MAX_CODE_POINTS = 24
+NAME_FORBIDDEN = (
+    # control characters
+    (0x0000, 0x001F, "control character"),
+    (0x007F, 0x009F, "control character"),
+    # invisible or bidirectional format characters
+    (0x00AD, 0x00AD, "invisible or bidirectional format character"),
+    (0x061C, 0x061C, "invisible or bidirectional format character"),
+    (0x180E, 0x180E, "invisible or bidirectional format character"),
+    (0x200B, 0x200F, "invisible or bidirectional format character"),
+    (0x202A, 0x202E, "invisible or bidirectional format character"),
+    (0x2060, 0x2064, "invisible or bidirectional format character"),
+    (0x2066, 0x206F, "invisible or bidirectional format character"),
+    (0xFEFF, 0xFEFF, "invisible or bidirectional format character"),
+    (0xFFF9, 0xFFFB, "invisible or bidirectional format character"),
+    (0xE0001, 0xE0001, "invisible or bidirectional format character"),
+    (0xE0020, 0xE007F, "invisible or bidirectional format character"),
+    # spaces other than U+0020
+    (0x00A0, 0x00A0, "space other than U+0020"),
+    (0x1680, 0x1680, "space other than U+0020"),
+    (0x2000, 0x200A, "space other than U+0020"),
+    (0x2028, 0x2029, "space other than U+0020"),
+    (0x202F, 0x202F, "space other than U+0020"),
+    (0x205F, 0x205F, "space other than U+0020"),
+    (0x3000, 0x3000, "space other than U+0020"),
+)
 
 
 def check_name(name: str) -> None:
-    """§7.2 Normalised name."""
+    """§7.2 Name. Unassigned code points, private use and non-NFC text are all allowed."""
     if len(name) > NAME_MAX_CODE_POINTS:  # Python str length counts code points
         raise ProofError("name", f"name has {len(name)} code points (at most {NAME_MAX_CODE_POINTS})")
-    if not unicodedata.is_normalized("NFC", name):
-        raise ProofError("name", "name is not in NFC")
     for ch in name:
         cp = ord(ch)
-        if cp in FORBIDDEN_WHITESPACE:
-            raise ProofError("name", f"name contains whitespace U+{cp:04X} (only U+0020 is allowed)")
-        category = unicodedata.category(ch)
-        if category[0] == "C":
-            note = f" (unassigned in Unicode {unicodedata.unidata_version})" if category == "Cn" else ""
-            raise ProofError("name", f"name contains U+{cp:04X} of general category {category}{note}")
+        for first, last, what in NAME_FORBIDDEN:
+            if first <= cp <= last:
+                raise ProofError("name", f"name contains U+{cp:04X}, a {what}")
     if name.startswith(" ") or name.endswith(" "):
         raise ProofError("name", "name has a leading or trailing space")
     if "  " in name:
-        raise ProofError("name", "name has doubled spaces")
+        raise ProofError("name", "name has two spaces in a row")
 
 
-# Edwards25519 constants (RFC 8032 §5.1).
+# Edwards25519 (RFC 8032 §5.1). Points are extended coordinates (X, Y, Z, T) with
+# x = X/Z, y = Y/Z and x*y = T/Z.
 ED_P = 2**255 - 19
 ED_D = (-121665 * pow(121666, -1, ED_P)) % ED_P
 ED_SQRT_M1 = pow(2, (ED_P - 1) // 4, ED_P)
 ED_L = 2**252 + 27742317777372353535851937790883648493
+ED_IDENTITY = (0, 1, 1, 0)
 
-# §7.3 The eight small-order points, as listed in the spec.
-SMALL_ORDER_KEYS = frozenset(
-    bytes.fromhex(h)
-    for h in (
-        "0100000000000000000000000000000000000000000000000000000000000000",
-        "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
-        "0000000000000000000000000000000000000000000000000000000000000000",
-        "0000000000000000000000000000000000000000000000000000000000000080",
-        "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc05",
-        "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc85",
-        "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac037a",
-        "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac03fa",
-    )
-)
+EdPoint = tuple  # (X, Y, Z, T)
 
 
-def point_encoding_problem(encoded: bytes) -> str | None:
-    """RFC 8032 §5.1.3 point decoding, strict. Returns why `encoded` is not a canonical
-    encoding of a curve point, or None if it is."""
+def ed_add(p: EdPoint, q: EdPoint) -> EdPoint:
+    """RFC 8032 §5.1.4 addition; complete, so it also doubles."""
+    x1, y1, z1, t1 = p
+    x2, y2, z2, t2 = q
+    a = (y1 - x1) * (y2 - x2) % ED_P
+    b = (y1 + x1) * (y2 + x2) % ED_P
+    c = 2 * t1 * t2 * ED_D % ED_P
+    d = 2 * z1 * z2 % ED_P
+    e, f, g, h = b - a, d - c, d + c, b + a
+    return (e * f % ED_P, g * h % ED_P, f * g % ED_P, e * h % ED_P)
+
+
+def ed_neg(p: EdPoint) -> EdPoint:
+    x, y, z, t = p
+    return ((-x) % ED_P, y, z, (-t) % ED_P)
+
+
+def ed_mul(scalar: int, p: EdPoint) -> EdPoint:
+    """[scalar]p by double-and-add (public data only, so no need for constant time)."""
+    result = ED_IDENTITY
+    while scalar:
+        if scalar & 1:
+            result = ed_add(result, p)
+        p = ed_add(p, p)
+        scalar >>= 1
+    return result
+
+
+def ed_is_identity(p: EdPoint) -> bool:
+    x, y, z, _ = p
+    return x % ED_P == 0 and (y - z) % ED_P == 0
+
+
+def ed_encode(p: EdPoint) -> bytes:
+    """RFC 8032 §5.1.2: y little-endian, with the low bit of x in the top bit."""
+    x, y, z, _ = p
+    z_inv = pow(z, ED_P - 2, ED_P)
+    x, y = x * z_inv % ED_P, y * z_inv % ED_P
+    return (y | ((x & 1) << 255)).to_bytes(32, "little")
+
+
+def ed_decode(encoded: bytes) -> EdPoint:
+    """RFC 8032 §5.1.3 decoding. Raises ValueError saying why `encoded` is not a point."""
     y = int.from_bytes(encoded, "little")
     sign = y >> 255
     y &= (1 << 255) - 1
     if y >= ED_P:
-        return "y is not reduced (y >= 2^255-19)"
+        raise ValueError("y is not reduced (y >= 2^255-19)")
     u = (y * y - 1) % ED_P
     v = (ED_D * y * y + 1) % ED_P
     x = u * pow(v, 3, ED_P) * pow(u * pow(v, 7, ED_P), (ED_P - 5) // 8, ED_P) % ED_P
     vxx = v * x * x % ED_P
-    if vxx != u and vxx != (-u) % ED_P:
-        return "not a point on the curve (x^2 has no square root)"
-    if vxx != u:
+    if vxx == (-u) % ED_P and vxx != u:
         x = x * ED_SQRT_M1 % ED_P
+    elif vxx != u:
+        raise ValueError("not on the curve (no x for this y)")
     if x == 0 and sign:
-        return "x = 0 with the sign bit set"
-    return None
+        raise ValueError("x = 0 with the sign bit set")
+    if x & 1 != sign:
+        x = ED_P - x
+    return (x, y, 1, x * y % ED_P)
 
 
-def check_public_key(public_key: bytes) -> None:
-    """§7.3 Public key: canonical point encoding, not of small order."""
-    problem = point_encoding_problem(public_key)
-    if problem is not None:
-        raise ProofError("publicKey", f"public key is not a canonical point encoding: {problem}")
-    if public_key in SMALL_ORDER_KEYS:
-        raise ProofError("publicKey", "public key is a small-order point (anyone can forge signatures for it)")
+# Base point B: y = 4/5, x even (RFC 8032 §5.1).
+ED_B = ed_decode(((4 * pow(5, ED_P - 2, ED_P)) % ED_P).to_bytes(32, "little"))
 
 
-def check_signature(proof: Proof) -> None:
-    """§7.4 Ed25519 (RFC 8032 §5.1.7) with strict decoding: S < L, R and A canonical.
-    A was checked in §7.3. `cryptography` (OpenSSL) also rejects S >= L, and checks the
-    cofactorless equation by re-encoding [S]B - [k]A and comparing it byte for byte with R."""
+def check_public_key(public_key: bytes) -> EdPoint:
+    """§7.3 Public key: an RFC 8032 point of prime order L ([L]A = identity, A != identity).
+    This rejects the 8 small-order points and keys with a hidden small-order component."""
+    try:
+        a_point = ed_decode(public_key)
+    except ValueError as err:
+        raise ProofError("publicKey", f"public key is not a valid point encoding: {err}") from None
+    if ed_is_identity(a_point):
+        raise ProofError("publicKey", "public key is the identity point (small order)")
+    if not ed_is_identity(ed_mul(ED_L, a_point)):
+        raise ProofError("publicKey", "public key is not of prime order L (it has a small-order component)")
+    return a_point
+
+
+def check_signature(proof: Proof, a_point: EdPoint) -> None:
+    """§7.4 Cofactorless Ed25519, exactly as the spec states it: S < L, k = SHA-512(R || A || M)
+    mod L, and encode([S]B - [k]A) == R byte for byte. R is not checked in any other way.
+
+    We also ask `cryptography` (OpenSSL), which implements the same cofactorless check, and stop
+    with an internal error if the two ever disagree."""
     r_bytes, s_bytes = proof.signature[:32], proof.signature[32:]
-    if int.from_bytes(s_bytes, "little") >= ED_L:
-        raise ProofError("signature", "signature S is not reduced (S >= L): malleated signature")
-    problem = point_encoding_problem(r_bytes)
-    if problem is not None:
-        raise ProofError("signature", f"signature R is not a canonical point encoding: {problem}")
+    s = int.from_bytes(s_bytes, "little")
+    if s >= ED_L:
+        ours, why = False, "signature S is not reduced (S >= L): malleated signature"
+    else:
+        digest = hashlib.sha512(r_bytes + proof.public_key + proof.signed_message).digest()
+        k = int.from_bytes(digest, "little") % ED_L
+        check = ed_encode(ed_add(ed_mul(s, ED_B), ed_neg(ed_mul(k, a_point))))
+        ours, why = check == r_bytes, "Ed25519 signature does not verify ([S]B - [k]A does not encode to R)"
     try:
         Ed25519PublicKey.from_public_bytes(proof.public_key).verify(proof.signature, proof.signed_message)
+        library = True
     except InvalidSignature:
-        raise ProofError("signature", "Ed25519 signature does not verify") from None
+        library = False
+    if ours != library:
+        raise RuntimeError(f"internal error: our Ed25519 check says {ours}, cryptography says {library}")
+    if not ours:
+        raise ProofError("signature", why)
 
 
 # ---------------------------------------------------------------------------------------------
@@ -534,16 +598,14 @@ def card_points(card: Card) -> int:
 
 
 def combo(cards: list[Card]) -> tuple[str, int]:
-    """Combo from the copy counts of each card id, sorted largest first; first match wins."""
+    """§8 combo from c1 >= c2, the two largest copy counts of a card id (c2 = 0 if none)."""
     counts = sorted(Counter(card.card_id for card in cards).values(), reverse=True) + [0]
-    top, second = counts[0], counts[1]
+    top, second = counts[0], counts[1]  # c1, c2
     if top >= 5:
         return "5 of a Kind", 10000
     if top == 4:
         return "4 of a Kind", 250
-    # "3 and 2": read literally, the second-largest count is exactly 2. Only differs from
-    # ">= 2" for a pack of 6+ cards with two triples; every current set has packSize 5.
-    if top == 3 and second == 2:
+    if top == 3 and second == 2:  # exactly 2: c1 = 3, c2 = 3 is "3 of a Kind"
         return "Full House", 150
     if top == 3:
         return "3 of a Kind", 15
@@ -579,10 +641,15 @@ CROCKFORD_BASE32 = "0123456789ABCDEFGHJKMNPQRSTVWXYZ"
 
 
 def fingerprint(public_key: bytes) -> str:
-    """First 40 bits of SHA-256(public key), 8 Crockford base32 characters, as #XXXX-XXXX."""
+    """First 40 bits of SHA-256(public key), 8 Crockford base32 characters, as XXXX-XXXX."""
     bits = int.from_bytes(hashlib.sha256(public_key).digest()[:5], "big")
     chars = "".join(CROCKFORD_BASE32[(bits >> (35 - 5 * i)) & 31] for i in range(8))
-    return f"#{chars[:4]}-{chars[4:]}"
+    return f"{chars[:4]}-{chars[4:]}"
+
+
+def display_name(name: str) -> str:
+    """§9: what a UI shows (NFC, Unicode category C removed). Never affects validity."""
+    return "".join(ch for ch in unicodedata.normalize("NFC", name) if unicodedata.category(ch)[0] != "C")
 
 
 # ---------------------------------------------------------------------------------------------
@@ -604,6 +671,7 @@ class VerifiedPull:
         return {
             "valid": True,
             "name": p.name,
+            "displayName": display_name(p.name),
             "fingerprint": fingerprint(p.public_key),
             "publicKey": p.public_key.hex(),
             "set": p.set_key,
@@ -627,8 +695,8 @@ def verify(text: str, sets: dict[str, SetDef]) -> VerifiedPull:
     Then §4-§5 derive the pack and §8 scores it."""
     proof = parse_proof(proof_text_from_input(text))  # §7.1
     check_name(proof.name)  # §7.2
-    check_public_key(proof.public_key)  # §7.3
-    check_signature(proof)  # §7.4
+    a_point = check_public_key(proof.public_key)  # §7.3
+    check_signature(proof, a_point)  # §7.4
     set_def = sets.get(proof.set_key)  # §7.5
     if set_def is None:
         raise ProofError("set", f"unknown set {proof.set_key}")
@@ -645,9 +713,12 @@ def verify(text: str, sets: dict[str, SetDef]) -> VerifiedPull:
 
 def print_summary(pull: VerifiedPull) -> None:
     p, s, sd = pull.proof, pull.score, pull.set_def
-    name = p.name if p.name else "(no name)"
+    shown = display_name(p.name)
+    name = shown if shown else "(no name)"
+    if shown != p.name:
+        name += f"  (as signed: {p.name!r})"
     print("VALID pull proof")
-    print(f"  Player       {name} {fingerprint(p.public_key)}")
+    print(f"  Player       {name} #{fingerprint(p.public_key)}")
     print(f"  Set          {sd.name} ({p.set_key}){' [archived]' if sd.archived else ''}")
     print(f"  Nonce        {p.nonce}")
     print("  Cards")
@@ -678,6 +749,9 @@ def run_single(text: str, sets_dir: Path, as_json: bool) -> int:
     except SetDataError as err:
         print(f"error: set data: {err}", file=sys.stderr)
         return 2
+    except RuntimeError as err:  # a bug in this verifier, not a verdict on the proof
+        print(f"error: {err}", file=sys.stderr)
+        return 3
     if as_json:
         print(json.dumps(pull.as_json(), ensure_ascii=False, indent=2))
     else:
@@ -690,141 +764,154 @@ def run_single(text: str, sets_dir: Path, as_json: bool) -> int:
 # ---------------------------------------------------------------------------------------------
 
 
-def _compare(label: str, got: object, want: object, failures: list[str]) -> None:
-    if got != want:
-        failures.append(f"{label}: got {got!r}, expected {want!r}")
+def _mismatch(field: str, got: object, want: object) -> list[str]:
+    return [] if got == want else [f"{field}: got {got!r}, expected {want!r}"]
 
 
-def check_tickets(vectors: list[dict], _sets: dict[str, SetDef]) -> list[str]:
-    failures: list[str] = []
-    for i, v in enumerate(vectors):
-        ticket = compute_ticket(v["setKey"], bytes.fromhex(v["publicKey"]), v["nonce"])
-        _compare(f"tickets[{i}] {v['setKey']} nonce {v['nonce']}", ticket.hex(), v["ticket"], failures)
-    return failures
+# Each check takes one vector and returns what is wrong with our result (empty list = pass).
 
 
-def check_rng(vectors: list[dict], _sets: dict[str, SetDef]) -> list[str]:
-    """The vectors don't say whether `outputs` start before or after the 15 discarded values;
-    we check the spec's generator (after the warm-up) and say so if the raw stream matches instead."""
-    failures: list[str] = []
-    for i, v in enumerate(vectors):
-        seed = bytes.fromhex(v["seed"])
-        rng = Sfc32(seed)
-        got = [rng.next() for _ in v["outputs"]]
-        if got != v["outputs"]:
-            raw = Sfc32(seed, warmup=0)
-            hint = " (they match the stream without the 15-output warm-up)" if [raw.next() for _ in v["outputs"]] == v["outputs"] else ""
-            failures.append(f"rng[{i}]: got {got}, expected {v['outputs']}{hint}")
-    return failures
+def check_ticket(v: dict, _sets: dict[str, SetDef]) -> list[str]:
+    ticket = compute_ticket(v["setKey"], bytes.fromhex(v["publicKey"]), v["nonce"])
+    return _mismatch("ticket", ticket.hex(), v["ticket"])
 
 
-def check_packs(vectors: list[dict], sets: dict[str, SetDef]) -> list[str]:
-    failures: list[str] = []
-    for i, v in enumerate(vectors):
-        if v["set"] not in sets:
-            failures.append(f"packs[{i}]: set {v['set']} not found")
-            continue
-        cards = [c.as_json() for c in generate_pack(sets[v["set"]], bytes.fromhex(v["seed"]))]
-        _compare(f"packs[{i}] {v['set']} {v['seed'][:12]}…", cards, v["cards"], failures)
-    return failures
+def check_rng(v: dict, _sets: dict[str, SetDef]) -> list[str]:
+    """`outputs` are the spec's generator, i.e. after the 15 discarded values (§5.2). The vectors
+    file doesn't say so; if only the raw stream matches, say that instead of a bare mismatch."""
+    seed = bytes.fromhex(v["seed"])
+    rng = Sfc32(seed)
+    got = [rng.next() for _ in v["outputs"]]
+    problems = _mismatch("outputs", got, v["outputs"])
+    if problems:
+        raw = Sfc32(seed, warmup=0)
+        if [raw.next() for _ in v["outputs"]] == v["outputs"]:
+            problems.append("the expected outputs are the stream WITHOUT the 15-output warm-up")
+    return problems
 
 
-def check_valid(vectors: list[dict], sets: dict[str, SetDef]) -> list[str]:
-    failures: list[str] = []
-    for i, v in enumerate(vectors):
-        label = f"valid[{i}] ({v.get('note', '')})"
+def check_pack(v: dict, sets: dict[str, SetDef]) -> list[str]:
+    if v["set"] not in sets:
+        return [f"set {v['set']} not found"]
+    cards = [c.as_json() for c in generate_pack(sets[v["set"]], bytes.fromhex(v["seed"]))]
+    return _mismatch("cards", cards, v["cards"])
+
+
+VALID_FIELDS = ("set", "publicKey", "nonce", "name", "fingerprint", "cards", "points", "hand", "multiplier", "score", "hallOfFame")
+
+
+def check_valid(v: dict, sets: dict[str, SetDef]) -> list[str]:
+    try:
+        pull = verify(v["proof"], sets)
+    except ProofError as err:
+        return [f"rejected ({err.rule}): {err.reason}"]
+    got = pull.as_json()
+    got["cards"] = [c.as_json() for c in pull.cards]
+    return [problem for field in VALID_FIELDS if field in v for problem in _mismatch(field, got[field], v[field])]
+
+
+def check_invalid(v: dict, sets: dict[str, SetDef]) -> list[str]:
+    try:
+        verify(v["proof"], sets)
+    except ProofError as err:
+        if err.rule != v["rule"]:
+            return [f"rejected by rule {err.rule!r} ({err.reason}), but the vector says {v['rule']!r}"]
+        return []
+    return [f"accepted, but the vector says reject ({v['rule']})"]
+
+
+def check_same_pull(v: dict, sets: dict[str, SetDef]) -> list[str]:
+    """Every proof is valid, they share one (set key, public key, nonce) triple (§7), and so one
+    ticket and one pack."""
+    problems: list[str] = []
+    pulls: list[VerifiedPull] = []
+    for j, text in enumerate(v["proofs"]):
         try:
-            pull = verify(v["proof"], sets)
+            pulls.append(verify(text, sets))
         except ProofError as err:
-            failures.append(f"{label}: rejected ({err.rule}): {err.reason}")
-            continue
-        got = pull.as_json()
-        got["fingerprint"] = got["fingerprint"].lstrip("#")  # vectors store it without the '#'
-        got["cards"] = [c.as_json() for c in pull.cards]
-        for field in ("set", "publicKey", "nonce", "name", "fingerprint", "cards", "points", "hand", "multiplier", "score", "hallOfFame"):
-            if field in v:
-                _compare(f"{label} {field}", got[field], v[field], failures)
-    return failures
-
-
-def check_invalid(vectors: list[dict], sets: dict[str, SetDef]) -> list[str]:
-    failures: list[str] = []
-    for i, v in enumerate(vectors):
-        label = f"invalid[{i}] ({v.get('note', '')})"
-        try:
-            verify(v["proof"], sets)
-        except ProofError as err:
-            if err.rule != v["rule"]:
-                failures.append(f"{label}: rejected by rule {err.rule!r} ({err.reason}), vector says {v['rule']!r}")
-            continue
-        failures.append(f"{label}: accepted, vector says reject ({v['rule']})")
-    return failures
-
-
-def check_same_pull(vectors: list[dict], sets: dict[str, SetDef]) -> list[str]:
-    failures: list[str] = []
-    for i, v in enumerate(vectors):
-        label = f"samePull[{i}] ({v.get('note', '')})"
-        pulls = []
-        for j, text in enumerate(v["proofs"]):
-            try:
-                pulls.append(verify(text, sets))
-            except ProofError as err:
-                failures.append(f"{label} proofs[{j}]: rejected ({err.rule}): {err.reason}")
-        if len(pulls) != len(v["proofs"]):
-            continue
-        for j, pull in enumerate(pulls):
-            _compare(f"{label} proofs[{j}] pullId", pull.proof.pull_id, v["pullId"], failures)
-            _compare(f"{label} proofs[{j}] cards", pull.cards, pulls[0].cards, failures)
-    return failures
+            problems.append(f"proofs[{j}] rejected ({err.rule}): {err.reason}")
+    for j, pull in enumerate(pulls):
+        problems += _mismatch(f"proofs[{j}] pullId", pull.proof.pull_id, v["pullId"])
+        problems += _mismatch(f"proofs[{j}] cards", pull.cards, pulls[0].cards)
+    return problems
 
 
 SECTIONS = {
-    "tickets": check_tickets,
+    "tickets": check_ticket,
     "rng": check_rng,
-    "packs": check_packs,
+    "packs": check_pack,
     "valid": check_valid,
     "invalid": check_invalid,
     "samePull": check_same_pull,
 }
 
 
-def run_vectors(path: Path, sets_dir: Path) -> int:
+# Vectors written before the revised spec that are now known to be wrong. They are reported but
+# not counted as failures. Delete an entry once the file that holds it has been regenerated.
+KNOWN_STALE = {
+    ("invalid", "name not NFC"): "valid under the revised §7.2, which no longer requires NFC",
+}
+
+
+def run_vector_file(path: Path, sets: dict[str, SetDef]) -> bool:
+    """Check one vectors file; print a line per section. Returns True if nothing failed."""
     try:
         doc = json.loads(path.read_text(encoding="utf-8"))
-        sets = load_sets(sets_dir)
     except (OSError, ValueError) as err:
-        print(f"error: cannot read vectors: {err}", file=sys.stderr)
-        return 2
-    except SetDataError as err:
-        print(f"error: set data: {err}", file=sys.stderr)
-        return 2
-    print(f"vectors {path} (spec version {doc.get('version')}); {len(sets)} sets; Unicode {unicodedata.unidata_version}")
+        print(f"FAIL {path}: cannot read: {err}")
+        return False
+    generated_by = f", generated by {doc['generatedBy']}" if "generatedBy" in doc else ""
+    print(f"{path} (spec version {doc.get('version')}{generated_by})")
     all_ok = True
     for section, check in SECTIONS.items():
         vectors = doc.get(section)
         if not isinstance(vectors, list) or not vectors:
-            print(f"FAIL {section:<9} missing or empty")
+            print(f"  FAIL {section:<9} missing or empty")
             all_ok = False
             continue
         started = time.perf_counter()
-        failures = check(vectors, sets)
+        failed, stale = [], []
+        for i, v in enumerate(vectors):
+            try:
+                problems = check(v, sets)
+            except RuntimeError as err:  # our Ed25519 and cryptography's disagree
+                problems = [str(err)]
+            if not problems:
+                continue
+            note = v.get("note", "")
+            line = f"{section}[{i}]{f' ({note})' if note else ''}: " + "; ".join(problems)
+            if (section, note) in KNOWN_STALE:
+                stale.append(f"{line}  [known stale: {KNOWN_STALE[(section, note)]}]")
+            else:
+                failed.append(line)
         elapsed = time.perf_counter() - started
-        status = "PASS" if not failures else "FAIL"
-        print(f"{status} {section:<9} {len(vectors) - len(failures) if len(failures) <= len(vectors) else 0}/{len(vectors)}  ({elapsed:.2f}s)")
-        for failure in failures:
-            print(f"     - {failure}")
-        all_ok = all_ok and not failures
-    unknown = set(doc) - set(SECTIONS) - {"spec", "version"}
-    if unknown:
-        print(f"note: unchecked sections in vectors file: {', '.join(sorted(unknown))}")
-    return 0 if all_ok else 1
+        extra = f", {len(stale)} known stale" if stale else ""
+        print(f"  {'FAIL' if failed else 'PASS'} {section:<9} {len(vectors) - len(failed) - len(stale)}/{len(vectors)}{extra}  ({elapsed:.2f}s)")
+        for line in failed:
+            print(f"       - {line}")
+        for line in stale:
+            print(f"       ~ {line}")
+        all_ok = all_ok and not failed
+    unchecked = set(doc) - set(SECTIONS) - {"spec", "version", "generatedBy", "testKey"}
+    if unchecked:
+        print(f"  note: sections not checked: {', '.join(sorted(unchecked))}")
+    return all_ok
+
+
+def run_vectors(paths: list[Path], sets_dir: Path) -> int:
+    try:
+        sets = load_sets(sets_dir)
+    except SetDataError as err:
+        print(f"error: set data: {err}", file=sys.stderr)
+        return 2
+    results = [run_vector_file(path, sets) for path in paths]
+    return 0 if all(results) else 1
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Verify a Brainrot TCG pull proof (spec/PULL_SPEC.md v1).")
     parser.add_argument("proof", nargs="?", help="a proof, or a share link ending in #/pull/<proof>")
-    parser.add_argument("--vectors", type=Path, metavar="FILE", help="check a vectors.json file instead")
+    parser.add_argument("--vectors", type=Path, nargs="+", metavar="FILE", help="check one or more vectors files instead")
     parser.add_argument("--sets", type=Path, default=DEFAULT_SETS_DIR, metavar="DIR", help=f"set directory (default: {DEFAULT_SETS_DIR})")
     parser.add_argument("--json", action="store_true", help="machine-readable output for a single proof")
     args = parser.parse_args(argv)
