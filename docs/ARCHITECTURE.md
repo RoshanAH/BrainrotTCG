@@ -119,7 +119,7 @@ player ─► Share ─► "Submit"  ─► signed Nostr event ─► 5 public r
                     .github/workflows/hall-of-fame-inbox.yml
                     scripts/hall-of-fame.ts inbox  ─► bot-filed issue + comment + labels (+ redeploy)
                                    │
-player ─► Share ─► "on GitHub" ─► GitHub issue form (pull link, shows your username)
+player ─► Share ─► "on GitHub" ─► GitHub issue form (pull link; needs an account)
                                    │
                     .github/workflows/hall-of-fame.yml
                     scripts/hall-of-fame.ts verify-issue  ─► comment + labels (+ redeploy)
@@ -136,9 +136,13 @@ throwaway key made for that one submission, and sends it to five open relays. Th
 only a transport: who pulled it comes from the proof's own signature. The inbox job reads the last
 week of events, checks each event's signature, verifies the pull with the same engine as everything
 else, and files the ones that qualify as issues in the same verified state the GitHub path ends in.
-Each run checks at most 300 pulls and files at most 20, skips pulls already in the list, and
-remembers events it has checked (in the Actions cache) so junk isn't re-checked every run; anything
-over the limits, and a filing that fails, waits for the next run.
+Each run checks at most 300 pulls and files at most 20, skips pulls already verified in the list,
+and remembers events it has checked (in the Actions cache) so junk isn't re-checked every run;
+anything over the limits waits for the next run. It keeps paging each relay back to the start of the
+window, so a burst of junk can't push a real submission out of reach, and keeps only copies whose
+signature checks out, so one bad relay can't hide another's good copy. Only the exact proof text a
+link carries is accepted, so what's filed always reads back as the same pull. A filing that stops
+halfway (issue opened, not yet labelled `verified`) is finished on the next run.
 It costs nothing: the relays are free, and Actions minutes on a public repository are free. GitHub
 pauses scheduled workflows after 60 days without a commit; if that happens, re-enable "Hall of Fame
 inbox" in the Actions tab (submissions from the last week are still picked up).

@@ -12,6 +12,7 @@
 import { schnorr } from '@noble/curves/secp256k1.js';
 import { sha256 } from '@noble/hashes/sha2.js';
 import { fromHex, toHex, utf8 } from '../engine/bytes';
+import { extractProof } from '../engine/proof';
 
 /** Open public relays (no account, payment or proof-of-work, per their NIP-11 info). */
 export const HOF_RELAYS = ['wss://relay.damus.io', 'wss://nos.lol', 'wss://relay.primal.net', 'wss://offchain.pub', 'wss://relay.nostr.net'];
@@ -39,9 +40,24 @@ export const signEvent = (e: Unsigned, secretKey: Uint8Array): NostrEvent => {
   return { ...e, id, sig: toHex(schnorr.sign(fromHex(id), secretKey)) };
 };
 
-export const verifyEvent = (e: NostrEvent): boolean => {
+const HEX64 = /^[0-9a-f]{64}$/;
+/** NIP-01's field types. Relays don't all enforce them, so anything read from one is checked first. */
+const isEventShape = (e: unknown): e is NostrEvent => {
+  if (!e || typeof e !== 'object') return false;
+  const x = e as Record<string, unknown>;
+  return (
+    typeof x.id === 'string' && HEX64.test(x.id) &&
+    typeof x.pubkey === 'string' && HEX64.test(x.pubkey) &&
+    typeof x.sig === 'string' && /^[0-9a-f]{128}$/.test(x.sig) &&
+    Number.isSafeInteger(x.created_at) && Number.isSafeInteger(x.kind) &&
+    typeof x.content === 'string' &&
+    Array.isArray(x.tags) && x.tags.every((t) => Array.isArray(t) && t.every((v) => typeof v === 'string'))
+  );
+};
+
+export const verifyEvent = (e: unknown): e is NostrEvent => {
   try {
-    return eventId(e) === e.id && schnorr.verify(fromHex(e.sig), fromHex(e.id), fromHex(e.pubkey));
+    return isEventShape(e) && eventId(e) === e.id && schnorr.verify(fromHex(e.sig), fromHex(e.id), fromHex(e.pubkey));
   } catch {
     return false;
   }
@@ -65,12 +81,15 @@ export const hallOfFameEvent = (proof: string, pullId: string, now = Date.now())
   );
 };
 
-/** The proof inside a submission, or null if it isn't one. */
+/**
+ * The proof inside a submission, or null if it isn't one. Only the exact text a pull link carries
+ * counts (no padding or wrapping), so the proof can be written into a link and read back unchanged.
+ */
 export const proofFromEvent = (e: NostrEvent): string | null => {
-  if (e.kind !== HOF_KIND || !e.tags.some((t) => t[0] === 't' && t[1] === HOF_TAG)) return null;
+  if (!isEventShape(e) || e.kind !== HOF_KIND || !e.tags.some((t) => t[0] === 't' && t[1] === HOF_TAG)) return null;
   try {
     const content = JSON.parse(e.content) as { v?: unknown; proof?: unknown };
-    return content.v === 1 && typeof content.proof === 'string' && content.proof.length < 2000 ? content.proof : null;
+    return content.v === 1 && typeof content.proof === 'string' && extractProof(content.proof) === content.proof ? content.proof : null;
   } catch {
     return null;
   }
@@ -136,18 +155,28 @@ export interface Filter {
   kinds: number[];
   '#t'?: string[];
   since?: number;
+  until?: number;
   limit?: number;
 }
 
-/** Ask every relay for matching events and merge them by id (stops at each relay's EOSE or timeout). */
-export const fetchEvents = async (filter: Filter, relays = HOF_RELAYS, timeoutMs = 10000, open: SocketFactory = defaultSocket) => {
+/**
+ * Ask every relay for matching events and merge them by id. Only events whose signature checks out
+ * are kept, so one relay serving a tampered copy can't hide the real one from the others. Relays
+ * send the newest `limit` events per request; with `maxPages` > 1 it keeps asking for older ones
+ * (`until` the oldest so far), so a burst of new events can't push older ones out of reach.
+ */
+export const fetchEvents = async (filter: Filter, relays = HOF_RELAYS, timeoutMs = 10000, open: SocketFactory = defaultSocket, maxPages = 1) => {
   const byId = new Map<string, NostrEvent>();
   const perRelay = await Promise.all(
     relays.map(
       (relay) =>
         new Promise<{ relay: string; count: number; error?: string }>((resolve) => {
-          const sub = `hof-${Math.random().toString(36).slice(2, 10)}`;
+          let sub = '';
           let count = 0;
+          let pages = 0;
+          let pageNew = 0;
+          let oldest = Infinity;
+          const fromHere = new Set<string>();
           let done = false;
           let socket: Socket | null = null;
           const finish = (error?: string) => {
@@ -162,6 +191,12 @@ export const fetchEvents = async (filter: Filter, relays = HOF_RELAYS, timeoutMs
             }
             resolve({ relay, count, error });
           };
+          const request = (until?: number) => {
+            sub = `hof-${Math.random().toString(36).slice(2, 10)}`;
+            pages++;
+            pageNew = 0;
+            socket!.send(JSON.stringify(['REQ', sub, until === undefined ? filter : { ...filter, until }]));
+          };
           const timer = setTimeout(() => finish('timed out'), timeoutMs);
           try {
             socket = open(relay);
@@ -169,16 +204,28 @@ export const fetchEvents = async (filter: Filter, relays = HOF_RELAYS, timeoutMs
             finish(String(error));
             return;
           }
-          socket.onopen = () => socket!.send(JSON.stringify(['REQ', sub, filter]));
+          socket.onopen = () => request();
           socket.onmessage = (msg) => {
             try {
               const data = JSON.parse(String(msg.data)) as unknown[];
-              if (data[0] === 'EVENT' && data[1] === sub && data[2] && typeof data[2] === 'object') {
-                const e = data[2] as NostrEvent;
-                if (typeof e.id === 'string' && !byId.has(e.id)) byId.set(e.id, e);
+              if (data[0] === 'EVENT' && data[1] === sub) {
+                const e = data[2];
                 count++;
-              } else if ((data[0] === 'EOSE' || data[0] === 'CLOSED') && data[1] === sub) {
-                finish(data[0] === 'CLOSED' ? String(data[2] ?? 'closed') : undefined);
+                if (isEventShape(e) && !fromHere.has(e.id)) {
+                  fromHere.add(e.id);
+                  oldest = Math.min(oldest, e.created_at);
+                  pageNew++;
+                  if (!byId.has(e.id) && verifyEvent(e)) byId.set(e.id, e);
+                }
+              } else if (data[0] === 'EOSE' && data[1] === sub) {
+                // Ask for anything older than this page until a page brings nothing new. (Relays cap
+                // `limit` at different sizes, so a short page doesn't prove there's nothing older.)
+                if (pageNew > 0 && pages < maxPages && Number.isFinite(oldest)) {
+                  socket!.send(JSON.stringify(['CLOSE', sub]));
+                  request(oldest);
+                } else finish();
+              } else if (data[0] === 'CLOSED' && data[1] === sub) {
+                finish(String(data[2] ?? 'closed'));
               }
             } catch {
               // ignore anything that isn't JSON

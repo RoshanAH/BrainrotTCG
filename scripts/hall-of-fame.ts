@@ -229,6 +229,8 @@ const INBOX_WINDOW_S = 7 * 24 * 60 * 60;
 const INBOX_BUDGET = 300;
 /** Entries filed per run (two GitHub requests each), well under GitHub's limits on creating content. */
 const INBOX_MAX_FILED = 20;
+/** Requests per relay for older events, so a burst of junk can't push real submissions out of reach. */
+const INBOX_PAGES = 20;
 
 const siteUrl = () => {
   const [owner, name] = REPO.split('/');
@@ -241,21 +243,27 @@ const inbox = async () => {
   const seen = new Set<string>(existsSync(SEEN_PATH) ? (JSON.parse(readFileSync(SEEN_PATH, 'utf8')) as string[]) : []);
 
   const since = Math.floor(Date.now() / 1000) - INBOX_WINDOW_S;
-  const { events, perRelay } = await fetchEvents({ kinds: [HOF_KIND], '#t': [HOF_TAG], since, limit: 500 });
+  const { events, perRelay } = await fetchEvents({ kinds: [HOF_KIND], '#t': [HOF_TAG], since, limit: 500 }, undefined, 30000, undefined, INBOX_PAGES);
   for (const r of perRelay) console.log(`${r.relay}: ${r.count} events${r.error ? ` (${r.error})` : ''}`);
 
-  // Pulls already filed, by anyone, in any state: the first submission keeps the credit.
+  // Pulls already in the Hall of Fame: only verified issues count, so an issue that never verified
+  // (wrong title, a failed run, or a copy someone opened to block it) can't keep a pull out.
   const filed = new Set<string>();
+  // Issues this job opened but didn't finish (it stopped before labelling them): finished next.
+  const unfinished = new Map<string, Issue>();
   for (let page = 1; page < 100; page++) {
     const batch = await github<Issue[]>(`/repos/${REPO}/issues?state=all&labels=hall-of-fame&per_page=100&page=${page}`, token);
     for (const issue of batch) {
       const proof = extractProof(issue.body ?? '');
-      if (!proof) continue;
+      if (!proof || issue.pull_request) continue;
+      let id: string;
       try {
-        filed.add(pullId(decodeProof(proof)));
+        id = pullId(decodeProof(proof));
       } catch {
-        // not a valid proof; nothing to dedupe against
+        continue; // not a valid proof; nothing to dedupe against
       }
+      if (labelNames(issue).includes('verified')) filed.add(id);
+      else if (issue.user?.login === BOT && !unfinished.has(id)) unfinished.set(id, issue);
     }
     if (batch.length < 100) break;
   }
@@ -268,15 +276,25 @@ const inbox = async () => {
     lookup: getSet,
     log: console.log,
     // Filed by the bot, so the issue-opened workflow doesn't run on it again; the marker comment is
-    // the "first verified" time, exactly as for issues people open themselves.
+    // the "first verified" time, exactly as for issues people open themselves. The marker goes on
+    // before the `verified` label (`build` only reads labelled issues), and a run that stops between
+    // steps finishes the same issue next time rather than opening another.
     file: async (proof, pull, event) => {
-      const issue = await github<Issue>(`/repos/${REPO}/issues`, token, {
-        title: `[Hall of Fame] ${pull.score.hand.name} by ${safe(pull.proof.name) || 'Anonymous'}`,
-        body: `${siteUrl()}#/pull/${proof}\n\nSubmitted without a GitHub account, through public Nostr relays (event \`${event.id}\`).`,
-        labels: ['hall-of-fame', 'verified'],
-      });
+      const id = pullId(pull.proof);
+      const earlier = unfinished.get(id);
+      const issue =
+        earlier ??
+        (await github<Issue>(`/repos/${REPO}/issues`, token, {
+          title: `[Hall of Fame] ${pull.score.hand.name} by ${safe(pull.proof.name) || 'Anonymous'}`,
+          body: `${siteUrl()}#/pull/${proof}\n\nSubmitted without a GitHub account, through public Nostr relays (event \`${event.id}\`).`,
+          labels: ['hall-of-fame'],
+        }));
       const entry = toEntry(pull, proof, issue, issue.created_at);
-      await github(`/repos/${REPO}/issues/${issue.number}/comments`, token, { body: verifiedComment(entry, pull) });
+      if (!earlier || !(await firstVerifiedAt(issue.number, id, token))) {
+        await github(`/repos/${REPO}/issues/${issue.number}/comments`, token, { body: verifiedComment(entry, pull) });
+      }
+      await github(`/repos/${REPO}/issues/${issue.number}/labels`, token, { labels: ['verified'] });
+      unfinished.delete(id);
       console.log(`#${issue.number}: ${entry.hand} (${entry.score}) from Nostr event ${event.id}`);
     },
   });

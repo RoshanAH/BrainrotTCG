@@ -83,7 +83,7 @@ type SubmitState = 'idle' | 'sending' | 'sent' | 'failed';
 
 /**
  * One tap, no account: the pull goes to public relays and a GitHub Action adds it within about 15
- * minutes. GitHub stays available for people who want their username on the entry.
+ * minutes. The GitHub issue form stays as a fallback.
  */
 const HallOfFameSubmit = ({ proof, githubUrl }: { proof: string; githubUrl: string }) => {
   const id = useMemo(() => pullId(decodeProof(proof)), [proof]);
@@ -115,7 +115,7 @@ const HallOfFameSubmit = ({ proof, githubUrl }: { proof: string; githubUrl: stri
         <strong>This qualifies for the Hall of Fame</strong>
         <span role="status">{note}</span>
         <a href={githubUrl} target="_blank" rel="noreferrer">
-          Or submit on GitHub to show your username
+          Or submit on GitHub instead
         </a>
       </span>
       <button type="button" className="btn btn--secondary btn--sm" onClick={submit} disabled={state === 'sending' || state === 'sent'}>
