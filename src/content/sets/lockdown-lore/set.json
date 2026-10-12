@@ -1,6 +1,6 @@
 {
   "id": "lockdown-lore",
-  "version": 1,
+  "version": 2,
   "name": "Lockdown Lore",
   "era": "2020–2022",
   "tagline": "Stay home. Open packs.",
@@ -20,6 +20,7 @@
     "BRAINROT": 50
   },
   "holoOdds": 500,
+  "modifiers": 1,
   "cards": [
     {
       "id": "sourdough-starter",

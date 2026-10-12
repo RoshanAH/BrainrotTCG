@@ -1,5 +1,19 @@
 import { useMemo } from 'react';
-import { HOLO_MULTIPLIER, POKER_HANDS, RARITIES_RAREST_FIRST, RARITY_POINTS, handOdds, oneIn, type HandKey, type SetDefinition } from '../../engine';
+import {
+  FINISHES_RAREST_FIRST,
+  FINISH_MULTIPLIER,
+  HOLO_MULTIPLIER,
+  MISPRINT_MULTIPLIER,
+  MODIFIERS_V1,
+  POKER_HANDS,
+  RARITIES_RAREST_FIRST,
+  RARITY_POINTS,
+  handOdds,
+  oneIn,
+  type HandKey,
+  type SetDefinition,
+} from '../../engine';
+import { FINISH_INFO } from '../../game/modifiers';
 import RarityBadge from './RarityBadge';
 import Sheet from './Sheet';
 import '../../styles/Scoring.css';
@@ -45,6 +59,31 @@ const ScoringGuide = ({ set, onClose }: ScoringGuideProps) => {
             </tr>
           </tbody>
         </table>
+
+        {set.modifiers === 1 && (
+          <>
+            <h3>Finishes and misprints (they all stack)</h3>
+            <table className="scoring-table">
+              <thead>
+                <tr><th>Modifier</th><th>Chance per card</th><th>Points</th></tr>
+              </thead>
+              <tbody>
+                {[...FINISHES_RAREST_FIRST].reverse().map((f) => (
+                  <tr key={f}>
+                    <td><span className="finish-pill" style={{ '--finish': FINISH_INFO[f].color } as React.CSSProperties}>{FINISH_INFO[f].name}</span></td>
+                    <td>{(MODIFIERS_V1.finishOdds[f] / 100).toLocaleString()}%</td>
+                    <td>×{FINISH_MULTIPLIER[f].toLocaleString()}</td>
+                  </tr>
+                ))}
+                <tr>
+                  <td><span className="finish-pill misprint-pill">Misprint</span></td>
+                  <td>{(MODIFIERS_V1.misprintOdds / 100).toLocaleString()}%</td>
+                  <td>×{MISPRINT_MULTIPLIER}</td>
+                </tr>
+              </tbody>
+            </table>
+          </>
+        )}
 
         <h3>Combos (same card more than once)</h3>
         <table className="scoring-table">

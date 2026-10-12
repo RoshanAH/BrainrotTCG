@@ -155,3 +155,18 @@
   justify-content: center;
   min-height: 32px;
 }
+
+/* Finish and misprint names in the guide (game/modifiers.ts) */
+.finish-pill {
+  display: inline-block;
+  padding: 0 7px;
+  border: 1px solid var(--finish, currentColor);
+  border-radius: 3px;
+  color: var(--finish, var(--text));
+  font-size: var(--text-sm);
+  font-weight: 800;
+}
+
+.misprint-pill {
+  text-shadow: 1.5px 0 rgba(255, 0, 90, 0.7), -1.5px 0 rgba(0, 230, 255, 0.7);
+}

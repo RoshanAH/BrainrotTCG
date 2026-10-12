@@ -100,6 +100,15 @@ export const ACHIEVEMENTS: Achievement[] = [
   { id: 'pack_value_9000', name: 'Ninety Grand', description: 'Open a pack with a Brainrot Score of 90,000+', icon: '🏰' },
   { id: 'pack_value_10000', name: 'Six Figure Pack', description: 'Open a pack with a Brainrot Score of 100,000+', icon: '🌌' },
   { id: 'pack_value_max', name: 'Literally Impossible', description: 'Open a pack with a Brainrot Score of 100,000,000+', icon: '🤯' },
+  // Card modifiers
+  { id: 'finish_silver', name: 'Sterling', description: 'Pull a Silver card', icon: '🥈' },
+  { id: 'finish_gold', name: 'Gold Standard', description: 'Pull a Gold card', icon: '🥇' },
+  { id: 'finish_platinum', name: 'Platinum Plaque', description: 'Pull a Platinum card', icon: '💿' },
+  { id: 'finish_diamond', name: 'Diamond Hands', description: 'Pull a Diamond card', icon: '💎' },
+  { id: 'misprint', name: 'Factory Error', description: 'Pull a misprint', icon: '🖨️' },
+  { id: 'stacked', name: 'Stacked', description: 'Pull a card that is a holo and has a finish', icon: '🥞' },
+  { id: 'fully_loaded', name: 'Fully Loaded', description: 'Pull a holo misprint with a finish', icon: '🎰' },
+
   // Every set you can open: complete it (every card), then master it (every card as a holo)
   ...SETS.filter(isOpenable).flatMap((set) => [
     { id: setCompleteId(set.id), name: `${set.name}: Complete`, description: `Collect every card in ${set.name}`, icon: '📗' },

@@ -4,6 +4,7 @@ import { RotateCcw, Share2 } from 'lucide-react';
 import type { CardWithMeta } from '../cards/Card';
 import CardViewerModal from '../cards/CardViewerModal';
 import BrainrotScorePanel from '../ui/BrainrotScorePanel';
+import { modifierLabel, modifierThumb } from '../../game/modifiers';
 import { CARD_RARITIES, getSetCards, scoreCards } from '../../data/cards';
 import type { SetDefinition } from '../../engine';
 
@@ -40,12 +41,14 @@ const PackSummaryUI = ({ openedCards, set, onClose, onShare }: PackSummaryUIProp
           <li key={card.uniqueId}>
             <button
               type="button"
-              className={`summary-card ${card.rarity.toLowerCase()} ${card.isHolo ? 'holo' : ''}`}
+              className={`summary-card ${card.rarity.toLowerCase()} ${card.isHolo ? 'holo' : ''} ${modifierThumb(card).className}`}
+              style={modifierThumb(card).style}
               onClick={() => setSelected(card)}
-              aria-label={`${card.name}, ${CARD_RARITIES[card.rarity].name}${card.isHolo ? ', holo' : ''}${card.isNew ? ', new' : ''}`}
+              aria-label={`${card.name}, ${CARD_RARITIES[card.rarity].name}${modifierLabel(card) ? `, ${modifierLabel(card)}` : ''}${card.isNew ? ', new' : ''}`}
             >
               <img src={card.image} alt="" draggable="false" />
               {card.isNew && <span className="new-sticker">New</span>}
+              {modifierLabel(card, false) && <span className="mod-label">{modifierLabel(card, false)}</span>}
             </button>
             <span className="collection-label tabular" aria-hidden="true">
               {numberOf(card)}{' '}

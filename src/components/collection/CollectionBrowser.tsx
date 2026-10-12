@@ -3,6 +3,8 @@ import CardViewerModal from '../cards/CardViewerModal';
 import Sheet from '../ui/Sheet';
 import { CARD_RARITIES, cardPoints, COLLECTIBLE_CARDS, getSetCards, type Card } from '../../data/cards';
 import { isOpenable, SETS } from '../../content/sets';
+import { FINISH_INFO, bestFinish } from '../../game/modifiers';
+import type { Finish } from '../../engine';
 import type { CollectionItem } from '../../types';
 import '../../styles/Collection.css';
 
@@ -11,7 +13,7 @@ interface CollectionBrowserProps {
   onClose: () => void;
 }
 
-type Owned = { normalCount: number; holoCount: number };
+type Owned = { normalCount: number; holoCount: number; finishes?: Partial<Record<Finish, number>>; misprints?: number };
 
 /**
  * Eras you've started, in timeline order, with every card (the missing ones as empty slots);
@@ -24,7 +26,12 @@ const CollectionBrowser = ({ collection, onClose }: CollectionBrowserProps) => {
     const map = new Map<string, Owned>();
     for (const item of Object.values(collection)) {
       if (!item?.card?.key) continue;
-      map.set(item.card.key, { normalCount: item.normalCount || item.count || 0, holoCount: item.holoCount || 0 });
+      map.set(item.card.key, {
+        normalCount: item.normalCount || item.count || 0,
+        holoCount: item.holoCount || 0,
+        finishes: item.finishes,
+        misprints: item.misprints,
+      });
     }
     return map;
   }, [collection]);
@@ -34,7 +41,7 @@ const CollectionBrowser = ({ collection, onClose }: CollectionBrowserProps) => {
       Object.values(collection).reduce(
         (sum, item) =>
           item?.card?.rarity
-            ? sum + (item.normalCount || item.count || 0) * cardPoints(item.card.rarity, false) + (item.holoCount || 0) * cardPoints(item.card.rarity, true)
+            ? sum + (item.normalCount || item.count || 0) * cardPoints(item.card.rarity, false) + (item.holoCount || 0) * cardPoints(item.card.rarity, true) + (item.modifierPoints ?? 0)
             : sum,
         0,
       ),
@@ -103,15 +110,26 @@ const CollectionBrowser = ({ collection, onClose }: CollectionBrowserProps) => {
                       );
                     }
                     const total = counts.normalCount + counts.holoCount;
+                    // The rarest finish owned shows as the tile's frame, and misprints get a mark.
+                    const finish = bestFinish(counts.finishes);
+                    const extras = [finish && `best finish ${FINISH_INFO[finish].name}`, counts.misprints && `${counts.misprints} misprint${counts.misprints === 1 ? '' : 's'}`].filter(Boolean).join(', ');
                     return (
                       <li key={card.key}>
                         <button
                           type="button"
-                          className={`collection-item ${card.rarity.toLowerCase()} ${counts.holoCount > 0 ? 'holo' : ''}`}
+                          className={`collection-item ${card.rarity.toLowerCase()} ${counts.holoCount > 0 ? 'holo' : ''} ${finish ? `has-finish finish-${finish.toLowerCase()}` : ''}`}
+                          style={finish ? ({ '--finish': FINISH_INFO[finish].color } as React.CSSProperties) : undefined}
                           onClick={() => setSelected({ card, ...counts })}
-                          aria-label={`${card.name}, ${number}, ${CARD_RARITIES[card.rarity].name}, ${total} owned${counts.holoCount ? `, ${counts.holoCount} holo` : ''}`}
+                          aria-label={`${card.name}, ${number}, ${CARD_RARITIES[card.rarity].name}, ${total} owned${counts.holoCount ? `, ${counts.holoCount} holo` : ''}${extras ? `, ${extras}` : ''}`}
                         >
                           <img src={card.image} alt="" loading="lazy" />
+                          {(finish || counts.misprints) && (
+                            <span className="collection-mods" aria-hidden="true">
+                              {finish && FINISH_INFO[finish].name}
+                              {finish && counts.misprints ? ' · ' : ''}
+                              {counts.misprints ? 'Misprint' : ''}
+                            </span>
+                          )}
                           {(total > 1 || counts.holoCount > 0) && (
                             <span className="collection-count tabular">
                               ×{total}

@@ -235,6 +235,18 @@ ticket costs the same), so progression is everything else, worked out from the p
 - **Player card** (`src/game/playerCard.ts`): a 9:16 image of all this plus the best pull, with a QR
   code for the profile link.
 
+### Card modifiers
+
+Besides rarity and holo, cards in a set version with `"modifiers": 1` roll a **finish** (Silver 10%,
+Gold 2.5%, Platinum 0.5%, Diamond 0.1%) and a **misprint** (0.5%), and every one multiplies the card's
+points by about 1 / its chance (x10, x40, x200, x1000, x200), stacking with holo (spec section 5.4).
+They're derived from the ticket like everything else, so they're as checkable as the cards. Only set
+versions that opt in roll them, so no pull from before changed: version 1 of each set has no
+modifiers and keeps verifying exactly as it did; version 2 (the same cards) adds them, and new packs
+open from it. They show as a metallic frame per finish and off-register colours for a misprint
+(`src/game/modifiers.ts`), in the collection, history, Hall of Fame and the share poster, and they're
+stored compactly in the pack history (`src/game/cardCode.ts`: `sigma*G!` is a holo Gold misprint).
+
 ## Invariants (CI enforces these)
 
 1. **Released sets never change.** Card ids, order, rarities, odds or pack size of a released

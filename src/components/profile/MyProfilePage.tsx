@@ -8,6 +8,7 @@ import { tabPanelProps } from '../ui/tabPanel';
 import ProfileSummary from './ProfileSummary';
 import RewardsPanel from './RewardsPanel';
 import SharePreviewSheet from '../share/SharePreviewSheet';
+import { modifierClasses } from '../../game/modifiers';
 import { renderPlayerCard } from '../../game/playerCard';
 import type { Settings } from '../../types';
 import { packImageUrl } from '../../content/art';
@@ -50,9 +51,13 @@ const timeAgo = (t: number) => {
 
 const cardsOf = (entry: HistoryEntry): CardWithMeta[] | null =>
   entry.cards
-    ?.map((c, i) => {
+    ?.map((c, i): CardWithMeta | null => {
       const card = getCard(`${entry.setId}/${c.id}`);
-      return card ? { ...card, uniqueId: i, isRevealed: true, isHolo: c.holo } : null;
+      if (!card) return null;
+      const meta: CardWithMeta = { ...card, uniqueId: i, isRevealed: true, isHolo: c.holo };
+      if (c.finish) meta.finish = c.finish;
+      if (c.misprint) meta.misprint = true;
+      return meta;
     })
     .filter((c): c is CardWithMeta => c !== null) ?? null;
 
@@ -216,7 +221,7 @@ const MyProfilePage = ({ stats, settings, onSettingsChange, onClose, onSharePull
                       >
                         <span className="pull-row-thumbs" aria-hidden="true">
                           {cards
-                            ? cards.map((c, i) => <img key={i} src={c.image} alt="" loading="lazy" className={c.isHolo ? 'holo' : ''} />)
+                            ? cards.map((c, i) => <img key={i} src={c.image} alt="" loading="lazy" className={`${c.isHolo ? 'holo' : ''} ${modifierClasses(c)}`} />)
                             : Array.from({ length: 5 }, (_, i) => <span key={i} className="pull-row-blank" />)}
                         </span>
                         <span className="pull-row-main">

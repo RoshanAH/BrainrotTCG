@@ -7,7 +7,7 @@
  *   npx tsx scripts/check-sets.ts --update   lock new set versions
  *
  * Names, captions, flavor text and art can change freely; card ids/order,
- * rarities, odds and pack size cannot (bump the set version instead).
+ * rarities, odds, modifiers and pack size cannot (bump the set version instead).
  */
 import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
@@ -30,6 +30,8 @@ const packHash = (set: SetDefinition) =>
         packSize: set.packSize,
         odds: set.odds,
         holoOdds: set.holoOdds,
+        // Only when present, so versions from before modifiers keep their hashes.
+        ...(set.modifiers !== undefined ? { modifiers: set.modifiers } : {}),
         cards: set.cards.map((c) => [c.id, c.rarity]),
       }),
     )
@@ -51,7 +53,7 @@ for (const set of ALL_SET_VERSIONS) {
       errors.push(`${key} is not locked yet. Run: npm run check:sets -- --update`);
     }
   } else if (lock[key] !== hash) {
-    errors.push(`${key} changed after release (cards, order, rarities, odds or pack size). Bump its version instead; old proofs depend on it.`);
+    errors.push(`${key} changed after release (cards, order, rarities, odds, modifiers or pack size). Bump its version instead; old proofs depend on it.`);
   }
   if (!set.draft && !set.archivedAt && !existsSync(`${ROOT}src/content/sets/${set.id}/pack.webp`)) {
     errors.push(`${key}: no pack wrapper. Run: npm run cards`);

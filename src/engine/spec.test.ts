@@ -9,11 +9,15 @@ import pythonVectors from '../../spec/vectors-python.json';
 import { getSet } from '../content/sets';
 import { fromHex, toHex } from './bytes';
 import { createRng, generatePack } from './pack';
+import type { PulledCard } from './types';
 import { decodeProof, pullId, verifyProof, type ProofRule } from './proof';
 import { checkProfile, profileStats, verifyProfile } from './profile';
 import { computeTicket } from './ticket';
 
 const lookup = (id: string, version: number) => getSet(id, version);
+/** A card as the vectors list it: sets with modifiers (section 5.4) add finish and misprint. */
+const asVector = ({ cardId, rarity, isHolo, finish, misprint }: PulledCard) =>
+  finish === undefined ? { cardId, rarity, isHolo } : { cardId, rarity, isHolo, finish, misprint };
 const setOf = (key: string) => {
   const [id, version] = key.split('@');
   const set = getSet(id, Number(version));
@@ -40,7 +44,7 @@ describe.each([
 
   it('packs', () => {
     for (const p of vectors.packs) {
-      const cards = generatePack(setOf(p.set), fromHex(p.seed)).map(({ cardId, rarity, isHolo }) => ({ cardId, rarity, isHolo }));
+      const cards = generatePack(setOf(p.set), fromHex(p.seed)).map(asVector);
       expect(cards).toEqual(p.cards);
     }
   });
@@ -52,7 +56,7 @@ describe.each([
       expect(toHex(pull.proof.publicKey)).toBe(v.publicKey);
       expect(pull.proof.nonce).toBe(v.nonce);
       expect(pull.fingerprint).toBe(v.fingerprint);
-      expect(pull.cards.map(({ cardId, rarity, isHolo }) => ({ cardId, rarity, isHolo }))).toEqual(v.cards);
+      expect(pull.cards.map(asVector)).toEqual(v.cards);
       expect([pull.score.points, pull.score.hand.name, pull.score.hand.multiplier, pull.score.score]).toEqual([v.points, v.hand, v.multiplier, v.score]);
     }
   });

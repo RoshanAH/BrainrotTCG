@@ -158,6 +158,16 @@ def make_packs() -> list[dict]:
     for key in ("gen-alpha-uprising@1", "italian-brainrot-deep-cuts@1", "vine-and-dank@1", "web-ancients@1"):
         seed = hashlib.sha256(b"brainrot-tcg/make_python_vectors/pack/" + key.encode()).digest()
         out.append({"set": key, "seed": seed.hex(), "cards": [c.as_json() for c in vp.generate_pack(SETS[key], seed)]})
+    # A set with modifiers (§5.4): the first seeds that, between them, show every finish and a misprint.
+    key, wanted, i = "gen-alpha-uprising@2", {"SILVER", "GOLD", "PLATINUM", "DIAMOND", "misprint"}, 0
+    while wanted:
+        seed = hashlib.sha256(b"brainrot-tcg/make_python_vectors/pack/" + key.encode() + b"/" + str(i).encode()).digest()
+        cards = vp.generate_pack(SETS[key], seed)
+        shows = {c.finish for c in cards if c.finish} | ({"misprint"} if any(c.misprint for c in cards) else set())
+        if shows & wanted:
+            wanted -= shows
+            out.append({"set": key, "seed": seed.hex(), "cards": [c.as_json() for c in cards]})
+        i += 1
     return out
 
 
@@ -167,6 +177,13 @@ MINED = [
     (83, "Full House", b"Full House"),
     (324, "3 of a Kind", b"Holo Hunter"),  # Hall of Fame by score alone (21825)
     (12777, "5 of a Kind", b"Five Kind"),
+]
+
+
+# Nonces mined once (gen-alpha-uprising@2, test key): the first pack with a finish, the first with a misprint.
+MINED_MODIFIERS = [
+    (2, "a Silver finish"),
+    (32, "a Silver misprint, stacked"),
 ]
 
 
@@ -188,6 +205,8 @@ def make_valid() -> list[dict]:
     for nonce, hand, name in MINED:
         out.append(valid(f"mined {hand}" + (" (Hall of Fame by score alone)" if nonce == 324 else ""),
                          make_proof(set_id=b"gen-alpha-uprising", nonce=nonce, name=name), expect_hand=hand))
+    for nonce, what in MINED_MODIFIERS:
+        out.append(valid(f"modifiers (§5.4): {what}", make_proof(set_id=b"gen-alpha-uprising", version=2, nonce=nonce, name=b"Shiny")))
     return out
 
 

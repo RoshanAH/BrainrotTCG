@@ -27,6 +27,7 @@ import { DEFAULT_SET_ID, getLatestSet, getSet } from '../content/sets';
 import { getPlayer, peekNonce } from './player';
 import { addDerivedPacks, historyForKey, type HistoryEntry } from './history';
 import { getReopened, putReopened } from './reopenCache';
+import { modifiersFor } from './cardCode';
 import { getTicket } from './ticketMiner';
 import { createTicketPool } from './ticketPool';
 
@@ -37,7 +38,7 @@ const toPulled = (entry: HistoryEntry, set: SetDefinition): PulledCard[] | null 
   const cards = entry.cards.map((c, slot) => {
     // This exact version's rarity: a later version may change it (spec section 12).
     const rarity = set.cards.find((card) => card.id === c.id)?.rarity;
-    return rarity ? { setId: set.id, cardId: c.id, rarity, isHolo: c.holo, slot } : null;
+    return rarity ? { setId: set.id, cardId: c.id, rarity, isHolo: c.holo, ...modifiersFor(c, set.modifiers === 1), slot } : null;
   });
   return cards.every((c) => c) ? (cards as PulledCard[]) : null;
 };

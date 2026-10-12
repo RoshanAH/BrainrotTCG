@@ -45,6 +45,7 @@ A set is a JSON document (`src/content/sets/<id>/set.json`; older versions are k
 | `packSize` | cards per pack (1 … 15) |
 | `odds` | integer weight per rarity, summing to **10000** |
 | `holoOdds` | chance of holo per card, out of 10000 |
+| `modifiers` | optional. `1` = every card also rolls a finish and a misprint with modifier table 1 (section 5.4). Absent = no modifiers. Any other value is invalid. |
 | `cards` | ordered list of `{ id, rarity }`. **Order matters.** Every rarity with a non-zero weight has at least one card. |
 
 Rarities, rarest first (this order is normative): `BRAINROT, LEGENDARY, EPIC, RARE, UNCOMMON, COMMON`.
@@ -86,6 +87,25 @@ ticket = Argon2id(
       total; the slot's rarity is the first whose running total is greater than `roll`.
    2. `pool` = the set's cards of that rarity, in set order. `card = pool[int(len(pool))]`.
    3. `holo = int(10000) < holoOdds`.
+   4. Only if the set has `modifiers` (section 5.4): two more draws, `finish` then `misprint`.
+      Without `modifiers` a slot is exactly the three draws above.
+
+### 5.4 Modifiers
+
+A set version with `"modifiers": 1` gives every card two more properties, drawn right after its holo
+draw, in this order:
+
+1. **Finish.** `roll = int(10000)`. Walk the finishes rarest first, adding each weight to a running
+   total; the finish is the first whose running total is greater than `roll`, or none if no total is.
+
+   | Finish (rarest first, normative order) | `DIAMOND` | `PLATINUM` | `GOLD` | `SILVER` | none |
+   | --- | --- | --- | --- | --- | --- |
+   | Weight (out of 10000) | 10 | 50 | 250 | 1000 | the remaining 8690 |
+
+2. **Misprint.** `misprint = int(10000) < 50`.
+
+This is modifier table 1. It never changes; different odds would be table 2. Older set versions
+don't opt in, so every pack that verified before modifiers existed is unchanged.
 
 ## 6. Proof format
 
@@ -147,6 +167,9 @@ their names or signatures differ (an owner can sign many times). Its **pull id**
 ## 8. Score
 
 - Card points: `COMMON 10, UNCOMMON 20, RARE 35, EPIC 70, LEGENDARY 200, BRAINROT 1000`; ×20 if holo.
+  Cards with modifiers (section 5.4) are multiplied again: finish `SILVER ×10`, `GOLD ×40`,
+  `PLATINUM ×200`, `DIAMOND ×1000`; misprint ×200. All multipliers stack. A card's id alone decides
+  matches below: a gold copy and a plain copy of a card are a pair.
 - Combo, from how many copies of each card id the pack holds, largest count `c1`, second `c2` (0 if
   none): `c1 ≥ 5` → **5 of a Kind ×10000**; `c1 = 4` → **4 of a Kind ×250**; `c1 = 3, c2 = 2` →
   **Full House ×150**; `c1 = 3` (any other `c2`) → **3 of a Kind ×15**; `c1 = 2, c2 = 2` →
@@ -267,4 +290,7 @@ Every link that has ever verified must keep verifying, so nothing here is ever c
   text and art may change freely; they don't affect packs.
 - **Rules.** Scoring (section 8), Hall of Fame thresholds and levels (section 11.3) can only change
   with a new spec version, published alongside the old one; leaderboards say which they use.
+- **Modifier tables.** A set version opts into a modifier table with `modifiers` (section 5.4); a
+  table never changes once published, and set versions without `modifiers` never roll them. Adding
+  table 1 changed no existing pull: their cards, points and scores are exactly as before.
 - **Test vectors** for a version are never edited, only added to.

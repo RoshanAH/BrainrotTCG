@@ -197,6 +197,30 @@
 .collection-item.brainrot { box-shadow: 0 0 0 2px #ffd23f; }
 .collection-label-rarity.brainrot { --r: #ffd23f; }
 
+/* The rarest finish owned frames the tile; finishes and misprints are named in a strip on top. */
+.collection-item.has-finish {
+  box-shadow: 0 0 0 2px var(--finish), 0 0 10px var(--finish);
+}
+
+.collection-mods {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  z-index: 3;
+  max-width: calc(100% - 8px);
+  overflow: hidden;
+  padding: 0 5px;
+  border-radius: 3px;
+  background: rgba(18, 17, 20, 0.88);
+  color: var(--finish, var(--text));
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
 .collection-count {
   position: absolute;
   right: 4px;

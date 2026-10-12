@@ -4,7 +4,7 @@
  */
 import { ALL_SET_VERSIONS, getCardDefinition, isOpenable, SETS } from '../content/sets';
 import { cardImageUrl } from '../content/art';
-import { cardPoints as engineCardPoints, scorePack, type CardDefinition, type PackScore, type Rarity } from '../engine';
+import { cardPoints as engineCardPoints, scorePack, type CardDefinition, type Finish, type PackScore, type Rarity } from '../engine';
 
 export type RarityKey = Rarity;
 
@@ -71,5 +71,5 @@ export const getCardsByRarity = (rarity: RarityKey): Card[] => COLLECTIBLE_CARDS
 export const cardPoints = engineCardPoints;
 
 /** Score UI cards (matching = same card key). */
-export const scoreCards = (cards: readonly { key: string; rarity: RarityKey; isHolo: boolean }[]): PackScore =>
-  scorePack(cards.map((c) => ({ cardId: c.key, rarity: c.rarity, isHolo: c.isHolo })));
+export const scoreCards = (cards: readonly { key: string; rarity: RarityKey; isHolo: boolean; finish?: Finish | null; misprint?: boolean }[]): PackScore =>
+  scorePack(cards.map((c) => ({ cardId: c.key, rarity: c.rarity, isHolo: c.isHolo, finish: c.finish, misprint: c.misprint })));

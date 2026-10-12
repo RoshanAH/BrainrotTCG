@@ -152,6 +152,11 @@ def utf8_decode(data: bytes, what: str) -> str:
 # Rarest first; this order is normative (§3) and is the order of the odds walk (§5.3.1).
 RARITIES = ("BRAINROT", "LEGENDARY", "EPIC", "RARE", "UNCOMMON", "COMMON")
 
+# §5.4 modifier table 1: finishes rarest first (the order of the finish walk) with their weights,
+# and the misprint chance, all out of 10000.
+FINISH_WEIGHTS = (("DIAMOND", 10), ("PLATINUM", 50), ("GOLD", 250), ("SILVER", 1000))
+MISPRINT_ODDS = 50
+
 
 @dataclass(frozen=True)
 class SetDef:
@@ -161,6 +166,7 @@ class SetDef:
     pack_size: int
     odds: dict[str, int]
     holo_odds: int
+    modifiers: bool  # §5.4: true for "modifiers": 1
     pools: dict[str, list[str]]  # rarity -> card ids of that rarity, in set order
     archived: bool
     path: Path
@@ -198,6 +204,9 @@ def parse_set(doc: object, path: Path) -> SetDef:
     holo_odds = doc.get("holoOdds")
     if not _is_int(holo_odds) or not 0 <= holo_odds <= 10000:
         raise bad("holoOdds must be an integer 0 ... 10000")
+    modifiers = doc.get("modifiers")
+    if modifiers is not None and not (_is_int(modifiers) and modifiers == 1):
+        raise bad("modifiers must be 1 or absent (§5.4)")
     cards = doc.get("cards")
     if not isinstance(cards, list):
         raise bad("cards must be a list")
@@ -216,6 +225,7 @@ def parse_set(doc: object, path: Path) -> SetDef:
         pack_size=pack_size,
         odds={r: odds.get(r, 0) for r in RARITIES},
         holo_odds=holo_odds,
+        modifiers=modifiers == 1,
         pools=pools,
         archived="archivedAt" in doc,
         path=path,
@@ -305,13 +315,21 @@ class Card:
     card_id: str
     rarity: str
     is_holo: bool
+    # §5.4, sets with modifiers only (None otherwise): the finish ("" for none) and misprint flag.
+    finish: str | None = None
+    misprint: bool | None = None
 
     def as_json(self) -> dict:
-        return {"cardId": self.card_id, "rarity": self.rarity, "isHolo": self.is_holo}
+        out = {"cardId": self.card_id, "rarity": self.rarity, "isHolo": self.is_holo}
+        if self.finish is not None:
+            out["finish"] = self.finish or None
+            out["misprint"] = self.misprint
+        return out
 
 
 def generate_pack(set_def: SetDef, seed: bytes) -> list[Card]:
-    """§5.3: for each slot, three draws in this order: rarity roll, card index, holo roll."""
+    """§5.3: for each slot, three draws in this order: rarity roll, card index, holo roll; then, in
+    sets with modifiers (§5.4), two more: finish roll, misprint roll."""
     rng = Sfc32(seed)
     cards = []
     for _slot in range(set_def.pack_size):
@@ -329,7 +347,20 @@ def generate_pack(set_def: SetDef, seed: bytes) -> list[Card]:
         card_id = pool[rng.int_below(len(pool))]
         # §5.3.3
         is_holo = rng.int_below(10000) < set_def.holo_odds
-        cards.append(Card(card_id, rarity, is_holo))
+        if not set_def.modifiers:
+            cards.append(Card(card_id, rarity, is_holo))
+            continue
+        # §5.4.1: walk the finishes rarest first; none if no running total exceeds the roll.
+        roll = rng.int_below(10000)
+        running, finish = 0, ""
+        for name, weight in FINISH_WEIGHTS:
+            running += weight
+            if running > roll:
+                finish = name
+                break
+        # §5.4.2
+        misprint = rng.int_below(10000) < MISPRINT_ODDS
+        cards.append(Card(card_id, rarity, is_holo, finish, misprint))
     return cards
 
 
@@ -593,12 +624,19 @@ def check_signature(proof: Proof | Profile, a_point: EdPoint) -> None:
 
 CARD_POINTS = {"COMMON": 10, "UNCOMMON": 20, "RARE": 35, "EPIC": 70, "LEGENDARY": 200, "BRAINROT": 1000}
 HOLO_FACTOR = 20
+FINISH_FACTOR = {"SILVER": 10, "GOLD": 40, "PLATINUM": 200, "DIAMOND": 1000}
+MISPRINT_FACTOR = 200
 HALL_OF_FAME_MIN_MULTIPLIER = 150
 HALL_OF_FAME_MIN_SCORE = 20000
 
 
 def card_points(card: Card) -> int:
-    return CARD_POINTS[card.rarity] * (HOLO_FACTOR if card.is_holo else 1)
+    points = CARD_POINTS[card.rarity] * (HOLO_FACTOR if card.is_holo else 1)
+    if card.finish:
+        points *= FINISH_FACTOR[card.finish]
+    if card.misprint:
+        points *= MISPRINT_FACTOR
+    return points
 
 
 def combo(cards: list[Card]) -> tuple[str, int]:
@@ -989,8 +1027,10 @@ def print_summary(pull: VerifiedPull) -> None:
     print("  Cards")
     width = max(len(c.card_id) for c in pull.cards)
     for i, card in enumerate(pull.cards, 1):
-        holo = "  HOLO" if card.is_holo else ""
-        print(f"    {i:>2}. {card.card_id:<{width}}  {card.rarity:<9} {card_points(card):>5} pts{holo}")
+        extras = "".join(
+            f"  {label}" for label, on in (("HOLO", card.is_holo), (card.finish or "", bool(card.finish)), ("MISPRINT", bool(card.misprint))) if on
+        )
+        print(f"    {i:>2}. {card.card_id:<{width}}  {card.rarity:<9} {card_points(card):>5} pts{extras}")
     print(f"  Combo        {s.hand} (x{s.multiplier})")
     print(f"  Score        {s.points} x {s.multiplier} = {s.score}")
     if s.hall_of_fame:

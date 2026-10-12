@@ -1,0 +1,133 @@
+{
+  "id": "lockdown-lore",
+  "version": 1,
+  "name": "Lockdown Lore",
+  "era": "2020–2022",
+  "tagline": "Stay home. Open packs.",
+  "releasedAt": "2026-10-12",
+  "palette": [
+    "#6EC6CA",
+    "#F4D35E",
+    "#5C4D7D"
+  ],
+  "packSize": 5,
+  "odds": {
+    "COMMON": 5000,
+    "UNCOMMON": 2500,
+    "RARE": 1500,
+    "EPIC": 700,
+    "LEGENDARY": 250,
+    "BRAINROT": 50
+  },
+  "holoOdds": 500,
+  "cards": [
+    {
+      "id": "sourdough-starter",
+      "name": "Sourdough Starter",
+      "rarity": "COMMON",
+      "caption": "Feed me. Every. Day.",
+      "flavor": "2020: stuck at home, everyone grew a bubbly sourdough starter, named it and fed it daily.",
+      "year": 2020,
+      "art": "Real photo of a homemade sourdough starter: bubbly, risen beige levain in a glass jar (Wikimedia Commons, CC BY-SA 4.0)."
+    },
+    {
+      "id": "dalgona-coffee",
+      "name": "Dalgona Coffee",
+      "rarity": "COMMON",
+      "caption": "Whisk 400 times. Worth it",
+      "flavor": "Korea to the world, 2020: fluffy whipped coffee on milk, lockdown's first TikTok hit.",
+      "year": 2020,
+      "art": "Real photo of homemade dalgona coffee: a thick cap of whipped caramel-brown coffee foam on a glass of milk (Wikimedia Commons, CC BY-SA 4.0)."
+    },
+    {
+      "id": "polish-cow",
+      "name": "Polish Cow",
+      "rarity": "COMMON",
+      "caption": "*Polish music plays*",
+      "flavor": "July 2020: a low-poly cow dancing to a Polish banger, looped for hours. Peak 3 a.m.",
+      "year": 2020,
+      "art": "The original Polish Cow clip: the pixelated black-and-white 3D cow mid-dance on a white background (KYM gallery GIF frame)."
+    },
+    {
+      "id": "stick-bug",
+      "name": "Stick Bug",
+      "rarity": "COMMON",
+      "caption": "Get stick bugged lol",
+      "flavor": "2020's bait-and-switch: any video could suddenly cut to a swaying stick insect.",
+      "year": 2020,
+      "art": "Frame from the original 2018 stick bug clip: a pale stick insect swaying on a concrete ledge (KYM gallery GIF, no caption)."
+    },
+    {
+      "id": "vibing-cat",
+      "name": "Vibing Cat",
+      "rarity": "UNCOMMON",
+      "caption": "Head bob intensifies",
+      "flavor": "2020: Minette the white cat bobbed her head on TikTok and became the sound of vibing.",
+      "year": 2020,
+      "art": "The canonical catJAM frame: close-up of the white cat's face, chin up, eyes half open, head tilted mid-bob (cover image of Mick Lagi's original TikTok)."
+    },
+    {
+      "id": "im-not-a-cat",
+      "name": "I'm Not a Cat",
+      "rarity": "UNCOMMON",
+      "caption": "I'm here live. Not a cat",
+      "flavor": "Feb 2021: a Texas lawyer stuck behind a kitten filter in a Zoom court hearing.",
+      "year": 2021,
+      "art": "The Zoom kitten filter itself: the fluffy white kitten face with big sad green eyes, isolated on white (no person visible)."
+    },
+    {
+      "id": "big-floppa",
+      "name": "Big Floppa",
+      "rarity": "UNCOMMON",
+      "caption": "Floppa is friend",
+      "flavor": "2020: Gosha the caracal and his giant ear tufts became the internet's beloved big cat.",
+      "year": 2020,
+      "art": "The original Big Floppa photo: Gosha the caracal lying on a window sill, ear tufts up, staring calmly at the camera."
+    },
+    {
+      "id": "toilet-paper-panic",
+      "name": "Toilet Paper Panic",
+      "rarity": "RARE",
+      "caption": "Worth more than gold",
+      "flavor": "March 2020: shelves emptied and rolls hoarded. The one true currency of lockdown.",
+      "year": 2020,
+      "art": "Real photo of a completely empty toilet-roll aisle at an Australian supermarket, March 2020 (Wikimedia Commons, CC BY-SA 3.0)."
+    },
+    {
+      "id": "ever-given",
+      "name": "Ever Given",
+      "rarity": "RARE",
+      "caption": "Tiny digger, giant job",
+      "flavor": "March 2021: a giant ship wedged across the Suez Canal vs. one very brave tiny digger.",
+      "year": 2021,
+      "art": "The Suez Canal Authority photo: a lone excavator digging at the towering red bulbous bow of the stuck Ever Given."
+    },
+    {
+      "id": "bing-chilling",
+      "name": "Bing Chilling",
+      "rarity": "EPIC",
+      "caption": "Now I have bing chilling",
+      "flavor": "2021: John Cena greets China in Mandarin, ice cream in hand. 'Bīngqílín' lives forever.",
+      "year": 2021,
+      "art": "Still from John Cena's 2021 Weibo clip: Cena in a suit in his car, mid-sentence, holding up a vanilla ice cream cone."
+    },
+    {
+      "id": "bernie-mittens",
+      "name": "Bernie's Mittens",
+      "rarity": "LEGENDARY",
+      "caption": "I am once again sitting",
+      "flavor": "Jan 2021: Bernie Sanders sat at the inauguration in cozy mittens, then sat everywhere.",
+      "year": 2021,
+      "art": "Brendan Smialowski's AFP photo: Bernie Sanders on a folding chair in a parka, face mask and patterned wool mittens at the 2021 inauguration."
+    },
+    {
+      "id": "coffin-dance",
+      "name": "Coffin Dance",
+      "rarity": "BRAINROT",
+      "caption": "Going out in style",
+      "flavor": "Ghana's dancing pallbearers + 'Astronomia' = 2020's ending to every fail video.",
+      "year": 2020,
+      "art": "The famous Coffin Dance frame: Ghana's dancing pallbearers in suits, sunglasses and caps, carrying a coffin on their shoulders (cropped to the lead dancer and the pallbearers beside him)."
+    }
+  ]
+}

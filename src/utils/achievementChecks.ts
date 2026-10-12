@@ -72,7 +72,7 @@ export const getAccountValue = (collection: Record<string, CollectionItem>): num
     const normalCount = item.count ?? item.normalCount ?? 0;
     const points = cardPoints(item.card.rarity, false);
     const holoValue = cardPoints(item.card.rarity, true);
-    return sum + (points * normalCount) + (holoValue * (item.holoCount || 0));
+    return sum + (points * normalCount) + (holoValue * (item.holoCount || 0)) + (item.modifierPoints ?? 0);
   }, 0);
 };
 
@@ -226,6 +226,15 @@ export const checkPackAchievements = (
   // Two pair
   const pairCount = counts.filter(c => c >= 2).length;
   if (pairCount >= 2) addIfNew(newAchievements, 'two_pair', achievements);
+
+  // Card modifiers (sets with modifiers): each finish, a misprint, and stacks on one card
+  if (newCards.some(c => c.finish === 'SILVER')) addIfNew(newAchievements, 'finish_silver', achievements);
+  if (newCards.some(c => c.finish === 'GOLD')) addIfNew(newAchievements, 'finish_gold', achievements);
+  if (newCards.some(c => c.finish === 'PLATINUM')) addIfNew(newAchievements, 'finish_platinum', achievements);
+  if (newCards.some(c => c.finish === 'DIAMOND')) addIfNew(newAchievements, 'finish_diamond', achievements);
+  if (newCards.some(c => c.misprint)) addIfNew(newAchievements, 'misprint', achievements);
+  if (newCards.some(c => c.finish && c.isHolo)) addIfNew(newAchievements, 'stacked', achievements);
+  if (newCards.some(c => c.finish && c.isHolo && c.misprint)) addIfNew(newAchievements, 'fully_loaded', achievements);
 
   // Rarity-based pack achievements
   const rarities = new Set(newCards.map(c => c.rarity));

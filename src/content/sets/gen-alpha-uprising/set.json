@@ -1,6 +1,6 @@
 {
   "id": "gen-alpha-uprising",
-  "version": 1,
+  "version": 2,
   "name": "Gen Alpha Uprising",
   "era": "2023–2024",
   "tagline": "Rizz, sigma & Smurf Cat inside",
@@ -20,6 +20,7 @@
     "BRAINROT": 50
   },
   "holoOdds": 500,
+  "modifiers": 1,
   "cards": [
     {
       "id": "sad-hamster",

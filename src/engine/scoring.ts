@@ -1,4 +1,4 @@
-import type { Rarity } from './types';
+import type { Finish, Rarity } from './types';
 
 /**
  * Brainrot Score: every number here follows from the odds, so rarer always
@@ -8,6 +8,9 @@ import type { Rarity } from './types';
  *   Uncommon 25% -> 20, Rare 15% -> 35, Epic 7% -> 70, Legendary 2.5% -> 200,
  *   Brainrot 0.5% -> 1,000.
  * - Holo (5% of cards) multiplies a card's points by 20 = 1 / 5%.
+ * - In sets with modifiers, a finish and a misprint multiply them again, each by about
+ *   1 / (its chance): Silver 10% x10, Gold 2.5% x40, Platinum 0.5% x200, Diamond 0.1% x1000,
+ *   Misprint 0.5% x200. They all stack.
  * - Combo multipliers are about 1 / (chance of that hand) in a typical set
  *   (see odds.ts for the exact odds of any set).
  *
@@ -23,6 +26,10 @@ export const RARITY_POINTS: Record<Rarity, number> = {
 };
 
 export const HOLO_MULTIPLIER = 20;
+
+export const FINISH_MULTIPLIER: Record<Finish, number> = { SILVER: 10, GOLD: 40, PLATINUM: 200, DIAMOND: 1000 };
+
+export const MISPRINT_MULTIPLIER = 200;
 
 export interface PokerHand {
   name: string;
@@ -42,14 +49,16 @@ export const POKER_HANDS = {
 
 export type HandKey = keyof typeof POKER_HANDS;
 
-export const cardPoints = (rarity: Rarity, isHolo: boolean): number =>
-  (RARITY_POINTS[rarity] ?? 0) * (isHolo ? HOLO_MULTIPLIER : 1);
+export const cardPoints = (rarity: Rarity, isHolo: boolean, finish?: Finish | null, misprint?: boolean): number =>
+  (RARITY_POINTS[rarity] ?? 0) * (isHolo ? HOLO_MULTIPLIER : 1) * (finish ? FINISH_MULTIPLIER[finish] : 1) * (misprint ? MISPRINT_MULTIPLIER : 1);
 
 interface ScorableCard {
-  /** Cards match when this is equal (use `${setId}/${cardId}` or plain card id). */
+  /** Cards match when this is equal (use `${setId}/${cardId}` or plain card id). Modifiers don't change it. */
   cardId: string;
   rarity: Rarity;
   isHolo: boolean;
+  finish?: Finish | null;
+  misprint?: boolean;
 }
 
 /** Classify a pack by how many copies of each card it has (sorted, biggest first). */
@@ -81,7 +90,7 @@ export interface PackScore {
 }
 
 export const scorePack = (cards: readonly ScorableCard[]): PackScore => {
-  const points = cards.reduce((sum, c) => sum + cardPoints(c.rarity, c.isHolo), 0);
+  const points = cards.reduce((sum, c) => sum + cardPoints(c.rarity, c.isHolo, c.finish, c.misprint), 0);
   const hand = getPokerHand(cards);
   return { points, hand, score: points * hand.multiplier };
 };

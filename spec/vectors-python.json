@@ -199,6 +199,211 @@
           "isHolo": false
         }
       ]
+    },
+    {
+      "set": "gen-alpha-uprising@2",
+      "seed": "3c76de674f7f4400c72b2626257cf9459ce6775fae44ce4213061595569cf641",
+      "cards": [
+        {
+          "cardId": "pedro-raccoon",
+          "rarity": "RARE",
+          "isHolo": false,
+          "finish": "SILVER",
+          "misprint": false
+        },
+        {
+          "cardId": "pesto-the-penguin",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "sad-hamster",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "pesto-the-penguin",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "pedro-raccoon",
+          "rarity": "RARE",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        }
+      ]
+    },
+    {
+      "set": "gen-alpha-uprising@2",
+      "seed": "e4efe0c6c4769da192b67c4662dd40891f8851f654e2bb01892dc690c47b0a69",
+      "cards": [
+        {
+          "cardId": "ok-i-pull-up",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "gegagedigedagedago",
+          "rarity": "UNCOMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "huh-cat",
+          "rarity": "UNCOMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "huh-cat",
+          "rarity": "UNCOMMON",
+          "isHolo": false,
+          "finish": "SILVER",
+          "misprint": false
+        },
+        {
+          "cardId": "dancing-toothless",
+          "rarity": "UNCOMMON",
+          "isHolo": true,
+          "finish": "GOLD",
+          "misprint": false
+        }
+      ]
+    },
+    {
+      "set": "gen-alpha-uprising@2",
+      "seed": "ddcae148c0ed79757871eeaa4b47c60e2b0e707a0c24fc2ba396c83cd57dd1d5",
+      "cards": [
+        {
+          "cardId": "dancing-toothless",
+          "rarity": "UNCOMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "sad-hamster",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "side-eye-cat",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "pesto-the-penguin",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": true
+        },
+        {
+          "cardId": "side-eye-cat",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        }
+      ]
+    },
+    {
+      "set": "gen-alpha-uprising@2",
+      "seed": "83be6a403ce489f6fe6e916be2332bd8b8636db124e2dbef4fbce223716465fc",
+      "cards": [
+        {
+          "cardId": "sad-hamster",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "gegagedigedagedago",
+          "rarity": "UNCOMMON",
+          "isHolo": false,
+          "finish": "DIAMOND",
+          "misprint": false
+        },
+        {
+          "cardId": "dancing-toothless",
+          "rarity": "UNCOMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "ok-i-pull-up",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "pesto-the-penguin",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        }
+      ]
+    },
+    {
+      "set": "gen-alpha-uprising@2",
+      "seed": "42b8b641e4253d69172aa9d43e5883d82c99efa57cea5d399b6451262b704cbc",
+      "cards": [
+        {
+          "cardId": "ok-i-pull-up",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "sad-hamster",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": "SILVER",
+          "misprint": false
+        },
+        {
+          "cardId": "pedro-raccoon",
+          "rarity": "RARE",
+          "isHolo": false,
+          "finish": "SILVER",
+          "misprint": false
+        },
+        {
+          "cardId": "huh-cat",
+          "rarity": "UNCOMMON",
+          "isHolo": false,
+          "finish": "PLATINUM",
+          "misprint": false
+        },
+        {
+          "cardId": "side-eye-cat",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        }
+      ]
     }
   ],
   "valid": [
@@ -815,6 +1020,108 @@
       "hand": "5 of a Kind",
       "multiplier": 10000,
       "score": 500000,
+      "hallOfFame": true
+    },
+    {
+      "note": "modifiers (§5.4): a Silver finish",
+      "proof": "ARJnZW4tYWxwaGEtdXByaXNpbmcAAr610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByAgVTaGluecKtMpYIDpPvrUOaCPLTvN3VYzzzBm56fSXwVwa2tNxJl4JIcCvgJkzK09wBBwREYNjIVBy7XjAcdUF_JRFbHwI",
+      "set": "gen-alpha-uprising@2",
+      "publicKey": "beb5d23f1a487720cb83e6f6f0baec51efd0a577f6e1e86bee69652134971072",
+      "nonce": 2,
+      "name": "Shiny",
+      "fingerprint": "YH48-X752",
+      "cards": [
+        {
+          "cardId": "ok-i-pull-up",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "dancing-toothless",
+          "rarity": "UNCOMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "side-eye-cat",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": "SILVER",
+          "misprint": false
+        },
+        {
+          "cardId": "gegagedigedagedago",
+          "rarity": "UNCOMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "sigma",
+          "rarity": "LEGENDARY",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        }
+      ],
+      "points": 350,
+      "hand": "No Matches",
+      "multiplier": 1,
+      "score": 350,
+      "hallOfFame": false
+    },
+    {
+      "note": "modifiers (§5.4): a Silver misprint, stacked",
+      "proof": "ARJnZW4tYWxwaGEtdXByaXNpbmcAAr610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByIAVTaGlueTHMPxwUJMWvxOMpoznouBqu5oWqarfNlVT-DY6kZTjNt4NaJYjWPGpE0YOjZab2JLeg8yy3kUtg7b1rJ3f8Dwg",
+      "set": "gen-alpha-uprising@2",
+      "publicKey": "beb5d23f1a487720cb83e6f6f0baec51efd0a577f6e1e86bee69652134971072",
+      "nonce": 32,
+      "name": "Shiny",
+      "fingerprint": "YH48-X752",
+      "cards": [
+        {
+          "cardId": "smurf-cat",
+          "rarity": "EPIC",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "pedro-raccoon",
+          "rarity": "RARE",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "ok-i-pull-up",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": "SILVER",
+          "misprint": true
+        },
+        {
+          "cardId": "smurf-cat",
+          "rarity": "EPIC",
+          "isHolo": false,
+          "finish": "SILVER",
+          "misprint": false
+        },
+        {
+          "cardId": "gegagedigedagedago",
+          "rarity": "UNCOMMON",
+          "isHolo": false,
+          "finish": "SILVER",
+          "misprint": false
+        }
+      ],
+      "points": 21005,
+      "hand": "Pair",
+      "multiplier": 2,
+      "score": 42010,
       "hallOfFame": true
     }
   ],

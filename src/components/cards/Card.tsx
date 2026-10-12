@@ -3,11 +3,16 @@ import { motion } from 'framer-motion';
 import '../../styles/Card.css';
 import cardBackImage from '../../assets/images/card_back.webp';
 import type { Card as CardType } from '../../data/cards';
+import type { Finish } from '../../engine';
+import { modifierClasses, modifierLabel } from '../../game/modifiers';
 
 export interface CardWithMeta extends CardType {
     uniqueId: number;
     isRevealed: boolean;
     isHolo: boolean;
+    /** Sets with modifiers: the card's finish and whether it's a misprint (game/modifiers.ts). */
+    finish?: Finish | null;
+    misprint?: boolean;
     /** The player didn't own this card before the pack it came in. */
     isNew?: boolean;
 }
@@ -92,11 +97,12 @@ const Card = ({ card, isFlipped, onFlip, slowFlip = false, tell = false }: CardP
                 </div>
 
                 {/* Card Front */}
-                <div className="card-face card-front">
+                <div className={`card-face card-front ${modifierClasses(card)}`}>
                     <img src={card.image} alt={card.name} className="card-full-image" draggable="false" />
                     {card.isHolo && <div className="holo-shine-overlay"></div>}
                     <div className="holo-overlay"></div>
                     {card.isNew && <span className="new-sticker">New</span>}
+                    {modifierLabel(card, false) && <span className="modifier-sticker">{modifierLabel(card, false)}</span>}
                 </div>
             </motion.div>
         </div>

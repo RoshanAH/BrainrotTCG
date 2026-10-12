@@ -2,7 +2,7 @@
  * The published Hall of Fame (public/hall-of-fame.json, built by scripts/hall-of-fame.ts during
  * deploy): the top pulls and each set's firsts. Nothing in it is trusted; the page re-checks entries.
  */
-import { decodeProof, pullId, wouldJoinHallOfFame, type RankableEntry } from '../engine';
+import { decodeProof, pullId, wouldJoinHallOfFame, type Finish, type RankableEntry } from '../engine';
 import { checkPull } from './pulls';
 import { wasSubmitted } from './share';
 
@@ -11,7 +11,8 @@ export interface HallOfFameEntry extends RankableEntry {
   name: string;
   fingerprint: string;
   setName: string;
-  cards: { cardId: string; isHolo: boolean }[];
+  /** finish and misprint only for cards from sets with modifiers. */
+  cards: { cardId: string; isHolo: boolean; finish?: Finish | null; misprint?: boolean }[];
   issue: number;
   githubUser: string;
   /** On the relays and checked on this device, but not filed yet (see `loadPending`). */
@@ -90,7 +91,7 @@ export const loadPending = async (published: readonly HallOfFameEntry[], onEntry
         hand: pull.score.hand.name,
         multiplier: pull.score.hand.multiplier,
         score: pull.score.score,
-        cards: pull.cards.map((c) => ({ cardId: c.cardId, isHolo: c.isHolo })),
+        cards: pull.cards.map((c) => ({ cardId: c.cardId, isHolo: c.isHolo, ...(c.finish ? { finish: c.finish } : {}), ...(c.misprint ? { misprint: true } : {}) })),
         issue: -(i + 1), // not filed yet; negative so it never clashes with a real issue
         githubUser: 'nostr',
         // The event's own time is whatever the sender set, so it can't place this ahead of anything
