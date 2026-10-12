@@ -5,6 +5,7 @@ import { CARD_RARITIES, getSetCards } from '../../data/cards';
 import { getLatestSet, setCode } from '../../content/sets';
 import { getPlayer } from '../../game/player';
 import { findPackWithCard } from '../../game/history';
+import { cardPreviewPath } from '../../game/previewLinks';
 import { proofFor, pullUrl } from '../../game/pulls';
 import { renderCardPoster } from '../../game/bragImage';
 import SharePreviewSheet from './SharePreviewSheet';
@@ -45,7 +46,7 @@ const CardShareSheet = ({ card, isHolo, onClose }: CardShareSheetProps) => {
   );
   // The QR code opens the pull directly; the pasted link previews as this card.
   const url = proof ? pullUrl(proof) : undefined;
-  const link = proof && pack ? pullUrl(proof, { setId: card.setId, cardId, hand: pack.hand }) : undefined;
+  const link = proof ? pullUrl(proof, cardPreviewPath(card.setId, cardId)) : undefined;
   const rarity = CARD_RARITIES[card.rarity];
   const text = `${card.name} (${rarity.name}${isHolo ? ', holo' : ''}) from ${setName} in Brainrot TCG${link ? `\n${link}` : ''}`;
 

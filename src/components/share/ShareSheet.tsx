@@ -34,7 +34,7 @@ const ShareSheet = ({ target, onClose }: ShareSheetProps) => {
   // The QR code opens the pull directly; the link people paste goes through the best card's
   // preview page, so chat apps show that card.
   const url = proof ? pullUrl(proof) : '';
-  const link = proof ? pullUrl(proof, previewFor(target.cards, target.score.hand.name)) : '';
+  const link = proof ? pullUrl(proof, previewFor(target.cards)) : '';
   const id = useMemo(() => (proof ? pullId(decodeProof(proof)) : ''), [proof]);
   // Submit only what would make the list (the top pulls, or a first); until it loads, anything that qualifies.
   const [list, setList] = useState<HallOfFameEntry[] | null>(null);

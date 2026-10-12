@@ -17,7 +17,7 @@ import {
 import { getSet } from '../content/sets';
 import { allocateNonce, getPlayer, peekNonce } from './player';
 import { recordPack } from './history';
-import { handKeyFromName, previewPath } from './previewLinks';
+import { previewOf, previewPath } from './previewLinks';
 import { revealOrder } from './reveal';
 import { getTicket, prefetchTicket } from './ticketMiner';
 import type { CardWithMeta } from '../components/cards/Card';
@@ -82,19 +82,16 @@ export const proofFor = (ref: PullRef): string => {
 };
 
 /**
- * A pull link. With `preview` (the card to show and the pack's hand), it goes through that card's
- * link-preview page (src/game/previewLinks.ts), so chat apps show the card instead of the site.
+ * A pull link. With a link-preview page (previewFor, or cardPreviewPath for one card), it goes
+ * through that page (src/game/previewLinks.ts), so chat apps show the cards instead of the site.
  */
-export const pullUrl = (proof: string, preview?: { setId: string; cardId: string; hand: string }): string =>
-  `${window.location.origin}${import.meta.env.BASE_URL}${preview ? previewPath(preview.setId, preview.cardId, handKeyFromName(preview.hand)) : ''}#/pull/${proof}`;
+export const pullUrl = (proof: string, previewPage?: string): string =>
+  `${window.location.origin}${import.meta.env.BASE_URL}${previewPage ?? ''}#/pull/${proof}`;
 
-/** The card a pack's link preview shows: its rarest (holo first), the one revealed last. */
-export const previewFor = (cards: readonly { key: string; rarity: Rarity; isHolo: boolean }[], hand: string) => {
-  const ordered = revealOrder(cards);
-  const best = ordered[ordered.length - 1];
-  if (!best) return undefined;
-  const [setId, cardId] = best.key.split('/');
-  return { setId, cardId, hand };
+/** A pack's link-preview page: the cards that make its hand, or its best card. */
+export const previewFor = (cards: readonly { key: string; rarity: Rarity; isHolo: boolean }[]): string | undefined => {
+  const preview = previewOf(revealOrder(cards));
+  return preview && previewPath(preview);
 };
 
 export interface CheckedPull extends VerifiedPull {

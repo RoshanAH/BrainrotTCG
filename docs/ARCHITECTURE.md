@@ -66,7 +66,7 @@ src/game/          Browser glue around the engine.
   pulls.ts           openPack(), proofFor(), pullUrl(), checkPull()
   share.ts, bragImage.ts   brag text, Hall of Fame submit, 9:16 poster with QR
   shareActions.ts    copy the link or image (the system share sheet only on phones)
-  previewLinks.ts    link previews: shared links go through a static page per card and hand
+  previewLinks.ts    link previews: shared links go through a static page per hand and its cards
   hallOfFameList.ts  the published Hall of Fame list, loaded once per visit
   nostrInbox.ts      Hall of Fame submissions over public Nostr relays (loaded only when used)
   move.ts            hands a save over from the site's old address, window to window (docs/HOSTING.md)
@@ -81,7 +81,7 @@ scripts/           Node tools (run with tsx)
   check-sets.ts      set lock guard
   hall-of-fame.ts    verifies Hall of Fame issues; files Nostr submissions; builds public/hall-of-fame.json
   hof-inbox.ts       the inbox rules: verify, dedupe, budget, retry
-  preview-pages.ts   after the Vite build: a preview image per card, a preview page per card and hand
+  preview-pages.ts   after the Vite build: a preview picture and page for every hand each set can make
   redirect-site.ts   the old address after a move: forwards every link and brings saves along
 ```
 
@@ -181,11 +181,18 @@ link carries its whole proof, which is what makes it checkable anywhere without 
 why it's long; the proof is about 170 characters and can't get much shorter.
 
 Chat apps build a link preview from the page address alone, and the proof is after the `#`, which
-they never see. So a copied link goes through a static page for the pack's rarest card and its hand,
-`p/<code>.html#/pull/<proof>` (the code is 8 hex characters of `sha256("set/card/HAND")`, fixed
-forever). `scripts/preview-pages.ts` writes those after the Vite build: a 1200x630 image per card and
-a page per card and hand, titled like "A Full House in Summer of Slop". The page forwards to the pull.
-The path only picks the preview; the pull is still re-derived from the proof when it's opened.
+they never see. So a copied link goes through a static page for the pack's hand and the cards that
+make it, `p/<code>.html#/pull/<proof>` (the code is 8 hex characters of
+`sha256("set/card+card/HAND")`, fixed forever). Its picture is the pack as five cards: those cards
+face up as many times as the hand has them, the rest face down. A Full House is the whole pack, Two
+Pair both pairs, 3 or 4 of a Kind or a Pair the matching card, and No Matches the best card. A card
+shared on its own gets a page with just that card (`sha256("set/card")`).
+
+Drawing the exact pack of every pull would need a server; drawing every hand each set can make is
+about 2,200 pictures (about 300 MB). `scripts/preview-pages.ts` writes them after the Vite build, with
+pages titled like "A Full House in Summer of Slop", and keeps the pictures in `.cache/previews/`
+(cached in CI too) so only new or changed ones are drawn. The pages forward to the pull. The path only
+picks the preview; the pull is still re-derived from the proof when it's opened.
 
 ## Hosting
 

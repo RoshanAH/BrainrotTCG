@@ -31,7 +31,7 @@ const PullViewerPage = ({ proof, onClose }: PullViewerPageProps) => {
 
   const copyLink = async () => {
     // Once the pack is checked, the link previews as its best card.
-    const link = pullUrl(proof, state.status === 'ok' ? previewFor(state.pull.cardsWithMeta, state.pull.score.hand.name) : undefined);
+    const link = pullUrl(proof, state.status === 'ok' ? previewFor(state.pull.cardsWithMeta) : undefined);
     try {
       await navigator.clipboard.writeText(link);
       setCopied(true);

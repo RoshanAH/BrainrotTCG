@@ -19,6 +19,12 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run check
+      # Link-preview pictures (scripts/preview-pages.ts) take minutes to draw from scratch; keep them.
+      - uses: actions/cache@v4
+        with:
+          path: .cache/previews
+          key: previews-${{ hashFiles('scripts/preview-pages.ts', 'src/game/previewLinks.ts', 'src/content/sets/*/cards/*', 'src/assets/images/card_back.webp') }}
+          restore-keys: previews-
       - run: npm run build
 
   # A second, independent implementation of spec/PULL_SPEC.md (Python + OpenSSL) must agree with

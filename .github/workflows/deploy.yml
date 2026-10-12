@@ -71,6 +71,12 @@ jobs:
           fi
           echo "Cloudflare Pages project $PROJECT: https://$sub/"
           { echo "host=cloudflare"; echo "url=${CUSTOM_URL:-https://$sub/}"; echo "base=/"; } >> "$GITHUB_OUTPUT"
+      # Link-preview pictures (scripts/preview-pages.ts) take minutes to draw from scratch; keep them.
+      - uses: actions/cache@v4
+        with:
+          path: .cache/previews
+          key: previews-${{ hashFiles('scripts/preview-pages.ts', 'src/game/previewLinks.ts', 'src/content/sets/*/cards/*', 'src/assets/images/card_back.webp') }}
+          restore-keys: previews-
       # After a move, the build knows the old address, so it can take saves handed over from it
       # (src/game/move.ts); a build that hasn't moved has no old address and takes nothing.
       - run: npm run build
