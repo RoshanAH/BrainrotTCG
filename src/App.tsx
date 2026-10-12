@@ -365,6 +365,9 @@ function App() {
     setShareTarget({ ref: { setId: pack.setId, setVersion: pack.setVersion, nonce: pack.nonce, publicKeyHex: pack.publicKeyHex }, cards: pack.cards, score: pack.score });
   }, []);
 
+  // For the NEW sticker: the collection as it was before the pack being opened.
+  const isOwned = useCallback((cardKey: string) => !!collection[cardKey], [collection]);
+
   // Progress shown on the counting achievements that are still locked.
   const achievementProgress = useMemo(() => {
     const packs = stats.packsOpened || 0;
@@ -407,6 +410,7 @@ function App() {
           set={selectedSet}
           disabled={isAnyModalOpen}
           settings={settings}
+          isOwned={isOwned}
         />
       </main>
 

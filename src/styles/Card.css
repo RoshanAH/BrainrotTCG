@@ -73,68 +73,79 @@
     opacity: 1;
 }
 
-/* Rarity Styles */
-.card-wrapper.common .card-face {
-    border-color: #aaaaaa;
-    box-shadow:
-        0 10px 30px rgba(0, 0, 0, 0.5),
-        0 0 20px rgba(170, 170, 170, 0.3),
-        0 0 40px rgba(170, 170, 170, 0.2);
+/* Rarity: a crisp border in the rarity colour and one plain shadow. No neon glows. */
+.card-wrapper .card-face {
+    --r: #b8b4bd;
 }
 
-.card-wrapper.uncommon .card-face {
-    border-color: #1eff00;
-    box-shadow:
-        0 10px 30px rgba(0, 0, 0, 0.5),
-        0 0 25px rgba(30, 255, 0, 0.5),
-        0 0 50px rgba(30, 255, 0, 0.3);
-}
+.card-wrapper.common .card-face { --r: var(--rarity-common); }
+.card-wrapper.uncommon .card-face { --r: var(--rarity-uncommon); }
+.card-wrapper.rare .card-face { --r: var(--rarity-rare); }
+.card-wrapper.epic .card-face { --r: var(--rarity-epic); }
+.card-wrapper.legendary .card-face { --r: var(--rarity-legendary); }
 
-.card-wrapper.rare .card-face {
-    border-color: #0070dd;
-    box-shadow:
-        0 10px 30px rgba(0, 0, 0, 0.5),
-        0 0 30px rgba(0, 112, 221, 0.6),
-        0 0 60px rgba(0, 112, 221, 0.4);
-}
-
-.card-wrapper.epic .card-face {
-    border-color: #a335ee;
-    box-shadow:
-        0 10px 30px rgba(0, 0, 0, 0.5),
-        0 0 35px rgba(163, 53, 238, 0.6),
-        0 0 70px rgba(163, 53, 238, 0.4);
-}
-
-.card-wrapper.legendary .card-face {
-    border-color: #ff8000;
-    box-shadow:
-        0 10px 30px rgba(0, 0, 0, 0.5),
-        0 0 40px rgba(255, 128, 0, 0.7),
-        0 0 80px rgba(255, 128, 0, 0.5);
+.card-wrapper:is(.common, .uncommon, .rare, .epic, .legendary) .card-face {
+    border-color: var(--r);
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.55);
 }
 
 .card-wrapper.brainrot .card-face {
     border: 3px solid transparent;
-    background: linear-gradient(#000, #000) padding-box,
-        linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3, #ff0000) border-box;
-    background-size: 100% 100%, 200% 100%;
-    animation: rainbowCardBorder 3s linear infinite;
-    box-shadow:
-        0 10px 30px rgba(0, 0, 0, 0.5),
-        0 0 30px rgba(255, 0, 255, 0.5),
-        0 0 60px rgba(0, 255, 255, 0.4),
-        0 0 90px rgba(255, 0, 255, 0.3);
+    background: linear-gradient(#000, #000) padding-box, var(--rarity-brainrot) border-box;
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.55);
 }
 
-@keyframes rainbowCardBorder {
-    0% {
-        background-position: 0 0, 0% 0;
-    }
+/* Before the flip: the back's edge shows the rarity of a big pull, brighter the rarer it is. */
+.card-wrapper.tell .card-back {
+    border-color: var(--tell);
+    box-shadow: 0 0 0 2px var(--tell), 0 14px 34px rgba(0, 0, 0, 0.55);
+}
 
-    100% {
-        background-position: 0 0, 200% 0;
+.card-wrapper.tell-rare { --tell: var(--rarity-rare); }
+.card-wrapper.tell-epic { --tell: var(--rarity-epic); }
+.card-wrapper.tell-legendary { --tell: var(--rarity-legendary); }
+.card-wrapper.tell-brainrot { --tell: #ffd23f; }
+
+/* Legendary and Brainrot backs breathe, so you know something big is under there. */
+.card-wrapper:is(.tell-legendary, .tell-brainrot) .card-back {
+    animation: tellPulse 1.1s ease-in-out infinite;
+}
+
+@keyframes tellPulse {
+    0%, 100% { box-shadow: 0 0 0 2px var(--tell), 0 14px 34px rgba(0, 0, 0, 0.55); }
+    50% { box-shadow: 0 0 0 5px var(--tell), 0 14px 34px rgba(0, 0, 0, 0.55); }
+}
+
+/* A holo under the back: a foil edge instead. */
+.card-wrapper.tell-holo .card-back {
+    border-color: transparent;
+    background: linear-gradient(#000, #000) padding-box, var(--foil) border-box;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .card-wrapper:is(.tell-legendary, .tell-brainrot) .card-back {
+        animation: none;
     }
+}
+
+/* New to the collection: a price-sticker tag on the card's corner. */
+.new-sticker {
+    position: absolute;
+    top: 6%;
+    right: 5%;
+    z-index: 3;
+    padding: 0.2em 0.6em;
+    border-radius: 3px;
+    background: var(--brand);
+    color: var(--brand-ink);
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.4);
+    font-family: var(--font-body);
+    font-size: clamp(11px, 3.4cqw, 16px);
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transform: rotate(6deg);
+    pointer-events: none;
 }
 
 /* Holo Card Shine Effect */
@@ -183,14 +194,6 @@
     100% {
         left: 150%;
     }
-}
-
-/* Holo card glow effect */
-.card-wrapper.holo .card-face {
-    box-shadow:
-        0 10px 30px rgba(0, 0, 0, 0.5),
-        0 0 25px rgba(255, 0, 255, 0.3),
-        0 0 50px rgba(0, 255, 255, 0.2);
 }
 
 /* Holo card rainbow shimmer background */

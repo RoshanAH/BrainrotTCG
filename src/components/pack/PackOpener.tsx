@@ -13,6 +13,7 @@ import PackCuttingUI from './PackCuttingUI';
 import CardRevealUI from './CardRevealUI';
 import PackSummaryUI from './PackSummaryUI';
 import { packImageUrl } from '../../content/art';
+import { isBigPull, markNew, revealOrder } from '../../game/reveal';
 import '../../styles/PackOpener.css';
 
 const Motion = motion;
@@ -32,9 +33,11 @@ interface PackOpenerProps {
   set: SetDefinition;
   disabled?: boolean;
   settings: Settings;
+  /** Whether the collection already had this card before the pack (for the NEW sticker). */
+  isOwned?: (cardKey: string) => boolean;
 }
 
-const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, settings }: PackOpenerProps) => {
+const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, settings, isOwned }: PackOpenerProps) => {
   const [isOpening, setIsOpening] = useState(false);
   const [openedPack, setOpenedPack] = useState<OpenedPack | null>(null);
   const [openError, setOpenError] = useState<string | null>(null);
@@ -70,10 +73,12 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
 
     setPreloadedAssets({ brainrotVoices, cardFlip, effects });
     setOpenedPack(pack);
-    setOpenedCards(pack.cards);
+    // Shown rarest last, with NEW on cards the collection didn't have yet. The pack itself (and its
+    // proof and history) keeps the engine's order.
+    setOpenedCards(markNew(revealOrder(pack.cards), (key) => isOwned?.(key) ?? true));
     setCurrentIndex(0);
     setIsOpening(true);
-  }, [set, preloadAudio]);
+  }, [set, preloadAudio, isOwned]);
 
   // Mine the next pack's ticket while this one is on screen.
   useEffect(() => {
@@ -139,6 +144,14 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
     }
   }, [currentIndex, openedCards, openedPack, onOpen]);
 
+  /** Reveal everything at once and go to the summary. */
+  const skipAll = useCallback(() => {
+    const all = openedCards.map((card) => ({ ...card, isRevealed: true }));
+    setOpenedCards(all);
+    if (openedPack) onOpen({ ...openedPack, cards: all });
+    setShowSummary(true);
+  }, [openedCards, openedPack, onOpen]);
+
   const closeSummary = useCallback(() => {
     finishPack();
   }, [finishPack]);
@@ -155,6 +168,11 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
     const newCards = [...openedCards];
     newCards[currentIndex].isRevealed = true;
     setOpenedCards(newCards);
+
+    // A short buzz on phones: a tick for any card, a double for big pulls.
+    if (typeof navigator.vibrate === 'function' && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      navigator.vibrate(isBigPull(currentCard.rarity) ? [18, 60, 30] : 8);
+    }
 
     if (settings.particlesEnabled) {
       triggerRarityConfetti(currentCard.rarity);
@@ -309,10 +327,12 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
                 totalCards={openedCards.length}
                 hasMovedMouse={hasMovedMouse}
                 onInteraction={handleInteraction}
+                onSkip={skipAll}
               />
             ) : (
               <PackSummaryUI
                 openedCards={openedCards}
+                set={set}
                 onClose={closeSummary}
                 onShare={openedPack ? () => onShare({ ...openedPack, cards: openedCards }) : undefined}
               />

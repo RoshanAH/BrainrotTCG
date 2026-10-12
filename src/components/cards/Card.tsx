@@ -8,6 +8,8 @@ export interface CardWithMeta extends CardType {
     uniqueId: number;
     isRevealed: boolean;
     isHolo: boolean;
+    /** The player didn't own this card before the pack it came in. */
+    isNew?: boolean;
 }
 
 interface CardProps {
@@ -15,9 +17,11 @@ interface CardProps {
     isFlipped: boolean;
     onFlip: () => void;
     slowFlip?: boolean;
+    /** Before the flip, light the back's edge in the card's rarity colour (rare and up). */
+    tell?: boolean;
 }
 
-const Card = ({ card, isFlipped, onFlip, slowFlip = false }: CardProps) => {
+const Card = ({ card, isFlipped, onFlip, slowFlip = false, tell = false }: CardProps) => {
     const cardRef = useRef<HTMLDivElement>(null);
     const [tilt, setTilt] = useState({ rotateX: 0, rotateY: 0 });
     const [hasShined, setHasShined] = useState(false);
@@ -55,6 +59,8 @@ const Card = ({ card, isFlipped, onFlip, slowFlip = false }: CardProps) => {
     const cardClasses = [
         'card-wrapper',
         isFlipped ? card.rarity.toLowerCase() : '',
+        !isFlipped && tell ? `tell tell-${card.rarity.toLowerCase()}` : '',
+        !isFlipped && tell && card.isHolo ? 'tell-holo' : '',
         card.isHolo ? 'holo' : '',
         hasShined ? 'shine-played' : ''
     ].filter(Boolean).join(' ');
@@ -90,6 +96,7 @@ const Card = ({ card, isFlipped, onFlip, slowFlip = false }: CardProps) => {
                     <img src={card.image} alt={card.name} className="card-full-image" draggable="false" />
                     {card.isHolo && <div className="holo-shine-overlay"></div>}
                     <div className="holo-overlay"></div>
+                    {card.isNew && <span className="new-sticker">New</span>}
                 </div>
             </motion.div>
         </div>
