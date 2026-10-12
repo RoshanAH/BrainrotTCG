@@ -12,6 +12,8 @@ export const STORAGE_KEYS = {
   /** Old notable-pulls log; migrated into HISTORY on load. */
   PULLS: 'brainrot-pulls-v1',
   HISTORY: 'brainrot-history-v1',
+  /** A pack whose ticket is spent but which hasn't reached the collection yet (see game/pulls.ts). */
+  PENDING_PACK: 'brainrot-pending-pack-v1',
 } as const;
 
 // Achievement milestone thresholds

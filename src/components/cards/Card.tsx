@@ -102,6 +102,7 @@ const Card = ({ card, isFlipped, onFlip, slowFlip = false, tell = false }: CardP
                     {card.misprint && <img src={card.image} alt="" aria-hidden="true" className="misprint-ghost" draggable="false" />}
                     {card.isHolo && <div className="holo-shine-overlay"></div>}
                     <div className="holo-overlay"></div>
+                    {card.finish && <span className="finish-frame" aria-hidden="true" />}
                     {card.isNew && <span className="new-sticker">New</span>}
                     {modifierLabel(card, false) && <span className="modifier-sticker">{modifierLabel(card, false)}</span>}
                 </div>

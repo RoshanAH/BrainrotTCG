@@ -41,8 +41,10 @@ img.misprint {
   transform: translateX(-50%);
 }
 
-/* Tiny thumbnails (history rows, Hall of Fame): just the ring. */
-img.finish-silver { box-shadow: 0 0 0 2px #cfd6dd; }
-img.finish-gold { box-shadow: 0 0 0 2px #ffcf4a; }
-img.finish-platinum { box-shadow: 0 0 0 2px #a8e6ff, 0 0 6px #a8e6ff; }
-img.finish-diamond { box-shadow: 0 0 0 2px #c9b6ff, 0 0 8px #c9b6ff; }
+/* Tiny thumbnails (history rows, Hall of Fame): just the ring, as an outline so it never competes
+   with the box-shadow those rows use for their own borders. */
+img[class*='finish-'] { outline: 2px solid var(--thumb-finish); outline-offset: 0; }
+img.finish-silver { --thumb-finish: #cfd6dd; }
+img.finish-gold { --thumb-finish: #ffcf4a; }
+img.finish-platinum { --thumb-finish: #a8e6ff; }
+img.finish-diamond { --thumb-finish: #c9b6ff; }

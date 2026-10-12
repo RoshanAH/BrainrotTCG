@@ -289,6 +289,14 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
     };
   }, [handlePointerDown, handlePointerMove, handlePointerEnd, endCutAttempt]);
 
+  // Unmounted mid-reveal (the set list changed under it): the pack still goes to the collection.
+  const recordOnUnmountRef = useRef(recordPack);
+  useEffect(() => {
+    recordOnUnmountRef.current = recordPack;
+  }, [recordPack]);
+
+  useEffect(() => () => recordOnUnmountRef.current(), []);
+
   // Cleanup on unmount
   useEffect(() => () => {
     if (openTimeoutRef.current) {

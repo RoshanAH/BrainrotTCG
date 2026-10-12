@@ -77,11 +77,6 @@ const PackSummaryUI = ({ openedCards, set, onClose, onShare }: PackSummaryUIProp
       {selected && (
         <CardViewerModal
           card={selected}
-          hasNormal={!selected.isHolo}
-          hasHolo={selected.isHolo}
-          initialHolo={selected.isHolo}
-          finish={selected.finish}
-          misprint={selected.misprint}
           onClose={() => setSelected(null)}
           canShare
         />

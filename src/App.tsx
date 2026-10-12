@@ -17,7 +17,7 @@ import { getAchievementById, Achievement } from './data/achievements';
 import { CardWithMeta } from './components/cards/Card';
 import { DEFAULT_SET_ID, SETS } from './content/sets';
 import { extractProfile, extractProof } from './engine';
-import type { OpenedPack, PullRef } from './game/pulls';
+import { clearPendingPack, takePendingPack, type OpenedPack, type PullRef } from './game/pulls';
 import { importPlayer } from './game/player';
 import { getStoredData } from './utils/storage';
 import { musicLevel, readSettings } from './utils/settings';
@@ -240,6 +240,7 @@ function App() {
   }, [unlockAchievement]);
 
   const handlePackOpened = useCallback((pack: OpenedPack) => {
+    clearPendingPack(pack.nonce);
     const newCards = pack.cards;
     const pullRef = { setId: pack.setId, setVersion: pack.setVersion, nonce: pack.nonce, publicKeyHex: pack.publicKeyHex };
     const { points: packValue, hand: pokerHand, score } = scoreCards(newCards);
@@ -377,6 +378,13 @@ function App() {
       return currentAchievements;
     });
   }, [stats, hallOfFame, collection, checkAllAchievements, unlockAchievement]);
+
+  // A pack whose reveal never finished (a reload, a closed tab): its ticket is spent, so it still counts.
+  useEffect(() => {
+    const pending = takePendingPack();
+    if (pending) handlePackOpened(pending);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const sharePack = useCallback((pack: OpenedPack) => {
     setShareTarget({ ref: { setId: pack.setId, setVersion: pack.setVersion, nonce: pack.nonce, publicKeyHex: pack.publicKeyHex }, cards: pack.cards, score: pack.score });

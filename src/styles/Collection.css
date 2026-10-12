@@ -165,8 +165,10 @@
   overflow: hidden;
 }
 
+/* Ring, glow and focus are separate shadows, so a finish, a holo and focus never hide each other. */
 .collection-item {
-  box-shadow: 0 0 0 2px var(--r);
+  --ring: 0 0 0 2px var(--r);
+  box-shadow: var(--ring), var(--glow, 0 0 #0000), var(--focus, 0 0 #0000);
   transition: transform var(--dur-fast) var(--ease-out);
 }
 
@@ -175,7 +177,7 @@
 }
 
 .collection-item:focus-visible {
-  box-shadow: 0 0 0 2px var(--r), var(--focus-ring);
+  --focus: var(--focus-ring);
 }
 
 .collection-item img {
@@ -194,12 +196,13 @@
 .collection-label-rarity.epic { --r: var(--rarity-epic); }
 .collection-item.legendary,
 .collection-label-rarity.legendary { --r: var(--rarity-legendary); }
-.collection-item.brainrot { box-shadow: 0 0 0 2px #ffd23f; }
+.collection-item.brainrot { --r: #ffd23f; }
 .collection-label-rarity.brainrot { --r: #ffd23f; }
 
 /* The rarest finish owned frames the tile; finishes and misprints are named in a strip on top. */
 .collection-item.has-finish {
-  box-shadow: 0 0 0 2px var(--finish), 0 0 10px var(--finish);
+  --ring: 0 0 0 2px var(--finish);
+  --glow: 0 0 10px var(--finish);
 }
 
 .collection-mods {
@@ -272,12 +275,14 @@
 
 .card-viewer-card {
   --r: var(--rarity-common);
+  --ring: 0 0 0 3px var(--r);
   position: relative;
   width: min(78vw, 46dvh, 24rem);
   aspect-ratio: 687 / 1024;
   border-radius: var(--radius-md);
   overflow: hidden;
-  box-shadow: 0 0 0 3px var(--r), var(--shadow-3);
+  /* Each effect is its own shadow, so rarity, finish and holo all show together. */
+  box-shadow: var(--ring), var(--finish-glow, 0 0 #0000), var(--holo-glow, 0 0 #0000), var(--shadow-3);
   transform-style: preserve-3d;
   transition: transform 0.1s ease-out;
 }
@@ -292,7 +297,7 @@
 .card-viewer-card.rare { --r: var(--rarity-rare); }
 .card-viewer-card.epic { --r: var(--rarity-epic); }
 .card-viewer-card.legendary { --r: var(--rarity-legendary); }
-.card-viewer-card.brainrot { box-shadow: 0 0 0 3px #ffe14d, 0 0 30px rgba(255, 225, 77, 0.5), var(--shadow-3); }
+.card-viewer-card.brainrot { --ring: 0 0 0 3px #ffe14d, 0 0 30px rgba(255, 225, 77, 0.5); }
 
 .card-viewer-info {
   display: flex;
@@ -313,47 +318,6 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: var(--space-2);
-}
-
-.collection-item.holo {
-    position: relative;
-    overflow: hidden;
-    box-shadow: 6px 10px 16px rgba(0, 0, 0, 0.45),
-                0 0 15px rgba(255, 0, 255, 0.25),
-                0 0 30px rgba(0, 255, 255, 0.15);
-}
-
-/* Rainbow shimmer for holo items */
-.collection-item.holo::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-        45deg,
-        rgba(255, 0, 0, 0.15) 0%,
-        rgba(255, 127, 0, 0.15) 14%,
-        rgba(255, 255, 0, 0.15) 28%,
-        rgba(0, 255, 0, 0.15) 42%,
-        rgba(0, 0, 255, 0.15) 56%,
-        rgba(75, 0, 130, 0.15) 70%,
-        rgba(148, 0, 211, 0.15) 84%,
-        rgba(255, 0, 0, 0.15) 100%
-    );
-    background-size: 400% 400%;
-    animation: collectionHoloRainbow 3s ease infinite;
-    pointer-events: none;
-    border-radius: 10px;
-    mix-blend-mode: overlay;
-    z-index: 1;
-}
-
-@keyframes collectionHoloRainbow {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
 }
 
 /* Shine sweep for holo items in grid */
@@ -387,11 +351,7 @@
 
 
 .card-viewer-card.holo {
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6),
-                0 0 30px rgba(255, 0, 255, 0.3),
-                0 0 60px rgba(0, 255, 255, 0.2);
+    --holo-glow: 0 0 30px rgba(255, 0, 255, 0.3), 0 0 60px rgba(0, 255, 255, 0.2);
 }
 
 /* Rainbow shimmer for card viewer */

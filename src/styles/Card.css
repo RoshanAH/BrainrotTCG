@@ -137,13 +137,13 @@
 
 .card-wrapper:is(.common, .uncommon, .rare, .epic, .legendary) .card-face {
     border-color: var(--r);
-    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.55);
+    box-shadow: var(--finish-glow, 0 0 #0000), 0 14px 34px rgba(0, 0, 0, 0.55);
 }
 
 .card-wrapper.brainrot .card-face {
     border: 3px solid transparent;
     background: linear-gradient(#000, #000) padding-box, var(--rarity-brainrot) border-box;
-    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.55);
+    box-shadow: var(--finish-glow, 0 0 #0000), 0 14px 34px rgba(0, 0, 0, 0.55);
 }
 
 /* Before the flip: the back's edge shows the rarity of a big pull, brighter the rarer it is. */
@@ -285,13 +285,15 @@
         max-height: 450px;
     }
 }
-/* Card modifiers (game/modifiers.ts): a metallic frame per finish, a misprinted image, and a sticker. */
-.card-front[class*='finish-']::after,
-.card-viewer-card[class*='finish-']::after {
-    content: '';
+/*
+ * Card modifiers (game/modifiers.ts): a metallic frame per finish, a misprinted image, and a sticker.
+ * The frame is its own element and the glow its own shadow (--finish-glow, added to every face's
+ * box-shadow), so neither fights the holo effects or the rarity border for the same property.
+ */
+.finish-frame {
     position: absolute;
     inset: 0;
-    z-index: 2;
+    z-index: 3;
     padding: clamp(4px, 2.2cqw, 9px);
     border-radius: 8px;
     background: var(--finish-frame);
@@ -316,13 +318,13 @@
 .card-front.finish-platinum,
 .card-viewer-card.finish-platinum {
     --finish-frame: linear-gradient(130deg, #eefaff, #7fb4cc 28%, #ffffff 48%, #6c9fb8 70%, #d6f3ff);
-    box-shadow: 0 0 18px rgba(168, 230, 255, 0.45);
+    --finish-glow: 0 0 18px rgba(168, 230, 255, 0.45);
 }
 
 .card-front.finish-diamond,
 .card-viewer-card.finish-diamond {
     --finish-frame: linear-gradient(130deg, #b9f2ff, #ffffff 20%, #c9b6ff 40%, #ffffff 60%, #7ee7ff 80%, #ffd6f5);
-    box-shadow: 0 0 26px rgba(201, 182, 255, 0.65), 0 0 60px rgba(126, 231, 255, 0.35);
+    --finish-glow: 0 0 26px rgba(201, 182, 255, 0.65), 0 0 60px rgba(126, 231, 255, 0.35);
 }
 
 @keyframes finish-sheen {
@@ -397,8 +399,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .card-front[class*='finish-']::after,
-.card-viewer-card[class*='finish-']::after {
+    .finish-frame {
         animation: none;
     }
 }

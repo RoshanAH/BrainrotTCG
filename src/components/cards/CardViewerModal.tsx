@@ -1,23 +1,18 @@
 import { useEffect, useRef, useState } from 'react';
-import { Share2, Sparkles } from 'lucide-react';
+import { Share2 } from 'lucide-react';
 import CardShareSheet from '../share/CardShareSheet';
 import type { Card } from '../../data/cards';
-import type { Finish } from '../../engine';
-import { FINISHES_RAREST_FIRST } from '../../engine';
+import { cardPoints } from '../../data/cards';
 import { FINISH_INFO, modifierClasses, modifierLabel } from '../../game/modifiers';
+import { sameVersion, versionOf, type CardVersion, type OwnedVersion } from '../../game/versions';
 import RarityBadge from '../ui/RarityBadge';
 import Sheet from '../ui/Sheet';
 
 interface CardViewerModalProps {
-  card: Card;
-  hasNormal: boolean;
-  hasHolo: boolean;
-  initialHolo: boolean;
-  /** A specific pulled card's finish and misprint (pack summary, a shared pull). */
-  finish?: Finish | null;
-  misprint?: boolean;
-  /** In the collection: the finishes and misprints you own, so you can look at each. */
-  owned?: { finishes?: Partial<Record<Finish, number>>; misprints?: number };
+  /** The card. A pulled card carries its own version (holo, finish, misprint), and that's what shows. */
+  card: Card & Partial<CardVersion>;
+  /** In the collection: every version you own, most valuable first. It opens on the first. */
+  versions?: OwnedVersion[];
   onClose: () => void;
   /** Only for cards the player owns (not someone else's shared pull). */
   canShare?: boolean;
@@ -25,13 +20,12 @@ interface CardViewerModalProps {
 
 const MAX_TILT = 12;
 
+const versionName = (v: CardVersion) => modifierLabel(v) || 'Plain';
+
 /** One card, big, tilting with the pointer. */
-const CardViewerModal = ({ card, hasNormal, hasHolo, initialHolo, finish: pulledFinish = null, misprint: pulledMisprint = false, owned, onClose, canShare = false }: CardViewerModalProps) => {
-  const [isHolo, setIsHolo] = useState(initialHolo);
-  const [finish, setFinish] = useState<Finish | null>(pulledFinish);
-  const [misprint, setMisprint] = useState(pulledMisprint);
-  const ownedFinishes = [...FINISHES_RAREST_FIRST].reverse().filter((f) => (owned?.finishes?.[f] ?? 0) > 0);
-  const shown = { isHolo, finish, misprint };
+const CardViewerModal = ({ card, versions, onClose, canShare = false }: CardViewerModalProps) => {
+  const [shown, setShown] = useState<CardVersion>(() => versions?.[0]?.version ?? versionOf(card));
+  const { isHolo, finish, misprint } = shown;
   const label = modifierLabel(shown, false);
   const [sharing, setSharing] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
@@ -65,46 +59,33 @@ const CardViewerModal = ({ card, hasNormal, hasHolo, initialHolo, finish: pulled
       >
         <img src={card.image} alt={card.name} draggable="false" />
         {misprint && <img src={card.image} alt="" aria-hidden="true" className="misprint-ghost" draggable="false" />}
+        {finish && <span className="finish-frame" aria-hidden="true" />}
         {label && <span className="modifier-sticker">{label}</span>}
       </div>
       <div className="card-viewer-info">
         <RarityBadge rarity={card.rarity} isHolo={isHolo} finish={finish} misprint={misprint} />
         {card.flavor && <p className="card-viewer-flavor">{card.flavor}</p>}
-        {(ownedFinishes.length > 0 || (owned?.misprints ?? 0) > 0) && (
+        {versions && versions.length > 1 && (
           <div className="card-viewer-versions" role="group" aria-label="Your versions of this card">
             <span className="card-viewer-versions-label">Your versions</span>
             <span className="card-viewer-chips">
-              {ownedFinishes.length > 0 && (
-                <button type="button" className="version-chip" aria-pressed={finish === null} onClick={() => setFinish(null)}>
-                  No finish
-                </button>
-              )}
-              {ownedFinishes.map((f) => (
+              {versions.map(({ version, count }) => (
                 <button
-                  key={f}
+                  key={versionName(version)}
                   type="button"
-                  className="version-chip"
-                  style={{ '--finish': FINISH_INFO[f].color } as React.CSSProperties}
-                  aria-pressed={finish === f}
-                  onClick={() => setFinish(f)}
+                  className={`version-chip ${version.misprint ? 'misprint-chip' : ''}`}
+                  style={version.finish ? ({ '--finish': FINISH_INFO[version.finish].color } as React.CSSProperties) : undefined}
+                  aria-pressed={sameVersion(shown, version)}
+                  onClick={() => setShown(version)}
                 >
-                  {FINISH_INFO[f].name} ×{owned!.finishes![f]}
+                  {versionName(version)} ×{count}
+                  <span className="sr-only">, {cardPoints(card.rarity, version.isHolo, version.finish, version.misprint).toLocaleString()} points</span>
                 </button>
               ))}
-              {(owned?.misprints ?? 0) > 0 && (
-                <button type="button" className="version-chip misprint-chip" aria-pressed={misprint} onClick={() => setMisprint(!misprint)}>
-                  Misprint ×{owned!.misprints}
-                </button>
-              )}
             </span>
           </div>
         )}
         <div className="card-viewer-actions">
-          {hasNormal && hasHolo && (
-            <button type="button" className="btn btn--secondary btn--sm" onClick={() => setIsHolo(!isHolo)} aria-pressed={isHolo}>
-              <Sparkles aria-hidden="true" /> {isHolo ? 'Show normal' : 'Show holo'}
-            </button>
-          )}
           {canShare && (
             <button type="button" className="btn btn--primary btn--sm" onClick={() => setSharing(true)}>
               <Share2 aria-hidden="true" /> Share card
@@ -112,7 +93,7 @@ const CardViewerModal = ({ card, hasNormal, hasHolo, initialHolo, finish: pulled
           )}
         </div>
       </div>
-      {sharing && <CardShareSheet card={card} isHolo={isHolo} onClose={() => setSharing(false)} />}
+      {sharing && <CardShareSheet card={card} version={shown} onClose={() => setSharing(false)} />}
     </Sheet>
   );
 };

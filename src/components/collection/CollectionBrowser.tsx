@@ -4,6 +4,7 @@ import Sheet from '../ui/Sheet';
 import { CARD_RARITIES, cardPoints, COLLECTIBLE_CARDS, getSetCards, type Card } from '../../data/cards';
 import { isOpenable, SETS } from '../../content/sets';
 import { FINISH_INFO, bestFinish } from '../../game/modifiers';
+import { ownedVersions } from '../../game/versions';
 import type { Finish } from '../../engine';
 import type { CollectionItem } from '../../types';
 import '../../styles/Collection.css';
@@ -165,10 +166,7 @@ const CollectionBrowser = ({ collection, onClose }: CollectionBrowserProps) => {
       {selected && (
         <CardViewerModal
           card={selected.card}
-          hasNormal={selected.normalCount > 0}
-          hasHolo={selected.holoCount > 0}
-          initialHolo={selected.holoCount > 0 && selected.normalCount === 0}
-          owned={{ finishes: selected.finishes, misprints: selected.misprints }}
+          versions={ownedVersions(selected.card.key, selected.card.rarity, selected)}
           onClose={() => setSelected(null)}
           canShare
         />

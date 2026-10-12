@@ -87,11 +87,6 @@ const PackCardViewer = ({
             {!onCardClick && selectedCard && (
                 <CardViewerModal
                     card={selectedCard}
-                    hasNormal={!selectedCard.isHolo}
-                    hasHolo={selectedCard.isHolo}
-                    initialHolo={selectedCard.isHolo}
-                    finish={selectedCard.finish}
-                    misprint={selectedCard.misprint}
                     onClose={() => setSelectedCard(null)}
                     canShare={canShareCards}
                 />

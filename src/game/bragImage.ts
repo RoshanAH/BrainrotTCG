@@ -126,10 +126,28 @@ const drawCard = (ctx: CanvasRenderingContext2D, img: HTMLImageElement, card: Po
   ctx.restore();
 };
 
-const drawQr = (ctx: CanvasRenderingContext2D, url: string, x: number, y: number, size: number) => {
-  const qr = qrcode(0, 'M');
-  qr.addData(url);
-  qr.make();
+/**
+ * Denser QR codes than this stop scanning once a chat app shrinks the image (the 230px code at two
+ * thirds size). Profile links grow with every set switch, so a long one can pass it.
+ */
+const MAX_QR_MODULES = 85;
+
+/** The link's QR code, with less error correction if that keeps it scannable; null if it can't be. */
+const qrFor = (url: string): ReturnType<typeof qrcode> | null => {
+  for (const level of ['M', 'L'] as const) {
+    try {
+      const qr = qrcode(0, level);
+      qr.addData(url);
+      qr.make();
+      if (qr.getModuleCount() <= MAX_QR_MODULES) return qr;
+    } catch {
+      // Longer than any QR code holds.
+    }
+  }
+  return null;
+};
+
+const drawQr = (ctx: CanvasRenderingContext2D, qr: ReturnType<typeof qrcode>, x: number, y: number, size: number) => {
   const n = qr.getModuleCount();
   const quiet = 3;
   const cell = size / (n + quiet * 2);
@@ -233,7 +251,8 @@ const drawLabel = (
   ctx.fillStyle = soft;
   ctx.font = `800 30px ${BODY_FONT}`;
   ctx.fillText(label.kind.toUpperCase(), x + 40, y + 64);
-  const textWidth = label.url ? 520 : w - 80;
+  const qr = label.url ? qrFor(label.url) : null;
+  const textWidth = qr ? 520 : w - 80;
   ctx.fillStyle = ink;
   fitFont(ctx, label.name, textWidth, 52, '800', BODY_FONT);
   ctx.fillText(label.name, x + 40, y + 134);
@@ -241,8 +260,9 @@ const drawLabel = (
   ctx.font = `600 32px ${BODY_FONT}`;
   ctx.fillText(label.cert, x + 40, y + 186);
   ctx.font = `500 28px ${BODY_FONT}`;
-  ctx.fillText(label.hint, x + 40, y + 242);
-  if (label.url) drawQr(ctx, label.url, x + w - 40 - 230, y + 30, 230);
+  // Too long to scan: the link travels with the image instead.
+  ctx.fillText(label.url && !qr ? 'Open the link sent with this to check it.' : label.hint, x + 40, y + 242);
+  if (qr) drawQr(ctx, qr, x + w - 40 - 230, y + 30, 230);
 };
 
 const toPng = (canvas: HTMLCanvasElement) =>
@@ -312,7 +332,8 @@ export const renderCardPoster = async (input: CardPosterInput): Promise<Blob> =>
   ctx.fillStyle = PAPER;
   fitFont(ctx, input.card.name, W - 120, 96, 'normal', DISPLAY_FONT);
   ctx.fillText(input.card.name, W / 2, 1385);
-  const rarity = `${input.card.raritySymbol} ${input.card.rarityName}${input.card.isHolo ? ' · Holo' : ''} · ${input.setCode} ${input.card.number}`;
+  const mods = modifierLabel(input.card);
+  const rarity = `${input.card.raritySymbol} ${input.card.rarityName}${mods ? ` · ${mods}` : ''} · ${input.setCode} ${input.card.number}`;
   ctx.font = `700 40px ${BODY_FONT}`;
   ctx.fillStyle = input.card.rarityColor;
   ctx.fillText(rarity, W / 2, 1470);

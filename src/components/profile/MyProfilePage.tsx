@@ -174,6 +174,15 @@ const MyProfilePage = ({ stats, settings, onSettingsChange, onClose, onSharePull
           </p>
         )}
 
+        {mine && mine.missing > mine.filled && (
+          <p className="pulls-note">
+            {(mine.missing - mine.filled).toLocaleString()} pack{mine.missing - mine.filled === 1 ? " in your history doesn't" : "s in your history don't"} have
+            {mine.missing - mine.filled === 1 ? ' its' : ' their'} cards on this device, so the numbers above leave{' '}
+            {mine.missing - mine.filled === 1 ? 'it' : 'them'} out for now. Copying your profile link re-opens{' '}
+            {mine.missing - mine.filled === 1 ? 'it' : 'them'}.
+          </p>
+        )}
+
         {stats.highestPackLegacy && stats.highestPackCards?.length ? (
           <section className="pulls-legacy">
             <h3 className="section-title pulls-history-title">Best before verifiable pulls</h3>

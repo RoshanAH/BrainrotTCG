@@ -71,10 +71,14 @@ const myTickets = (): Ticket[] => {
     const entry = known.get(nonce);
     const set = setOf(entry) ?? previous;
     const cards = entry && setOf(entry) ? toPulled(entry, set) : null;
+    const score = cards && scorePulled(cards);
+    // Packs re-opened by an older build were stored without their finishes and misprints; their
+    // saved score gives them away. Treat them as unknown so they're re-opened properly.
+    const intact = score && !(set.modifiers === 1 && entry && score.score !== entry.score);
     tickets.push({
       nonce,
       set,
-      pack: cards ? { nonce, set, cards, score: scorePulled(cards) } : null,
+      pack: cards && score && intact ? { nonce, set, cards, score } : null,
       filled: !setOf(entry),
       openedAt: entry?.openedAt ?? previousTime,
     });
@@ -127,7 +131,7 @@ export const myProfileProof = async (onProgress?: (done: number, total: number) 
       setVersion: t.set.version,
       nonce: t.nonce,
       key: player.publicKeyHex.slice(0, 16),
-      cards: cards.map((c) => ({ id: c.cardId, holo: c.isHolo })),
+      cards: cards.map((c) => ({ id: c.cardId, holo: c.isHolo, ...(c.finish ? { finish: c.finish } : {}), ...(c.misprint ? { misprint: true } : {}) })),
       hand: t.pack.score.hand.name,
       score: t.pack.score.score,
       openedAt: t.openedAt,
