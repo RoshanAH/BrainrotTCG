@@ -27,10 +27,11 @@ interface UsePackCutterOptions {
   onCutComplete: () => void;
   isOpening: boolean;
   isPackCut: boolean;
-  soundEnabled?: boolean;
+  /** Sound effects volume, 0 (silent) to 1. */
+  volume?: number;
 }
 
-export const usePackCutter = ({ onCutComplete, isOpening, isPackCut, soundEnabled = true }: UsePackCutterOptions) => {
+export const usePackCutter = ({ onCutComplete, isOpening, isPackCut, volume = 1 }: UsePackCutterOptions) => {
   const [isCutting, setIsCutting] = useState(false);
   const [cutPoints, setCutPoints] = useState<CutPoint[]>([]);
 
@@ -73,14 +74,15 @@ export const usePackCutter = ({ onCutComplete, isOpening, isPackCut, soundEnable
     clearSparks();
 
     // Play woosh sound
-    if (soundEnabled) {
+    if (volume > 0) {
       const woosh = new Audio(WOOSH_SRC);
+      woosh.volume = volume;
       woosh.onended = () => { woosh.src = ''; };
       woosh.play().catch(() => { });
     }
 
     onCutComplete();
-  }, [onCutComplete, clearSparks, soundEnabled]);
+  }, [onCutComplete, clearSparks, volume]);
 
   const beginOrContinueCut = useCallback((clientX: number, clientY: number) => {
     if (cutCompletedRef.current || isOpening || isPackCut) return;
@@ -105,12 +107,13 @@ export const usePackCutter = ({ onCutComplete, isOpening, isPackCut, soundEnable
       emitSpark(clientX, sparkY);
 
       // Play fairy dust sound when cutting starts
-      if (soundEnabled) {
+      if (volume > 0) {
         if (fairyDustRef.current) {
           fairyDustRef.current.pause();
           fairyDustRef.current.currentTime = 0;
         }
         fairyDustRef.current = new Audio(FAIRY_DUST_SRC);
+        fairyDustRef.current.volume = volume;
         fairyDustRef.current.play().catch(() => { });
       }
       return;
@@ -135,7 +138,7 @@ export const usePackCutter = ({ onCutComplete, isOpening, isPackCut, soundEnable
     if (touchedLeft && touchedRight && coveredDistance >= point.width * REQUIRED_CUT_RATIO) {
       completeCut();
     }
-  }, [isCutting, isOpening, isPackCut, getLocalPoint, emitSpark, completeCut, soundEnabled]);
+  }, [isCutting, isOpening, isPackCut, getLocalPoint, emitSpark, completeCut, volume]);
 
   const endCutAttempt = useCallback(() => {
     setIsCutting(false);
