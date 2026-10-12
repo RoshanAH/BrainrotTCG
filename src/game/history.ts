@@ -6,6 +6,7 @@
  * Stored compactly: thousands of packs fit comfortably in localStorage.
  */
 import { STORAGE_KEYS } from '../constants';
+import { POKER_HANDS, qualifiesForHallOfFame } from '../engine';
 import type { OpenedPack } from './pulls';
 
 export interface HistoryEntry {
@@ -96,6 +97,15 @@ const sameTicket = (a: Stored, b: Stored) => a.k === b.k && a.n === b.n;
 
 /** Newest first. */
 export const getHistory = (): HistoryEntry[] => read().map(decode);
+
+/** Good enough for the Hall of Fame (the same rule as its Submit button). */
+export const isHallOfFameWorthy = (entry: Pick<HistoryEntry, 'hand' | 'score'>): boolean => {
+  const hand = Object.values(POKER_HANDS).find((h) => h.name === entry.hand) ?? POKER_HANDS.NO_MATCH;
+  return qualifiesForHallOfFame({ points: 0, hand, score: entry.score });
+};
+
+/** Highest score first; the newest first among equal scores. */
+export const byBest = (a: HistoryEntry, b: HistoryEntry): number => b.score - a.score || b.openedAt - a.openedAt;
 
 export const recordPack = (pack: OpenedPack) => {
   const entry = encode({

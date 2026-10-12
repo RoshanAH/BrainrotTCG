@@ -90,6 +90,23 @@
   font-weight: 700;
 }
 
+.pull-row-hof {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  margin-left: var(--space-1);
+  vertical-align: -2px;
+  color: var(--brand);
+}
+
+.pulls-panel {
+  margin-top: var(--space-3);
+}
+
+.pulls-panel > .pulls-note {
+  margin: 0 0 var(--space-2);
+}
+
 .pull-row-meta {
   display: flex;
   align-items: center;

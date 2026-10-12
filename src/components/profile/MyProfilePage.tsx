@@ -1,12 +1,15 @@
-import { useMemo, useState } from 'react';
-import { ChevronRight, Link2 } from 'lucide-react';
+import { useId, useMemo, useState } from 'react';
+import { ChevronRight, Link2, Trophy } from 'lucide-react';
 import type { CardWithMeta } from '../cards/Card';
 import PackCardViewer from '../ui/PackCardViewer';
 import Sheet from '../ui/Sheet';
+import Tabs from '../ui/Tabs';
+import { tabPanelProps } from '../ui/tabPanel';
 import ProfileSummary from './ProfileSummary';
 import { getCard } from '../../data/cards';
 import { getLatestSet, setCode } from '../../content/sets';
-import { getHistory, type HistoryEntry } from '../../game/history';
+import { byBest, getHistory, isHallOfFameWorthy, type HistoryEntry } from '../../game/history';
+import { HALL_OF_FAME_MIN_SCORE } from '../../engine';
 import { getPlayer } from '../../game/player';
 import { myProfileInfo, myProfileProof, myStats, profileUrl } from '../../game/profiles';
 import { copyText } from '../../game/shareActions';
@@ -24,6 +27,10 @@ interface MyProfilePageProps {
 }
 
 const PAGE = 30;
+
+/** How the pack list is shown: newest first, best first, or only the ones good enough for the Hall of Fame. */
+type PackView = 'newest' | 'best' | 'hof';
+
 const relative = new Intl.RelativeTimeFormat(undefined, { numeric: 'auto' });
 
 const timeAgo = (t: number) => {
@@ -49,6 +56,15 @@ const MyProfilePage = ({ stats, onClose, onSharePull }: MyProfilePageProps) => {
   const summary = useMemo(() => myStats(), []);
   const mine = useMemo(() => myProfileInfo(), []);
   const [shown, setShown] = useState(PAGE);
+  const [view, setView] = useState<PackView>('newest');
+  const tabsId = useId();
+  const best = useMemo(() => [...history].sort(byBest), [history]);
+  const worthy = useMemo(() => best.filter(isHallOfFameWorthy), [best]);
+  const listed = view === 'hof' ? worthy : view === 'best' ? best : history;
+  const changeView = (next: PackView) => {
+    setView(next);
+    setShown(PAGE);
+  };
   const [copied, setCopied] = useState(false);
   const [preparing, setPreparing] = useState<string | null>(null);
   /** A link that took a while to prepare; the tap that started it may no longer be allowed to copy. */
@@ -134,45 +150,73 @@ const MyProfilePage = ({ stats, onClose, onSharePull }: MyProfilePageProps) => {
           <h3 id="pulls-history-title" className="section-title pulls-history-title">
             All packs · {history.length.toLocaleString()}
           </h3>
-          <ul className="pulls-list">
-            {history.slice(0, shown).map((entry) => {
-              const cards = cardsOf(entry);
-              const set = getLatestSet(entry.setId);
-              const [a = '#ff3df2', b = '#29f0ff'] = set?.palette ?? [];
-              return (
-                <li key={`${entry.key}-${entry.nonce}`}>
-                  <button
-                    type="button"
-                    className="pull-row"
-                    style={{ '--set-a': a, '--set-b': b } as React.CSSProperties}
-                    onClick={() => openEntry(entry)}
-                    disabled={!cards}
-                  >
-                    <span className="pull-row-thumbs" aria-hidden="true">
-                      {cards
-                        ? cards.map((c, i) => <img key={i} src={c.image} alt="" loading="lazy" className={c.isHolo ? 'holo' : ''} />)
-                        : Array.from({ length: 5 }, (_, i) => <span key={i} className="pull-row-blank" />)}
-                    </span>
-                    <span className="pull-row-main">
-                      <span className="pull-row-hand">{entry.hand}</span>
-                      <span className="pull-row-meta">
-                        {set && <span className="set-code">{setCode(set)}</span>}
-                        <span className="pull-row-setname">{set?.name ?? entry.setId} · </span>
-                        {timeAgo(entry.openedAt)}
+          <Tabs
+            idBase={tabsId}
+            label="Sort packs"
+            value={view}
+            onChange={changeView}
+            tabs={[
+              { id: 'newest', label: 'Newest' },
+              { id: 'best', label: 'Best' },
+              { id: 'hof', label: <>Hall of Fame · {worthy.length.toLocaleString()}</> },
+            ]}
+          />
+          <div className="pulls-panel" {...tabPanelProps(tabsId, view)}>
+            {view === 'hof' && (
+              <p className="pulls-note">
+                {worthy.length
+                  ? 'Good enough for the Hall of Fame. Open one to share it or submit it.'
+                  : `None yet: a Full House or better, or a Brainrot Score of ${HALL_OF_FAME_MIN_SCORE.toLocaleString()}+, gets in.`}
+              </p>
+            )}
+            <ul className="pulls-list">
+              {listed.slice(0, shown).map((entry) => {
+                const cards = cardsOf(entry);
+                const set = getLatestSet(entry.setId);
+                const [a = '#ff3df2', b = '#29f0ff'] = set?.palette ?? [];
+                return (
+                  <li key={`${entry.key}-${entry.nonce}`}>
+                    <button
+                      type="button"
+                      className="pull-row"
+                      style={{ '--set-a': a, '--set-b': b } as React.CSSProperties}
+                      onClick={() => openEntry(entry)}
+                      disabled={!cards}
+                    >
+                      <span className="pull-row-thumbs" aria-hidden="true">
+                        {cards
+                          ? cards.map((c, i) => <img key={i} src={c.image} alt="" loading="lazy" className={c.isHolo ? 'holo' : ''} />)
+                          : Array.from({ length: 5 }, (_, i) => <span key={i} className="pull-row-blank" />)}
                       </span>
-                    </span>
-                    <span className="pull-row-score tabular">{entry.score.toLocaleString()}</span>
-                    {cards && <ChevronRight className="pull-row-chevron" aria-hidden="true" />}
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-          {shown < history.length && (
-            <button type="button" className="btn btn--ghost btn--block" onClick={() => setShown((n) => n + PAGE)}>
-              Show more
-            </button>
-          )}
+                      <span className="pull-row-main">
+                        <span className="pull-row-hand">
+                          {entry.hand}
+                          {isHallOfFameWorthy(entry) && (
+                            <>
+                              <Trophy className="pull-row-hof" aria-hidden="true" />
+                              <span className="sr-only">, good enough for the Hall of Fame</span>
+                            </>
+                          )}
+                        </span>
+                        <span className="pull-row-meta">
+                          {set && <span className="set-code">{setCode(set)}</span>}
+                          <span className="pull-row-setname">{set?.name ?? entry.setId} · </span>
+                          {timeAgo(entry.openedAt)}
+                        </span>
+                      </span>
+                      <span className="pull-row-score tabular">{entry.score.toLocaleString()}</span>
+                      {cards && <ChevronRight className="pull-row-chevron" aria-hidden="true" />}
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+            {shown < listed.length && (
+              <button type="button" className="btn btn--ghost btn--block" onClick={() => setShown((n) => n + PAGE)}>
+                Show more
+              </button>
+            )}
+          </div>
         </section>
       )}
     </Sheet>

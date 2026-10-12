@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { STORAGE_KEYS } from '../constants';
-import { getHistory, historyForKey, migratePullLog, recordPack } from './history';
+import { byBest, getHistory, historyForKey, isHallOfFameWorthy, migratePullLog, recordPack, type HistoryEntry } from './history';
+import { HALL_OF_FAME_MIN_SCORE } from '../engine';
 import type { OpenedPack } from './pulls';
 
 /** Minimal localStorage with an optional size cap, to exercise the out-of-space path. */
@@ -103,5 +104,22 @@ describe('pack history', () => {
     expect(history[0].cards).not.toBeNull();
     expect(history[1].cards).toBeNull();
     expect(localStorage.getItem(STORAGE_KEYS.PULLS)).toBeNull();
+  });
+});
+
+describe('sorting and filtering packs', () => {
+  const entry = (hand: string, score: number, openedAt: number): HistoryEntry => ({ setId: 'right-now', setVersion: 1, nonce: openedAt, key: 'ab', cards: null, hand, score, openedAt });
+
+  it('marks what the Hall of Fame would take', () => {
+    expect(isHallOfFameWorthy(entry('Full House', 900, 1))).toBe(true);
+    expect(isHallOfFameWorthy(entry('5 of a Kind', 10, 1))).toBe(true);
+    expect(isHallOfFameWorthy(entry('3 of a Kind', 900, 1))).toBe(false);
+    expect(isHallOfFameWorthy(entry('Pair', HALL_OF_FAME_MIN_SCORE, 1))).toBe(true); // a big enough score on its own
+    expect(isHallOfFameWorthy(entry('No Matches', HALL_OF_FAME_MIN_SCORE - 1, 1))).toBe(false);
+  });
+
+  it('puts the best first, newest first among equals', () => {
+    const sorted = [entry('Pair', 50, 1), entry('Pair', 900, 2), entry('Pair', 50, 3)].sort(byBest);
+    expect(sorted.map((e) => e.openedAt)).toEqual([2, 3, 1]);
   });
 });
