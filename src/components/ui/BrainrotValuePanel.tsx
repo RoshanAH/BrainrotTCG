@@ -11,7 +11,7 @@ const BrainrotValuePanel = ({ baseValue, multiplier, handName, flexValue }: Brai
             <div style={{ marginBottom: '0.5rem', color: '#ffb347' }}>
                 {baseValue.toLocaleString()} Buhcoins &times; {multiplier}x ({handName})
             </div>
-            <span style={{ fontFamily: '"Rubik Glitch", system-ui', color: 'white', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>
+            <span style={{ fontFamily: '"RubikGlitch", system-ui', color: 'white', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>
                 = {flexValue.toLocaleString()} Brainrot value!
             </span>
         </div>

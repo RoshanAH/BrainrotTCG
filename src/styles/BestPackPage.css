@@ -20,7 +20,7 @@
 }
 
 .best-pack-header h2 {
-    font-family: 'Rubik Glitch', system-ui;
+    font-family: 'RubikGlitch', system-ui;
     font-size: 3rem;
     color: #ffb347;
     margin: 0;
@@ -84,7 +84,7 @@
 }
 
 .value-number {
-    font-family: 'Rubik Glitch', system-ui;
+    font-family: 'RubikGlitch', system-ui;
     font-size: 2.5rem;
     color: white;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
