@@ -246,3 +246,22 @@ or edited, and the level those packs earn. It can't show packs opened after the 
 (only stop early, which can only make it smaller), that ticket `n` was opened in that set and no other
 (re-mining one ticket in several sets costs a full ticket each), or that two keys belong to different
 people.
+
+## 12. Versions
+
+Every link that has ever verified must keep verifying, so nothing here is ever changed in place.
+
+- **Formats.** A pull proof starts with version byte `0x01` and a profile with its own `0x01`. A
+  verifier MUST reject any version it doesn't implement (rule `decode`), never guess. A new format gets
+  the next version byte **and** a new signed-message prefix (`brainrot-tcg/proof/v2`), so a signature
+  made for one format can never verify as another. Verifiers keep accepting every older version.
+- **Tickets.** The ticket preimage starts with `brainrot-tcg/ticket/v1` and the salt is fixed
+  (section 4). Changing the Argon2id parameters, the preimage or the salt means a new ticket version,
+  chosen per set version, so existing set versions keep v1 tickets forever.
+- **Sets.** `id@version` is immutable once released: anything that changes which pack a ticket yields
+  (cards, their order, rarities, odds, pack size) needs a new version, and every released version stays
+  available for verification (enforced by `src/content/sets.lock.json` in CI). Names, captions, flavor
+  text and art may change freely; they don't affect packs.
+- **Rules.** Scoring (section 8), Hall of Fame thresholds and levels (section 11.3) can only change
+  with a new spec version, published alongside the old one; leaderboards say which they use.
+- **Test vectors** for a version are never edited, only added to.
