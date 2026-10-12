@@ -16,11 +16,13 @@ between other things, so every rule below starts from a 390 px wide screen.
 4. **One way to show a panel.** Collection, achievements, settings, sharing and the rest are the same
    sheet: a bottom sheet on phones, a centred dialog on wide screens, with the same header, close
    button, Escape key, focus handling and backdrop.
-5. **Readable before flashy.** Rubik Glitch is for the logo only. Headings use Lilita One (the same
-   face as the card captions), and body text uses Inter. Scores use tabular numbers.
-6. **Colour carries meaning.** Surfaces are one purple-black ramp. Accent colours mean something:
-   brand gradient for primary actions, cyan for links and focus, and the rarity colours, which are
-   identical everywhere a rarity appears (cards, badges, collection, scoring guide).
+5. **Readable before flashy.** Rubik Glitch is for the logo only. Headings and big numbers use Lilita
+   One (the same face as the card captions); everything else is Archivo, whose condensed widths set
+   labels like a grading slab. Numbers are tabular.
+6. **Colour carries meaning.** Surfaces are a binder-black ramp with card-stock white text. There is
+   one accent, price-sticker yellow, and it only marks the thing to do next (primary buttons,
+   progress, the "New" set). Foil only ever appears on holo cards. Rarity colours are identical
+   everywhere and always come with their symbol (● ◆ ★ ★★ ★★★ ✦), so colour is never the only cue.
 7. **Celebrate in proportion.** A common card gets a flip; a Brainrot pull gets the confetti.
    Achievement toasts arrive one at a time, small and out of the way; a burst of unlocks becomes one
    grouped toast instead of a wall.
@@ -32,18 +34,33 @@ between other things, so every rule below starts from a 390 px wide screen.
 10. **Fast and steady.** Images have fixed aspect ratios so nothing jumps while loading; animations are
     120–320 ms and only animate transform and opacity.
 
+## Looks like a card game, not like an AI demo
+
+The look comes from collecting real cards: binder pages, sleeves, set checklists, collector numbers
+("SOS 007/012"), set codes printed in the set's colour, rarity marks, and graded-card labels for
+anything verified. Generic app chrome gives a page away as generated. Don't use:
+
+- gradients on buttons, text, borders or backgrounds (foil on holo cards is the one exception);
+- glows, glassy blur, or tinted "neon" shadows;
+- emoji as bullets or markers (🧠 before every score, ✨ for holo); emoji stay where they're content,
+  like an achievement's icon or a share post;
+- small letter-spaced uppercase headings over every section; headings are plain sentence case;
+- coloured rails down the side of rounded cards, and pills for everything;
+- a row of boxed "big number" tiles; four numbers on one line read faster;
+- generic system fonts or Inter, and centring everything.
+
 ## Tokens
 
 | Group | Tokens | Notes |
 | --- | --- | --- |
 | Surfaces | `--bg`, `--bg-elevated`, `--surface`, `--surface-2`, `--surface-3` | lighter = closer |
 | Text | `--text`, `--text-muted`, `--text-subtle` | all AA on `--bg-elevated` |
-| Brand | `--brand`, `--brand-2` (cyan), `--brand-3` (yellow), `--brand-gradient` | primary actions use the gradient |
+| Accent | `--brand` (sticker yellow), `--brand-strong`, `--brand-ink` (text on yellow), `--foil` | foil is for holo cards only; `--brand-gradient` is kept as an alias of the flat accent |
 | Rarity | `--rarity-common` … `--rarity-brainrot` | never redefine locally |
 | Type | `--font-body`, `--font-display`, `--font-logo`, `--text-xs` … `--text-3xl` | |
 | Space | `--space-1` (4 px) … `--space-7` (48 px), `--gutter` | 4 px grid |
 | Shape | `--radius-sm` … `--radius-xl`, `--radius-pill` | |
-| Depth | `--shadow-1` … `--shadow-3`, `--glow-brand` | |
+| Depth | `--shadow-1` … `--shadow-3` | `--glow-brand` is `none` |
 | Motion | `--dur-fast`, `--dur`, `--dur-slow`, `--ease-out`, `--ease-spring` | zero under reduced motion |
 | Layout | `--touch-target`, `--nav-height`, `--safe-top`, `--safe-bottom` | |
 
@@ -57,8 +74,11 @@ between other things, so every rule below starts from a 390 px wide screen.
   returns to the opener. Sheets stack (a card opened from the collection sits on top of it). Sizes:
   `sm` (settings, share), `md` (one pull), `lg` (collection, history, achievements, Hall of Fame);
   `bare` for a single big card.
-- **Tabs** (`ui/Tabs.tsx`): a segmented control when one sheet holds several lists, so only one
-  shows at a time. Arrow keys move between tabs.
+- **Tabs** (`ui/Tabs.tsx`): text with a yellow underline, like binder dividers, when one sheet holds
+  several lists, so only one shows at a time. Arrow keys move between tabs.
+- **Set code** (`.set-code`, `setCode()`): a set's initials in its colour, next to its name in rows.
+- **Verified label** (`.pull-viewer-badge`): a bordered, condensed caps strip with a cert number
+  (player ID and ticket), like the label on a graded card.
 - **Rows**: lists are rows (thumbnail, two lines of text, a value on the right, a chevron when it
   opens something), not cards in a grid. Settings use grouped rows with `.switch` toggles.
 - **App nav** (`ui/AppNav.tsx`): Collection, Pulls, Hall of Fame, Achievements, Settings, each an

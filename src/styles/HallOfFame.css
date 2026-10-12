@@ -38,9 +38,9 @@
 }
 
 .hof-empty svg {
-  width: 36px;
-  height: 36px;
-  color: var(--warning);
+  width: 32px;
+  height: 32px;
+  color: var(--text-subtle);
 }
 
 .hof-empty strong {
@@ -49,7 +49,6 @@
 
 .hof-list {
   display: grid;
-  gap: 2px;
   list-style: none;
 }
 
@@ -72,7 +71,12 @@
 }
 
 .hof-entry:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(243, 239, 230, 0.05);
+}
+
+.hof-list li + li .hof-entry {
+  border-top: 1px solid var(--border);
+  border-radius: 0;
 }
 
 .hof-entry.is-failed {
@@ -151,8 +155,8 @@
 }
 
 .hof-score {
-  color: var(--brand-3);
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
   white-space: nowrap;
 }
 

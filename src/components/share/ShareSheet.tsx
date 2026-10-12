@@ -95,7 +95,7 @@ const ShareSheet = ({ target, onClose }: ShareSheetProps) => {
       title="Share your pull"
       subtitle={
         <>
-          {setName} · {target.score.hand.name} · <span className="tabular">🧠 {target.score.score.toLocaleString()}</span>
+          {setName} · {target.score.hand.name} · <span className="tabular">{target.score.score.toLocaleString()}</span>
         </>
       }
       onClose={onClose}

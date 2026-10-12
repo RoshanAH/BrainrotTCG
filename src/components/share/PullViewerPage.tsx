@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link2, ShieldAlert, ShieldCheck } from 'lucide-react';
 import { checkPull, pullUrl, type CheckedPull } from '../../game/pulls';
 import { normalizeName } from '../../engine';
+import { setCode } from '../../content/sets';
 import PackCardViewer from '../ui/PackCardViewer';
 import Sheet from '../ui/Sheet';
 import '../../styles/Share.css';
@@ -59,7 +60,9 @@ const PullViewerPage = ({ proof, onClose }: PullViewerPageProps) => {
     return (
       <Sheet title="Not a valid pull" onClose={onClose} size="sm" footer={openOwn}>
         <p className="pull-viewer-badge is-invalid">
-          <ShieldAlert aria-hidden="true" /> {state.reason}
+          <span>
+            <ShieldAlert aria-hidden="true" /> {state.reason}
+          </span>
         </p>
         <p className="share-note">The link was edited, cut off or made up. Real pulls always check out.</p>
       </Sheet>
@@ -89,7 +92,12 @@ const PullViewerPage = ({ proof, onClose }: PullViewerPageProps) => {
       }
     >
       <p className="pull-viewer-badge">
-        <ShieldCheck aria-hidden="true" /> Verified on this device
+        <span>
+          <ShieldCheck aria-hidden="true" /> Verified on this device
+        </span>
+        <span className="pull-viewer-cert">
+          Cert {pull.fingerprint} · {setCode(pull.set)} #{pull.proof.nonce}
+        </span>
       </p>
       <PackCardViewer cards={pull.cardsWithMeta} displayMode="carousel" />
       <details className="pull-viewer-how">

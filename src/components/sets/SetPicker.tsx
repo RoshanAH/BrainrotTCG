@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import type { SetDefinition } from '../../engine';
-import { isNewSet } from '../../content/sets';
+import { isNewSet, setCode } from '../../content/sets';
 import type { CollectionItem } from '../../types';
 import '../../styles/Sets.css';
 
@@ -45,19 +45,20 @@ const SetPicker = ({ sets, selectedId, onSelect, collection, disabled = false }:
               disabled={disabled && !selected}
               title={disabled && !selected ? 'Finish this pack first' : undefined}
             >
-              <span className="set-chip-era">
+              <span className="set-chip-head">
+                <span className="set-code" aria-hidden="true">
+                  {setCode(set)}
+                </span>
+                <span className="set-chip-name">{set.name}</span>
+              </span>
+              <span className="set-chip-meta">
                 {set.era}
                 {set.draft && <span className="set-chip-draft"> · preview</span>}
+                <span className="tabular" aria-label={`${owned} of ${set.cards.length} collected`}>
+                  {' '}
+                  · {owned}/{set.cards.length}
+                </span>
                 {isNewSet(set) && <span className="set-chip-new">New</span>}
-              </span>
-              <span className="set-chip-name">{set.name}</span>
-              <span className="set-chip-progress" aria-label={`${owned} of ${set.cards.length} collected`}>
-                <span className="set-chip-bar" aria-hidden="true">
-                  <span style={{ width: `${(owned / set.cards.length) * 100}%` }} />
-                </span>
-                <span className="tabular">
-                  {owned}/{set.cards.length}
-                </span>
               </span>
             </button>
           );

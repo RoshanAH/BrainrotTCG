@@ -37,21 +37,14 @@ button.achievement {
 }
 
 button.achievement:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(243, 239, 230, 0.05);
 }
 
 .achievement-icon {
   display: grid;
   place-items: center;
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-sm);
-  background: var(--surface-2);
-  font-size: 1.15rem;
-}
-
-.achievement.is-unlocked .achievement-icon {
-  background: color-mix(in srgb, var(--brand) 18%, var(--surface-2));
+  width: 32px;
+  font-size: 1.3rem;
 }
 
 .achievement-text {

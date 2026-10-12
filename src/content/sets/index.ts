@@ -33,6 +33,16 @@ export const isOpenable = (set: SetDefinition): boolean => !set.draft && !set.ar
 /** The pack new players land on: the newest openable set. */
 export const DEFAULT_SET_ID = [...SETS].reverse().find(isOpenable)!.id;
 
+/**
+ * A short set code, like the one printed next to a real card's number ("SOS 007/012"): the
+ * initials of the set's words (3-4 letters), or the first three letters of a one-word name.
+ */
+export const setCode = (set: Pick<SetDefinition, 'name'>): string => {
+  const words = set.name.split(/\s+/).filter((w) => /^[A-Za-z0-9]/.test(w));
+  const code = words.length > 1 ? words.map((w) => w[0]).join('').slice(0, 4) : (words[0] ?? '').slice(0, 3);
+  return code.toUpperCase();
+};
+
 const NEW_FOR_DAYS = 45;
 
 /**

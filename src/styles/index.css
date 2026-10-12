@@ -30,31 +30,18 @@
   text-transform: uppercase;
   letter-spacing: 0.06em;
   white-space: nowrap;
-  filter: drop-shadow(var(--glow-brand));
+  color: var(--text);
+  /* A hard misprint offset, like a cheap sticker, instead of a glow. */
+  text-shadow: 0.06em 0.06em 0 var(--brand-ink), 0.09em 0.09em 0 var(--brand);
 }
 
 .app-logo .title-char {
   display: inline-block;
-  background: linear-gradient(45deg, var(--brand), var(--brand-2));
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: float 2.5s ease-in-out infinite;
 }
 
 .app-logo .title-space {
   display: inline-block;
   width: 0.3em;
-}
-
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-3px);
-  }
 }
 
 .app-main {

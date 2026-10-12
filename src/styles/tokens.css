@@ -2,7 +2,7 @@
  * Design tokens: the only place colours, type, spacing, radii, shadows and motion are defined.
  * Components use these variables, never raw values. See docs/DESIGN.md.
  */
-@import '@fontsource-variable/inter';
+@import '@fontsource-variable/archivo/wdth.css';
 
 @font-face {
   font-family: 'RubikGlitch';
@@ -21,45 +21,57 @@
 :root {
   color-scheme: dark;
 
-  /* Surfaces: one deep purple ramp, lighter = closer to the viewer */
-  --bg: #0d0820;
-  --bg-elevated: #150e2c;
-  --surface: #1c1338;
-  --surface-2: #261a49;
-  --surface-3: #33245e;
-  --scrim: rgba(6, 3, 16, 0.78);
-  --border: rgba(255, 255, 255, 0.1);
-  --border-strong: rgba(255, 255, 255, 0.2);
+  /*
+   * The look comes from card collecting, not from "gaming app": a binder-black table, card-stock
+   * white text, one loud price-sticker yellow for the thing to do next, and foil only on holo cards.
+   */
+  --bg: #121114;
+  --bg-elevated: #18171b;
+  --surface: #1f1e23;
+  --surface-2: #27262c;
+  --surface-3: #323037;
+  --scrim: rgba(8, 7, 10, 0.8);
+  --border: rgba(243, 239, 230, 0.1);
+  --border-strong: rgba(243, 239, 230, 0.2);
 
   /* Text (all pass WCAG AA on --bg-elevated) */
-  --text: #f7f3ff;
-  --text-muted: #c2b8e0;
-  --text-subtle: #948ab3;
+  --text: #f3efe6;
+  --text-muted: #b6b0ba;
+  --text-subtle: #8c8692;
 
-  /* Brand */
-  --brand: #c04dff;
-  --brand-strong: #a12cf0;
-  --brand-2: #29f0ff;
-  --brand-3: #ffd60a;
-  --brand-gradient: linear-gradient(120deg, #ff3df2 0%, #9b5cff 48%, #29d8ff 100%);
-  --focus-ring: 0 0 0 3px var(--bg), 0 0 0 5px var(--brand-2);
+  /* Accent: price-sticker yellow, with dark ink on it. Used for primary actions and progress only. */
+  --brand: #ffd23f;
+  --brand-strong: #f2c214;
+  --brand-ink: #17130a;
+  --brand-2: #ffd23f;
+  --brand-3: #ffd23f;
+  /* Kept for old references: the accent is flat now. */
+  --brand-gradient: var(--brand);
+  --focus-ring: 0 0 0 2px var(--bg), 0 0 0 4px var(--brand);
+  /* Holo foil: only ever on holo cards. */
+  --foil: linear-gradient(115deg, #ff7ac8, #ffd23f 30%, #6ff2c6 55%, #7ab8ff 80%, #d38bff);
 
   /* Feedback */
-  --success: #3ddc84;
-  --danger: #ff5c7a;
-  --warning: #ffd60a;
+  --success: #5fd38d;
+  --danger: #ff6b6b;
+  --warning: #ffb547;
 
-  /* Rarity: the same colours everywhere a rarity appears */
-  --rarity-common: #b8b8c6;
-  --rarity-uncommon: #3ddc84;
-  --rarity-rare: #4c9bff;
-  --rarity-epic: #b866ff;
-  --rarity-legendary: #ff9a3d;
-  --rarity-brainrot: linear-gradient(90deg, #ff4d4d, #ff9a3d, #ffe14d, #3ddc84, #4c9bff, #b866ff);
+  /* Rarity: the same colours everywhere a rarity appears, always with its symbol too */
+  --rarity-common: #b8b4bd;
+  --rarity-uncommon: #5fd38d;
+  --rarity-rare: #6aa8ff;
+  --rarity-epic: #c08bff;
+  --rarity-legendary: #ffa24d;
+  --rarity-brainrot: linear-gradient(90deg, #ff6b6b, #ffa24d, #ffd23f, #5fd38d, #6aa8ff, #c08bff);
 
-  /* Type: Lilita One for headings, Inter for everything else, Rubik Glitch only for the logo */
-  --font-body: 'Inter Variable', Inter, system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-display: 'Lilita One', 'Inter Variable', system-ui, sans-serif;
+  /*
+   * Type: Lilita One (the face printed on the cards) for headings and big numbers, Archivo for
+   * everything else; Archivo's condensed widths set labels like a grading slab. Rubik Glitch is the
+   * logo only.
+   */
+  --font-body: 'Archivo Variable', Archivo, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Lilita One', 'Archivo Variable', system-ui, sans-serif;
+  --stretch-label: 82%;
   --font-logo: 'RubikGlitch', 'Lilita One', system-ui, sans-serif;
   --text-xs: 0.75rem;
   --text-sm: 0.875rem;
@@ -81,18 +93,19 @@
   --space-7: 3rem;
   --gutter: clamp(1rem, 4vw, 2rem);
 
-  /* Shape */
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 18px;
-  --radius-xl: 24px;
+  /* Shape: tight corners, like card stock and sleeves */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+  --radius-xl: 14px;
   --radius-pill: 999px;
 
   /* Depth */
   --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.25);
   --shadow-2: 0 8px 24px rgba(0, 0, 0, 0.45);
   --shadow-3: 0 24px 64px rgba(0, 0, 0, 0.6);
-  --glow-brand: 0 0 24px rgba(192, 77, 255, 0.45);
+  /* No glows: depth comes from shadows and borders only. */
+  --glow-brand: none;
 
   /* Motion: short and purposeful; disabled under prefers-reduced-motion */
   --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);

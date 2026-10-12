@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import CardViewerModal from '../cards/CardViewerModal';
 import Sheet from '../ui/Sheet';
-import { cardPoints, COLLECTIBLE_CARDS, getSetCards, type Card } from '../../data/cards';
+import { CARD_RARITIES, cardPoints, COLLECTIBLE_CARDS, getSetCards, type Card } from '../../data/cards';
 import { isOpenable, SETS } from '../../content/sets';
 import type { CollectionItem } from '../../types';
 import '../../styles/Collection.css';
@@ -58,7 +58,7 @@ const CollectionBrowser = ({ collection, onClose }: CollectionBrowserProps) => {
         title="Collection"
         subtitle={
           <span className="tabular">
-            {uniqueOwned}/{COLLECTIBLE_CARDS.length} cards · 🧠 {score.toLocaleString()}
+            {uniqueOwned}/{COLLECTIBLE_CARDS.length} cards · {score.toLocaleString()} Brainrot Score
           </span>
         }
         onClose={onClose}
@@ -84,14 +84,19 @@ const CollectionBrowser = ({ collection, onClose }: CollectionBrowserProps) => {
               </header>
               <ul className="collection-grid">
                 {cards
-                  .filter((card) => owned.has(card.key) || isOpenable(set))
-                  .map((card) => {
+                  .map((card, index) => ({ card, number: `${String(index + 1).padStart(3, '0')}/${String(cards.length).padStart(3, '0')}` }))
+                  .filter(({ card }) => owned.has(card.key) || isOpenable(set))
+                  .map(({ card, number }) => {
                     const counts = owned.get(card.key);
                     if (!counts) {
+                      // An empty binder pocket: the collector number and rarity, like a set checklist.
                       return (
-                        <li key={card.key} className="collection-slot" aria-label={`Not collected yet (${card.rarity.toLowerCase()})`}>
-                          <span className={`collection-slot-gem ${card.rarity.toLowerCase()}`} aria-hidden="true">
-                            ?
+                        <li key={card.key} className="collection-slot" aria-label={`${number}, ${CARD_RARITIES[card.rarity].name}, not collected yet`}>
+                          <span className="collection-slot-number tabular" aria-hidden="true">
+                            {number}
+                          </span>
+                          <span className={`collection-slot-rarity ${card.rarity.toLowerCase()}`} aria-hidden="true">
+                            {CARD_RARITIES[card.rarity].symbol}
                           </span>
                         </li>
                       );
@@ -108,7 +113,7 @@ const CollectionBrowser = ({ collection, onClose }: CollectionBrowserProps) => {
                           <img src={card.image} alt="" loading="lazy" />
                           {(total > 1 || counts.holoCount > 0) && (
                             <span className="collection-count tabular">
-                              {counts.holoCount > 0 && '✨'}×{total}
+                              ×{total}
                             </span>
                           )}
                         </button>

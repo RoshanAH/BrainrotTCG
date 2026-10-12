@@ -13,8 +13,6 @@
   position: absolute;
   inset: 0;
   background: var(--scrim);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
   animation: sheet-fade var(--dur) var(--ease-out);
 }
 

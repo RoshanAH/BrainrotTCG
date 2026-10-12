@@ -10,8 +10,8 @@
 
 .settings-panel {
   overflow: hidden;
+  border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  background: var(--surface-2);
 }
 
 .settings-row,

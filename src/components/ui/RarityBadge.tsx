@@ -10,7 +10,7 @@ interface RarityBadgeProps {
 /** Rarity shown by name and colour together (never colour alone), plus the card's points. */
 const RarityBadge = ({ rarity, isHolo = false, showPoints = true }: RarityBadgeProps) => (
   <span className={`rarity-pill ${rarity.toLowerCase()}`}>
-    <span className="rarity-pill-gem" aria-hidden="true">◆</span>
+    <span className="rarity-pill-gem" aria-hidden="true">{CARD_RARITIES[rarity].symbol}</span>
     {isHolo && 'Holo '}
     {CARD_RARITIES[rarity].name}
     {showPoints && <span className="rarity-pill-points">{cardPoints(rarity, isHolo).toLocaleString()} pts</span>}

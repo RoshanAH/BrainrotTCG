@@ -30,24 +30,19 @@
 
 .set-chip {
   flex: 0 0 auto;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  display: grid;
   gap: 2px;
-  min-width: 8.5rem;
   min-height: var(--touch-target);
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-md);
   border: 1px solid var(--border);
-  background: var(--surface);
-  background: linear-gradient(140deg, color-mix(in srgb, var(--set-a) 22%, var(--surface)), color-mix(in srgb, var(--set-b) 14%, var(--surface)));
   color: var(--text);
   text-align: left;
   scroll-snap-align: center;
   transition:
     transform var(--dur-fast) var(--ease-out),
     border-color var(--dur) var(--ease-out),
-    box-shadow var(--dur) var(--ease-out),
+    background-color var(--dur) var(--ease-out),
     opacity var(--dur) var(--ease-out);
 }
 
@@ -65,20 +60,14 @@
 }
 
 .set-chip.selected {
-  border-color: transparent;
-  background:
-    linear-gradient(140deg, color-mix(in srgb, var(--set-a) 30%, var(--surface-2)), color-mix(in srgb, var(--set-b) 22%, var(--surface-2))) padding-box,
-    linear-gradient(120deg, var(--set-a), var(--set-b)) border-box;
-  border: 2px solid transparent;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+  background: var(--surface-2);
+  border-color: var(--text);
 }
 
-.set-chip-era {
-  color: var(--text-muted);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+.set-chip-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
 }
 
 .set-chip-name {
@@ -88,27 +77,10 @@
   white-space: nowrap;
 }
 
-.set-chip-progress {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  width: 100%;
+.set-chip-meta {
   color: var(--text-muted);
-  font-size: 11px;
-}
-
-.set-chip-bar {
-  flex: 1;
-  height: 4px;
-  border-radius: var(--radius-pill);
-  background: rgba(255, 255, 255, 0.12);
-  overflow: hidden;
-}
-
-.set-chip-bar > span {
-  display: block;
-  height: 100%;
-  background: linear-gradient(90deg, var(--set-a), var(--set-b));
+  font-size: var(--text-xs);
+  white-space: nowrap;
 }
 
 .set-chip-draft {
@@ -117,14 +89,14 @@
 
 .set-chip-new {
   margin-left: var(--space-2);
-  padding: 1px 6px;
-  border-radius: var(--radius-pill);
-  background: var(--set-a);
-  color: #12002a;
+  padding: 0 5px;
+  border-radius: 3px;
+  background: var(--brand);
+  color: var(--brand-ink);
   font-size: 10px;
   font-weight: 800;
-  letter-spacing: 0.08em;
-  vertical-align: 1px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 /* Focus mode: the era can't change mid-pack, so the picker steps aside. */
@@ -149,7 +121,7 @@
   padding: 0.4cqw 3.5cqw;
   border-radius: 1.6cqw;
   border: 0.5cqw solid #12002a;
-  background: linear-gradient(135deg, var(--set-a), var(--set-b));
+  background: var(--set-a);
   box-shadow: 0 0.8cqw 0 #12002a;
   color: #12002a;
   white-space: nowrap;

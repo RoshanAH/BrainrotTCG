@@ -18,13 +18,9 @@ const BrainrotScorePanel = ({ points, multiplier, handName, score, setId }: Brai
   const set = getLatestSet(setId ?? DEFAULT_SET_ID) ?? getLatestSet(DEFAULT_SET_ID);
   return (
     <div className="score-panel">
-      <div className="score-panel-total">
-        <span className="score-panel-brain" aria-hidden="true">🧠</span>
-        {score.toLocaleString()}
-      </div>
-      <div className="score-panel-label">Brainrot Score</div>
+      <div className="score-panel-total">{score.toLocaleString()}</div>
       <div className="score-panel-math">
-        {points.toLocaleString()} pts × <strong>{multiplier.toLocaleString()}</strong> · {handName}
+        Brainrot Score · {points.toLocaleString()} pts × <strong>{multiplier.toLocaleString()}</strong> for {handName}
       </div>
       {set && (
         <button type="button" className="score-panel-help" onClick={(e) => { e.stopPropagation(); setShowGuide(true); }}>

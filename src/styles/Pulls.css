@@ -33,24 +33,26 @@
   gap: var(--space-3);
   width: 100%;
   min-height: 64px;
-  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-3);
+  padding: var(--space-2);
   border-radius: var(--radius-md);
-  border-left: 3px solid var(--set-a);
   text-align: left;
   transition: background-color var(--dur) var(--ease-out);
 }
 
 .pull-row:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(243, 239, 230, 0.05);
+}
+
+.pulls-list li + li .pull-row {
+  border-top: 1px solid var(--border);
+  border-radius: 0;
 }
 
 .pull-row:disabled {
   cursor: default;
 }
 
-.pulls-list li + li {
-  margin-top: 2px;
-}
+
 
 .pull-row-thumbs {
   display: flex;
@@ -70,7 +72,7 @@
 }
 
 .pull-row-thumbs img.holo {
-  box-shadow: 0 0 0 1.5px var(--brand-3);
+  box-shadow: 0 0 0 1.5px var(--bg-elevated), 0 0 0 3px #ffd23f;
 }
 
 .pull-row-blank {
@@ -88,6 +90,9 @@
 }
 
 .pull-row-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
   overflow: hidden;
   color: var(--text-muted);
   font-size: var(--text-sm);
@@ -96,14 +101,21 @@
 }
 
 .pull-row-score {
-  color: var(--brand-3);
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
 }
 
 .pull-row-chevron {
   width: 18px;
   height: 18px;
   color: var(--text-subtle);
+}
+
+/* On phones the coloured set code is enough. */
+@media (max-width: 480px) {
+  .pull-row-setname {
+    display: none;
+  }
 }
 
 @media (max-width: 420px) {

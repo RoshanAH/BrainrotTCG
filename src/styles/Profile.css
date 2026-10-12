@@ -11,43 +11,21 @@
 
 .profile-level {
   display: grid;
-  grid-template-columns: auto 1fr;
-  align-items: center;
-  gap: var(--space-2) var(--space-4);
+  gap: var(--space-2);
 }
 
-.profile-level-badge {
-  display: grid;
-  place-items: center;
-  align-content: center;
-  width: 64px;
-  height: 64px;
-  border-radius: 20px;
-  background: var(--brand-gradient);
-  box-shadow: var(--glow-brand);
-  color: #fff;
-  font-family: var(--font-display);
-  font-size: 1.9rem;
-  line-height: 1;
-}
-
-.profile-level-badge span {
-  font-family: var(--font-body);
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  opacity: 0.85;
-}
-
-.profile-level-xp {
-  display: grid;
-  gap: 6px;
-  min-width: 0;
+.profile-level-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-3);
 }
 
 .profile-level-label {
   font-family: var(--font-display);
-  font-size: var(--text-xl);
+  font-size: var(--text-2xl);
+  line-height: 1.1;
 }
 
 .profile-so-far {
@@ -61,84 +39,48 @@
   font-size: var(--text-sm);
 }
 
+.profile-level .progress {
+  height: 6px;
+}
+
 .profile-level-actions {
-  grid-column: 1 / -1;
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
+  margin-top: var(--space-2);
 }
 
-@media (min-width: 560px) {
-  .profile-level {
-    grid-template-columns: auto 1fr auto;
-  }
-
-  .profile-level-actions {
-    grid-column: auto;
-  }
-}
-
+/* Four numbers on one line, no boxes. */
 .profile-stats {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-2);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-6);
 }
 
 .profile-stats > div {
-  display: grid;
-  gap: 2px;
-  padding: var(--space-3);
-  border-radius: var(--radius-md);
-  background: var(--surface-2);
-  text-align: center;
-}
-
-.profile-stats dt {
-  color: var(--text-subtle);
-  font-size: var(--text-xs);
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-1);
 }
 
 .profile-stats dd {
-  overflow: hidden;
-  font-size: var(--text-lg);
-  font-weight: 800;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
 }
 
-.profile-stats small {
-  color: var(--text-subtle);
+.profile-stats dt {
+  color: var(--text-muted);
   font-size: var(--text-sm);
-  font-weight: 600;
-}
-
-@media (max-width: 420px) {
-  .profile-stats > div {
-    padding: var(--space-2) var(--space-1);
-  }
-
-  .profile-stats dd {
-    font-size: var(--text-base);
-  }
 }
 
 .profile-hands {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  margin-top: calc(-1 * var(--space-2));
-  list-style: none;
+  margin-top: calc(-1 * var(--space-3));
+  color: var(--text-muted);
+  font-size: var(--text-sm);
 }
 
-.profile-hands li {
-  padding: var(--space-1) var(--space-3);
-  border-radius: var(--radius-pill);
-  background: color-mix(in srgb, var(--brand-3) 14%, transparent);
-  color: var(--brand-3);
-  font-size: var(--text-sm);
+.profile-hands .tabular {
+  color: var(--text);
   font-weight: 700;
 }
 
@@ -173,13 +115,13 @@
   height: 4px;
   overflow: hidden;
   border-radius: var(--radius-pill);
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(243, 239, 230, 0.1);
 }
 
 .profile-set-bar > span {
   display: block;
   height: 100%;
-  background: linear-gradient(90deg, var(--set-a), var(--set-b));
+  background: var(--set-a);
   transition: width var(--dur-slow) var(--ease-out);
 }
 
@@ -188,9 +130,10 @@
 .profile-verify {
   display: grid;
   gap: var(--space-2);
-  padding: var(--space-3) var(--space-4);
-  border-radius: var(--radius-md);
-  background: var(--surface-2);
+  margin-bottom: var(--space-5);
+  padding: var(--space-3);
+  border: 1px solid var(--border-strong);
+  border-radius: 3px;
   font-size: var(--text-sm);
 }
 
@@ -207,13 +150,22 @@
   height: 16px;
 }
 
+/* Done: the same graded-slab label as a verified pull. */
 .profile-verify.is-done {
-  background: color-mix(in srgb, var(--success) 12%, transparent);
+  border-color: var(--success);
   color: var(--success);
 }
 
+.profile-verify.is-done .profile-verify-line {
+  font-stretch: var(--stretch-label);
+  font-size: var(--text-xs);
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
 .profile-verify.is-failed {
-  background: color-mix(in srgb, var(--danger) 12%, transparent);
+  border-color: var(--danger);
   color: var(--danger);
 }
 
@@ -245,7 +197,7 @@
 }
 
 .profile-footnote {
-  margin-top: calc(-1 * var(--space-4));
+  margin-top: calc(-1 * var(--space-3));
   color: var(--text-subtle);
   font-size: var(--text-xs);
 }

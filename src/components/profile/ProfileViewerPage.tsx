@@ -72,7 +72,9 @@ const ProfileViewerPage = ({ proof, onClose }: ProfileViewerPageProps) => {
     return (
       <Sheet title="Not a valid profile" onClose={onClose} size="sm" footer={openOwn}>
         <p className="pull-viewer-badge is-invalid">
-          <ShieldAlert aria-hidden="true" /> {state.reason}
+          <span>
+            <ShieldAlert aria-hidden="true" /> {state.reason}
+          </span>
         </p>
         <p className="share-note">The link was edited, cut off or made up. Real profiles always check out.</p>
       </Sheet>

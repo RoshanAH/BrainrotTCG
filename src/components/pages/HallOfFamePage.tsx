@@ -147,11 +147,11 @@ const HallOfFamePage = ({ onClose }: HallOfFamePageProps) => {
               {who} <span className="share-fp">#{entry.fingerprint}</span>
             </span>
             <span className="hof-meta">
-              {entry.setName} · {formatDate(entry.submittedAt)} · @{entry.githubUser}
+              {entry.setName} · {formatDate(entry.submittedAt)}
             </span>
           </span>
           <span className="hof-side">
-            <span className="hof-score tabular">🧠 {entry.score.toLocaleString()}</span>
+            <span className="hof-score tabular">{entry.score.toLocaleString()}</span>
             <CheckBadge check={check} />
           </span>
         </a>
@@ -163,7 +163,7 @@ const HallOfFamePage = ({ onClose }: HallOfFamePageProps) => {
     <div className="hof-empty">
       <Crown aria-hidden="true" />
       <p>
-        <strong>No verified entries yet.</strong> Pull a Full House or better (or score 🧠 {HALL_OF_FAME_MIN_SCORE.toLocaleString()}+),
+        <strong>No verified entries yet.</strong> Pull a Full House or better (or a Brainrot Score of {HALL_OF_FAME_MIN_SCORE.toLocaleString()}+),
         share it, and submit it from the share sheet. You could be first.
       </p>
     </div>

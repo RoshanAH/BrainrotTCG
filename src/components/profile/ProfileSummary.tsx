@@ -2,7 +2,7 @@ import { useState, type ReactNode } from 'react';
 import { ChevronRight } from 'lucide-react';
 import { POKER_HANDS, xpForLevel, type HandKey, type ProfilePack, type ProfileStats } from '../../engine';
 import { COLLECTIBLE_CARDS, getSetCards } from '../../data/cards';
-import { SETS } from '../../content/sets';
+import { SETS, setCode } from '../../content/sets';
 import { toCardsWithMeta } from '../../game/pulls';
 import PackCardViewer from '../ui/PackCardViewer';
 import Sheet from '../ui/Sheet';
@@ -37,59 +37,54 @@ const ProfileSummary = ({ stats, actions, levelNote, partial = false, onOpenPack
   return (
     <div className={`profile-summary ${partial ? 'is-partial' : ''}`}>
       <section className="profile-level" aria-label={`Level ${stats.level}`}>
-        <span className="profile-level-badge" aria-hidden="true">
-          <span>LV</span>
-          {stats.level}
-        </span>
-        <span className="profile-level-xp">
+        <span className="profile-level-head">
           <span className="profile-level-label">
-            Level {stats.level}
+            Level <span className="tabular">{stats.level}</span>
             {levelNote && <span className="profile-so-far"> {levelNote}</span>}
-          </span>
-          <span className="progress" aria-hidden="true">
-            <span style={{ width: `${((stats.xp - floor) / (ceiling - floor)) * 100}%` }} />
           </span>
           <span className="profile-level-next tabular">
             {stats.xp.toLocaleString()} / {ceiling.toLocaleString()} XP
           </span>
+        </span>
+        <span className="progress" aria-hidden="true">
+          <span style={{ width: `${((stats.xp - floor) / (ceiling - floor)) * 100}%` }} />
         </span>
         {actions && <span className="profile-level-actions">{actions}</span>}
       </section>
 
       <dl className="profile-stats">
         <div>
-          <dt>Packs</dt>
           <dd className="tabular">{stats.packs.toLocaleString()}</dd>
+          <dt>packs</dt>
         </div>
         <div>
-          <dt>Cards{partial && '*'}</dt>
           <dd className="tabular">
-            {stats.unique}
-            <small>/{COLLECTIBLE_CARDS.length}</small>
+            {stats.unique}/{COLLECTIBLE_CARDS.length}
           </dd>
+          <dt>cards{partial && '*'}</dt>
         </div>
         <div>
-          <dt>Holos{partial && '*'}</dt>
           <dd className="tabular">{stats.holos.toLocaleString()}</dd>
+          <dt>holo{partial && '*'}</dt>
         </div>
         <div>
-          <dt>Best</dt>
           <dd className="tabular" title={(stats.best[0]?.score.score ?? 0).toLocaleString()}>
-            🧠 {compact.format(stats.best[0]?.score.score ?? 0)}
+            {compact.format(stats.best[0]?.score.score ?? 0)}
           </dd>
+          <dt>best score</dt>
         </div>
       </dl>
-      {partial && <p className="profile-footnote">* so far, while the rest of the packs are re-opened</p>}
-
       {hands.length > 0 && (
-        <ul className="profile-hands" aria-label="Big hands">
-          {hands.map((h) => (
-            <li key={h}>
-              <span className="tabular">{stats.hands[h]}×</span> {POKER_HANDS[h].name}
-            </li>
+        <p className="profile-hands">
+          {hands.map((h, i) => (
+            <span key={h}>
+              {i > 0 && ' · '}
+              <span className="tabular">{stats.hands[h]}</span> × {POKER_HANDS[h].name}
+            </span>
           ))}
-        </ul>
+        </p>
       )}
+      {partial && <p className="profile-footnote">* so far, while the rest of the packs are re-opened</p>}
 
       {best.length > 0 && (
         <section>
@@ -114,10 +109,12 @@ const ProfileSummary = ({ stats, actions, levelNote, partial = false, onOpenPack
                     <span className="pull-row-main">
                       <span className="pull-row-hand">{pack.score.hand.name}</span>
                       <span className="pull-row-meta">
-                        {pack.set.name} · ticket #{pack.nonce}
+                        <span className="set-code">{setCode(pack.set)}</span>
+                        <span className="pull-row-setname">{pack.set.name} · </span>
+                        ticket #{pack.nonce}
                       </span>
                     </span>
-                    <span className="pull-row-score tabular">🧠 {pack.score.score.toLocaleString()}</span>
+                    <span className="pull-row-score tabular">{pack.score.score.toLocaleString()}</span>
                     <ChevronRight className="pull-row-chevron" aria-hidden="true" />
                   </button>
                 </li>

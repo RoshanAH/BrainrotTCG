@@ -5,7 +5,7 @@ import PackCardViewer from '../ui/PackCardViewer';
 import Sheet from '../ui/Sheet';
 import ProfileSummary from './ProfileSummary';
 import { getCard } from '../../data/cards';
-import { getLatestSet } from '../../content/sets';
+import { getLatestSet, setCode } from '../../content/sets';
 import { getHistory, type HistoryEntry } from '../../game/history';
 import { getPlayer } from '../../game/player';
 import { myProfileInfo, myProfileProof, myStats, profileUrl } from '../../game/profiles';
@@ -157,10 +157,12 @@ const MyProfilePage = ({ stats, onClose, onSharePull }: MyProfilePageProps) => {
                     <span className="pull-row-main">
                       <span className="pull-row-hand">{entry.hand}</span>
                       <span className="pull-row-meta">
-                        {set?.name ?? entry.setId} · {timeAgo(entry.openedAt)}
+                        {set && <span className="set-code">{setCode(set)}</span>}
+                        <span className="pull-row-setname">{set?.name ?? entry.setId} · </span>
+                        {timeAgo(entry.openedAt)}
                       </span>
                     </span>
-                    <span className="pull-row-score tabular">🧠 {entry.score.toLocaleString()}</span>
+                    <span className="pull-row-score tabular">{entry.score.toLocaleString()}</span>
                     {cards && <ChevronRight className="pull-row-chevron" aria-hidden="true" />}
                   </button>
                 </li>

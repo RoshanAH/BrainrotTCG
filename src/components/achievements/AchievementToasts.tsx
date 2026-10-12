@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { Award } from 'lucide-react';
 import type { Achievement } from '../../data/achievements';
 import '../../styles/Toasts.css';
 
@@ -47,7 +48,7 @@ const AchievementToasts = ({ queue, onDismiss, onOpen }: AchievementToastsProps)
             transition={{ type: 'spring', stiffness: 380, damping: 28 }}
           >
             <span className="toast-icon" aria-hidden="true">
-              {grouped ? '🏆' : shown[0].icon}
+              <Award strokeWidth={2.4} />
             </span>
             <span className="toast-text">
               <span className="toast-kicker">{grouped ? `${shown.length} achievements unlocked` : 'Achievement unlocked'}</span>
