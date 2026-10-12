@@ -1,0 +1,135 @@
+{
+  "id": "six-seven-season",
+  "version": 1,
+  "name": "Six Seven Season",
+  "era": "2025",
+  "tagline": "Chicken jockeys, one gorilla & way too much 6-7",
+  "releasedAt": "2026-10-12",
+  "draft": true,
+  "palette": [
+    "#F5C518",
+    "#6BBF59",
+    "#E8492E"
+  ],
+  "packSize": 5,
+  "odds": {
+    "COMMON": 5000,
+    "UNCOMMON": 2500,
+    "RARE": 1500,
+    "EPIC": 700,
+    "LEGENDARY": 250,
+    "BRAINROT": 50
+  },
+  "holoOdds": 500,
+  "modifiers": 1,
+  "cards": [
+    {
+      "id": "played-these-games",
+      "name": "Played These Games",
+      "rarity": "COMMON",
+      "caption": "Not my first Red Light",
+      "flavor": "Squid Game 2: Gi-hun yells 'I've played these games before!' KYM's top meme of Jan 2025.",
+      "year": 2025,
+      "art": "Netflix still from Squid Game season 2, episode 3: Seong Gi-hun (Lee Jung-jae) shouting at the other players under pink dormitory light. The subtitle is cropped out."
+    },
+    {
+      "id": "penguin-tariffs",
+      "name": "Penguin Tariffs",
+      "rarity": "COMMON",
+      "caption": "Taxed for being a penguin",
+      "flavor": "Apr 2, 2025: a US tariff list hit Heard Island, whose only residents are penguins.",
+      "year": 2025,
+      "art": "Photo of the real tariffed residents: king penguins standing on black volcanic sand on Heard Island, a glacier and mossy hills behind them."
+    },
+    {
+      "id": "frieren-looking-up",
+      "name": "Frieren Looking Up",
+      "rarity": "COMMON",
+      "caption": "Chin? Never heard of her",
+      "flavor": "Nov 2025: a Redditor's wonky low-angle Frieren sketch set off a redraw craze.",
+      "year": 2025,
+      "art": "SpaceDev1's original drawing: Frieren with silver twin tails, green eyes and a red earring gazing upward, her chin a long flat wedge, on a pale blue background."
+    },
+    {
+      "id": "ashton-hall",
+      "name": "Ashton Hall's Routine",
+      "rarity": "COMMON",
+      "caption": "Up at 3:52. Face in ice.",
+      "flavor": "Mar 2025: an influencer's 4 AM routine of ice dunks and banana-peel facials went global.",
+      "year": 2025,
+      "art": "Frame from Ashton Hall's Instagram Reel: shirtless and muscular, he plunges his face into a glass bowl of ice water on a white table, with the video's own '5:49 am' timestamp."
+    },
+    {
+      "id": "james-doakes",
+      "name": "James Doakes",
+      "rarity": "UNCOMMON",
+      "caption": "I know. Can't prove it.",
+      "flavor": "Dexter's Sgt. Doakes, the one cop who knew. In 2025 his suspicious stare was everywhere.",
+      "year": 2025,
+      "art": "Still from Dexter season 1: Sgt. James Doakes (Erik King), bald with a moustache, side-eyeing someone just off-frame in a church courtyard."
+    },
+    {
+      "id": "jon-hamm-dancing",
+      "name": "Jon Hamm Dancing",
+      "rarity": "UNCOMMON",
+      "caption": "Dancing through the pain",
+      "flavor": "Late 2025: Jon Hamm's club scene from Your Friends & Neighbors became everyone's mood.",
+      "year": 2025,
+      "art": "Still from Apple TV+'s Your Friends & Neighbors: Jon Hamm, eyes closed and chin up, lost in the music under a club's blue light."
+    },
+    {
+      "id": "dubai-chocolate",
+      "name": "Dubai Chocolate",
+      "rarity": "UNCOMMON",
+      "caption": "Worth the pistachio crisis",
+      "flavor": "A TikTok-famous knafeh-pistachio bar. In 2025 its clones caused a pistachio shortage.",
+      "year": 2025,
+      "art": "Photo of a Dubai chocolate bar broken open on a plate, showing its green pistachio and crispy kataifi filling."
+    },
+    {
+      "id": "100-men-vs-1-gorilla",
+      "name": "100 Men vs 1 Gorilla",
+      "rarity": "RARE",
+      "caption": "We only gotta win once",
+      "flavor": "Apr 2025: who wins, 100 unarmed men or one silverback? The internet still can't agree.",
+      "year": 2025,
+      "art": "The painted-style AI image from the debate (left half of KYM's header): a silverback gorilla on a grassy plain facing a long column of shirtless men under a cloudy sky."
+    },
+    {
+      "id": "montoya-por-favor",
+      "name": "Montoya Por Favor",
+      "rarity": "RARE",
+      "caption": "Heartbreak speedrun",
+      "flavor": "Feb 2025, Spanish reality TV: Montoya sprints off down a beach as the host begs him back.",
+      "year": 2025,
+      "art": "Telecinco still from La Isla de las Tentaciones: José Carlos Montoya in an open white shirt and black shorts, springing up from the night-time bonfire a moment before his sprint."
+    },
+    {
+      "id": "jet2-holiday",
+      "name": "Jet2 Holiday",
+      "rarity": "EPIC",
+      "caption": "Darling, hold my hand",
+      "flavor": "Jet2's chirpy ad voice plus Jess Glynne's 'Hold My Hand' scored every disaster of 2025.",
+      "year": 2025,
+      "art": "Photo of a Jet2holidays Boeing 737-800 taxiing at Tenerife South, the red 'Jet2holidays' logo on its white fuselage and a volcanic hill behind."
+    },
+    {
+      "id": "chicken-jockey",
+      "name": "Chicken Jockey",
+      "rarity": "LEGENDARY",
+      "caption": "CHICKEN JOCKEY!!!",
+      "flavor": "A Minecraft Movie, Apr 2025: Jack Black yells it and cinemas erupt in popcorn and chaos.",
+      "year": 2025,
+      "art": "Film still: the grinning CGI baby zombie in a teal shirt riding a fluffy, blocky white chicken into the boxing ring."
+    },
+    {
+      "id": "six-seven",
+      "name": "6-7",
+      "rarity": "BRAINROT",
+      "caption": "Word of the Year, somehow",
+      "flavor": "Skrilla's 'Doot Doot (6 7)' met LaMelo Ball edits, then became Dictionary.com's 2025 WOTY.",
+      "year": 2025,
+      "art": "Photo of rapper Skrilla grinning with gold grills (the left half of KYM's header, cropped below its 'Six Seven' text and away from the 67 Kid on the right)."
+    }
+  ]
+}
