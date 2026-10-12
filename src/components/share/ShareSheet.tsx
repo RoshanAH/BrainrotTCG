@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import type { CardWithMeta } from '../cards/Card';
 import type { PackScore } from '../../engine';
 import { qualifiesForHallOfFame } from '../../engine';
-import { getLatestSet } from '../../content/sets';
+import { getLatestSet, setCode } from '../../content/sets';
 import { getPlayer } from '../../game/player';
 import { canShare, proofFor, pullUrl, type PullRef } from '../../game/pulls';
 import { bragText, hallOfFameSubmitUrl } from '../../game/share';
@@ -25,7 +25,8 @@ interface ShareSheetProps {
 
 const ShareSheet = ({ target, onClose }: ShareSheetProps) => {
   const player = getPlayer();
-  const setName = getLatestSet(target.ref.setId)?.name ?? target.ref.setId;
+  const set = getLatestSet(target.ref.setId);
+  const setName = set?.name ?? target.ref.setId;
   const shareable = canShare(target.ref);
   const url = useMemo(() => (shareable ? pullUrl(proofFor(target.ref)) : ''), [shareable, target.ref]);
   const text = bragText(target.cards, target.score, setName, url);
@@ -52,6 +53,8 @@ const ShareSheet = ({ target, onClose }: ShareSheetProps) => {
         playerName: player.name,
         fingerprint: player.fingerprint,
         url,
+        cert: set ? `${setCode(set)} #${target.ref.nonce}` : `#${target.ref.nonce}`,
+        setColor: set?.palette?.[0],
       });
       const file = new File([blob], `brainrot-pull-${target.ref.setId}-${target.ref.nonce}.png`, { type: 'image/png' });
       if (navigator.canShare?.({ files: [file] })) {
