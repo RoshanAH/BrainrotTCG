@@ -6,6 +6,7 @@ import { exportPlayer, getPlayer, renamePlayer } from '../../game/player';
 import { canBringOldSave, fetchOldSave, hasProgress, importSave, type MoveResult } from '../../game/move';
 import { CARD_FLIP_SRC } from '../../constants/audio';
 import { effectsLevel } from '../../utils/settings';
+import { SPECIAL_REVEAL_CUTOFF, SPECIAL_REVEAL_DURATION_MS } from '../../game/reveal';
 import type { Settings } from '../../types';
 import Sheet from '../ui/Sheet';
 import '../../styles/Settings.css';
@@ -193,6 +194,12 @@ const SettingsPage = ({ settings, onSettingsChange, onClose, onImportSave }: Set
                         desc="Sparks and confetti"
                         checked={settings.particlesEnabled}
                         onChange={() => onSettingsChange({ ...settings, particlesEnabled: !settings.particlesEnabled })}
+                    />
+                    <SwitchRow
+                        label="Pause on good pulls"
+                        desc={`Hold cards worth ${SPECIAL_REVEAL_CUTOFF.toLocaleString()}+ points for ${SPECIAL_REVEAL_DURATION_MS / 1000} seconds. Off: reveal effects still play, but you can skip.`}
+                        checked={settings.pauseBigPulls !== false}
+                        onChange={() => onSettingsChange({ ...settings, pauseBigPulls: settings.pauseBigPulls === false })}
                     />
                     <SwitchRow
                         label="Preview upcoming sets"

@@ -12,6 +12,7 @@ export const DEFAULT_SETTINGS: Settings = {
   musicVolume: 0.5,
   effectsVolume: 1,
   particlesEnabled: true,
+  pauseBigPulls: true,
 };
 
 const slider = (value: unknown, fallback: number) =>
@@ -26,6 +27,7 @@ export const readSettings = (stored: unknown): Settings => {
     ...rest,
     musicVolume: slider(rest.musicVolume, muted ? 0 : DEFAULT_SETTINGS.musicVolume),
     effectsVolume: slider(rest.effectsVolume, muted ? 0 : DEFAULT_SETTINGS.effectsVolume),
+    pauseBigPulls: typeof rest.pauseBigPulls === 'boolean' ? rest.pauseBigPulls : DEFAULT_SETTINGS.pauseBigPulls,
   };
 };
 

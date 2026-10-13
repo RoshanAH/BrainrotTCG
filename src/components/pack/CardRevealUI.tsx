@@ -17,10 +17,12 @@ interface CardRevealUIProps {
   totalCards: number;
   hasMovedMouse: boolean;
   onInteraction: () => void;
-  /** Skip ordinary cards and reveal any remaining valuable cards before the summary. */
+  /** Skip to the summary, pausing for valuable cards when the setting is enabled. */
   onSkip: () => void;
   /** A valuable card gets a moment to land before any input can move on. */
   revealLocked?: boolean;
+  /** Visual celebration runs independently of the optional input lock. */
+  celebrating?: boolean;
   skipping?: boolean;
 }
 
@@ -32,13 +34,14 @@ const SWIPE_SPEED = 500;
  * One card at a time off the top of the stack, rarest last. Big pulls light the back's edge before
  * the flip and get a spotlight after it; a flipped card can be swiped away or tapped.
  */
-const CardRevealUI = ({ currentCard, currentIndex, totalCards, hasMovedMouse, onInteraction, onSkip, revealLocked = false, skipping = false }: CardRevealUIProps) => {
+const CardRevealUI = ({ currentCard, currentIndex, totalCards, hasMovedMouse, onInteraction, onSkip, revealLocked = false, celebrating = false, skipping = false }: CardRevealUIProps) => {
   const touch = useCoarsePointer();
   const reducedMotion = useReducedMotion();
   const revealed = currentCard?.isRevealed;
   const remaining = totalCards - currentIndex - 1;
   const big = !!currentCard && isBigPull(currentCard);
   const special = !!currentCard && isSpecialReveal(currentCard);
+  const celebration = celebrating && !!revealed && special;
   const slow = !!currentCard && !special && (currentCard.rarity === 'LEGENDARY' || currentCard.rarity === 'BRAINROT');
   const hint = revealLocked ? 'Big pull!' : touch
     ? revealed
@@ -72,7 +75,7 @@ const CardRevealUI = ({ currentCard, currentIndex, totalCards, hasMovedMouse, on
         </button>
       </div>
 
-      <div className={`active-card-container ${revealed && big ? 'is-spotlit' : ''}`} aria-busy={revealLocked}>
+      <div className={`active-card-container ${revealed && big ? 'is-spotlit' : ''}`} aria-busy={revealLocked} style={{ '--special-reveal-duration': `${SPECIAL_REVEAL_DURATION_MS}ms` } as React.CSSProperties}>
         {/* The cards still to come, as a stack behind the current one. */}
         {Array.from({ length: Math.min(remaining, 3) }, (_, i) => (
           <div key={`stack-${i}`} className="reveal-stack-card" style={{ '--depth': i + 1 } as React.CSSProperties} aria-hidden="true">
@@ -83,11 +86,11 @@ const CardRevealUI = ({ currentCard, currentIndex, totalCards, hasMovedMouse, on
           {currentCard && (
             <Motion.div
               key={currentCard.uniqueId}
-              className={`reveal-card ${revealLocked ? 'is-celebrating' : ''}`}
+              className={`reveal-card ${celebration ? 'is-celebrating' : ''}`}
               initial={{ y: 24, opacity: 0, scale: 0.96 }}
-              animate={{ y: 0, opacity: 1, scale: revealLocked && !reducedMotion ? [1, 1.055, 1.03] : revealed && big ? 1.03 : 1 }}
+              animate={{ y: 0, opacity: 1, scale: celebration && !reducedMotion ? [1, 1.055, 1.03] : revealed && big ? 1.03 : 1 }}
               exit={{ x: -360, opacity: 0, rotate: -10, transition: { duration: 0.22 } }}
-              transition={{ duration: revealLocked ? SPECIAL_REVEAL_DURATION_MS / 1000 : 0.22, ease: 'easeOut' }}
+              transition={{ duration: celebration ? SPECIAL_REVEAL_DURATION_MS / 1000 : 0.22, ease: 'easeOut' }}
               drag={revealed && !revealLocked ? 'x' : false}
               dragSnapToOrigin
               dragElastic={0.6}
@@ -97,8 +100,8 @@ const CardRevealUI = ({ currentCard, currentIndex, totalCards, hasMovedMouse, on
             </Motion.div>
           )}
         </AnimatePresence>
-        {revealLocked && currentCard && (
-          <div className="special-reveal-celebration" role="status">
+        {celebration && currentCard && (
+          <div key={currentCard.uniqueId} className="special-reveal-celebration" role="status">
             <div className="special-reveal-rays" aria-hidden="true" />
             <div className="special-reveal-banner">
               <span>Big pull!</span>

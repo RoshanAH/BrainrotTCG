@@ -573,7 +573,7 @@
     border-radius: 12px;
     box-shadow: 0 0 24px #ffd23f, 0 0 64px #ffd23f80;
     pointer-events: none;
-    animation: valuable-card-ring 1s ease-out both;
+    animation: valuable-card-ring var(--special-reveal-duration) ease-out both;
 }
 
 .reveal-card.is-celebrating::after {
@@ -586,7 +586,7 @@
     font-size: 42px;
     line-height: 1;
     pointer-events: none;
-    animation: valuable-card-spark 1s ease-out both;
+    animation: valuable-card-spark var(--special-reveal-duration) ease-out both;
 }
 
 @keyframes valuable-card-ring {
@@ -615,7 +615,7 @@
     inset: -12px;
     background: repeating-conic-gradient(from 0deg, #ffd23f26 0deg 8deg, transparent 8deg 24deg);
     mask-image: radial-gradient(ellipse, transparent 18%, #000 48%, transparent 72%);
-    animation: valuable-card-rays 1s ease-out both;
+    animation: valuable-card-rays var(--special-reveal-duration) ease-out both;
 }
 
 .special-reveal-banner {
@@ -631,7 +631,7 @@
     box-shadow: 0 0 32px #ffd23f80, 0 8px 24px #0009;
     color: #241800;
     text-align: center;
-    animation: valuable-card-banner 1s ease-out both;
+    animation: valuable-card-banner var(--special-reveal-duration) ease-out both;
 }
 
 .special-reveal-banner > span {

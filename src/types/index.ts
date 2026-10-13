@@ -78,6 +78,8 @@ export interface Settings {
   /** Sound effects volume slider (cards, the pack, voices), 0 (off) to 1. */
   effectsVolume: number;
   particlesEnabled: boolean;
+  /** Hold good pulls for three seconds; defaults to on for older saves. Effects still play when off. */
+  pauseBigPulls?: boolean;
   /** Chosen level rewards (game/progression.ts); a locked choice falls back to the first. */
   cardBack?: string;
   packFoil?: string;

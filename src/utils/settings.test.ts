@@ -14,6 +14,14 @@ describe('settings', () => {
     expect(muted).not.toHaveProperty('soundEnabled');
   });
 
+  it('enables good-pull pauses for older saves, preserves the toggle, and rejects malformed values', () => {
+    expect(readSettings({ musicVolume: 0.2 }).pauseBigPulls).toBe(true);
+    expect(readSettings({ pauseBigPulls: false }).pauseBigPulls).toBe(false);
+    expect(readSettings({ pauseBigPulls: true }).pauseBigPulls).toBe(true);
+    expect(readSettings({ pauseBigPulls: 'false' }).pauseBigPulls).toBe(true);
+    expect(readSettings({ pauseBigPulls: null }).pauseBigPulls).toBe(true);
+  });
+
   it('keeps sliders in range', () => {
     expect(readSettings({ musicVolume: 3, effectsVolume: -1 })).toMatchObject({ musicVolume: 1, effectsVolume: 0 });
     expect(readSettings({ musicVolume: 'loud', effectsVolume: Number.NaN })).toMatchObject({ musicVolume: 0.5, effectsVolume: 1 });

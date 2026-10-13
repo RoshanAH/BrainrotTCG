@@ -48,11 +48,13 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
   const [preloadedAssets, setPreloadedAssets] = useState<PreloadedAssets | null>(null);
   const [showSummary, setShowSummary] = useState(false);
   const [revealLocked, setRevealLocked] = useState(false);
+  const [celebratingCardId, setCelebratingCardId] = useState<CardWithMeta['uniqueId'] | null>(null);
   const [skipping, setSkipping] = useState(false);
   const packDesign = packImageUrl(set.id);
   const [hasMovedMouse, setHasMovedMouse] = useState(false);
   const [autoMode, setAutoMode] = useState(false);
   const effectsVolume = effectsLevel(settings.effectsVolume);
+  const pauseBigPulls = settings.pauseBigPulls !== false;
 
   const { playAndCleanup, preloadAudio, cleanupAudio, playRandom } = useAudio();
 
@@ -61,7 +63,7 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
   const handleInteractionRef = useRef<() => void>(() => {});
   // Set synchronously before React renders: rapid taps and intervals share the same guard.
   const revealLockedUntilRef = useRef(0);
-  const revealLockTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const celebrationTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const skippingRef = useRef(false);
   /** Whether this pack has been handed to onOpen; a pack is recorded once, however it's finished. */
   const recordedRef = useRef(false);
@@ -155,10 +157,11 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
   const finishPack = useCallback(() => {
     skippingRef.current = false;
     setSkipping(false);
-    if (revealLockTimerRef.current) clearTimeout(revealLockTimerRef.current);
-    revealLockTimerRef.current = null;
+    if (celebrationTimerRef.current) clearTimeout(celebrationTimerRef.current);
+    celebrationTimerRef.current = null;
     revealLockedUntilRef.current = 0;
     setRevealLocked(false);
+    setCelebratingCardId(null);
     if (preloadedAssets) {
       cleanupAudio(preloadedAssets.brainrotVoices);
       cleanupAudio([preloadedAssets.cardFlip]);
@@ -186,21 +189,27 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
   }, [dealtPack, onOpen]);
 
   const nextCard = useCallback(() => {
-    if (performance.now() < revealLockedUntilRef.current) return;
+    if (pauseBigPulls && performance.now() < revealLockedUntilRef.current) return;
     if (currentIndex < openedCards.length - 1) {
       setCurrentIndex(currentIndex + 1);
     } else {
       recordPack();
       setShowSummary(true);
     }
-  }, [currentIndex, openedCards, recordPack]);
+  }, [currentIndex, openedCards, recordPack, pauseBigPulls]);
 
-  /** Skip ordinary cards, but let every remaining valuable card have its reveal first. */
+  /** With the pause enabled, Skip still gives each valuable card its full reveal. */
   const skipAll = useCallback(() => {
-    if (disabled || skippingRef.current || performance.now() < revealLockedUntilRef.current) return;
+    if (disabled || skippingRef.current || (pauseBigPulls && performance.now() < revealLockedUntilRef.current)) return;
+    if (!pauseBigPulls) {
+      setOpenedCards(openedCards.map((card) => ({ ...card, isRevealed: true })));
+      recordPack();
+      setShowSummary(true);
+      return;
+    }
     skippingRef.current = true;
     setSkipping(true);
-  }, [disabled]);
+  }, [disabled, pauseBigPulls, openedCards, recordPack]);
 
   const closeSummary = useCallback(() => {
     finishPack();
@@ -211,13 +220,16 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
     if (!currentCard || currentCard.isRevealed || !preloadedAssets) return;
 
     if (isSpecialReveal(currentCard)) {
-      revealLockedUntilRef.current = performance.now() + SPECIAL_REVEAL_DURATION_MS;
-      setRevealLocked(true);
-      if (revealLockTimerRef.current) clearTimeout(revealLockTimerRef.current);
-      revealLockTimerRef.current = setTimeout(() => {
+      // The celebration always plays; the setting controls only the input lock.
+      setCelebratingCardId(currentCard.uniqueId);
+      revealLockedUntilRef.current = pauseBigPulls ? performance.now() + SPECIAL_REVEAL_DURATION_MS : 0;
+      setRevealLocked(pauseBigPulls);
+      if (celebrationTimerRef.current) clearTimeout(celebrationTimerRef.current);
+      celebrationTimerRef.current = setTimeout(() => {
         revealLockedUntilRef.current = 0;
-        revealLockTimerRef.current = null;
+        celebrationTimerRef.current = null;
         setRevealLocked(false);
+        setCelebratingCardId(null);
       }, SPECIAL_REVEAL_DURATION_MS);
     }
 
@@ -242,15 +254,15 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
         triggerHoloSparkles();
       }
     }
-  }, [openedCards, currentIndex, preloadedAssets, playAndCleanup, playRandom, settings, effectsVolume]);
+  }, [openedCards, currentIndex, preloadedAssets, playAndCleanup, playRandom, settings, effectsVolume, pauseBigPulls]);
 
   // A skip is a short sequence: mount each valuable card face down, flip it, wait for its lock,
   // then move to the next. Already revealed cards don't repeat their celebration.
   useEffect(() => {
-    if (!skipping || revealLocked || !isOpening || showSummary || disabled) return;
+    if (!skipping || (revealLocked && pauseBigPulls) || !isOpening || showSummary || disabled) return;
     // Give a newly mounted card a frame face down before starting its flip.
     const frame = requestAnimationFrame(() => {
-      const nextIndex = nextSpecialRevealIndex(openedCards);
+      const nextIndex = pauseBigPulls ? nextSpecialRevealIndex(openedCards) : -1;
       if (nextIndex === -1) {
         setOpenedCards(openedCards.map((card) => ({ ...card, isRevealed: true })));
         recordPack();
@@ -265,10 +277,10 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
       }
     });
     return () => cancelAnimationFrame(frame);
-  }, [skipping, revealLocked, isOpening, showSummary, disabled, openedCards, currentIndex, handleFlip, recordPack]);
+  }, [skipping, revealLocked, pauseBigPulls, isOpening, showSummary, disabled, openedCards, currentIndex, handleFlip, recordPack]);
 
   const handleInteraction = useCallback(() => {
-    if (!isOpening || showSummary || disabled || skippingRef.current || performance.now() < revealLockedUntilRef.current) return;
+    if (!isOpening || showSummary || disabled || skippingRef.current || (pauseBigPulls && performance.now() < revealLockedUntilRef.current)) return;
 
     const currentItem = openedCards[currentIndex];
     if (currentItem && !currentItem.isRevealed) {
@@ -276,7 +288,7 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
     } else {
       nextCard();
     }
-  }, [isOpening, showSummary, disabled, openedCards, currentIndex, handleFlip, nextCard]);
+  }, [isOpening, showSummary, disabled, openedCards, currentIndex, handleFlip, nextCard, pauseBigPulls]);
 
   // Keep ref updated for use in intervals (avoids stale closure)
   useEffect(() => {
@@ -371,7 +383,7 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
 
   // Cleanup on unmount
   useEffect(() => () => {
-    if (revealLockTimerRef.current) clearTimeout(revealLockTimerRef.current);
+    if (celebrationTimerRef.current) clearTimeout(celebrationTimerRef.current);
     if (openTimeoutRef.current) {
       window.clearTimeout(openTimeoutRef.current);
     }
@@ -427,7 +439,8 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
                 hasMovedMouse={hasMovedMouse}
                 onInteraction={handleInteraction}
                 onSkip={skipAll}
-                revealLocked={revealLocked}
+                revealLocked={revealLocked && pauseBigPulls}
+                celebrating={celebratingCardId === currentCard?.uniqueId}
                 skipping={skipping}
               />
             ) : (
