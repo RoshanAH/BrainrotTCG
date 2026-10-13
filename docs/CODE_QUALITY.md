@@ -69,3 +69,5 @@ The following primary-source guidance was retrieved from its official GitHub sou
 These principles are adapted to this repository, not an adoption of every external style rule. The simplification recommendations are product hypotheses supported by our reported usability problems; they still need newcomer/device validation. The previously blocked Nielsen Norman Group/web.dev pages were not reviewed and are not cited as verified research here.
 
 See [BEST_PRACTICES_AUDIT.md](BEST_PRACTICES_AUDIT.md) for concrete repository findings, reproductions and existing issue owners.
+
+Use [TESTING.md](TESTING.md) for the layered agent verification workflow and evidence template.
