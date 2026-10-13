@@ -8,6 +8,7 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { buildSetCards, SETS_DIR } from './lib.ts';
 import { buildSetPack } from './pack.ts';
 import { buildFinishMask } from './finish-mask.ts';
+import { buildSetFinishThumbs } from './finish-thumbs.ts';
 
 await buildFinishMask();
 
@@ -28,6 +29,10 @@ for (const set of SETS) {
   skipped += result.skipped;
   missing.push(...result.missing);
   if (result.missing.length) continue;
+  const thumbs = await buildSetFinishThumbs(set.id, force);
+  built += thumbs.built;
+  skipped += thumbs.skipped;
+  if (thumbs.built) console.log(`built ${thumbs.built} ${set.id} finish thumbnails`);
   const manifestPath = `${SETS_DIR}/${set.id}/cards/.manifest.json`;
   const manifest = existsSync(manifestPath) ? JSON.parse(readFileSync(manifestPath, 'utf8')) : {};
   if (await buildSetPack(set, manifest, force)) {

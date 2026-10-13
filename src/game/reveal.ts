@@ -9,6 +9,15 @@ type Revealable = { rarity: Rarity; isHolo: boolean; finish?: Finish | null; mis
 /** What the card is worth: rarity times holo, finish and misprint, so a Platinum Common outranks a plain Rare. */
 const rank = (card: Revealable) => cardPoints(card.rarity, card.isHolo, card.finish, card.misprint);
 
+/** Individual card value, before any pack combo multiplier. Exactly the cutoff uses a normal reveal. */
+export const SPECIAL_REVEAL_CUTOFF = 2_000;
+export const SPECIAL_REVEAL_DURATION_MS = 1_000;
+export const isSpecialReveal = (card: Revealable): boolean => rank(card) > SPECIAL_REVEAL_CUTOFF;
+
+/** Skip can pass ordinary cards, but every still-hidden valuable card must get its own reveal. */
+export const nextSpecialRevealIndex = (cards: readonly (Revealable & { isRevealed: boolean })[]): number =>
+  cards.findIndex((card) => !card.isRevealed && isSpecialReveal(card));
+
 /** Least valuable first, most valuable last; ties keep pack order. */
 export const revealOrder = <T extends Revealable>(cards: readonly T[]): T[] =>
   cards

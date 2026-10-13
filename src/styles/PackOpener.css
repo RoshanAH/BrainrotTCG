@@ -392,6 +392,7 @@
     width: 100%;
     min-height: 0;
     padding: var(--space-2) var(--gutter) var(--space-4);
+    overflow-x: hidden;
     overflow-y: auto;
 }
 
@@ -419,17 +420,20 @@
 
 /* The card takes all the height that's left, at its real 687:1024 shape. */
 .active-card-container {
+    position: relative;
     flex: 1;
     min-height: 0;
     width: 100%;
     container-type: size;
     display: grid;
     place-items: center;
+    /* Animated cards, rings and rays stay inside the stage, rather than enlarging its scroll area. */
+    overflow: clip;
 }
 
 .active-card-container .card-wrapper {
     /* Leaves room under the card for the stack's edges. */
-    height: min(100cqh - 28px, 46rem, (100cqw - 16px) * 1024 / 687);
+    height: min((100cqh - 28px) / 1.055, 46rem, (100cqw - 16px) / 1.055 * 1024 / 687);
     max-height: none;
     aspect-ratio: 687 / 1024;
 }
@@ -516,18 +520,137 @@
     color: var(--text);
 }
 
+.reveal-skip:disabled {
+    opacity: 0.35;
+    cursor: default;
+}
+
 /* The current card and the stack behind it share one grid cell. */
 .active-card-container > * {
     grid-area: 1 / 1;
 }
 
 .reveal-card {
+    position: relative;
     z-index: 2;
     touch-action: pan-y;
 }
 
+/* A valuable card gets one celebratory beat as its flip lands. */
+.reveal-card.is-celebrating::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    z-index: 4;
+    border: 3px solid #ffe38a;
+    border-radius: 12px;
+    box-shadow: 0 0 24px #ffd23f, 0 0 64px #ffd23f80;
+    pointer-events: none;
+    animation: valuable-card-ring 1s ease-out both;
+}
+
+.reveal-card.is-celebrating::after {
+    content: '✦';
+    position: absolute;
+    top: 8%;
+    right: -18px;
+    z-index: 4;
+    color: var(--brand);
+    font-size: 42px;
+    line-height: 1;
+    pointer-events: none;
+    animation: valuable-card-spark 1s ease-out both;
+}
+
+@keyframes valuable-card-ring {
+    0% { opacity: 0; transform: scale(0.98); }
+    25% { opacity: 0.8; }
+    100% { opacity: 0; transform: scale(1.12); }
+}
+
+@keyframes valuable-card-spark {
+    0% { opacity: 0; transform: translateY(12px) rotate(-12deg) scale(0.4); }
+    30% { opacity: 1; }
+    100% { opacity: 0; transform: translateY(-22px) rotate(12deg) scale(1.1); }
+}
+
+.special-reveal-celebration {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    pointer-events: none;
+    display: grid;
+    place-items: center;
+}
+
+.special-reveal-rays {
+    position: absolute;
+    inset: -12px;
+    background: repeating-conic-gradient(from 0deg, #ffd23f26 0deg 8deg, transparent 8deg 24deg);
+    mask-image: radial-gradient(ellipse, transparent 18%, #000 48%, transparent 72%);
+    animation: valuable-card-rays 1s ease-out both;
+}
+
+.special-reveal-banner {
+    position: absolute;
+    bottom: 8%;
+    display: grid;
+    gap: 2px;
+    min-width: min(80%, 18rem);
+    padding: 12px 24px;
+    border: 1px solid #ffe38a;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #ffe69b, #ffd23f);
+    box-shadow: 0 0 32px #ffd23f80, 0 8px 24px #0009;
+    color: #241800;
+    text-align: center;
+    animation: valuable-card-banner 1s ease-out both;
+}
+
+.special-reveal-banner > span {
+    font-size: clamp(22px, 4cqw, 32px);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.special-reveal-banner > strong {
+    font-size: 18px;
+}
+
+@keyframes valuable-card-rays {
+    0% { opacity: 0; transform: rotate(-12deg) scale(0.8); }
+    25% { opacity: 1; }
+    85% { opacity: 1; }
+    100% { opacity: 0; transform: rotate(12deg) scale(1.08); }
+}
+
+@keyframes valuable-card-banner {
+    0% { opacity: 0; transform: translateY(12px) scale(0.85); }
+    20% { opacity: 1; transform: translateY(0) scale(1.04); }
+    35%, 85% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0; transform: translateY(-4px) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .special-reveal-rays {
+        animation: none;
+        opacity: 0.65;
+    }
+    .special-reveal-banner {
+        animation: none;
+    }
+    .reveal-card.is-celebrating::before {
+        animation: none;
+        opacity: 0.65;
+    }
+    .reveal-card.is-celebrating::after {
+        animation: none;
+    }
+}
+
 .reveal-stack-card {
-    height: min(100cqh - 28px, 46rem, (100cqw - 16px) * 1024 / 687);
+    height: min((100cqh - 28px) / 1.055, 46rem, (100cqw - 16px) / 1.055 * 1024 / 687);
     aspect-ratio: 687 / 1024;
     border-radius: 8px;
     overflow: hidden;
@@ -701,7 +824,7 @@
 @media (max-width: 700px) {
     .active-card-container .card-wrapper,
     .reveal-stack-card {
-        height: min(100cqh - 28px, 46rem, 100cqw * 0.84 * 1024 / 687);
+        height: min((100cqh - 28px) / 1.055, 46rem, 100cqw * 0.84 * 1024 / 687);
     }
 
     .summary-title {

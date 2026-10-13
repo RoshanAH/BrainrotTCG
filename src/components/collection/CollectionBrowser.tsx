@@ -124,7 +124,7 @@ const CollectionBrowser = ({ collection, onClose }: CollectionBrowserProps) => {
                           onClick={() => setSelected({ card, ...counts })}
                           aria-label={`${card.name}, ${number}, ${CARD_RARITIES[card.rarity].name}, ${total} owned${counts.holoCount ? `, ${counts.holoCount} holo` : ''}${extras ? `, ${extras}` : ''}`}
                         >
-                          <CardImage src={card.image} finish={finish} alt="" loading="lazy" />
+                          <CardImage src={card.image} finish={finish} thumbnail alt="" loading="lazy" decoding="async" />
                           {(finish || (counts.misprints ?? 0) > 0) && (
                             <span className="collection-mods" aria-hidden="true">
                               {finish && FINISH_INFO[finish].name}

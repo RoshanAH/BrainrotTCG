@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { isBigPull, markNew, revealOrder } from './reveal';
+import { isBigPull, isSpecialReveal, markNew, nextSpecialRevealIndex, revealOrder } from './reveal';
 
 describe('reveal order', () => {
   it('shows the most valuable card last, otherwise pack order', () => {
@@ -33,9 +33,36 @@ describe('reveal order', () => {
     expect(isBigPull({ rarity: 'RARE', isHolo: false })).toBe(true);
   });
 
+  it('celebrates only individual cards worth more than 2,000, including all modifiers', () => {
+    expect(isSpecialReveal({ rarity: 'BRAINROT', isHolo: false })).toBe(false);
+    expect(isSpecialReveal({ rarity: 'COMMON', isHolo: false, finish: 'PLATINUM' })).toBe(false); // exactly 2,000
+    expect(isSpecialReveal({ rarity: 'COMMON', isHolo: false, misprint: true })).toBe(false); // exactly 2,000
+    expect(isSpecialReveal({ rarity: 'LEGENDARY', isHolo: true })).toBe(true); // 4,000
+    expect(isSpecialReveal({ rarity: 'EPIC', isHolo: false, finish: 'GOLD' })).toBe(true); // Gold Verity: 2,800
+    expect(isSpecialReveal({ rarity: 'RARE', isHolo: false, finish: 'GOLD' })).toBe(false); // 1,400
+    expect(isSpecialReveal({ rarity: 'COMMON', isHolo: false, finish: 'DIAMOND' })).toBe(true); // 10,000
+    expect(isSpecialReveal({ rarity: 'COMMON', isHolo: true, finish: 'SILVER' })).toBe(false); // exactly 2,000
+    expect(isSpecialReveal({ rarity: 'RARE', isHolo: true, finish: 'SILVER', misprint: true })).toBe(true);
+  });
+
   it('marks only the first copy of a card the player did not own', () => {
     const owned = new Set(['set/x']);
     const marked = markNew([{ key: 'set/y' }, { key: 'set/x' }, { key: 'set/y' }], (k) => owned.has(k));
     expect(marked.map((c) => c.isNew)).toEqual([true, false, false]);
+  });
+
+  it('keeps every unrevealed valuable card in the skip sequence, without replaying seen cards', () => {
+    const cards = [
+      { rarity: 'COMMON' as const, isHolo: false, isRevealed: false },
+      { rarity: 'COMMON' as const, isHolo: false, finish: 'PLATINUM' as const, isRevealed: false }, // exactly 2,000
+      { rarity: 'EPIC' as const, isHolo: false, finish: 'GOLD' as const, isRevealed: true }, // already seen
+      { rarity: 'EPIC' as const, isHolo: false, finish: 'GOLD' as const, isRevealed: false },
+      { rarity: 'COMMON' as const, isHolo: false, finish: 'DIAMOND' as const, isRevealed: false },
+    ];
+    expect(nextSpecialRevealIndex(cards)).toBe(3);
+    const afterGold = cards.map((card, index) => ({ ...card, isRevealed: card.isRevealed || index === 3 }));
+    expect(nextSpecialRevealIndex(afterGold)).toBe(4);
+    expect(nextSpecialRevealIndex(afterGold.map((card, index) => ({ ...card, isRevealed: card.isRevealed || index === 4 })))).toBe(-1);
+    expect(nextSpecialRevealIndex(cards.slice(0, 2))).toBe(-1);
   });
 });

@@ -56,6 +56,7 @@ src/content/       Data. Adding content never needs code changes.
   sets/<set>/set.json  cards (id, name, rarity, caption, flavor, art brief), odds, holo odds
   sets/<set>/art/      source art (real images, full cards, or SVG placeholders)
   sets/<set>/cards/    built card images (npm run cards); committed
+  sets/<set>/finish-thumbs/  small ready-made metallic finishes for the collection; committed
   sets/<set>/pack.webp the set's booster pack wrapper, built from its colours and rarest cards
   sets/index.ts        the registry: every version of every set (old versions and archived sets stay for old proofs)
   sets.lock.json       hash of each released set@version (npm run check:sets)
@@ -257,9 +258,14 @@ diamond blue/violet), with glow on platinum and diamond; misprints show off-regi
 (`src/game/modifiers.ts`), in the collection, history, Hall of Fame and the share poster, and they're
 stored compactly in the pack history (`src/game/cardCode.ts`: `sigma*G!` is a holo Gold misprint).
 
-`src/game/finishImage.ts` uses the shared frame's alpha mask to protect the meme artwork, and caches
-the result per card/finish. `CardImage` and the PNG exporter use the same image. `npm run cards`
-also rebuilds the small lossless mask (`src/assets/images/card-frame-mask.webp`) from the frame template.
+`src/game/frameRecolor.ts` uses the shared frame's alpha mask to protect the meme artwork. Large
+card views and the PNG exporter use `src/game/finishImage.ts`, caching full-size results per card/finish.
+Collection tiles load pre-rendered 344px WebP finishes directly, with native lazy loading and no
+canvas recolouring or PNG encoding on first load. They use the same recolouring function before
+resizing. `npm run cards` rebuilds these thumbnails and the small lossless mask
+(`src/assets/images/card-frame-mask.webp`); `npm run cards:finish-thumbs` refreshes just the thumbnails.
+Input hashes include the source image, mask, recolouring code and output settings, so changed cards
+or finishes regenerate their thumbnails while unchanged assets are skipped.
 
 ## Invariants (CI enforces these)
 

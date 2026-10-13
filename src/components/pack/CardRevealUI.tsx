@@ -1,12 +1,13 @@
 import { useRef } from 'react';
-import { motion, AnimatePresence, type PanInfo } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion, type PanInfo } from 'framer-motion';
 import { FastForward } from 'lucide-react';
 import Card from '../cards/Card';
 import type { CardWithMeta } from '../cards/Card';
 import cardBackImage from '../../assets/images/card_back.webp';
 import RarityBadge from '../ui/RarityBadge';
 import { useCoarsePointer } from '../../hooks/useCoarsePointer';
-import { isBigPull } from '../../game/reveal';
+import { isBigPull, isSpecialReveal, SPECIAL_REVEAL_DURATION_MS } from '../../game/reveal';
+import { cardPoints } from '../../engine';
 
 const Motion = motion;
 
@@ -16,8 +17,11 @@ interface CardRevealUIProps {
   totalCards: number;
   hasMovedMouse: boolean;
   onInteraction: () => void;
-  /** Reveal everything and go straight to the summary. */
+  /** Skip ordinary cards and reveal any remaining valuable cards before the summary. */
   onSkip: () => void;
+  /** A valuable card gets a moment to land before any input can move on. */
+  revealLocked?: boolean;
+  skipping?: boolean;
 }
 
 /** How far (px) or how fast (px/s) a flipped card has to be flung to move on. */
@@ -28,13 +32,15 @@ const SWIPE_SPEED = 500;
  * One card at a time off the top of the stack, rarest last. Big pulls light the back's edge before
  * the flip and get a spotlight after it; a flipped card can be swiped away or tapped.
  */
-const CardRevealUI = ({ currentCard, currentIndex, totalCards, hasMovedMouse, onInteraction, onSkip }: CardRevealUIProps) => {
+const CardRevealUI = ({ currentCard, currentIndex, totalCards, hasMovedMouse, onInteraction, onSkip, revealLocked = false, skipping = false }: CardRevealUIProps) => {
   const touch = useCoarsePointer();
+  const reducedMotion = useReducedMotion();
   const revealed = currentCard?.isRevealed;
   const remaining = totalCards - currentIndex - 1;
   const big = !!currentCard && isBigPull(currentCard);
-  const slow = !!currentCard && (currentCard.rarity === 'LEGENDARY' || currentCard.rarity === 'BRAINROT');
-  const hint = touch
+  const special = !!currentCard && isSpecialReveal(currentCard);
+  const slow = !!currentCard && !special && (currentCard.rarity === 'LEGENDARY' || currentCard.rarity === 'BRAINROT');
+  const hint = revealLocked ? 'Big pull!' : touch
     ? revealed
       ? 'Swipe or tap for the next card'
       : 'Tap card to flip'
@@ -46,10 +52,11 @@ const CardRevealUI = ({ currentCard, currentIndex, totalCards, hasMovedMouse, on
   const draggedAt = useRef(0);
   const onDragEnd = (_: unknown, info: PanInfo) => {
     draggedAt.current = performance.now();
+    if (revealLocked) return;
     if (Math.abs(info.offset.x) > SWIPE_DISTANCE || Math.abs(info.velocity.x) > SWIPE_SPEED) onInteraction();
   };
   const onTap = () => {
-    if (performance.now() - draggedAt.current > 300) onInteraction();
+    if (!revealLocked && performance.now() - draggedAt.current > 300) onInteraction();
   };
 
   return (
@@ -60,12 +67,12 @@ const CardRevealUI = ({ currentCard, currentIndex, totalCards, hasMovedMouse, on
             <span key={i} className={i < currentIndex ? 'done' : i === currentIndex ? 'current' : ''} aria-hidden="true" />
           ))}
         </div>
-        <button type="button" className="reveal-skip" onClick={onSkip}>
+        <button type="button" className="reveal-skip" onClick={onSkip} disabled={revealLocked || skipping}>
           Skip <FastForward aria-hidden="true" />
         </button>
       </div>
 
-      <div className={`active-card-container ${revealed && big ? 'is-spotlit' : ''}`}>
+      <div className={`active-card-container ${revealed && big ? 'is-spotlit' : ''}`} aria-busy={revealLocked}>
         {/* The cards still to come, as a stack behind the current one. */}
         {Array.from({ length: Math.min(remaining, 3) }, (_, i) => (
           <div key={`stack-${i}`} className="reveal-stack-card" style={{ '--depth': i + 1 } as React.CSSProperties} aria-hidden="true">
@@ -76,12 +83,12 @@ const CardRevealUI = ({ currentCard, currentIndex, totalCards, hasMovedMouse, on
           {currentCard && (
             <Motion.div
               key={currentCard.uniqueId}
-              className="reveal-card"
+              className={`reveal-card ${revealLocked ? 'is-celebrating' : ''}`}
               initial={{ y: 24, opacity: 0, scale: 0.96 }}
-              animate={{ y: 0, opacity: 1, scale: revealed && big ? 1.03 : 1 }}
+              animate={{ y: 0, opacity: 1, scale: revealLocked && !reducedMotion ? [1, 1.055, 1.03] : revealed && big ? 1.03 : 1 }}
               exit={{ x: -360, opacity: 0, rotate: -10, transition: { duration: 0.22 } }}
-              transition={{ duration: 0.22, ease: 'easeOut' }}
-              drag={revealed ? 'x' : false}
+              transition={{ duration: revealLocked ? SPECIAL_REVEAL_DURATION_MS / 1000 : 0.22, ease: 'easeOut' }}
+              drag={revealed && !revealLocked ? 'x' : false}
               dragSnapToOrigin
               dragElastic={0.6}
               onDragEnd={onDragEnd}
@@ -90,6 +97,15 @@ const CardRevealUI = ({ currentCard, currentIndex, totalCards, hasMovedMouse, on
             </Motion.div>
           )}
         </AnimatePresence>
+        {revealLocked && currentCard && (
+          <div className="special-reveal-celebration" role="status">
+            <div className="special-reveal-rays" aria-hidden="true" />
+            <div className="special-reveal-banner">
+              <span>Big pull!</span>
+              <strong>{cardPoints(currentCard.rarity, currentCard.isHolo, currentCard.finish, currentCard.misprint).toLocaleString()} points</strong>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Waits for the flip to land (longer for the slow Legendary and Brainrot flips), so it can't spoil it. */}
