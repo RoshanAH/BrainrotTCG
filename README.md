@@ -100,6 +100,10 @@ by code. See [docs/ADDING_A_SET.md](docs/ADDING_A_SET.md) and [docs/ART_STYLE.md
 
 The full roadmap lives in [issue #1](https://github.com/evanlin23/BrainrotTCG/issues/1).
 
+See the [product and launch plan](docs/ROADMAP.md), [social content pipeline](docs/SOCIAL_PIPELINE.md),
+[short-form creative direction](docs/SHORT_FORM_CREATIVE.md), [serverless progression options](docs/PROGRESSION.md),
+and [issue hygiene rules](docs/ISSUE_HYGIENE.md).
+
 ## Tech Stack
 
 - React 19
