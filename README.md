@@ -114,3 +114,7 @@ and [issue hygiene rules](docs/ISSUE_HYGIENE.md).
 - Argon2id ([hash-wasm](https://github.com/Daninet/hash-wasm)) + Ed25519 ([noble](https://github.com/paulmillr/noble-ed25519)) for verifiable pulls
 - Local Storage (collection persistence)
 - GitHub Pages, Issues and Actions (hosting, Hall of Fame database and verifier)
+
+## Contributing with coding agents
+
+Read [AGENTS.md](AGENTS.md) and [the code-quality guide](docs/CODE_QUALITY.md) before making changes. Claude reads the same instructions through CLAUDE.md. Keep product simplification proposals and implementation status distinct; current work remains draft pending Claude review.
