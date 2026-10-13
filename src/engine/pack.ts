@@ -1,6 +1,6 @@
 import { sha256 } from '@noble/hashes/sha2.js';
 import { concatBytes, utf8 } from './bytes';
-import { FINISHES_RAREST_FIRST, MODIFIERS_V1, ODDS_TOTAL, RARITIES_RAREST_FIRST, type Finish, type PulledCard, type Rarity, type SetDefinition } from './types';
+import { finishOrder, modifierTable, ODDS_TOTAL, RARITIES_RAREST_FIRST, type Finish, type PulledCard, type Rarity, type SetDefinition } from './types';
 
 /**
  * sfc32 PRNG. Integer-only, so every JS engine produces the same sequence.
@@ -36,7 +36,7 @@ export const packSeedFromTicket = (ticket: Uint8Array): Uint8Array => sha256(con
  *   1. roll = int(ODDS_TOTAL); rarity = first rarity (rarest first) whose cumulative odds exceed roll
  *   2. card = cards of that rarity, in set order, [int(count)]
  *   3. holo = int(ODDS_TOTAL) < holoOdds
- * and only for sets with `modifiers: 1` (section 5.4), two more draws:
+ * and only for sets with a modifier table (section 5.4), two more draws:
  *   4. roll = int(ODDS_TOTAL); finish = first finish (rarest first) whose cumulative odds exceed roll, else none
  *   5. misprint = int(ODDS_TOTAL) < misprintOdds
  */
@@ -59,18 +59,19 @@ export const generatePack = (set: SetDefinition, seed: Uint8Array): PulledCard[]
     const pool = pools.get(rarity)!;
     const cardId = pool[rng.int(pool.length)];
     const isHolo = rng.int(ODDS_TOTAL) < set.holoOdds;
-    if (set.modifiers !== 1) return { setId: set.id, cardId, rarity, isHolo, slot };
+    const modifiers = modifierTable(set.modifiers);
+    if (!modifiers) return { setId: set.id, cardId, rarity, isHolo, slot };
     const finishRoll = rng.int(ODDS_TOTAL);
     let finishTotal = 0;
     let finish: Finish | null = null;
-    for (const f of FINISHES_RAREST_FIRST) {
-      finishTotal += MODIFIERS_V1.finishOdds[f];
+    for (const f of finishOrder(set.modifiers)) {
+      finishTotal += modifiers.finishOdds[f] ?? 0;
       if (finishRoll < finishTotal) {
         finish = f;
         break;
       }
     }
-    const misprint = rng.int(ODDS_TOTAL) < MODIFIERS_V1.misprintOdds;
+    const misprint = rng.int(ODDS_TOTAL) < modifiers.misprintOdds;
     return { setId: set.id, cardId, rarity, isHolo, finish, misprint, slot };
   });
 };

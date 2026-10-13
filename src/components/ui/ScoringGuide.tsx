@@ -1,10 +1,10 @@
 import { useMemo } from 'react';
 import {
-  FINISHES_RAREST_FIRST,
+  finishOrder,
   FINISH_MULTIPLIER,
   HOLO_MULTIPLIER,
   MISPRINT_MULTIPLIER,
-  MODIFIERS_V1,
+  modifierTable,
   ODDS_TOTAL,
   POKER_HANDS,
   RARITIES_RAREST_FIRST,
@@ -32,16 +32,16 @@ const formatOneIn = (n: number) => (n < 10 ? n.toFixed(1) : Math.round(n).toLoca
 const ScoringGuide = ({ set, onClose }: ScoringGuideProps) => {
   const odds = useMemo(() => handOdds(set), [set]);
   const rarities = [...RARITIES_RAREST_FIRST].reverse().filter((r) => set.odds[r] > 0);
-  const modifiers = set.modifiers === 1 ? MODIFIERS_V1 : undefined;
+  const modifiers = modifierTable(set.modifiers);
   const finishChance = modifiers ? Object.values(modifiers.finishOdds).reduce<number>((a, b) => a + (b ?? 0), 0) / ODDS_TOTAL : 0;
   const misprintChance = modifiers ? modifiers.misprintOdds / ODDS_TOTAL : 0;
   const plainChance = (1 - set.holoOdds / ODDS_TOTAL) * (1 - finishChance) * (1 - misprintChance);
   const specialPackChance = 1 - plainChance ** set.packSize;
 
   return (
-    <Sheet title="Card guide" subtitle={`Rarity, modifiers and scoring for ${set.name}`} onClose={onClose} size="sm" className="scoring-guide">
+    <Sheet title="Card guide" subtitle={`Rarity, modifiers and scoring for ${set.name} · version ${set.version}`} onClose={onClose} size="sm" className="scoring-guide">
         <h3>What makes a card rare?</h3>
-        <p className="scoring-note">Every card has a base rarity: Common, Uncommon, Rare, Epic, Legendary or Brainrot. Holo is an extra shimmering effect. A finish changes the printed frame to Silver, Gold, Platinum or Diamond. A misprint adds offset colours and a ghost image.</p>
+        <p className="scoring-note">Every card has a base rarity: Common, Uncommon, Rare, Epic, Legendary or Brainrot. Holo is an extra shimmering effect. A finish changes the printed frame: metallic Silver, Gold, Platinum or Diamond, or colourful Neon, Cosmic or Ember in newer set versions. A misprint adds offset colours and a ghost image.</p>
         <p className="scoring-note">A card can have one finish, plus holo and misprint at the same time. These are separate rolls; their chances multiply. A 1% chance means about 1 in 100 cards on average, not a guaranteed pull after 100 cards.</p>
         <p className="scoring-note">About {(specialPackChance * 100).toLocaleString(undefined, { maximumFractionDigits: 1 })}% of {set.packSize}-card packs from this set contain at least one holo, finish or misprint. Each pack rolls independently; there is no guaranteed special card after a run of ordinary packs.</p>
         {modifiers ? <p className="scoring-note">For example, a Gold holo card has a {(set.holoOdds / 10000 * (modifiers.finishOdds.GOLD ?? 0) / 100).toLocaleString()}% chance per card before its base rarity is considered. Its points are multiplied by {HOLO_MULTIPLIER * FINISH_MULTIPLIER.GOLD}.</p> : <p className="scoring-note">This set version has no finishes or misprints.</p>}
@@ -79,7 +79,7 @@ const ScoringGuide = ({ set, onClose }: ScoringGuideProps) => {
                 <tr><th>Modifier</th><th>Chance per card</th><th>Points</th></tr>
               </thead>
               <tbody>
-                {[...FINISHES_RAREST_FIRST].reverse().map((f) => (
+                {[...finishOrder(set.modifiers)].reverse().map((f) => (
                   <tr key={f}>
                     <td><span className="finish-pill" style={{ '--finish': FINISH_INFO[f].color } as React.CSSProperties}>{FINISH_INFO[f].name}</span></td>
                     <td>{((modifiers.finishOdds[f] ?? 0) / 100).toLocaleString()}%</td>

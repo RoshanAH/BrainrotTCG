@@ -1,6 +1,6 @@
 {
   "id": "peak-brain-rot",
-  "version": 1,
+  "version": 2,
   "name": "Peak Brain Rot",
   "era": "2024",
   "tagline": "Brat, Shrimp Jesus & Olympic aura",
@@ -20,7 +20,7 @@
     "BRAINROT": 50
   },
   "holoOdds": 500,
-  "modifiers": 1,
+  "modifiers": 2,
   "cards": [
     {
       "id": "pepe-the-king-prawn",

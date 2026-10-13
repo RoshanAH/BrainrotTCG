@@ -1,0 +1,134 @@
+{
+  "id": "italian-brainrot-deep-cuts",
+  "version": 2,
+  "name": "Italian Brainrot Deep Cuts",
+  "era": "2025",
+  "tagline": "Mamma mia, che brainrot!",
+  "releasedAt": "2026-10-12",
+  "palette": [
+    "#2E8B57",
+    "#F4E1C1",
+    "#E63946"
+  ],
+  "packSize": 5,
+  "odds": {
+    "COMMON": 5000,
+    "UNCOMMON": 2500,
+    "RARE": 1500,
+    "EPIC": 700,
+    "LEGENDARY": 250,
+    "BRAINROT": 50
+  },
+  "holoOdds": 500,
+  "modifiers": 1,
+  "cards": [
+    {
+      "id": "gangster-footera",
+      "name": "Gangster Footera",
+      "rarity": "COMMON",
+      "caption": "Footera Criminalera",
+      "flavor": "A foot in a cap and gold chain. Steal a Brainrot's 2025 stand-in for Tung Tung Sahur.",
+      "year": 2025,
+      "art": "The original AI image: a giant bare foot in a backwards grey cap, black sunglasses, gold chain and black tracksuit, standing in desert dunes under a blazing sun."
+    },
+    {
+      "id": "ballerino-lololo",
+      "name": "Ballerino Lololo",
+      "rarity": "COMMON",
+      "caption": "Ballerina's buff brother",
+      "flavor": "Ballerina Cappuccina's brother in fan lore: a muscular smoothie in a tutu, 2025.",
+      "year": 2025,
+      "art": "The original AI image from @fskacca's first TikTok: a smiling smoothie cup with a bent straw, huge muscular arms and legs and a white tutu, dancing on pointe against a soft grey glow with sparkles and glowing hearts."
+    },
+    {
+      "id": "trulimero-trulicina",
+      "name": "Trulimero Trulicina",
+      "rarity": "COMMON",
+      "caption": "Trulimero trulicina!",
+      "flavor": "A cat-headed fish on four human legs, a viral TikTok chant from early 2025.",
+      "year": 2025,
+      "art": "The original AI image: a scaly silver fish body with red fins, a tabby cat's head with green eyes and four human legs, striding along a sandy beach by the sea."
+    },
+    {
+      "id": "spijuniro-golubiro",
+      "name": "Spijuniro Golubiro",
+      "rarity": "COMMON",
+      "caption": "The government's pigeon",
+      "flavor": "A spy pigeon narrated in Croatian, TikTok, March 2025. Sports clubs made it a meme.",
+      "year": 2025,
+      "art": "The original AI image (left half of Know Your Meme's header): a pigeon in black sunglasses and a tan trench coat with a film camera round its neck, leaning on a concrete wall."
+    },
+    {
+      "id": "chicleteira-bicicleteira",
+      "name": "Chicleteira",
+      "rarity": "UNCOMMON",
+      "caption": "Chicleteira Bicicleteira!",
+      "flavor": "Brazilian brainrot by @brainbenderchannel: a gumball machine riding a bicycle, 2025.",
+      "year": 2025,
+      "art": "The original AI image: a red gumball machine with a grinning face in its glass globe of gumballs, pedalling a bicycle down a small-town street."
+    },
+    {
+      "id": "glorbo-fruttodrillo",
+      "name": "Glorbo Fruttodrillo",
+      "rarity": "UNCOMMON",
+      "caption": "Half croc, all watermelon",
+      "flavor": "A crocodile stuffed into a watermelon, an Italian brainrot TikTok staple of 2025.",
+      "year": 2025,
+      "art": "The original AI image: a smirking crocodile head and scaly legs on a round striped watermelon body, wading in a misty swamp with lily pads and reeds."
+    },
+    {
+      "id": "tric-trac-baraboom",
+      "name": "Tric Trac Baraboom",
+      "rarity": "UNCOMMON",
+      "caption": "Tric, trac... BARABOOM!",
+      "flavor": "A zucchini beast on giant bare feet, one of 2025's early Italian brainrot TikToks.",
+      "year": 2025,
+      "art": "The original AI image: a zucchini-skinned creature with a long snout, beady eyes, leaf ears and enormous human toes, standing in a foggy pine forest."
+    },
+    {
+      "id": "pot-hotspot",
+      "name": "Pot Hotspot",
+      "rarity": "RARE",
+      "caption": "Hotspot bro? Hotspot bro!",
+      "flavor": "Indonesian TikTok by @dytzz88, March 2025, about the friend who always begs for hotspot.",
+      "year": 2025,
+      "art": "The original AI image: a gaunt skeleton with a smartphone for a head, its screen showing a sad wrinkled face, holding up a second phone with a glowing WiFi sign."
+    },
+    {
+      "id": "dragon-cannelloni",
+      "name": "Dragon Cannelloni",
+      "rarity": "RARE",
+      "caption": "Al dente and on fire",
+      "flavor": "Steal a Brainrot's 2025 top secret: a pasta dragon, from the AI meme Cannelloni Dragoni.",
+      "year": 2025,
+      "art": "The Steal a Brainrot in-game model: a blocky golden dragon made of ribbed cannelloni with sauce-red patches, spread wings and a toothy grin, on a dark maroon background."
+    },
+    {
+      "id": "trippi-troppi",
+      "name": "Trippi Troppi",
+      "rarity": "EPIC",
+      "caption": "Shrimp body. Cat brain.",
+      "flavor": "The cat-shrimp of the 'Trippi Troppi' TikTok chant, a core Italian brainrot of 2025.",
+      "year": 2025,
+      "art": "The original AI image: a translucent orange shrimp body with long legs and antennae, topped by a tabby cat's face with golden eyes, swimming underwater among bubbles."
+    },
+    {
+      "id": "strawberry-elephant",
+      "name": "Strawberry Elephant",
+      "rarity": "LEGENDARY",
+      "caption": "Have a strawberry morning",
+      "flavor": "A 2007 Worth1000 Photoshop winner, meme'd for years, then Steal a Brainrot's first OG.",
+      "year": 2025,
+      "art": "The original 2007 Photoshop: an elephant with strawberry skin and seeds and a leafy green calyx on its head, standing in a strawberry field. No caption text."
+    },
+    {
+      "id": "lirili-larila",
+      "name": "Lirilì Larilà",
+      "rarity": "BRAINROT",
+      "caption": "Tick tock, lirilì larilà",
+      "flavor": "The cactus elephant in sandals, first posted on TikTok by @capybarawt in February 2025.",
+      "year": 2025,
+      "art": "The original AI image: an elephant whose body is a spiny green cactus, wearing brown buckled sandals in the desert, with an alarm clock and hot-air balloons floating in the sky."
+    }
+  ]
+}

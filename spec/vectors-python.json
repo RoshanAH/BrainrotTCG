@@ -404,6 +404,170 @@
           "misprint": false
         }
       ]
+    },
+    {
+      "set": "gen-alpha-uprising@3",
+      "seed": "4e328f2d134260b133e2b0fa9058ce860d6b79dc3b3bf9771ff1d43259c61257",
+      "cards": [
+        {
+          "cardId": "gegagedigedagedago",
+          "rarity": "UNCOMMON",
+          "isHolo": false,
+          "finish": "NEON",
+          "misprint": false
+        },
+        {
+          "cardId": "side-eye-cat",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "side-eye-cat",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "smurf-cat",
+          "rarity": "EPIC",
+          "isHolo": false,
+          "finish": "SILVER",
+          "misprint": false
+        },
+        {
+          "cardId": "huh-cat",
+          "rarity": "UNCOMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        }
+      ]
+    },
+    {
+      "set": "gen-alpha-uprising@3",
+      "seed": "ce87496e7f5d8b41aed7d12f1a31323a4df8d5f4c3fbbe1b18586c52aa835d37",
+      "cards": [
+        {
+          "cardId": "ok-i-pull-up",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "sad-hamster",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": "EMBER",
+          "misprint": false
+        },
+        {
+          "cardId": "pedro-raccoon",
+          "rarity": "RARE",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "pesto-the-penguin",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "smurf-cat",
+          "rarity": "EPIC",
+          "isHolo": false,
+          "finish": "COSMIC",
+          "misprint": false
+        }
+      ]
+    },
+    {
+      "set": "gen-alpha-uprising@3",
+      "seed": "f079e0a0735c17c43dbbe8de35558cafba926a10e7282eb9c7fcabdbdb62d76a",
+      "cards": [
+        {
+          "cardId": "pedro-raccoon",
+          "rarity": "RARE",
+          "isHolo": false,
+          "finish": "GOLD",
+          "misprint": false
+        },
+        {
+          "cardId": "sad-hamster",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "sad-hamster",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "sad-hamster",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "huh-cat",
+          "rarity": "UNCOMMON",
+          "isHolo": true,
+          "finish": "SILVER",
+          "misprint": false
+        }
+      ]
+    },
+    {
+      "set": "gen-alpha-uprising@3",
+      "seed": "486edd1054e00c24d31d25091be0bfed59303a68625773a9d529537d2f2b5a45",
+      "cards": [
+        {
+          "cardId": "huh-cat",
+          "rarity": "UNCOMMON",
+          "isHolo": false,
+          "finish": "SILVER",
+          "misprint": false
+        },
+        {
+          "cardId": "low-taper-fade",
+          "rarity": "RARE",
+          "isHolo": false,
+          "finish": "NEON",
+          "misprint": true
+        },
+        {
+          "cardId": "low-taper-fade",
+          "rarity": "RARE",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "huh-cat",
+          "rarity": "UNCOMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "sad-hamster",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": "SILVER",
+          "misprint": false
+        }
+      ]
     }
   ],
   "valid": [
@@ -1123,6 +1287,57 @@
       "multiplier": 2,
       "score": 42010,
       "hallOfFame": true
+    },
+    {
+      "note": "modifier table 2",
+      "proof": "ARJnZW4tYWxwaGEtdXByaXNpbmcAA7610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByAA9GaW5pc2ggRXhwbG9yZXLqxmRUuSt0OQ4LdUnS2wTuHSL5XEZr4WZmHCutOeIa_yj2VJ6w-_dwaxQYIytcaabFYT_PVnsoJP_XJsB1P0UC",
+      "set": "gen-alpha-uprising@3",
+      "publicKey": "beb5d23f1a487720cb83e6f6f0baec51efd0a577f6e1e86bee69652134971072",
+      "nonce": 0,
+      "name": "Finish Explorer",
+      "fingerprint": "YH48-X752",
+      "cards": [
+        {
+          "cardId": "pesto-the-penguin",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": "NEON",
+          "misprint": false
+        },
+        {
+          "cardId": "smurf-cat",
+          "rarity": "EPIC",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "pesto-the-penguin",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": "SILVER",
+          "misprint": false
+        },
+        {
+          "cardId": "ok-i-pull-up",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "side-eye-cat",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": "SILVER",
+          "misprint": false
+        }
+      ],
+      "points": 400,
+      "hand": "Pair",
+      "multiplier": 2,
+      "score": 800,
+      "hallOfFame": false
     }
   ],
   "invalid": [
@@ -1588,6 +1803,150 @@
       "xp": 90,
       "level": 1,
       "highlights": [
+        0
+      ]
+    },
+    {
+      "note": "profile spanning modifier tables 1 and 2",
+      "profile": "Ab610j8aSHcgy4Pm9vC67FHv0KV39uHoa-5pZSE0lxByD0ZpbmlzaCBFeHBsb3JlcgISZ2VuLWFscGhhLXVwcmlzaW5nAAISZ2VuLWFscGhhLXVwcmlzaW5nAAMCAAEBAuYBAwECAG9ldY34HTwLJBa_rssL00AhS9jvAfQvGhkoC6ijR58qKVIclBGjnWm0SZij9r5cuUGs1KOYIT6LIHmNUN-dCQg",
+      "publicKey": "beb5d23f1a487720cb83e6f6f0baec51efd0a577f6e1e86bee69652134971072",
+      "name": "Finish Explorer",
+      "fingerprint": "YH48-X752",
+      "tickets": [
+        "gen-alpha-uprising@2",
+        "gen-alpha-uprising@3",
+        "gen-alpha-uprising@3"
+      ],
+      "packs": [
+        {
+          "cards": [
+            {
+              "cardId": "smurf-cat",
+              "rarity": "EPIC",
+              "isHolo": false,
+              "finish": null,
+              "misprint": false
+            },
+            {
+              "cardId": "ok-i-pull-up",
+              "rarity": "COMMON",
+              "isHolo": false,
+              "finish": null,
+              "misprint": false
+            },
+            {
+              "cardId": "side-eye-cat",
+              "rarity": "COMMON",
+              "isHolo": false,
+              "finish": null,
+              "misprint": false
+            },
+            {
+              "cardId": "pesto-the-penguin",
+              "rarity": "COMMON",
+              "isHolo": false,
+              "finish": null,
+              "misprint": false
+            },
+            {
+              "cardId": "pesto-the-penguin",
+              "rarity": "COMMON",
+              "isHolo": false,
+              "finish": null,
+              "misprint": false
+            }
+          ],
+          "hand": "Pair",
+          "score": 220
+        },
+        {
+          "cards": [
+            {
+              "cardId": "gegagedigedagedago",
+              "rarity": "UNCOMMON",
+              "isHolo": false,
+              "finish": null,
+              "misprint": false
+            },
+            {
+              "cardId": "side-eye-cat",
+              "rarity": "COMMON",
+              "isHolo": false,
+              "finish": null,
+              "misprint": false
+            },
+            {
+              "cardId": "huh-cat",
+              "rarity": "UNCOMMON",
+              "isHolo": false,
+              "finish": null,
+              "misprint": false
+            },
+            {
+              "cardId": "sad-hamster",
+              "rarity": "COMMON",
+              "isHolo": false,
+              "finish": "GOLD",
+              "misprint": false
+            },
+            {
+              "cardId": "smurf-cat",
+              "rarity": "EPIC",
+              "isHolo": false,
+              "finish": "SILVER",
+              "misprint": false
+            }
+          ],
+          "hand": "No Matches",
+          "score": 1150
+        },
+        {
+          "cards": [
+            {
+              "cardId": "pedro-raccoon",
+              "rarity": "RARE",
+              "isHolo": false,
+              "finish": null,
+              "misprint": false
+            },
+            {
+              "cardId": "pesto-the-penguin",
+              "rarity": "COMMON",
+              "isHolo": false,
+              "finish": "SILVER",
+              "misprint": false
+            },
+            {
+              "cardId": "sad-hamster",
+              "rarity": "COMMON",
+              "isHolo": false,
+              "finish": null,
+              "misprint": false
+            },
+            {
+              "cardId": "pesto-the-penguin",
+              "rarity": "COMMON",
+              "isHolo": false,
+              "finish": null,
+              "misprint": false
+            },
+            {
+              "cardId": "ok-i-pull-up",
+              "rarity": "COMMON",
+              "isHolo": false,
+              "finish": "SILVER",
+              "misprint": false
+            }
+          ],
+          "hand": "Pair",
+          "score": 510
+        }
+      ],
+      "xp": 230,
+      "level": 2,
+      "highlights": [
+        1,
+        2,
         0
       ]
     }

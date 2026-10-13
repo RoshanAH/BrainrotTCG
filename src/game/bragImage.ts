@@ -94,11 +94,11 @@ const drawCard = (ctx: CanvasRenderingContext2D, img: HTMLImageElement, card: Po
   ctx.shadowBlur = 24;
   ctx.shadowOffsetY = 10;
   roundRect(ctx, -w / 2, -h / 2, w, h, 14);
-  if (card.finish === 'PLATINUM' || card.finish === 'DIAMOND') {
+  if (card.finish && !['SILVER', 'GOLD'].includes(card.finish)) {
     // Draw the soft finish glow outside the card before clipping its image.
     ctx.save();
     ctx.shadowOffsetY = 0;
-    ctx.shadowColor = card.finish === 'PLATINUM' ? 'rgba(168, 230, 255, 0.45)' : 'rgba(201, 182, 255, 0.65)';
+    ctx.shadowColor = card.finish === 'PLATINUM' ? 'rgba(168, 230, 255, 0.45)' : card.finish === 'DIAMOND' ? 'rgba(201, 182, 255, 0.65)' : `${FINISH_INFO[card.finish].color}88`;
     ctx.shadowBlur = w * (card.finish === 'PLATINUM' ? 0.06 : 0.085);
     ctx.fillStyle = '#121114';
     ctx.fill();

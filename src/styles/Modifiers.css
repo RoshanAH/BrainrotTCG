@@ -16,8 +16,24 @@
   --finish-thumb-glow: drop-shadow(0 0 7px rgba(201, 182, 255, 0.65));
 }
 
+.finish-neon {
+  --finish-glow: 0 0 20px rgba(57, 245, 237, 0.45);
+  --finish-thumb-glow: drop-shadow(0 0 5px rgba(57, 245, 237, 0.45));
+}
+.finish-cosmic {
+  --finish-glow: 0 0 24px rgba(188, 140, 255, 0.55);
+  --finish-thumb-glow: drop-shadow(0 0 6px rgba(188, 140, 255, 0.55));
+}
+.finish-ember {
+  --finish-glow: 0 0 24px rgba(255, 139, 64, 0.55);
+  --finish-thumb-glow: drop-shadow(0 0 6px rgba(255, 139, 64, 0.55));
+}
+
 .mod-thumb.finish-platinum,
-.mod-thumb.finish-diamond {
+.mod-thumb.finish-diamond,
+.mod-thumb.finish-neon,
+.mod-thumb.finish-cosmic,
+.mod-thumb.finish-ember {
   filter: var(--finish-thumb-glow);
 }
 
@@ -29,7 +45,10 @@ img.misprint {
 .mod-thumb.misprint img,
 img.misprint,
 img.finish-platinum,
-img.finish-diamond {
+img.finish-diamond,
+img.finish-neon,
+img.finish-cosmic,
+img.finish-ember {
   filter: var(--misprint-filter, brightness(1)) var(--finish-thumb-glow, brightness(1));
 }
 

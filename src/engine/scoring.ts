@@ -27,7 +27,7 @@ export const RARITY_POINTS: Record<Rarity, number> = {
 
 export const HOLO_MULTIPLIER = 20;
 
-export const FINISH_MULTIPLIER: Record<Finish, number> = { SILVER: 10, GOLD: 40, PLATINUM: 200, DIAMOND: 1000 };
+export const FINISH_MULTIPLIER: Record<Finish, number> = { SILVER: 10, GOLD: 40, PLATINUM: 200, DIAMOND: 1000, NEON: 12, COSMIC: 20, EMBER: 50 };
 
 export const MISPRINT_MULTIPLIER = 200;
 

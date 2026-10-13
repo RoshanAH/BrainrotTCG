@@ -7,7 +7,7 @@ export const RARITIES_RAREST_FIRST: readonly Rarity[] = ['BRAINROT', 'LEGENDARY'
 export const ODDS_TOTAL = 10_000;
 
 /** A card's finish, on top of its rarity and holo (sets with modifiers only). */
-export type Finish = 'SILVER' | 'GOLD' | 'PLATINUM' | 'DIAMOND';
+export type Finish = 'SILVER' | 'GOLD' | 'PLATINUM' | 'DIAMOND' | 'NEON' | 'COSMIC' | 'EMBER';
 
 /** Rarest first. This order is part of the pack-generation spec; never reorder. */
 export const FINISHES_RAREST_FIRST: readonly Finish[] = ['DIAMOND', 'PLATINUM', 'GOLD', 'SILVER'];
@@ -18,9 +18,19 @@ export const FINISHES_RAREST_FIRST: readonly Finish[] = ['DIAMOND', 'PLATINUM', 
  * changes; different odds would be table 2.
  */
 export const MODIFIERS_V1 = {
-  finishOdds: { DIAMOND: 10, PLATINUM: 50, GOLD: 250, SILVER: 1000 } as Readonly<Record<Finish, number>>,
+  finishOdds: { DIAMOND: 10, PLATINUM: 50, GOLD: 250, SILVER: 1000 } as Readonly<Partial<Record<Finish, number>>>,
   misprintOdds: 50,
 } as const;
+
+/** Table 2 adds three distinct frames; table 1 and its draw order stay frozen. */
+export const FINISHES_V2_RAREST_FIRST: readonly Finish[] = ['DIAMOND', 'PLATINUM', 'EMBER', 'GOLD', 'COSMIC', 'NEON', 'SILVER'];
+export const MODIFIERS_V2 = {
+  finishOdds: { DIAMOND: 10, PLATINUM: 50, EMBER: 200, GOLD: 250, COSMIC: 500, NEON: 800, SILVER: 1000 } as Readonly<Partial<Record<Finish, number>>>,
+  misprintOdds: 50,
+} as const;
+
+export const modifierTable = (version: SetDefinition['modifiers']) => version === 2 ? MODIFIERS_V2 : version === 1 ? MODIFIERS_V1 : undefined;
+export const finishOrder = (version: SetDefinition['modifiers']): readonly Finish[] => version === 2 ? FINISHES_V2_RAREST_FIRST : FINISHES_RAREST_FIRST;
 
 export interface CardDefinition {
   /** Stable slug, unique within the set. Never rename a released card. */
@@ -56,8 +66,8 @@ export interface SetDefinition {
   odds: Record<Rarity, number>;
   /** Chance of holo per card, out of ODDS_TOTAL. */
   holoOdds: number;
-  /** Modifier table: 1 = every card also rolls a finish and a misprint (MODIFIERS_V1). Absent = none. */
-  modifiers?: 1;
+  /** Immutable modifier table 1 or 2. Both roll a finish and misprint; absent = neither. */
+  modifiers?: 1 | 2;
   /** Order matters: it is part of pack generation. */
   cards: CardDefinition[];
 }
@@ -91,7 +101,7 @@ export const validateSet = (input: unknown): SetDefinition => {
   if (!Number.isInteger(set.packSize) || set.packSize < 1 || set.packSize > 15) fail('packSize must be 1..15');
   if (set.archivedAt !== undefined && !/^\d{4}-\d{2}-\d{2}$/.test(set.archivedAt)) fail('archivedAt must be an ISO date (YYYY-MM-DD)');
   if (!Number.isInteger(set.holoOdds) || set.holoOdds < 0 || set.holoOdds > ODDS_TOTAL) fail('holoOdds out of range');
-  if (set.modifiers !== undefined && set.modifiers !== 1) fail('modifiers must be 1 (the only modifier table so far) or absent');
+  if (set.modifiers !== undefined && set.modifiers !== 1 && set.modifiers !== 2) fail('modifiers must be 1, 2 or absent');
   const total = RARITIES_RAREST_FIRST.reduce((sum, r) => {
     const w = set.odds?.[r];
     if (!Number.isInteger(w) || w < 0) fail(`odds.${r} must be a non-negative integer`);

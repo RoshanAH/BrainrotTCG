@@ -4,7 +4,7 @@ import { decodeCard, encodeCard, modifiersFor } from './cardCode';
 describe('stored cards', () => {
   it('round-trips every combination', () => {
     for (const holo of [false, true]) {
-      for (const finish of [undefined, 'SILVER', 'GOLD', 'PLATINUM', 'DIAMOND'] as const) {
+      for (const finish of [undefined, 'SILVER', 'GOLD', 'PLATINUM', 'DIAMOND', 'NEON', 'COSMIC', 'EMBER'] as const) {
         for (const misprint of [false, true]) {
           const card = { id: 'ok-i-pull-up', holo, ...(finish ? { finish } : {}), ...(misprint ? { misprint } : {}) };
           expect(decodeCard(encodeCard(card))).toEqual(card);

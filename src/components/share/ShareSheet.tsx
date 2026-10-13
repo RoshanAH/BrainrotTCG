@@ -4,7 +4,7 @@ import type { CardWithMeta } from '../cards/Card';
 import type { PackScore } from '../../engine';
 import { decodeProof, pullId, qualifiesForHallOfFame, wouldJoinHallOfFame } from '../../engine';
 import { loadHallOfFame, type HallOfFameEntry } from '../../game/hallOfFameList';
-import { getLatestSet, setCode } from '../../content/sets';
+import { getSet, setCode } from '../../content/sets';
 import { getPlayer } from '../../game/player';
 import { canShare, previewFor, proofFor, pullUrl, type PullRef } from '../../game/pulls';
 import { bragText, hallOfFameSubmitUrl, submitToHallOfFame, wasSubmitted } from '../../game/share';
@@ -28,7 +28,7 @@ interface ShareSheetProps {
 /** Share a whole pack: the poster you'll send, then share it or the link. */
 const ShareSheet = ({ target, onClose }: ShareSheetProps) => {
   const player = getPlayer();
-  const set = getLatestSet(target.ref.setId);
+  const set = getSet(target.ref.setId, target.ref.setVersion);
   const setName = set?.name ?? target.ref.setId;
   const shareable = canShare(target.ref);
   const proof = useMemo(() => (shareable ? proofFor(target.ref) : ''), [shareable, target.ref]);

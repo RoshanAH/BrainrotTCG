@@ -18,6 +18,7 @@ interface PackCardViewerProps {
     className?: string;
     /** The player's own pack: its cards can be shared one by one. */
     canShareCards?: boolean;
+    setVersion?: number;
 }
 
 const PackCardViewer = ({
@@ -27,6 +28,7 @@ const PackCardViewer = ({
     onCardClick,
     className = '',
     canShareCards = false,
+    setVersion,
 }: PackCardViewerProps) => {
     const [selectedCard, setSelectedCard] = useState<CardWithMeta | null>(null);
 
@@ -59,6 +61,7 @@ const PackCardViewer = ({
                     handName={pokerHand.name}
                     score={score}
                     setId={cards[0]?.setId}
+                    setVersion={setVersion}
                 />
             )}
 

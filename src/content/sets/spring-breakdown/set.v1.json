@@ -1,0 +1,134 @@
+{
+  "id": "spring-breakdown",
+  "version": 1,
+  "name": "Spring Breakdown",
+  "era": "Jan–Jun 2026",
+  "tagline": "Lonely penguins, clingy monkeys & one sad horse",
+  "releasedAt": "2026-10-12",
+  "palette": [
+    "#FF7A1A",
+    "#8EC5FF",
+    "#E5383B"
+  ],
+  "packSize": 5,
+  "odds": {
+    "COMMON": 5000,
+    "UNCOMMON": 2500,
+    "RARE": 1500,
+    "EPIC": 700,
+    "LEGENDARY": 250,
+    "BRAINROT": 50
+  },
+  "holoOdds": 500,
+  "modifiers": 1,
+  "cards": [
+    {
+      "id": "dubai-chewy-cookie",
+      "name": "Dubai Chewy Cookie",
+      "rarity": "COMMON",
+      "caption": "Sold out in 15 minutes",
+      "flavor": "Jan 2026: Korea lined up at dawn for 'dujjonku,' a pistachio-marshmallow cookie craze.",
+      "year": 2026,
+      "art": "Wikimedia Commons photo of a Dubai chewy cookie cut in half: cocoa-dusted marshmallow shell around green pistachio-kataifi filling, in a paper cup."
+    },
+    {
+      "id": "reginald-skulinski",
+      "name": "Reginald Skulinski",
+      "rarity": "COMMON",
+      "caption": "*chews in disappointment*",
+      "flavor": "Apr 2026: Skull from Monster House (2006), mid-chew and staring, became the face of dread.",
+      "year": 2026,
+      "art": "Still of Reginald 'Skull' Skulinski from Monster House chewing and staring wide-eyed, from the meme's most-shared reaction image."
+    },
+    {
+      "id": "bowie-knife99",
+      "name": "Bowie Knife99",
+      "rarity": "COMMON",
+      "caption": "Off the track. On you.",
+      "flavor": "May 2026: an AI rival in Forza Horizon 6 rammed so many players he became its villain.",
+      "year": 2026,
+      "art": "Forza Horizon 6 gameplay frame: an orange supercar at night under the floating 'bowie knife99' nametag (Know Your Meme's main image)."
+    },
+    {
+      "id": "he-is-20-years-old",
+      "name": "He Is 20 Years Old",
+      "rarity": "COMMON",
+      "caption": "He is only 20 years old",
+      "flavor": "June 2026: one headshot of Backrooms director Kane Parsons ran in every story. So: memes.",
+      "year": 2026,
+      "art": "Kane Parsons' press headshot: curly hair, faint smile, plain olive background (Know Your Meme's main image)."
+    },
+    {
+      "id": "big-arch-burger-test",
+      "name": "Big Arch Burger Test",
+      "rarity": "UNCOMMON",
+      "caption": "Mm. Delicious product.",
+      "flavor": "Feb 2026: McDonald's CEO took one tiny bite of the Big Arch and called it 'product.'",
+      "year": 2026,
+      "art": "Frame from Chris Kempczinski's Instagram review: the McDonald's CEO in a cream sweater, mid-bite into the Big Arch burger."
+    },
+    {
+      "id": "dlss-5-on",
+      "name": "DLSS 5 On",
+      "rarity": "UNCOMMON",
+      "caption": "Now with free AI makeup",
+      "flavor": "Mar 16, 2026: Nvidia showed off AI graphics. Gamers saw a beauty filter and memed it.",
+      "year": 2026,
+      "art": "The 'DLSS 5 on' half of Nvidia's demo comparison: Resident Evil Requiem's Grace Ashcroft, glossy and glammed up in a rainy alley."
+    },
+    {
+      "id": "your-ai-slop-bores-me",
+      "name": "Your AI Slop Bores Me",
+      "rarity": "UNCOMMON",
+      "caption": "As a large human model...",
+      "flavor": "Mar 2026: a site where humans play the chatbot and scribble answers. 280 million hits.",
+      "year": 2026,
+      "art": "The youraislopbores.me logo: a big black hand-drawn scribble on white (Know Your Meme's main image)."
+    },
+    {
+      "id": "crying-horse",
+      "name": "Crying Horse",
+      "rarity": "RARE",
+      "caption": "How I look at work",
+      "flavor": "Jan 2026: a lucky horse plush got its smile sewn on upside down. China bought 15,000/day.",
+      "year": 2026,
+      "art": "News photo of the red Year of the Horse plush with its frown sewn on upside down, held up in a Yiwu toy shop."
+    },
+    {
+      "id": "du-bist-gut-genug",
+      "name": "Du Bist Gut Genug",
+      "rarity": "RARE",
+      "caption": "Du bist gut genuuuuug",
+      "flavor": "June 2026: Rayan's falsetto hook went global on TikTok and the song hit No. 1 in Germany.",
+      "year": 2026,
+      "art": "Black-and-white music video still of Blumengarten singer Rayan mid-note in glasses and a leather jacket (Know Your Meme's main image, cropped)."
+    },
+    {
+      "id": "skeleton-banging-shield",
+      "name": "Rahhhhh",
+      "rarity": "EPIC",
+      "caption": "Me when the wifi drops",
+      "flavor": "Skeleton Banging Shield: Skyrim undead, a roar and a Half-Life clang. Jan 2026's top meme.",
+      "year": 2026,
+      "art": "The Skyrim skeleton on black, sword raised, skull screaming behind its round bronze shield (Know Your Meme's explainer image)."
+    },
+    {
+      "id": "nihilist-penguin",
+      "name": "Nihilist Penguin",
+      "rarity": "LEGENDARY",
+      "caption": "Me leaving the group chat",
+      "flavor": "Jan 2026: Herzog's 2007 penguin, marching alone to the mountains, became burnout's mascot.",
+      "year": 2026,
+      "art": "Vertical frame from Encounters at the End of the World: a lone Adélie penguin walking across the ice toward snowy mountains."
+    },
+    {
+      "id": "punch-the-monkey",
+      "name": "Punch the Monkey",
+      "rarity": "BRAINROT",
+      "caption": "Emotional support IKEA",
+      "flavor": "Feb 2026: Punch, a baby macaque at a Japanese zoo, clung to an IKEA orangutan. So did we.",
+      "year": 2026,
+      "art": "Photo of Punch, the baby Japanese macaque, sitting on his orange orangutan plush and looking back at the camera (Wikimedia Commons)."
+    }
+  ]
+}

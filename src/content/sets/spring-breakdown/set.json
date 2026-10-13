@@ -1,6 +1,6 @@
 {
   "id": "spring-breakdown",
-  "version": 1,
+  "version": 2,
   "name": "Spring Breakdown",
   "era": "Jan–Jun 2026",
   "tagline": "Lonely penguins, clingy monkeys & one sad horse",
@@ -20,7 +20,7 @@
     "BRAINROT": 50
   },
   "holoOdds": 500,
-  "modifiers": 1,
+  "modifiers": 2,
   "cards": [
     {
       "id": "dubai-chewy-cookie",

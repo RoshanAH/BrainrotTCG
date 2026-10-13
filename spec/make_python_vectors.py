@@ -168,6 +168,19 @@ def make_packs() -> list[dict]:
             wanted -= shows
             out.append({"set": key, "seed": seed.hex(), "cards": [c.as_json() for c in cards]})
         i += 1
+    # Table 2: independently generated seeds cover every new finish and stacked modifiers.
+    key, wanted, i = "gen-alpha-uprising@3", {"NEON", "COSMIC", "EMBER", "holo+finish", "finish+misprint"}, 0
+    while wanted and i < 10000:
+        seed = hashlib.sha256(b"brainrot-tcg/make_python_vectors/pack/" + key.encode() + b"/" + str(i).encode()).digest()
+        cards = vp.generate_pack(SETS[key], seed)
+        shows = {c.finish for c in cards if c.finish}
+        if any(c.is_holo and c.finish for c in cards): shows.add("holo+finish")
+        if any(c.misprint and c.finish for c in cards): shows.add("finish+misprint")
+        if shows & wanted:
+            wanted -= shows
+            out.append({"set": key, "seed": seed.hex(), "cards": [c.as_json() for c in cards]})
+        i += 1
+    assert not wanted, f"Missing table 2 vectors: {wanted}"
     return out
 
 
@@ -207,6 +220,7 @@ def make_valid() -> list[dict]:
                          make_proof(set_id=b"gen-alpha-uprising", nonce=nonce, name=name), expect_hand=hand))
     for nonce, what in MINED_MODIFIERS:
         out.append(valid(f"modifiers (§5.4): {what}", make_proof(set_id=b"gen-alpha-uprising", version=2, nonce=nonce, name=b"Shiny")))
+    out.append(valid("modifier table 2", make_proof(set_id=b"gen-alpha-uprising", version=3, nonce=0, name=b"Finish Explorer")))
     return out
 
 
@@ -344,6 +358,8 @@ def make_profiles() -> list[dict]:
                       make_profile(**with_true_claims(table=(b"vine-and-dank", b"gen-alpha-uprising"),
                                                       runs=((0, 1), (1, 2), (0, 4)), name="Zoe\u0308".encode()))),
         valid_profile("empty name, one ticket", make_profile(**with_true_claims(runs=((0, 1),), name=b""))),
+        valid_profile("profile spanning modifier tables 1 and 2", make_profile(**with_true_claims(
+            table=(b"gen-alpha-uprising", b"gen-alpha-uprising"), versions=[2, 3], runs=((0, 1), (1, 2)), name=b"Finish Explorer"))),
     ]
 
 

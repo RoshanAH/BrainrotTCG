@@ -39,7 +39,7 @@ const toPulled = (entry: HistoryEntry, set: SetDefinition): PulledCard[] | null 
   const cards = entry.cards.map((c, slot) => {
     // This exact version's rarity: a later version may change it (spec section 12).
     const rarity = set.cards.find((card) => card.id === c.id)?.rarity;
-    return rarity ? { setId: set.id, cardId: c.id, rarity, isHolo: c.holo, ...modifiersFor(c, set.modifiers === 1), slot } : null;
+    return rarity ? { setId: set.id, cardId: c.id, rarity, isHolo: c.holo, ...modifiersFor(c, set.modifiers !== undefined), slot } : null;
   });
   return cards.every((c) => c) ? (cards as PulledCard[]) : null;
 };
@@ -75,7 +75,7 @@ const myTickets = (): Ticket[] => {
     const score = cards && scorePulled(cards);
     // Packs re-opened by an older build were stored without their finishes and misprints; their
     // saved score gives them away. Treat them as unknown so they're re-opened properly.
-    const intact = score && !(set.modifiers === 1 && entry && score.score !== entry.score);
+    const intact = score && !(set.modifiers !== undefined && entry && score.score !== entry.score);
     tickets.push({
       nonce,
       set,

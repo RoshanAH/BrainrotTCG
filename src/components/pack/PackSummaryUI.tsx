@@ -52,7 +52,7 @@ const PackSummaryUI = ({ openedCards, set, onClose, onShare }: PackSummaryUIProp
         </button>
       </div>
       <h2 className="summary-title">{hand.name}</h2>
-      <BrainrotScorePanel points={points} multiplier={hand.multiplier} handName={hand.name} score={score} setId={set.id} />
+      <BrainrotScorePanel points={points} multiplier={hand.multiplier} handName={hand.name} score={score} setId={set.id} setVersion={set.version} />
       <div className="summary-xp">
         <span className="summary-xp-text tabular">
           <strong>+{progress.gained.toLocaleString()} XP</strong> · Level {progress.level} · {into.toLocaleString()}/{span.toLocaleString()} to Level {progress.level + 1}

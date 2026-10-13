@@ -1,0 +1,134 @@
+{
+  "id": "gen-alpha-uprising",
+  "version": 2,
+  "name": "Gen Alpha Uprising",
+  "era": "2023–2024",
+  "tagline": "Rizz, sigma & Smurf Cat inside",
+  "releasedAt": "2026-10-12",
+  "palette": [
+    "#B6FF00",
+    "#FF2E88",
+    "#1A1A2E"
+  ],
+  "packSize": 5,
+  "odds": {
+    "COMMON": 5000,
+    "UNCOMMON": 2500,
+    "RARE": 1500,
+    "EPIC": 700,
+    "LEGENDARY": 250,
+    "BRAINROT": 50
+  },
+  "holoOdds": 500,
+  "modifiers": 1,
+  "cards": [
+    {
+      "id": "sad-hamster",
+      "name": "Sad Hamster",
+      "rarity": "COMMON",
+      "caption": "*sad violin plays*",
+      "flavor": "Feb 2024: Alto the hamster, edited with huge teary eyes, set to a sad violin song.",
+      "year": 2024,
+      "art": "Real image: KYM's main image, a TikTok frame of the grey big-eyed 'sad hamster' (an edit of Alto, owned by Instagram's monyo_melo) staring at the camera on a white background."
+    },
+    {
+      "id": "side-eye-cat",
+      "name": "Side Eye Cat",
+      "rarity": "COMMON",
+      "caption": "Bombastic side eye",
+      "flavor": "Late 2023: Mr. Fresh, an orange stray on a Chinese cat-feeder livestream, side-eyes you.",
+      "year": 2023,
+      "art": "Real image: KYM's main image of Mr. Fresh, the orange tabby from the Hello Street Cat feeder-cam livestream, giving the camera a suspicious side-eye."
+    },
+    {
+      "id": "pesto-the-penguin",
+      "name": "Pesto the Penguin",
+      "rarity": "COMMON",
+      "caption": "Bigger than his parents",
+      "flavor": "Sept 2024: a giant, fluffy king penguin chick at Sea Life Melbourne outgrew his parents.",
+      "year": 2024,
+      "art": "Real image: KYM's main photo of Pesto, the huge brown fluffy king penguin chick at Sea Life Melbourne Aquarium, beak up, with adult king penguins behind him."
+    },
+    {
+      "id": "ok-i-pull-up",
+      "name": "Ok I Pull Up",
+      "rarity": "COMMON",
+      "caption": "Hop out at the after party",
+      "flavor": "Don Toliver's 'After Party' plays while JoeJoe the capybara rides shotgun. Ok I pull up.",
+      "year": 2023,
+      "art": "Real image: KYM's main image, a video frame of JoeJoe the capybara sitting in a car's passenger seat with the door open (from a Crazy Cody's Creatures clip)."
+    },
+    {
+      "id": "huh-cat",
+      "name": "Huh Cat",
+      "rarity": "UNCOMMON",
+      "caption": "Huh?",
+      "flavor": "2023: Ben, a chubby cat meowing for food, got a 'huh?' dub and became pure confusion.",
+      "year": 2023,
+      "art": "Real image: KYM's main image of Ben the chubby white-and-black cat, eyes wide and mouth open mid-'huh?', cropped above the image's HUH? caption."
+    },
+    {
+      "id": "gegagedigedagedago",
+      "name": "Gegagedigedagedago",
+      "rarity": "UNCOMMON",
+      "caption": "Where did you come from?",
+      "flavor": "2023–24: a Roblox-faced chicken nugget sings a gibberish 'Cotton Eye Joe' on TikTok.",
+      "year": 2024,
+      "art": "Real image: KYM's main image of the Roblox-face chicken nugget in a cowboy hat, standing in the middle of a desert highway."
+    },
+    {
+      "id": "dancing-toothless",
+      "name": "Dancing Toothless",
+      "rarity": "UNCOMMON",
+      "caption": "Vibing to Driftveil City",
+      "flavor": "Dec 2023: animator Cas van de Pol's 2D Toothless danced to a Pokémon song. Forever.",
+      "year": 2023,
+      "art": "Real image: KYM's main image, a frame of Cas van de Pol's 2D animation of Toothless (How to Train Your Dragon) standing upright mid-dance in a jungle clearing."
+    },
+    {
+      "id": "pedro-raccoon",
+      "name": "Pedro Raccoon",
+      "rarity": "RARE",
+      "caption": "Pedro pedro pedro",
+      "flavor": "Spring 2024: a raccoon spinning in a circle video to Raffaella Carrà's 'Pedro' remix.",
+      "year": 2024,
+      "art": "Real image: KYM's main image, the baby raccoon waving a paw inside the round TikTok circle video on a black background."
+    },
+    {
+      "id": "low-taper-fade",
+      "name": "Low Taper Fade",
+      "rarity": "RARE",
+      "caption": "The meme is still massive",
+      "flavor": "Jan 2024: ericdoa sang 'Imagine if Ninja got a low taper fade.' Then Ninja got one.",
+      "year": 2024,
+      "art": "Real image: the viral photoshop from KYM's gallery of streamer Ninja with a curly-top low taper fade, hand on chin, in a grey hoodie."
+    },
+    {
+      "id": "smurf-cat",
+      "name": "Smurf Cat",
+      "rarity": "EPIC",
+      "caption": "We live, we love, we lie",
+      "flavor": "Aug 2023: Nate Hallinan's 2011 'Smurf Sighting' art went viral on TikTok as шайлушай.",
+      "year": 2023,
+      "art": "Real image: Nate Hallinan's 'Smurf Sighting' concept art in the square TikTok crop: a blue cat-faced creature in a white mushroom cap, carrying a snail on a stick through a mossy forest."
+    },
+    {
+      "id": "sigma",
+      "name": "Sigma",
+      "rarity": "LEGENDARY",
+      "caption": "Erm, what the sigma?",
+      "flavor": "The 'sigma male' grindset got Patrick Bateman as its face. Gen Alpha made it a word.",
+      "year": 2024,
+      "art": "Real image: film still from American Psycho (2000), Patrick Bateman (Christian Bale) walking into the office in headphones, the frame behind the 'Patrick Bateman Walking' sigma edits."
+    },
+    {
+      "id": "rizz",
+      "name": "Rizz",
+      "rarity": "BRAINROT",
+      "caption": "Unspoken rizz",
+      "flavor": "Oxford's 2023 Word of the Year. Its face: Shrek's knowing smile from Shrek the Third.",
+      "year": 2023,
+      "art": "Real image: KYM's main image for 'Shrek Rizz', a still from Shrek the Third (2007) of Shrek looking up with a sly, knowing smile."
+    }
+  ]
+}

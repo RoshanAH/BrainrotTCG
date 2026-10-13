@@ -2,6 +2,22 @@ import { describe, expect, it } from 'vitest';
 import { recolorFrame } from './finishImage';
 
 describe('printed frame finishes', () => {
+  it('renders distinct patterned table-2 frames and preserves unmasked artwork', () => {
+    const original = new Uint8ClampedArray(Array.from({ length: 1024 }, () => [128, 128, 128, 255]).flat());
+    const mask = new Uint8ClampedArray(Array.from({ length: 1024 }, (_, i) => [255, 255, 255, i === 0 ? 0 : 255]).flat());
+    const results = ['NEON', 'COSMIC', 'EMBER'].map((finish) => {
+      const pixels = original.slice();
+      recolorFrame(pixels, mask, finish as 'NEON' | 'COSMIC' | 'EMBER', 32);
+      expect([...pixels.slice(0, 4)]).toEqual([...original.slice(0, 4)]);
+      expect(new Set(Array.from({ length: 1023 }, (_, i) => [...pixels.slice((i + 1) * 4, (i + 1) * 4 + 3)].join(','))).size).toBeGreaterThan(8);
+      const again = original.slice();
+      recolorFrame(again, mask, finish as 'NEON' | 'COSMIC' | 'EMBER', 32);
+      expect(again).toEqual(pixels);
+      return pixels;
+    });
+    expect(results[0]).not.toEqual(results[1]);
+    expect(results[1]).not.toEqual(results[2]);
+  });
   it('preserves artwork pixels and card transparency', () => {
     const pixels = new Uint8ClampedArray([240, 20, 80, 255, 90, 180, 20, 120]);
     const mask = new Uint8ClampedArray([255, 255, 255, 0, 255, 255, 255, 255]);

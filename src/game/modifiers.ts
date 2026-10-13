@@ -3,7 +3,7 @@
  * points live in the engine; a set opts in with `"modifiers": 1`.
  */
 import type React from 'react';
-import { FINISHES_RAREST_FIRST, type Finish } from '../engine';
+import { FINISHES_V2_RAREST_FIRST, type Finish } from '../engine';
 import '../styles/Modifiers.css';
 
 export const FINISH_INFO: Record<Finish, { name: string; color: string }> = {
@@ -11,6 +11,9 @@ export const FINISH_INFO: Record<Finish, { name: string; color: string }> = {
   GOLD: { name: 'Gold', color: '#ffcf4a' },
   PLATINUM: { name: 'Platinum', color: '#a8e6ff' },
   DIAMOND: { name: 'Diamond', color: '#c9b6ff' },
+  NEON: { name: 'Neon', color: '#39f5ed' },
+  COSMIC: { name: 'Cosmic', color: '#bc8cff' },
+  EMBER: { name: 'Ember', color: '#ff8b40' },
 };
 
 /** What makes a card special beyond its rarity, e.g. "Gold · Holo · Misprint" ('' if nothing). */
@@ -18,7 +21,7 @@ export const modifierLabel = (card: { isHolo?: boolean; finish?: Finish | null; 
   [card.finish && FINISH_INFO[card.finish].name, withHolo && card.isHolo && 'Holo', card.misprint && 'Misprint'].filter(Boolean).join(' · ');
 
 /** The rarest finish in a tally of finishes owned, if any. */
-export const bestFinish = (finishes?: Partial<Record<Finish, number>>): Finish | undefined => FINISHES_RAREST_FIRST.find((f) => (finishes?.[f] ?? 0) > 0);
+export const bestFinish = (finishes?: Partial<Record<Finish, number>>): Finish | undefined => FINISHES_V2_RAREST_FIRST.find((f) => (finishes?.[f] ?? 0) > 0);
 
 /** Classes for a card's face: `finish-gold misprint` and so on. */
 export const modifierClasses = (card: { finish?: Finish | null; misprint?: boolean }): string =>

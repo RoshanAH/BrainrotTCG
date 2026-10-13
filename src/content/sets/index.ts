@@ -10,39 +10,57 @@
 import { setKey, validateSet, type CardDefinition, type SetDefinition } from '../../engine';
 import genesis from './genesis/set.json';
 import webAncientsV1 from './web-ancients/set.v1.json';
+import webAncientsV2 from './web-ancients/set.v2.json';
 import webAncients from './web-ancients/set.json';
 import vineAndDankV1 from './vine-and-dank/set.v1.json';
+import vineAndDankV2 from './vine-and-dank/set.v2.json';
 import vineAndDank from './vine-and-dank/set.json';
 import lockdownLoreV1 from './lockdown-lore/set.v1.json';
+import lockdownLoreV2 from './lockdown-lore/set.v2.json';
 import lockdownLore from './lockdown-lore/set.json';
 import genAlphaUprisingV1 from './gen-alpha-uprising/set.v1.json';
+import genAlphaUprisingV2 from './gen-alpha-uprising/set.v2.json';
 import genAlphaUprising from './gen-alpha-uprising/set.json';
+import peakBrainRotV1 from './peak-brain-rot/set.v1.json';
 import peakBrainRot from './peak-brain-rot/set.json';
 import italianBrainrotDeepCutsV1 from './italian-brainrot-deep-cuts/set.v1.json';
+import italianBrainrotDeepCutsV2 from './italian-brainrot-deep-cuts/set.v2.json';
 import italianBrainrotDeepCuts from './italian-brainrot-deep-cuts/set.json';
+import sixSevenSeasonV1 from './six-seven-season/set.v1.json';
 import sixSevenSeason from './six-seven-season/set.json';
+import springBreakdownV1 from './spring-breakdown/set.v1.json';
 import springBreakdown from './spring-breakdown/set.json';
 import rightNowV1 from './right-now/set.v1.json';
+import rightNowV2 from './right-now/set.v2.json';
 import rightNow from './right-now/set.json';
 
 /** Every version of every set. Display order = timeline order (Genesis first). */
-// Version 1 of each set is from before card modifiers; version 2 adds them (spec section 5.4).
+// Previous definitions remain frozen; the newest versions opt into modifier table 2 (spec section 5.4).
 export const ALL_SET_VERSIONS: SetDefinition[] = [
   genesis,
   webAncientsV1,
+  webAncientsV2,
   webAncients,
   vineAndDankV1,
+  vineAndDankV2,
   vineAndDank,
   lockdownLoreV1,
+  lockdownLoreV2,
   lockdownLore,
   genAlphaUprisingV1,
+  genAlphaUprisingV2,
   genAlphaUprising,
+  peakBrainRotV1,
   peakBrainRot,
   italianBrainrotDeepCutsV1,
+  italianBrainrotDeepCutsV2,
   italianBrainrotDeepCuts,
+  sixSevenSeasonV1,
   sixSevenSeason,
+  springBreakdownV1,
   springBreakdown,
   rightNowV1,
+  rightNowV2,
   rightNow,
 ].map((s) => validateSet(s));
 

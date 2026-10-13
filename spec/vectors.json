@@ -574,6 +574,129 @@
           "misprint": true
         }
       ]
+    },
+    {
+      "set": "right-now@3",
+      "seed": "c4f24efefb153a6bd6deb77ed0e4c8af0df1a5e329340de825656eb94b428c87",
+      "cards": [
+        {
+          "cardId": "chile-memes",
+          "rarity": "UNCOMMON",
+          "isHolo": true,
+          "finish": "SILVER",
+          "misprint": true
+        },
+        {
+          "cardId": "verity",
+          "rarity": "EPIC",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "bukangi",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": "SILVER",
+          "misprint": false
+        },
+        {
+          "cardId": "black-cat-clapping",
+          "rarity": "RARE",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "chile-memes",
+          "rarity": "UNCOMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        }
+      ]
+    },
+    {
+      "set": "right-now@3",
+      "seed": "ef0a9e7a532a643fe42301a3aaafac394de82ef46afc23c63b406060eb92fe6f",
+      "cards": [
+        {
+          "cardId": "bukangi",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": "SILVER",
+          "misprint": false
+        },
+        {
+          "cardId": "bukangi",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": "NEON",
+          "misprint": false
+        },
+        {
+          "cardId": "remember-november",
+          "rarity": "UNCOMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "bukangi",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "remember-november",
+          "rarity": "UNCOMMON",
+          "isHolo": false,
+          "finish": "COSMIC",
+          "misprint": false
+        }
+      ]
+    },
+    {
+      "set": "right-now@3",
+      "seed": "2702e032bb7c051c460d8cdc19bf8c3ac07a1bdbe11bb00cc70617475a4655c2",
+      "cards": [
+        {
+          "cardId": "bukangi",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "bukangi",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "steal-an-egg",
+          "rarity": "RARE",
+          "isHolo": false,
+          "finish": "EMBER",
+          "misprint": false
+        },
+        {
+          "cardId": "la-peace",
+          "rarity": "UNCOMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "verity",
+          "rarity": "EPIC",
+          "isHolo": false,
+          "finish": "NEON",
+          "misprint": false
+        }
+      ]
     }
   ],
   "valid": [
@@ -1047,6 +1170,57 @@
       "multiplier": 2,
       "score": 9850,
       "hallOfFame": false
+    },
+    {
+      "note": "modifier table 2",
+      "proof": "AQlyaWdodC1ub3cAA8gklFOmlHeFiPZ1XIUIRr3ARo67BTbINmtTwGnVKqjSAA9GaW5pc2ggRXhwbG9yZXI4DWkC6ZweWIXMeMbDY7qkpAQQQZ-6WfCHZiq0u3a_cXKfUBNKTz2-ul40WpYLjIcnsYRoX18no_eNaxtMYEQJ",
+      "set": "right-now@3",
+      "publicKey": "c8249453a694778588f6755c850846bdc0468ebb0536c8366b53c069d52aa8d2",
+      "nonce": 0,
+      "name": "Finish Explorer",
+      "fingerprint": "CD2A-WMBX",
+      "cards": [
+        {
+          "cardId": "black-cat-clapping",
+          "rarity": "RARE",
+          "isHolo": false,
+          "finish": "GOLD",
+          "misprint": false
+        },
+        {
+          "cardId": "niu-lai",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": "SILVER",
+          "misprint": false
+        },
+        {
+          "cardId": "pirate-gaster",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "bukangi",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        },
+        {
+          "cardId": "bukangi",
+          "rarity": "COMMON",
+          "isHolo": false,
+          "finish": null,
+          "misprint": false
+        }
+      ],
+      "points": 1530,
+      "hand": "Pair",
+      "multiplier": 2,
+      "score": 3060,
+      "hallOfFame": false
     }
   ],
   "invalid": [
@@ -1506,6 +1680,150 @@
         0,
         3,
         2
+      ]
+    },
+    {
+      "note": "profile spanning modifier tables 1 and 2",
+      "profile": "AcgklFOmlHeFiPZ1XIUIRr3ARo67BTbINmtTwGnVKqjSD0ZpbmlzaCBFeHBsb3JlcgIJcmlnaHQtbm93AAIJcmlnaHQtbm93AAMCAAEBAv8BAwECAE5Hi_kE8lPG62AtFaj2RQE_dXffgK5U9Dyf3mFVWAxAW-5OUAJqhDKnZV1k9bP_kh0cXnRcHliAAW3yVW7hVgc",
+      "publicKey": "c8249453a694778588f6755c850846bdc0468ebb0536c8366b53c069d52aa8d2",
+      "name": "Finish Explorer",
+      "fingerprint": "CD2A-WMBX",
+      "tickets": [
+        "right-now@2",
+        "right-now@3",
+        "right-now@3"
+      ],
+      "packs": [
+        {
+          "cards": [
+            {
+              "cardId": "remember-november",
+              "rarity": "UNCOMMON",
+              "isHolo": false,
+              "finish": null,
+              "misprint": false
+            },
+            {
+              "cardId": "bukangi",
+              "rarity": "COMMON",
+              "isHolo": false,
+              "finish": null,
+              "misprint": false
+            },
+            {
+              "cardId": "huss-valley",
+              "rarity": "COMMON",
+              "isHolo": false,
+              "finish": null,
+              "misprint": false
+            },
+            {
+              "cardId": "bukangi",
+              "rarity": "COMMON",
+              "isHolo": true,
+              "finish": null,
+              "misprint": false
+            },
+            {
+              "cardId": "niu-lai",
+              "rarity": "COMMON",
+              "isHolo": false,
+              "finish": null,
+              "misprint": false
+            }
+          ],
+          "hand": "Pair",
+          "score": 500
+        },
+        {
+          "cards": [
+            {
+              "cardId": "remember-november",
+              "rarity": "UNCOMMON",
+              "isHolo": false,
+              "finish": null,
+              "misprint": false
+            },
+            {
+              "cardId": "black-cat-clapping",
+              "rarity": "RARE",
+              "isHolo": false,
+              "finish": null,
+              "misprint": false
+            },
+            {
+              "cardId": "black-cat-clapping",
+              "rarity": "RARE",
+              "isHolo": false,
+              "finish": null,
+              "misprint": false
+            },
+            {
+              "cardId": "ai-rumpelstiltskin",
+              "rarity": "LEGENDARY",
+              "isHolo": false,
+              "finish": "NEON",
+              "misprint": false
+            },
+            {
+              "cardId": "verity",
+              "rarity": "EPIC",
+              "isHolo": false,
+              "finish": "COSMIC",
+              "misprint": false
+            }
+          ],
+          "hand": "Pair",
+          "score": 7780
+        },
+        {
+          "cards": [
+            {
+              "cardId": "huss-valley",
+              "rarity": "COMMON",
+              "isHolo": false,
+              "finish": null,
+              "misprint": false
+            },
+            {
+              "cardId": "bukangi",
+              "rarity": "COMMON",
+              "isHolo": false,
+              "finish": "COSMIC",
+              "misprint": false
+            },
+            {
+              "cardId": "chile-memes",
+              "rarity": "UNCOMMON",
+              "isHolo": false,
+              "finish": "NEON",
+              "misprint": false
+            },
+            {
+              "cardId": "bukangi",
+              "rarity": "COMMON",
+              "isHolo": false,
+              "finish": "SILVER",
+              "misprint": false
+            },
+            {
+              "cardId": "la-peace",
+              "rarity": "UNCOMMON",
+              "isHolo": false,
+              "finish": "COSMIC",
+              "misprint": false
+            }
+          ],
+          "hand": "Pair",
+          "score": 1900
+        }
+      ],
+      "xp": 255,
+      "level": 2,
+      "highlights": [
+        1,
+        2,
+        0
       ]
     }
   ],

@@ -9,15 +9,36 @@ const PALETTES: Record<Finish, { mid: RGB; light: RGB }> = {
   GOLD: { mid: [198, 150, 38], light: [255, 240, 180] },
   PLATINUM: { mid: [144, 180, 197], light: [235, 250, 255] },
   DIAMOND: { mid: [170, 165, 221], light: [219, 253, 255] },
+  NEON: { mid: [35, 190, 200], light: [200, 255, 250] },
+  COSMIC: { mid: [100, 55, 185], light: [225, 200, 255] },
+  EMBER: { mid: [210, 65, 20], light: [255, 225, 110] },
 };
 
 /** Recolour only printed frame pixels; artwork and transparency stay exactly as supplied. */
-export const recolorFrame = (pixels: Uint8ClampedArray, mask: Uint8ClampedArray, finish: Finish): void => {
+export const recolorFrame = (pixels: Uint8ClampedArray, mask: Uint8ClampedArray, finish: Finish, width = pixels.length / 4): void => {
   if (pixels.length !== mask.length || pixels.length % 4) throw new Error('Frame mask dimensions do not match the card');
-  const { mid, light } = PALETTES[finish];
   for (let i = 0; i < pixels.length; i += 4) {
     const coverage = mask[i + 3] / 255;
     if (!coverage) continue;
+    let { mid, light } = PALETTES[finish];
+    const x = (i / 4) % width;
+    const y = Math.floor(i / 4 / width);
+    const u = x / width;
+    const v = y / (pixels.length / 4 / width);
+    if (finish === 'NEON') {
+      const band = (Math.sin((u + v) * Math.PI * 12) + 1) / 2;
+      mid = [30 + 190 * band, 210 - 155 * band, 220];
+      light = [185 + 65 * band, 255 - 75 * band, 255];
+    } else if (finish === 'COSMIC') {
+      const nebula = (Math.sin(u * 17 + Math.cos(v * 13) * 2) + 1) / 2;
+      const star = (x * 13 + y * 17) % 97 < 2;
+      mid = star ? [235, 235, 255] : [60 + 75 * nebula, 35 + 35 * nebula, 150 + 60 * nebula];
+      light = star ? [255, 255, 255] : [155 + 80 * nebula, 170, 255];
+    } else if (finish === 'EMBER') {
+      const flame = (Math.sin(u * 30 + v * 18 + Math.sin(v * 14) * 3) + 1) / 2;
+      mid = [190 + 45 * flame, 35 + 95 * flame, 12];
+      light = [255, 145 + 100 * flame, 35 + 80 * flame];
+    }
     const luminance = (0.2126 * pixels[i] + 0.7152 * pixels[i + 1] + 0.0722 * pixels[i + 2]) / 255;
     const t = luminance < 0.5 ? luminance * 2 : (luminance - 0.5) * 2;
     for (let channel = 0; channel < 3; channel++) {
@@ -64,7 +85,7 @@ export const finishedCardImage = (src: string, finish?: Finish | null): Promise<
     const ctx = canvas.getContext('2d')!;
     ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
     const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    recolorFrame(pixels.data, mask.data, finish);
+    recolorFrame(pixels.data, mask.data, finish, canvas.width);
     ctx.putImageData(pixels, 0, 0);
     const blob = await new Promise<Blob>((resolve, reject) => canvas.toBlob(
       (png) => png ? resolve(png) : reject(new Error('Finish render failed')), 'image/png',

@@ -134,7 +134,7 @@ export const takePendingPack = (): OpenedPack | null => {
   if (!pending || !set || (pending.k && pending.k !== getPlayer().publicKeyHex)) return null;
   try {
     const cards = toCardsWithMeta(
-      pending.c.split(',').map(decodeCard).map((c) => ({ setId: set.id, cardId: c.id, isHolo: c.holo, ...modifiersFor(c, set.modifiers === 1) })),
+      pending.c.split(',').map(decodeCard).map((c) => ({ setId: set.id, cardId: c.id, isHolo: c.holo, ...modifiersFor(c, set.modifiers !== undefined) })),
     ).map((c) => ({ ...c, isRevealed: true }));
     return { setId: set.id, setVersion: set.version, nonce: pending.n, publicKeyHex: pending.k, cards, score: scoreCards(cards), openedAt: pending.t };
   } catch {

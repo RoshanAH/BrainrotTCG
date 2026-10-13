@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Info } from 'lucide-react';
-import { DEFAULT_SET_ID, getLatestSet } from '../../content/sets';
+import { DEFAULT_SET_ID, getLatestSet, getSet } from '../../content/sets';
 import ScoringGuide from './ScoringGuide';
 import '../../styles/Scoring.css';
 
@@ -11,11 +11,13 @@ interface BrainrotScorePanelProps {
   score: number;
   /** Set whose odds the "how it works" guide should show. */
   setId?: string;
+  /** Historical pulls must show the odds of the version they actually used. */
+  setVersion?: number;
 }
 
-const BrainrotScorePanel = ({ points, multiplier, handName, score, setId }: BrainrotScorePanelProps) => {
+const BrainrotScorePanel = ({ points, multiplier, handName, score, setId, setVersion }: BrainrotScorePanelProps) => {
   const [showGuide, setShowGuide] = useState(false);
-  const set = getLatestSet(setId ?? DEFAULT_SET_ID) ?? getLatestSet(DEFAULT_SET_ID);
+  const set = setVersion === undefined ? getLatestSet(setId ?? DEFAULT_SET_ID) : getSet(setId ?? DEFAULT_SET_ID, setVersion);
   return (
     <div className="score-panel">
       <div className="score-panel-total">{score.toLocaleString()}</div>

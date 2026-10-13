@@ -1,6 +1,6 @@
 {
   "id": "web-ancients",
-  "version": 2,
+  "version": 3,
   "name": "Web Ancients",
   "era": "2007–2012",
   "tagline": "LOL, I can has pack?",
@@ -20,7 +20,7 @@
     "BRAINROT": 50
   },
   "holoOdds": 500,
-  "modifiers": 1,
+  "modifiers": 2,
   "cards": [
     {
       "id": "ceiling-cat",

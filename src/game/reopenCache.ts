@@ -46,7 +46,7 @@ export const getReopened = (set: SetDefinition, publicKeyHex: string, nonce: num
     const c = decodeCard(text);
     // This exact version's rarity: a later version may change it (spec section 12).
     const rarity = set.cards.find((card) => card.id === c.id)?.rarity;
-    return rarity ? { setId: set.id, cardId: c.id, rarity, isHolo: c.holo, ...modifiersFor(c, set.modifiers === 1), slot } : null;
+    return rarity ? { setId: set.id, cardId: c.id, rarity, isHolo: c.holo, ...modifiersFor(c, set.modifiers !== undefined), slot } : null;
   });
   return cards.every((c) => c) ? (cards as PulledCard[]) : null;
 };

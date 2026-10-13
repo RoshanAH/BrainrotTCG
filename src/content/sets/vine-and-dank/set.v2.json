@@ -1,0 +1,134 @@
+{
+  "id": "vine-and-dank",
+  "version": 2,
+  "name": "Vine & Dank",
+  "era": "2013–2019",
+  "tagline": "6 seconds. Infinite dank.",
+  "releasedAt": "2026-10-12",
+  "palette": [
+    "#00BF8F",
+    "#FF6A00",
+    "#8A2BE2"
+  ],
+  "packSize": 5,
+  "odds": {
+    "COMMON": 5000,
+    "UNCOMMON": 2500,
+    "RARE": 1500,
+    "EPIC": 700,
+    "LEGENDARY": 250,
+    "BRAINROT": 50
+  },
+  "holoOdds": 500,
+  "modifiers": 1,
+  "cards": [
+    {
+      "id": "fidget-spinner",
+      "name": "Fidget Spinner",
+      "rarity": "COMMON",
+      "caption": "Spin to win (nothing)",
+      "flavor": "2017: in every pocket and every classroom. Teachers still have nightmares.",
+      "year": 2017,
+      "art": "Photo of a red three-lobed fidget spinner with black bearings on a pale grey background (Wikimedia Commons, CC0)."
+    },
+    {
+      "id": "ok-boomer",
+      "name": "OK Boomer",
+      "rarity": "COMMON",
+      "caption": "OK boomer",
+      "flavor": "2019's two-word comeback, dropped mid-speech in NZ Parliament. Heckle deflected.",
+      "year": 2019,
+      "art": "Parliament TV still of NZ Green MP Chlöe Swarbrick smiling at her desk mid-speech on 5 Nov 2019, the moment she answered a heckler with \"OK boomer\"."
+    },
+    {
+      "id": "dancing-hot-dog",
+      "name": "Dancing Hot Dog",
+      "rarity": "COMMON",
+      "caption": "Look at him go",
+      "flavor": "2017: a dancing hot dog lens crashed every selfie. Still the best dancer online.",
+      "year": 2017,
+      "art": "Screenshot of Snapchat's 3D dancing hot dog lens (green headphones, ketchup and mustard zigzags) mid-dance on a living-room floor."
+    },
+    {
+      "id": "all-those-chickens",
+      "name": "All Those Chickens",
+      "rarity": "COMMON",
+      "caption": "Look at all those chickens",
+      "flavor": "A Vine classic: one confident narrator, a field full of geese, and zero chickens.",
+      "year": 2016,
+      "art": "Frame from the Vine: a flock of white snow geese grazing on a suburban field in front of a big house. The girl filming is not in this frame."
+    },
+    {
+      "id": "moth-lamp",
+      "name": "Moth Lamp",
+      "rarity": "UNCOMMON",
+      "caption": "Brother, may I have lamp",
+      "flavor": "2018: one fuzzy moth at a window started the internet's purest obsession: lamp.",
+      "year": 2018,
+      "art": "The original July 2018 Reddit photo: a fuzzy brown moth with glowing eyes and long antennae at a window at night."
+    },
+    {
+      "id": "mocking-spongebob",
+      "name": "Mocking SpongeBob",
+      "rarity": "UNCOMMON",
+      "caption": "sUrE, wHaTeVeR yOu SaY",
+      "flavor": "2017: a chicken-posing SpongeBob still from 2012 became the internet's sarcasm font.",
+      "year": 2017,
+      "art": "SpongeBob hunched in his chicken pose from the 2012 episode \"Little Yellow Book\", cut out on white (Know Your Meme's main image)."
+    },
+    {
+      "id": "mr-skeltal",
+      "name": "Mr. Skeltal",
+      "rarity": "UNCOMMON",
+      "caption": "Doot doot",
+      "flavor": "Good bones and calcium will come to you: a 1999 trumpet skull, still dooting.",
+      "year": 2014,
+      "art": "The 1999 \"jazzskull\" GIF: a gold 3D skull blowing a brass trumpet held by bony hands, on black."
+    },
+    {
+      "id": "galaxy-brain",
+      "name": "Galaxy Brain",
+      "rarity": "RARE",
+      "caption": "Big brain time",
+      "flavor": "2017's expanding-brain chart: each idea dumber, each brain glowier.",
+      "year": 2017,
+      "art": "Last panel of the 2017 Expanding Brain template: a glowing blue-white brain in a translucent head, radiating beams of light."
+    },
+    {
+      "id": "area-51-raid",
+      "name": "Area 51 Raid",
+      "rarity": "RARE",
+      "caption": "They can't stop all of us",
+      "flavor": "2019: two million RSVP'd to storm Area 51 arms-back. A tiny crowd actually went.",
+      "year": 2019,
+      "art": "Photo of the Area 51 main gate in Nevada two days after the 2019 raid date: a yellow barrier with stop signs across a desert road."
+    },
+    {
+      "id": "road-work-ahead",
+      "name": "Road Work Ahead",
+      "rarity": "EPIC",
+      "caption": "I sure hope it does",
+      "flavor": "2016 Vine: a driver reads a road sign and delivers the decade's greatest pun.",
+      "year": 2016,
+      "art": "Photo of an orange diamond ROAD WORK AHEAD sign on a folding stand, on grass in front of a school (Wikimedia Commons)."
+    },
+    {
+      "id": "dat-boi",
+      "name": "Dat Boi",
+      "rarity": "LEGENDARY",
+      "caption": "Here come dat boi!",
+      "flavor": "2016: a frog on a unicycle. Nobody knows why. Everybody knows the greeting.",
+      "year": 2016,
+      "art": "The Animation Factory 3D clip-art frog riding an orange unicycle on white, one arm out (frame of the classic GIF)."
+    },
+    {
+      "id": "woman-yelling-at-a-cat",
+      "name": "Woman Yelling at a Cat",
+      "rarity": "BRAINROT",
+      "caption": "Smudge did nothing wrong",
+      "flavor": "2019: a sobbing Real Housewife meets Smudge, a salad-hating Ottawa cat. Meme of the year.",
+      "year": 2019,
+      "art": "Smudge the white cat at a dinner table behind a plate of salad, grimacing: his owner's 2018 photo, the meme's cat panel."
+    }
+  ]
+}

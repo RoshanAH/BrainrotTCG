@@ -155,6 +155,7 @@ RARITIES = ("BRAINROT", "LEGENDARY", "EPIC", "RARE", "UNCOMMON", "COMMON")
 # §5.4 modifier table 1: finishes rarest first (the order of the finish walk) with their weights,
 # and the misprint chance, all out of 10000.
 FINISH_WEIGHTS = (("DIAMOND", 10), ("PLATINUM", 50), ("GOLD", 250), ("SILVER", 1000))
+FINISH_WEIGHTS_V2 = (("DIAMOND", 10), ("PLATINUM", 50), ("EMBER", 200), ("GOLD", 250), ("COSMIC", 500), ("NEON", 800), ("SILVER", 1000))
 MISPRINT_ODDS = 50
 
 
@@ -166,7 +167,7 @@ class SetDef:
     pack_size: int
     odds: dict[str, int]
     holo_odds: int
-    modifiers: bool  # §5.4: true for "modifiers": 1
+    modifiers: int  # §5.4: 0 (absent), 1 or 2
     pools: dict[str, list[str]]  # rarity -> card ids of that rarity, in set order
     archived: bool
     path: Path
@@ -205,8 +206,8 @@ def parse_set(doc: object, path: Path) -> SetDef:
     if not _is_int(holo_odds) or not 0 <= holo_odds <= 10000:
         raise bad("holoOdds must be an integer 0 ... 10000")
     modifiers = doc.get("modifiers")
-    if modifiers is not None and not (_is_int(modifiers) and modifiers == 1):
-        raise bad("modifiers must be 1 or absent (§5.4)")
+    if modifiers is not None and not (_is_int(modifiers) and modifiers in (1, 2)):
+        raise bad("modifiers must be 1, 2 or absent (§5.4)")
     cards = doc.get("cards")
     if not isinstance(cards, list):
         raise bad("cards must be a list")
@@ -225,7 +226,7 @@ def parse_set(doc: object, path: Path) -> SetDef:
         pack_size=pack_size,
         odds={r: odds.get(r, 0) for r in RARITIES},
         holo_odds=holo_odds,
-        modifiers=modifiers == 1,
+        modifiers=modifiers or 0,
         pools=pools,
         archived="archivedAt" in doc,
         path=path,
@@ -353,7 +354,7 @@ def generate_pack(set_def: SetDef, seed: bytes) -> list[Card]:
         # §5.4.1: walk the finishes rarest first; none if no running total exceeds the roll.
         roll = rng.int_below(10000)
         running, finish = 0, ""
-        for name, weight in FINISH_WEIGHTS:
+        for name, weight in (FINISH_WEIGHTS_V2 if set_def.modifiers == 2 else FINISH_WEIGHTS):
             running += weight
             if running > roll:
                 finish = name
@@ -624,7 +625,7 @@ def check_signature(proof: Proof | Profile, a_point: EdPoint) -> None:
 
 CARD_POINTS = {"COMMON": 10, "UNCOMMON": 20, "RARE": 35, "EPIC": 70, "LEGENDARY": 200, "BRAINROT": 1000}
 HOLO_FACTOR = 20
-FINISH_FACTOR = {"SILVER": 10, "GOLD": 40, "PLATINUM": 200, "DIAMOND": 1000}
+FINISH_FACTOR = {"SILVER": 10, "GOLD": 40, "PLATINUM": 200, "DIAMOND": 1000, "NEON": 12, "COSMIC": 20, "EMBER": 50}
 MISPRINT_FACTOR = 200
 HALL_OF_FAME_MIN_MULTIPLIER = 150
 HALL_OF_FAME_MIN_SCORE = 20000

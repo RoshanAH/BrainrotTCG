@@ -45,7 +45,7 @@ A set is a JSON document (`src/content/sets/<id>/set.json`; older versions are k
 | `packSize` | cards per pack (1 … 15) |
 | `odds` | integer weight per rarity, summing to **10000** |
 | `holoOdds` | chance of holo per card, out of 10000 |
-| `modifiers` | optional. `1` = every card also rolls a finish and a misprint with modifier table 1 (section 5.4). Absent = no modifiers. Any other value is invalid. |
+| `modifiers` | optional. `1` or `2` selects the immutable modifier table in section 5.4. Absent = no modifiers. Any other value is invalid. |
 | `cards` | ordered list of `{ id, rarity }`. **Order matters.** Every rarity with a non-zero weight has at least one card. |
 
 Rarities, rarest first (this order is normative): `BRAINROT, LEGENDARY, EPIC, RARE, UNCOMMON, COMMON`.
@@ -92,7 +92,7 @@ ticket = Argon2id(
 
 ### 5.4 Modifiers
 
-A set version with `"modifiers": 1` gives every card two more properties, drawn right after its holo
+A set version with `"modifiers": 1` or `"modifiers": 2` gives every card two more properties, drawn right after its holo
 draw, in this order:
 
 1. **Finish.** `roll = int(10000)`. Walk the finishes rarest first, adding each weight to a running
@@ -104,8 +104,19 @@ draw, in this order:
 
 2. **Misprint.** `misprint = int(10000) < 50`.
 
-This is modifier table 1. It never changes; different odds would be table 2. Older set versions
-don't opt in, so every pack that verified before modifiers existed is unchanged.
+The table above is modifier table 1. It never changes. For modifier table 2, use this finish walk instead:
+
+| Finish (normative order) | `DIAMOND` | `PLATINUM` | `EMBER` | `GOLD` | `COSMIC` | `NEON` | `SILVER` | none |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Weight (out of 10000) | 10 | 50 | 200 | 250 | 500 | 800 | 1000 | the remaining 7190 |
+
+The misprint draw is still `int(10000) < 50`. The draw count and proof/ticket wire formats do not change.
+There is at most one finish per card; it can independently combine with holo and misprint.
+Neon (cyan/magenta bands), Cosmic (violet starfield) and Ember (warm flame patterns) are finish choices,
+not a fourth modifier axis. Their visual rendering is not part of the pack derivation.
+
+Changing a released set to table 2 requires a new set version. Keep its previous definition and lock entry
+in the registry, so old pulls and profiles continue to verify against table 1 (or no modifiers).
 
 ## 6. Proof format
 
@@ -168,7 +179,8 @@ their names or signatures differ (an owner can sign many times). Its **pull id**
 
 - Card points: `COMMON 10, UNCOMMON 20, RARE 35, EPIC 70, LEGENDARY 200, BRAINROT 1000`; ×20 if holo.
   Cards with modifiers (section 5.4) are multiplied again: finish `SILVER ×10`, `GOLD ×40`,
-  `PLATINUM ×200`, `DIAMOND ×1000`; misprint ×200. All multipliers stack. A card's id alone decides
+  `PLATINUM ×200`, `DIAMOND ×1000`; table 2 adds `NEON ×12`, `COSMIC ×20`, `EMBER ×50`;
+  misprint ×200. All multipliers stack. A card's id alone decides
   matches below: a gold copy and a plain copy of a card are a pair.
 - Combo, from how many copies of each card id the pack holds, largest count `c1`, second `c2` (0 if
   none): `c1 ≥ 5` → **5 of a Kind ×10000**; `c1 = 4` → **4 of a Kind ×250**; `c1 = 3, c2 = 2` →

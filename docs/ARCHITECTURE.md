@@ -251,11 +251,17 @@ Gold 2.5%, Platinum 0.5%, Diamond 0.1%) and a **misprint** (0.5%), and every one
 points by about 1 / its chance (x10, x40, x200, x1000, x200), stacking with holo (spec section 5.4).
 They're derived from the ticket like everything else, so they're as checkable as the cards. Only set
 versions that opt in roll them, so no pull from before changed: version 1 of each set has no
-modifiers and keeps verifying exactly as it did; version 2 (the same cards) adds them, and new packs
-open from it. Finishes recolour the card's printed frame (silver gray, gold yellow, platinum blue,
+modifiers and keeps verifying exactly as it did. Newer set versions select modifier table 2, adding
+Neon (8%), Cosmic (5%) and Ember (2%) to the finish walk. Each card has at most one finish; it can
+stack with holo and misprint. Table-2 multipliers are Neon ×12, Cosmic ×20 and Ember ×50. Previous
+set definitions and locks remain unchanged, and profiles can span both tables. These are finish
+choices, not a new independent axis. Finishes recolour the card's printed frame (silver gray, gold yellow, platinum blue,
 diamond blue/violet), with glow on platinum and diamond; misprints show off-register colours
 (`src/game/modifiers.ts`), in the collection, history, Hall of Fame and the share poster, and they're
 stored compactly in the pack history (`src/game/cardCode.ts`: `sigma*G!` is a holo Gold misprint).
+
+Neon has cyan/magenta bands, Cosmic a violet starfield and Ember a warm flame pattern. These static
+frame patterns use the same mask, lossless image cache and PNG export path as the original finishes.
 
 `src/game/finishImage.ts` uses the shared frame's alpha mask to protect the meme artwork, and caches
 the result per card/finish. `CardImage` and the PNG exporter use the same image. `npm run cards`
@@ -265,7 +271,8 @@ also rebuilds the small lossless mask (`src/assets/images/card-frame-mask.webp`)
 
 1. **Released sets never change.** Card ids, order, rarities, odds or pack size of a released
    `set@version` can't change; bump `version` and keep the old file (`npm run check:sets`).
-2. **Engine changes that alter packs need a new ticket or proof version.** The engine and the
+2. **Changes that alter packs must select a new version.** A new immutable modifier table requires
+   new set versions; changes to ticket or proof algorithms require their own version. The engine and the
    independent Python verifier must both pass every vector in `spec/` (`src/engine/spec.test.ts` and
    the `independent-verifier` CI job).
 3. **Every card has a built image** (`npm run cards`).

@@ -1,0 +1,134 @@
+{
+  "id": "web-ancients",
+  "version": 2,
+  "name": "Web Ancients",
+  "era": "2007–2012",
+  "tagline": "LOL, I can has pack?",
+  "releasedAt": "2026-10-12",
+  "palette": [
+    "#0645AD",
+    "#FFDD00",
+    "#7CFC00"
+  ],
+  "packSize": 5,
+  "odds": {
+    "COMMON": 5000,
+    "UNCOMMON": 2500,
+    "RARE": 1500,
+    "EPIC": 700,
+    "LEGENDARY": 250,
+    "BRAINROT": 50
+  },
+  "holoOdds": 500,
+  "modifiers": 1,
+  "cards": [
+    {
+      "id": "ceiling-cat",
+      "name": "Ceiling Cat",
+      "rarity": "COMMON",
+      "caption": "Ceiling Cat is watching u",
+      "flavor": "Lolcat scripture, 2007: a cat peeks through a hole in the ceiling and judges you.",
+      "year": 2007,
+      "art": "Ginger-and-white cat head poking down through a ragged square hole in a plain gray ceiling, wide round eyes staring straight at the viewer, whiskers dangling. Background: smooth gray ceiling fading darker. Colors: ginger, white, gray."
+    },
+    {
+      "id": "me-gusta",
+      "name": "Me Gusta",
+      "rarity": "COMMON",
+      "caption": "Mmm... me gusta",
+      "flavor": "Rage comics, 2010: May Oswald's bug-eyed face for liking something you really shouldn't.",
+      "year": 2010,
+      "art": "May Oswald's original black-and-white Me Gusta rage face (Know Your Meme's main image): round head, heavy brows, wide bulging eyes and a tight, wavy, satisfied mouth, cropped so the face fills the frame. Background: plain white. Colors: black, white."
+    },
+    {
+      "id": "y-u-no-guy",
+      "name": "Y U NO Guy",
+      "rarity": "COMMON",
+      "caption": "Y U NO PULL LEGENDARY",
+      "flavor": "Rage comics, 2010: arms up, mouth wide, grammar optional. Y U NO?",
+      "year": 2010,
+      "art": "Black-and-white rage-comic drawing: huge round white head with furious bulging eyes, gritted teeth and a scrunched nose, small body in a white shirt throwing both hands up in exasperation. Background: flat dark blue. Colors: white, black, slate blue."
+    },
+    {
+      "id": "double-rainbow",
+      "name": "Double Rainbow",
+      "rarity": "COMMON",
+      "caption": "What does it mean?!",
+      "flavor": "Yosemite, 2010: Paul 'Bear' Vasquez films two rainbows and sobs with joy. All the way!",
+      "year": 2010,
+      "art": "Frame from Paul Vasquez's January 2010 YouTube video (Know Your Meme's main image): a bright double rainbow arcing down over a scrubby Yosemite hillside under a gray-blue sky, no people in shot. Colors: rainbow, slate gray, olive."
+    },
+    {
+      "id": "dramatic-chipmunk",
+      "name": "Dramatic Chipmunk",
+      "rarity": "UNCOMMON",
+      "caption": "DUN DUN DUNNNN",
+      "flavor": "2007's five-second epic: a 'chipmunk' (it's a prairie dog) turns and stares.",
+      "year": 2007,
+      "art": "Extreme close-up of a tan prairie dog that has just whipped its head toward the camera, one beady dark eye, nose in profile, fur slightly blurred like a zoomed TV frame. Background: flat blue studio sky. Colors: tan, blue, dark brown."
+    },
+    {
+      "id": "longcat",
+      "name": "Longcat",
+      "rarity": "UNCOMMON",
+      "caption": "Longcat is looooong",
+      "flavor": "Imageboard legend, 2007: a white cat held up so long it never seems to end.",
+      "year": 2007,
+      "art": "A white cat held up under the front legs by a pair of hands, front paws reaching out to the sides, body stretching impossibly far down past the bottom of the frame, calm face. Background: wood-panel wall. Colors: white, pink, warm wood."
+    },
+    {
+      "id": "arrow-to-the-knee",
+      "name": "Arrow to the Knee",
+      "rarity": "UNCOMMON",
+      "caption": "Took an arrow to the knee",
+      "flavor": "Skyrim, 2011: every guard 'used to be an adventurer like you.' Then... ouch.",
+      "year": 2011,
+      "art": "Fantasy town guard in a full-face iron helmet with a nose guard, mustard-yellow tabard over chainmail, round wooden shield, standing in a cobbled medieval town. Background: stone wall and timber house. Colors: mustard, steel gray, brown."
+    },
+    {
+      "id": "philosoraptor",
+      "name": "Philosoraptor",
+      "rarity": "RARE",
+      "caption": "Are we the memes now?",
+      "flavor": "2008 advice animal: a velociraptor stroking its chin over unanswerable questions.",
+      "year": 2008,
+      "art": "Green velociraptor head in profile drawn in heavy black ink, one claw raised to its chin, eyes narrowed in deep thought. Background: two-tone green diagonal split. Colors: lime green, sage, black."
+    },
+    {
+      "id": "trololo-guy",
+      "name": "Trololo Guy",
+      "rarity": "RARE",
+      "caption": "Trololo lololo lololo!",
+      "flavor": "Soviet TV, 1976: Eduard Khil grins through a wordless song. In 2010 the web went wild.",
+      "year": 2010,
+      "art": "Still from singer Eduard Khil's 1976 Soviet TV performance of 'I Am Very Glad, as I'm Finally Returning Back Home' (Know Your Meme's main image): close-up of his huge grin and raised brows, side-parted brown hair, dark suit. Background: mustard-yellow studio wall. Colors: mustard, brown, skin tones."
+    },
+    {
+      "id": "forever-alone",
+      "name": "Forever Alone",
+      "rarity": "EPIC",
+      "caption": "Table for one, please",
+      "flavor": "Rage comics, 2010: a lumpy, teary grin for every Valentine's Day spent solo.",
+      "year": 2010,
+      "art": "The original Forever Alone rage face (Know Your Meme's main image): a lumpy black-outlined face with a wide, toothy, trembling grin and blue tears streaming from both eyes, centred with white space around it. Background: plain white. Colors: black, white, blue."
+    },
+    {
+      "id": "gangnam-style",
+      "name": "Gangnam Style",
+      "rarity": "LEGENDARY",
+      "caption": "Oppa Gangnam Style!",
+      "flavor": "2012: the first video to hit 1 billion YouTube views had the whole planet horse-dancing.",
+      "year": 2012,
+      "art": "Cartoon of a round-faced singer in black sunglasses and a black suit doing the invisible-horse dance, wrists crossed in front of his chest, knees bent. Background: cartoon horse stable with tiled floor. Colors: black, cream, tan, teal."
+    },
+    {
+      "id": "i-can-has-cheezburger",
+      "name": "I Can Has Cheezburger?",
+      "rarity": "BRAINROT",
+      "caption": "Oh hai! U has cheezburger?",
+      "flavor": "2007: a grinning gray cat begs for a burger in broken English, and LOLcats are born.",
+      "year": 2007,
+      "art": "The uncaptioned original Happy Cat photo (c. 2003): a gray British Shorthair sitting up, mouth open in a hopeful grin, round orange eyes, in front of a blue-gray patterned wall. Colors: blue-gray, orange, pink."
+    }
+  ]
+}

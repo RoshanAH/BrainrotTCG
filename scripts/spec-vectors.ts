@@ -105,6 +105,20 @@ for (const [id, version] of [['genesis', 1], ['right-now', 1], ['lockdown-lore',
 }
 
 // --- valid proofs ---
+// Table 2 gets its own coverage; all earlier fixtures above remain byte-for-byte compatible.
+{
+  const set = must('right-now', 3);
+  const wanted = new Set(['NEON', 'COSMIC', 'EMBER', 'holo+finish', 'finish+misprint']);
+  for (let i = 0; wanted.size > 0 && i < 10000; i++) {
+    const seed = hash(`brainrot-tcg/vector-pack/${set.id}@${set.version}/${i}`);
+    const cards = generatePack(set, seed);
+    const shows = cards.flatMap((c) => [c.finish ?? '', c.isHolo && c.finish ? 'holo+finish' : '', c.finish && c.misprint ? 'finish+misprint' : '']);
+    if (!shows.some((x) => wanted.has(x))) continue;
+    for (const x of shows) wanted.delete(x);
+    packs.push({ set: setKey(set), seed: toHex(seed), cards: cards.map(cardJson(set)) });
+  }
+  if (wanted.size) throw new Error(`Missing table 2 vectors: ${[...wanted]}`);
+}
 const valid: unknown[] = [];
 const addValid = async (set: SetDefinition, sk: Uint8Array, nonce: number, name: string, note: string) => {
   const publicKey = publicKeyFromSecret(sk);
@@ -302,7 +316,7 @@ const addProfile = async (secret: Uint8Array, name: string, runs: ProfileRun[], 
     name: profile.name,
     fingerprint: fingerprint40(publicKey),
     tickets,
-    packs: packs.map((p) => ({ cards: p.cards.map(({ cardId, rarity, isHolo }) => ({ cardId, rarity, isHolo })), hand: p.score.hand.name, score: p.score.score })),
+    packs: packs.map((p) => ({ cards: p.cards.map(cardJson(p.set)), hand: p.score.hand.name, score: p.score.score })),
     xp: stats.xp,
     level: stats.level,
     highlights: profile.highlights,
@@ -323,6 +337,10 @@ await addProfile(
 );
 
 const PROFILE_DOMAIN = utf8('brainrot-tcg/profile/v1');
+await addProfile(KEYS[0], 'Finish Explorer', [
+  { setId: 'right-now', setVersion: 2, count: 1 },
+  { setId: 'right-now', setVersion: 3, count: 2 },
+], 'profile spanning modifier tables 1 and 2');
 const profileHeader = (o: { version?: number; publicKey?: Uint8Array; name?: Uint8Array } = {}) => {
   const name = o.name ?? utf8('Evan');
   return concatBytes(Uint8Array.of(o.version ?? 1), o.publicKey ?? pk, Uint8Array.of(name.length), name);
@@ -390,6 +408,8 @@ const invalidProfiles = [
     profile: b64(signProfileBytes(concatBytes(profileHeader(), table(entry('right-now')), runsWithClaims([[0, 3]], evanProfile.xp, [...evanProfile.highlights].reverse())))),
   },
 ];
+
+await addValid(must('right-now', 3), KEYS[0], 0, 'Finish Explorer', 'modifier table 2');
 
 writeFileSync(
   OUT,

@@ -102,7 +102,7 @@ describe.each([
       expect(toHex(checked.profile.publicKey)).toBe(v.publicKey);
       expect(checked.fingerprint).toBe(v.fingerprint);
       expect(checked.tickets.map((s) => `${s.id}@${s.version}`)).toEqual(v.tickets);
-      expect(packs.map((p) => ({ cards: p.cards.map(({ cardId, rarity, isHolo }) => ({ cardId, rarity, isHolo })), hand: p.score.hand.name, score: p.score.score }))).toEqual(v.packs);
+      expect(packs.map((p) => ({ cards: p.cards.map(asVector), hand: p.score.hand.name, score: p.score.score }))).toEqual(v.packs);
       const stats = profileStats(packs);
       expect([stats.xp, stats.level], v.note).toEqual([v.xp, v.level]);
       expect(checked.profile.highlights).toEqual(v.highlights);
