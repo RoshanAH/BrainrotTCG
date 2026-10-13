@@ -46,19 +46,13 @@ const PackCuttingUI = ({
           tabIndex={isPackCut ? -1 : 0}
           aria-label={`Open a ${set.name} pack`}
         >
-          <img
-            className="pack-half pack-half-bottom"
-            src={packDesign}
-            alt="Brainrot TCG booster pack wrapper"
-            draggable="false"
-          />
-          <img
-            className="pack-half pack-half-top"
-            src={packDesign}
-            alt=""
-            aria-hidden="true"
-            draggable="false"
-          />
+          {/* Each half carries its foil with it when the wrapper tears. */}
+          <div className="pack-half pack-half-bottom">
+            <img src={packDesign} alt="Brainrot TCG booster pack wrapper" draggable="false" />
+          </div>
+          <div className="pack-half pack-half-top" aria-hidden="true">
+            <img src={packDesign} alt="" draggable="false" />
+          </div>
           {/* The set tag is stuck on the top strip, so it tears away with it. */}
           <div className="pack-top-piece">
             <div

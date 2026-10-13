@@ -13,6 +13,7 @@ const Motion = motion;
 
 interface CardRevealUIProps {
   currentCard: CardWithMeta;
+  cardBack?: string;
   currentIndex: number;
   totalCards: number;
   hasMovedMouse: boolean;
@@ -34,7 +35,7 @@ const SWIPE_SPEED = 500;
  * One card at a time off the top of the stack, rarest last. Big pulls light the back's edge before
  * the flip and get a spotlight after it; a flipped card can be swiped away or tapped.
  */
-const CardRevealUI = ({ currentCard, currentIndex, totalCards, hasMovedMouse, onInteraction, onSkip, revealLocked = false, celebrating = false, skipping = false }: CardRevealUIProps) => {
+const CardRevealUI = ({ currentCard, cardBack, currentIndex, totalCards, hasMovedMouse, onInteraction, onSkip, revealLocked = false, celebrating = false, skipping = false }: CardRevealUIProps) => {
   const touch = useCoarsePointer();
   const reducedMotion = useReducedMotion();
   const revealed = currentCard?.isRevealed;
@@ -75,11 +76,11 @@ const CardRevealUI = ({ currentCard, currentIndex, totalCards, hasMovedMouse, on
         </button>
       </div>
 
-      <div className={`active-card-container ${revealed && big ? 'is-spotlit' : ''}`} aria-busy={revealLocked} style={{ '--special-reveal-duration': `${SPECIAL_REVEAL_DURATION_MS}ms` } as React.CSSProperties}>
+      <div className={`active-card-container ${cardBack ? `back-${cardBack}` : ''} ${revealed && big ? 'is-spotlit' : ''}`} aria-busy={revealLocked} style={{ '--special-reveal-duration': `${SPECIAL_REVEAL_DURATION_MS}ms` } as React.CSSProperties}>
         {/* The cards still to come, as a stack behind the current one. */}
         {Array.from({ length: Math.min(remaining, 3) }, (_, i) => (
           <div key={`stack-${i}`} className="reveal-stack-card" style={{ '--depth': i + 1 } as React.CSSProperties} aria-hidden="true">
-            <img src={cardBackImage} alt="" draggable="false" />
+            <img src={cardBackImage} alt="" className="card-back-image" draggable="false" />
           </div>
         ))}
         <AnimatePresence mode="popLayout">

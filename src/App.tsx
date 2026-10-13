@@ -491,6 +491,7 @@ function App() {
           set={selectedSet}
           disabled={isAnyModalOpen}
           settings={settings}
+          cardBack={usable(CARD_BACKS, settings.cardBack, level)}
           isOwned={isOwned}
         />
       </main>

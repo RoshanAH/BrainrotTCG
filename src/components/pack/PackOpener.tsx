@@ -34,11 +34,13 @@ interface PackOpenerProps {
   set: SetDefinition;
   disabled?: boolean;
   settings: Settings;
+  /** The chosen, unlocked back, shared by the active card and the remaining stack. */
+  cardBack?: string;
   /** Whether the collection already had this card before the pack (for the NEW sticker). */
   isOwned?: (cardKey: string) => boolean;
 }
 
-const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, settings, isOwned }: PackOpenerProps) => {
+const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, settings, cardBack, isOwned }: PackOpenerProps) => {
   const [isOpening, setIsOpening] = useState(false);
   const [openedPack, setOpenedPack] = useState<OpenedPack | null>(null);
   const [openError, setOpenError] = useState<string | null>(null);
@@ -434,6 +436,7 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
             {!showSummary ? (
               <CardRevealUI
                 currentCard={currentCard}
+                cardBack={cardBack}
                 currentIndex={currentIndex}
                 totalCards={openedCards.length}
                 hasMovedMouse={hasMovedMouse}
