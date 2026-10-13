@@ -748,12 +748,3 @@
     color: var(--text-muted);
     font-size: var(--text-xs);
 }
-
-.auto-mode-indicator {
-    align-self: center;
-    padding: var(--space-2) var(--space-3);
-    border: 1px solid var(--success);
-    border-radius: var(--radius-pill);
-    color: var(--success);
-    font-weight: 700;
-}

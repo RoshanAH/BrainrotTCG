@@ -51,12 +51,10 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
   const [showSummary, setShowSummary] = useState(false);
   const packDesign = packImageUrl(set.id);
   const [hasMovedMouse, setHasMovedMouse] = useState(false);
-  const [autoMode, setAutoMode] = useState(false);
   const effectsVolume = effectsLevel(settings.effectsVolume);
 
   const { playAndCleanup, preloadAudio, cleanupAudio, playRandom } = useAudio();
 
-  const autoIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const openTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const handleInteractionRef = useRef<() => void>(() => {});
   /** Whether this pack has been handed to onOpen; a pack is recorded once, however it's finished. */
@@ -177,7 +175,6 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
 
   /** Leaving the animation still awards and records the entire already-spent ticket. */
   const leaveReveal = useCallback(() => {
-    setAutoMode(false);
     recordPack();
     finishPack();
   }, [recordPack, finishPack]);
@@ -264,7 +261,6 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
     showSummary,
     disabled: disabled || guideOpen,
     onCloseSummary: closeSummary,
-    onToggleAutoMode: () => setAutoMode(prev => !prev),
     onOpenPack: () => !isPackCut && completeCut(),
     handleInteractionRef,
   });
@@ -286,56 +282,6 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [isOpening, hasMovedMouse]);
-
-  // Stop immediately on focus loss, before background timers can advance more packs.
-  useEffect(() => {
-    const stop = () => {
-      if (autoIntervalRef.current) {
-        clearInterval(autoIntervalRef.current);
-        autoIntervalRef.current = null;
-      }
-      setAutoMode(false);
-    };
-    const visibility = () => { if (document.hidden) stop(); };
-    window.addEventListener('blur', stop);
-    document.addEventListener('visibilitychange', visibility);
-    return () => {
-      window.removeEventListener('blur', stop);
-      document.removeEventListener('visibilitychange', visibility);
-    };
-  }, []);
-
-  // Auto mode effect
-  useEffect(() => {
-    if (autoMode && !disabled && !guideOpen) {
-      autoIntervalRef.current = setInterval(() => {
-        if (showSummary) {
-          closeSummary();
-        } else if (!isOpening && !isPackCut) {
-          completeCut();
-        } else if (isOpening) {
-          handleInteraction();
-        }
-      }, 100);
-    } else {
-      if (autoIntervalRef.current) {
-        clearInterval(autoIntervalRef.current);
-        autoIntervalRef.current = null;
-      }
-    }
-
-    return () => {
-      if (autoIntervalRef.current) {
-        clearInterval(autoIntervalRef.current);
-        autoIntervalRef.current = null;
-      }
-    };
-  }, [autoMode, disabled, guideOpen, showSummary, isOpening, isPackCut, closeSummary, completeCut, handleInteraction]);
-
-  // Stop auto mode when disabled (adjusting state during render avoids an extra effect pass)
-  if (disabled && autoMode) {
-    setAutoMode(false);
-  }
 
   // Pointer event listeners for cutting
   useEffect(() => {
@@ -377,14 +323,9 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
       {!isOpening && !isPackCut && <div className="pack-controls">
         <button type="button" className="btn btn--primary" onClick={completeCut} disabled={disabled}>Open pack</button>
         <button type="button" className="btn btn--secondary" onClick={() => setGuideOpen(true)} disabled={disabled}>Card guide</button>
-        <button type="button" className="btn btn--secondary" onClick={() => setAutoMode(true)} disabled={disabled}>Auto-open packs</button>
         <span className="pack-controls-hint">No swipe needed · Enter or Space opens a pack</span>
       </div>}
-      {autoMode && <div className="pack-controls">
-        <span className="auto-mode-indicator" role="status">Auto-open is on</span>
-        <button type="button" className="btn btn--secondary" onClick={() => setAutoMode(false)}>Stop auto-open</button>
-        <span className="pack-controls-hint">Auto-open stops when you leave this window · A toggles it</span>
-      </div>}
+
       <AnimatePresence mode="wait">
         {!isOpening ? (
           <Motion.div
