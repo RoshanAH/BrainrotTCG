@@ -37,7 +37,7 @@ const CardRevealUI = ({ currentCard, currentIndex, totalCards, hasMovedMouse, on
   const hint = touch
     ? revealed
       ? 'Swipe or tap for the next card'
-      : 'Tap to flip'
+      : 'Tap card to flip'
     : revealed
       ? 'Click or press Space for the next card'
       : 'Click or press Space to flip';
