@@ -74,3 +74,5 @@ A weekly review records the sample, observation, decision and next experiment. M
 ## Pending simplification review
 
 See [SIMPLIFICATION.md](SIMPLIFICATION.md) for the navigation/first-pack audit and mobile reliability plan, and [RANKINGS.md](RANKINGS.md) for top-10 daily/all-time/per-card submissions and stale-cutoff auto-submission. These are draft proposals held for Claude review; PRs #188, #203 and #216 are drafts and must not be merged before that review. Accounts remain deferred.
+
+[SERVERLESS_READINESS.md](SERVERLESS_READINESS.md) assigns the remaining release/recovery, local diagnostics, asset-integrity, storage-longevity and capacity gaps without a new application server. It remains draft; real-device and newcomer evidence is still required.
