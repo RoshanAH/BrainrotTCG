@@ -70,3 +70,7 @@ Keep trading/gifting (#19), battles (#18), an advanced economy (#48/#51), season
 | Is production worth repeating? | Reviewed usable assets, editing time, and engaged visits by format | Views alone are not product growth |
 
 A weekly review records the sample, observation, decision and next experiment. Measure whether flashy reveals improve watch-through, shares and engaged game visits; do not optimize empty views at the expense of payoff. Use [SOCIAL_PIPELINE.md](SOCIAL_PIPELINE.md) for production, [PROGRESSION.md](PROGRESSION.md) for serverless constraints, and [ISSUE_HYGIENE.md](ISSUE_HYGIENE.md) for backlog rules. Issue #1 is the live index; the docs hold rationale and operating details.
+
+## Pending simplification review
+
+See [SIMPLIFICATION.md](SIMPLIFICATION.md) for the navigation/first-pack audit and mobile reliability plan, and [RANKINGS.md](RANKINGS.md) for top-10 daily/all-time/per-card submissions and stale-cutoff auto-submission. These are draft proposals held for Claude review; PRs #188, #203 and #216 are drafts and must not be merged before that review. Accounts remain deferred.
