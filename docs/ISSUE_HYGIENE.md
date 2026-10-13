@@ -20,7 +20,7 @@ Weekly, review current-milestone blockers, new-player findings, post results, st
 
 Close as completed only when the whole agreed scope is implemented and validated on main or a verified release. A feature branch or open PR is not a shipped feature. Use PR closing references for finite deliverables and `Refs` for partially resolved tracking work. Close duplicates with a link to the canonical issue; close abandoned experiments with a stated decision rather than pretend they shipped.
 
-Current examples: #50 (XP/titles) and #41 (art pipeline) are closed; #82 was narrowed to remaining rarity decisions. #182–#185/#187 have proposed implementations in PRs #188/#203 and remain open pending merge/release validation. #186's original blank-screen report remains unconfirmed even though related auto-focus handling is proposed. #181/#87 still track save/storage problems. Do not bulk-close those based on this docs PR.
+Current examples: #50 (XP/titles) and #41 (art pipeline) are closed; #82 was narrowed to remaining rarity decisions. #182–#185/#187 have proposed implementations in PRs #188/#203 and remain open pending merge/release validation. #186's original blank-screen report remains unconfirmed even though related auto-open removal is proposed. #181/#87 still track save/storage problems. Do not bulk-close those based on this docs PR.
 
 ## Docs and PR discipline
 

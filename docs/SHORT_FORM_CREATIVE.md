@@ -25,7 +25,7 @@ A single-card clip can initially target 6–15 seconds. Test longer 15–30-seco
 
 ## Live play and cinematic output
 
-Live play needs quick controls, visible auto state, voluntary pacing and comfortable repeat use. Offer cinematic playback/export for content without forcing the full ceremony on every player or locking gesture alternatives behind progression. Keep reduced-motion behavior and a non-flashing variant. Do not interpret a request for flashy content as permission to remove accessibility controls.
+Live play needs quick manual controls, voluntary pacing and comfortable repeat use. Auto-open is excluded from the product direction. Offer cinematic playback/export for content without forcing the full ceremony on every player or locking gesture alternatives behind progression. Keep reduced-motion behavior and a non-flashing variant. Do not interpret a request for flashy content as permission to remove accessibility controls.
 
 Clips should omit desktop UI clutter, keep the card/joke readable, and end with a short brand/play invitation. Overlay verified-source context briefly or provide it in the caption/link. The renderer must preserve the actual pack order/results or clearly distinguish presentation order from derivation. Label staged/promotional demonstrations instead of pretending they are authentic lucky pulls.
 

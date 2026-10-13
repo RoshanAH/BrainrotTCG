@@ -6,7 +6,7 @@ Progression is the long-term layer underneath the short-form spectacle: it shoul
 | --- | --- | --- |
 | Level/collection milestones | Predictable cosmetics, titles, backgrounds, wrappers | Re-derive from verified history; no spending ledger |
 | Cosmetic shop | Choose what to buy with earned points | Validate earning rules and replay versioned purchases |
-| Shorter reveals and visible auto controls | Fewer gestures and less waiting | Presentation only; keep accessibility controls free |
+| Shorter reveals and button opening | Fewer gestures and less waiting | Presentation only; keep accessibility controls free |
 | Better prefetch/scheduling | Less waiting between fixed-cost tickets | Device CPU/memory limits; no reduction in required work |
 | Cheaper mining or better odds | More packs or different outcomes | Each pull needs provable eligibility and a versioned derivation |
 
@@ -31,3 +31,9 @@ Editable browser saves can fork into two individually valid spending histories. 
 - Preserve old definitions and verifier behavior. The new-finish proposal in PR #203 uses modifier table 2 and new set versions; it is not assumed released here.
 
 Spendable upgrades, cheaper mining, better odds and trading are future designs. This roadmap prioritizes predictable collecting and cosmetics before those commitments.
+
+## Saving and recovery
+
+LocalStorage persists on this browser until site data is removed; ordinary history/cache-only clearing does not necessarily remove it. Exported backups are currently the separate recovery copy and include the private player key. A shared profile proof can show and verify public pack history, but cannot restore the private identity key.
+
+The first recovery improvement is a visible backup/reminder flow and tested restore behavior (#181). Optional future encrypted cloud backups can use a storage provider without a dedicated application backend, but still introduce a remote service, authentication and a recovery-key/passphrase design. Keep that choice explicit; do not upload raw private keys to public issue or relay storage. No cloud sync is implemented by this plan.
