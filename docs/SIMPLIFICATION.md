@@ -46,3 +46,7 @@ Ship in small reviewed slices: image reliability/performance baseline; first-pac
 ## Research limits
 
 Progressive disclosure, recognition over recall and prioritizing the primary task guide this proposal. Attempts to fetch Nielsen Norman Group's progressive-disclosure article and web.dev's LCP guidance were blocked by the environment (HTTP 403); their contents were not reviewed. No additional simplification skill was installed or invoked. Validate these hypotheses with actual players and device measurements.
+
+## Issue ownership
+
+[Finite simplification checklist #227](https://github.com/evanlin23/BrainrotTCG/issues/227) links existing owners and these new scopes: #222 first-pack disclosure, #223 daily/all-time rankings, #224 per-card rankings, #225 automatic submission/stale cutoffs, #226 blank-image investigation. Existing navigation, mobile performance, accessibility, state architecture, landing and validation issues were linked with follow-up comments rather than duplicated.
