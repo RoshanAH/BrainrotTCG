@@ -199,10 +199,9 @@
 .collection-item.brainrot { --r: #ffd23f; }
 .collection-label-rarity.brainrot { --r: #ffd23f; }
 
-/* The rarest finish owned frames the tile; finishes and misprints are named in a strip on top. */
-.collection-item.has-finish {
-  --ring: 0 0 0 2px var(--finish);
-  --glow: 0 0 10px var(--finish);
+/* Only platinum and diamond glow; CardImage supplies the rarest finish's printed inks. */
+.collection-item:is(.finish-platinum, .finish-diamond) {
+  --glow: var(--finish-glow);
 }
 
 .collection-mods {

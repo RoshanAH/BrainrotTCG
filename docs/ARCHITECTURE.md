@@ -252,9 +252,14 @@ points by about 1 / its chance (x10, x40, x200, x1000, x200), stacking with holo
 They're derived from the ticket like everything else, so they're as checkable as the cards. Only set
 versions that opt in roll them, so no pull from before changed: version 1 of each set has no
 modifiers and keeps verifying exactly as it did; version 2 (the same cards) adds them, and new packs
-open from it. They show as a metallic frame per finish and off-register colours for a misprint
+open from it. Finishes recolour the card's printed frame (silver gray, gold yellow, platinum blue,
+diamond blue/violet), with glow on platinum and diamond; misprints show off-register colours
 (`src/game/modifiers.ts`), in the collection, history, Hall of Fame and the share poster, and they're
 stored compactly in the pack history (`src/game/cardCode.ts`: `sigma*G!` is a holo Gold misprint).
+
+`src/game/finishImage.ts` uses the shared frame's alpha mask to protect the meme artwork, and caches
+the result per card/finish. `CardImage` and the PNG exporter use the same image. `npm run cards`
+also rebuilds the small lossless mask (`src/assets/images/card-frame-mask.webp`) from the frame template.
 
 ## Invariants (CI enforces these)
 

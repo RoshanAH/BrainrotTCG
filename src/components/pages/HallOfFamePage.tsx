@@ -1,6 +1,7 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { Crown, ShieldAlert, ShieldCheck } from 'lucide-react';
 import Sheet from '../ui/Sheet';
+import CardImage from '../cards/CardImage';
 import Tabs from '../ui/Tabs';
 import { tabPanelProps } from '../ui/tabPanel';
 import '../../styles/HallOfFame.css';
@@ -132,7 +133,7 @@ const HallOfFamePage = ({ onClose }: HallOfFamePageProps) => {
           <span className="hof-cards" aria-hidden="true">
             {entry.cards.map((c, i) => {
               const card = getCard(`${entry.setId}/${c.cardId}`);
-              return card ? <img key={i} src={card.image} alt="" className={`${card.rarity.toLowerCase()} ${c.isHolo ? 'holo' : ''} ${modifierClasses(c)}`} /> : null;
+              return card ? <CardImage key={i} src={card.image} finish={c.finish} alt="" className={`${card.rarity.toLowerCase()} ${c.isHolo ? 'holo' : ''} ${modifierClasses(c)}`} /> : null;
             })}
           </span>
           <span className="hof-main">

@@ -7,6 +7,7 @@ import { FINISH_INFO, modifierClasses, modifierLabel } from '../../game/modifier
 import { sameVersion, versionOf, type CardVersion, type OwnedVersion } from '../../game/versions';
 import RarityBadge from '../ui/RarityBadge';
 import Sheet from '../ui/Sheet';
+import CardImage from './CardImage';
 
 interface CardViewerModalProps {
   /** The card. A pulled card carries its own version (holo, finish, misprint), and that's what shows. */
@@ -53,9 +54,8 @@ const CardViewerModal = ({ card, versions, onClose, canShare = false }: CardView
         className={`card-viewer-card ${card.rarity.toLowerCase()} ${isHolo ? 'holo' : ''} ${modifierClasses(shown)}`}
         style={{ transform: `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)` }}
       >
-        <img src={card.image} alt={card.name} draggable="false" />
-        {misprint && <img src={card.image} alt="" aria-hidden="true" className="misprint-ghost" draggable="false" />}
-        {finish && <span className="finish-frame" aria-hidden="true" />}
+        <CardImage src={card.image} finish={finish} alt={card.name} draggable="false" />
+        {misprint && <CardImage src={card.image} finish={finish} alt="" aria-hidden="true" className="misprint-ghost" draggable="false" />}
         {label && <span className="modifier-sticker">{label}</span>}
       </div>
       <div className="card-viewer-info">

@@ -5,6 +5,7 @@ import cardBackImage from '../../assets/images/card_back.webp';
 import type { Card as CardType } from '../../data/cards';
 import type { Finish } from '../../engine';
 import { FINISH_INFO, modifierClasses, modifierLabel } from '../../game/modifiers';
+import CardImage from './CardImage';
 
 export interface CardWithMeta extends CardType {
     uniqueId: number;
@@ -104,11 +105,10 @@ const Card = ({ card, isFlipped, onFlip, slowFlip = false, tell = false }: CardP
 
                 {/* Card Front */}
                 <div className={`card-face card-front ${modifierClasses(card)}`}>
-                    <img src={card.image} alt={card.name} className="card-full-image" draggable="false" />
-                    {card.misprint && <img src={card.image} alt="" aria-hidden="true" className="misprint-ghost" draggable="false" />}
+                    <CardImage src={card.image} finish={card.finish} alt={card.name} className="card-full-image" draggable="false" />
+                    {card.misprint && <CardImage src={card.image} finish={card.finish} alt="" aria-hidden="true" className="misprint-ghost" draggable="false" />}
                     {card.isHolo && <div className="holo-shine-overlay"></div>}
                     <div className="holo-overlay"></div>
-                    {card.finish && <span className="finish-frame" aria-hidden="true" />}
                     {card.isNew && <span className="new-sticker">New</span>}
                     {modifierLabel(card, false) && <span className="modifier-sticker">{modifierLabel(card, false)}</span>}
                 </div>

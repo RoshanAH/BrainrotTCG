@@ -7,6 +7,7 @@ import { toCardsWithMeta } from '../../game/pulls';
 import { collectionMilestone, setProgress, titleFor } from '../../game/progression';
 import { modifierClasses } from '../../game/modifiers';
 import PackCardViewer from '../ui/PackCardViewer';
+import CardImage from '../cards/CardImage';
 import SetBadge from '../sets/SetBadge';
 import Sheet from '../ui/Sheet';
 import '../../styles/Profile.css';
@@ -125,7 +126,7 @@ const ProfileSummary = ({ stats, actions, levelNote, partial = false, onOpenPack
                   >
                     <span className="pull-row-thumbs" aria-hidden="true">
                       {cards.map((c, i) => (
-                        <img key={i} src={c.image} alt="" loading="lazy" className={`${c.isHolo ? 'holo' : ''} ${modifierClasses(c)}`} />
+                        <CardImage key={i} src={c.image} finish={c.finish} alt="" loading="lazy" className={`${c.isHolo ? 'holo' : ''} ${modifierClasses(c)}`} />
                       ))}
                     </span>
                     <span className="pull-row-main">

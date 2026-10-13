@@ -7,6 +7,9 @@ import { ALL_SET_VERSIONS, SETS } from '../../src/content/sets/index.ts';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { buildSetCards, SETS_DIR } from './lib.ts';
 import { buildSetPack } from './pack.ts';
+import { buildFinishMask } from './finish-mask.ts';
+
+await buildFinishMask();
 
 const args = process.argv.slice(2);
 const force = args.includes('--force');

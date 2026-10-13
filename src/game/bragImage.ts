@@ -6,6 +6,7 @@
 import qrcode from 'qrcode-generator';
 import type { Finish, PackScore } from '../engine';
 import { FINISH_INFO, modifierLabel } from './modifiers';
+import { finishedCardImage } from './finishImage';
 
 interface PosterCard {
   image: string;
@@ -14,14 +15,6 @@ interface PosterCard {
   finish?: Finish | null;
   misprint?: boolean;
 }
-
-/** A finish's frame on the poster: its colour, light to dark to light like the in-game frame. */
-const FINISH_STOPS: Record<Finish, string[]> = {
-  SILVER: ['#f4f7fa', '#8e98a2', '#ffffff', '#7f8992', '#e3e8ec'],
-  GOLD: ['#fff3c4', '#c8961e', '#ffeaa0', '#a5700c', '#ffd76a'],
-  PLATINUM: ['#eefaff', '#7fb4cc', '#ffffff', '#6c9fb8', '#d6f3ff'],
-  DIAMOND: ['#b9f2ff', '#ffffff', '#c9b6ff', '#ffffff', '#7ee7ff'],
-};
 
 interface PosterInput {
   cards: PosterCard[];
@@ -39,13 +32,15 @@ interface PosterInput {
 const W = 1080;
 const H = 1920;
 
-const loadImage = (src: string) =>
-  new Promise<HTMLImageElement>((resolve, reject) => {
+const loadImage = async (src: string, finish?: Finish | null) => {
+  const imageUrl = await finishedCardImage(src, finish);
+  return new Promise<HTMLImageElement>((resolve, reject) => {
     const img = new Image();
     img.onload = () => resolve(img);
     img.onerror = () => reject(new Error(`Could not load ${src}`));
-    img.src = src;
+    img.src = imageUrl;
   });
+};
 
 const roundRect = (ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) => {
   ctx.beginPath();
@@ -99,6 +94,21 @@ const drawCard = (ctx: CanvasRenderingContext2D, img: HTMLImageElement, card: Po
   ctx.shadowBlur = 24;
   ctx.shadowOffsetY = 10;
   roundRect(ctx, -w / 2, -h / 2, w, h, 14);
+  if (card.finish === 'PLATINUM' || card.finish === 'DIAMOND') {
+    // Draw the soft finish glow outside the card before clipping its image.
+    ctx.save();
+    ctx.shadowOffsetY = 0;
+    ctx.shadowColor = card.finish === 'PLATINUM' ? 'rgba(168, 230, 255, 0.45)' : 'rgba(201, 182, 255, 0.65)';
+    ctx.shadowBlur = w * (card.finish === 'PLATINUM' ? 0.06 : 0.085);
+    ctx.fillStyle = '#121114';
+    ctx.fill();
+    if (card.finish === 'DIAMOND') {
+      ctx.shadowColor = 'rgba(126, 231, 255, 0.35)';
+      ctx.shadowBlur = w * 0.19;
+      ctx.fill();
+    }
+    ctx.restore();
+  }
   ctx.clip();
   if (card.misprint) {
     // Match Card.css: tilted/scaled base, then a shifted wrong-ink pass ABOVE it.
@@ -126,16 +136,6 @@ const drawCard = (ctx: CanvasRenderingContext2D, img: HTMLImageElement, card: Po
     ctx.globalAlpha = 0.45;
     ctx.fillStyle = shine;
     ctx.fillRect(-w / 2, -h / 2, w, h);
-  }
-  if (card.finish) {
-    const frame = ctx.createLinearGradient(-w / 2, -h / 2, w / 2, h / 2);
-    FINISH_STOPS[card.finish].forEach((c, i, all) => frame.addColorStop(i / (all.length - 1), c));
-    ctx.globalCompositeOperation = 'source-over';
-    ctx.globalAlpha = 1;
-    ctx.strokeStyle = frame;
-    ctx.lineWidth = Math.max(8, w * 0.05);
-    roundRect(ctx, -w / 2, -h / 2, w, h, 14);
-    ctx.stroke();
   }
   // Name what's special about it on the card's bottom edge, like the sticker in the game.
   const label = modifierLabel(card, false).toUpperCase();
@@ -306,7 +306,7 @@ export const renderPoster = async (input: PosterInput): Promise<Blob> => {
   drawHeader(ctx, input.setName, code, input.setColor);
 
   // Cards: three on top, two below, slightly fanned.
-  const images = await Promise.all(input.cards.map((c) => loadImage(c.image)));
+  const images = await Promise.all(input.cards.map((c) => loadImage(c.image, c.finish)));
   const slots = [
     { x: 215, y: 620, a: -0.06 },
     { x: 540, y: 600, a: 0 },
@@ -356,7 +356,7 @@ export const renderCardPoster = async (input: CardPosterInput): Promise<Blob> =>
   const { canvas, ctx } = await newCanvas();
   drawHeader(ctx, input.setName, input.setCode, input.setColor);
 
-  const image = await loadImage(input.card.image);
+  const image = await loadImage(input.card.image, input.card.finish);
   drawCard(ctx, image, input.card, W / 2, 790, 620, 0);
 
   ctx.textAlign = 'center';
@@ -500,7 +500,7 @@ export const renderProfilePoster = async (input: ProfilePosterInput): Promise<Bl
     ctx.font = `800 36px ${BODY_FONT}`;
     fitFont(ctx, `Best pull · ${input.best.hand} · ${fmt(input.best.score)}`, w, 36, '800', BODY_FONT);
     ctx.fillText(`Best pull · ${input.best.hand} · ${fmt(input.best.score)}`, x, top);
-    const images = await Promise.all(input.best.cards.map((c) => loadImage(c.image)));
+    const images = await Promise.all(input.best.cards.map((c) => loadImage(c.image, c.finish)));
     const cardW = Math.min(170, (1520 - top - 60) * (687 / 1024));
     const gap = (w - cardW * 5) / 4;
     input.best.cards.forEach((card, i) => {

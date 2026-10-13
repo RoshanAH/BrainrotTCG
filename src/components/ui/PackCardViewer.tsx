@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import BrainrotScorePanel from './BrainrotScorePanel';
 import CardViewerModal from '../cards/CardViewerModal';
+import CardImage from '../cards/CardImage';
 import type { CardWithMeta } from '../cards/Card';
 import { scoreCards } from '../../data/cards';
 import { hydrateCard } from '../../utils/migrations';
@@ -76,7 +77,7 @@ const PackCardViewer = ({
                             onClick={() => handleCardClick(card)}
                             aria-label={`${card.name}${modifierLabel(card) ? ` (${modifierLabel(card)})` : ''}`}
                         >
-                            <img src={card.image} alt="" />
+                            <CardImage src={card.image} finish={card.finish} alt="" />
                             {modifierLabel(card, false) && <span className="mod-label">{modifierLabel(card, false)}</span>}
                         </button>
                     );

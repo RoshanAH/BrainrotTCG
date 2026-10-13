@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { RotateCcw, Share2 } from 'lucide-react';
 import type { CardWithMeta } from '../cards/Card';
 import CardViewerModal from '../cards/CardViewerModal';
+import CardImage from '../cards/CardImage';
 import BrainrotScorePanel from '../ui/BrainrotScorePanel';
 import { modifierLabel, modifierThumb } from '../../game/modifiers';
 import { CARD_RARITIES, getSetCards, scoreCards } from '../../data/cards';
@@ -59,7 +60,7 @@ const PackSummaryUI = ({ openedCards, set, onClose, onShare }: PackSummaryUIProp
               onClick={() => setSelected(card)}
               aria-label={`${card.name}, ${CARD_RARITIES[card.rarity].name}${modifierLabel(card) ? `, ${modifierLabel(card)}` : ''}${card.isNew ? ', new' : ''}`}
             >
-              <img src={card.image} alt="" draggable="false" />
+              <CardImage src={card.image} finish={card.finish} alt="" draggable="false" />
               {card.isNew && <span className="new-sticker">New</span>}
               {modifierLabel(card, false) && <span className="mod-label">{modifierLabel(card, false)}</span>}
             </button>

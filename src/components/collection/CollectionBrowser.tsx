@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import CardViewerModal from '../cards/CardViewerModal';
+import CardImage from '../cards/CardImage';
 import Sheet from '../ui/Sheet';
 import { CARD_RARITIES, cardPoints, COLLECTIBLE_CARDS, getSetCards, type Card } from '../../data/cards';
 import { isOpenable, SETS } from '../../content/sets';
@@ -111,7 +112,7 @@ const CollectionBrowser = ({ collection, onClose }: CollectionBrowserProps) => {
                       );
                     }
                     const total = counts.normalCount + counts.holoCount;
-                    // The rarest finish owned shows as the tile's frame, and misprints get a mark.
+                    // The rarest finish owned recolours the tile's printed frame; misprints get a mark.
                     const finish = bestFinish(counts.finishes);
                     const extras = [finish && `best finish ${FINISH_INFO[finish].name}`, counts.misprints && `${counts.misprints} misprint${counts.misprints === 1 ? '' : 's'}`].filter(Boolean).join(', ');
                     return (
@@ -123,7 +124,7 @@ const CollectionBrowser = ({ collection, onClose }: CollectionBrowserProps) => {
                           onClick={() => setSelected({ card, ...counts })}
                           aria-label={`${card.name}, ${number}, ${CARD_RARITIES[card.rarity].name}, ${total} owned${counts.holoCount ? `, ${counts.holoCount} holo` : ''}${extras ? `, ${extras}` : ''}`}
                         >
-                          <img src={card.image} alt="" loading="lazy" />
+                          <CardImage src={card.image} finish={finish} alt="" loading="lazy" />
                           {(finish || (counts.misprints ?? 0) > 0) && (
                             <span className="collection-mods" aria-hidden="true">
                               {finish && FINISH_INFO[finish].name}

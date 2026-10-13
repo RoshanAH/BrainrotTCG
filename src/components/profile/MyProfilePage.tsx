@@ -1,6 +1,7 @@
 import { useId, useMemo, useState } from 'react';
 import { ChevronRight, IdCard, Link2, Trophy } from 'lucide-react';
 import type { CardWithMeta } from '../cards/Card';
+import CardImage from '../cards/CardImage';
 import PackCardViewer from '../ui/PackCardViewer';
 import Sheet from '../ui/Sheet';
 import Tabs from '../ui/Tabs';
@@ -230,7 +231,7 @@ const MyProfilePage = ({ stats, settings, onSettingsChange, onClose, onSharePull
                       >
                         <span className="pull-row-thumbs" aria-hidden="true">
                           {cards
-                            ? cards.map((c, i) => <img key={i} src={c.image} alt="" loading="lazy" className={`${c.isHolo ? 'holo' : ''} ${modifierClasses(c)}`} />)
+                            ? cards.map((c, i) => <CardImage key={i} src={c.image} finish={c.finish} alt="" loading="lazy" className={`${c.isHolo ? 'holo' : ''} ${modifierClasses(c)}`} />)
                             : Array.from({ length: 5 }, (_, i) => <span key={i} className="pull-row-blank" />)}
                         </span>
                         <span className="pull-row-main">
