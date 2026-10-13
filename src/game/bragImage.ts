@@ -62,6 +62,34 @@ const roundRect = (ctx: CanvasRenderingContext2D, x: number, y: number, w: numbe
   ctx.closePath();
 };
 
+/** The in-game ghost's hue-rotate(150deg) saturate(2.2), including browsers without canvas filters. */
+const misprintGhost = (img: HTMLImageElement, w: number, h: number): HTMLCanvasElement => {
+  const ghost = document.createElement('canvas');
+  ghost.width = Math.ceil(w);
+  ghost.height = Math.ceil(h);
+  const ctx = ghost.getContext('2d')!;
+  ctx.drawImage(img, 0, 0, ghost.width, ghost.height);
+  const pixels = ctx.getImageData(0, 0, ghost.width, ghost.height);
+  const c = Math.cos(150 * Math.PI / 180);
+  const s = Math.sin(150 * Math.PI / 180);
+  const clamp = (value: number) => Math.max(0, Math.min(255, value));
+  for (let i = 0; i < pixels.data.length; i += 4) {
+    const r = pixels.data[i];
+    const g = pixels.data[i + 1];
+    const b = pixels.data[i + 2];
+    // CSS hue rotation matrix, then saturation around the rotated pixel's luminance.
+    const red = clamp((0.213 + 0.787 * c - 0.213 * s) * r + (0.715 - 0.715 * c - 0.715 * s) * g + (0.072 - 0.072 * c + 0.928 * s) * b);
+    const green = clamp((0.213 - 0.213 * c + 0.143 * s) * r + (0.715 + 0.285 * c + 0.140 * s) * g + (0.072 - 0.072 * c - 0.283 * s) * b);
+    const blue = clamp((0.213 - 0.213 * c - 0.787 * s) * r + (0.715 - 0.715 * c + 0.715 * s) * g + (0.072 + 0.928 * c + 0.072 * s) * b);
+    const luminance = 0.213 * red + 0.715 * green + 0.072 * blue;
+    pixels.data[i] = luminance + 2.2 * (red - luminance);
+    pixels.data[i + 1] = luminance + 2.2 * (green - luminance);
+    pixels.data[i + 2] = luminance + 2.2 * (blue - luminance);
+  }
+  ctx.putImageData(pixels, 0, 0);
+  return ghost;
+};
+
 const drawCard = (ctx: CanvasRenderingContext2D, img: HTMLImageElement, card: PosterCard, cx: number, cy: number, w: number, angle: number) => {
   const h = (w * 1024) / 687;
   ctx.save();
@@ -73,20 +101,23 @@ const drawCard = (ctx: CanvasRenderingContext2D, img: HTMLImageElement, card: Po
   roundRect(ctx, -w / 2, -h / 2, w, h, 14);
   ctx.clip();
   if (card.misprint) {
-    // Off-register colour plates: a pink and a cyan ghost either side, the card a touch askew.
+    // Match Card.css: tilted/scaled base, then a shifted wrong-ink pass ABOVE it.
+    ctx.save();
+    ctx.rotate(-1.5 * Math.PI / 180);
+    ctx.scale(1.03, 1.03);
     ctx.drawImage(img, -w / 2, -h / 2, w, h);
-    for (const [dx, colour] of [[w * 0.025, 'rgba(255, 0, 90, 0.35)'], [-w * 0.025, 'rgba(0, 230, 255, 0.35)']] as const) {
-      ctx.globalAlpha = 0.5;
-      ctx.drawImage(img, -w / 2 + dx, -h / 2, w, h);
-      ctx.globalAlpha = 1;
-      ctx.globalCompositeOperation = 'source-atop';
-      ctx.fillStyle = colour;
-      ctx.fillRect(-w / 2, -h / 2, w, h);
-      ctx.globalCompositeOperation = 'source-over';
-    }
-    ctx.rotate(-0.02);
+    ctx.restore();
+    ctx.save();
+    ctx.shadowColor = 'transparent';
+    ctx.translate(w * 0.04, h * 0.02);
+    ctx.rotate(Math.PI / 180);
+    ctx.globalAlpha = 0.45;
+    ctx.globalCompositeOperation = 'screen';
+    ctx.drawImage(misprintGhost(img, w, h), -w / 2, -h / 2, w, h);
+    ctx.restore();
+  } else {
+    ctx.drawImage(img, -w / 2, -h / 2, w, h);
   }
-  ctx.drawImage(img, -w / 2, -h / 2, w, h);
   if (card.isHolo) {
     // Foil: the only gradient on the poster, as in the app.
     const shine = ctx.createLinearGradient(-w / 2, -h / 2, w / 2, h / 2);
