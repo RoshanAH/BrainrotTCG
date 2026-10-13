@@ -63,6 +63,7 @@ function App() {
   const [isAchievementsOpen, setIsAchievementsOpen] = useState(false);
   const [isHallOfFameOpen, setIsHallOfFameOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isPullsOpen, setIsPullsOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [notificationQueue, setNotificationQueue] = useState<ToastItem[]>([]);
   const [shareTarget, setShareTarget] = useState<ShareTarget | null>(null);
@@ -240,7 +241,7 @@ function App() {
   const openNav = useCallback((target: NavTarget) => {
     ({
       collection: setIsCollectionOpen,
-      achievements: setIsAchievementsOpen,
+      pulls: setIsPullsOpen,
       hallOfFame: setIsHallOfFameOpen,
       profile: setIsProfileOpen,
       settings: setIsSettingsOpen,
@@ -462,7 +463,7 @@ function App() {
     return out;
   }, [stats.packsOpened, collection]);
 
-  const isAnyModalOpen = isCollectionOpen || isAchievementsOpen || isHallOfFameOpen || isProfileOpen || isSettingsOpen || !!shareTarget || !!viewProof || !!viewProfile;
+  const isAnyModalOpen = isCollectionOpen || isAchievementsOpen || isHallOfFameOpen || isProfileOpen || isPullsOpen || isSettingsOpen || !!shareTarget || !!viewProof || !!viewProfile;
 
   return (
     <div className={`app ${packBusy ? 'is-focus' : ''}`}>
@@ -519,12 +520,16 @@ function App() {
         />
       )}
 
-      {isProfileOpen && (
+      {(isProfileOpen || isPullsOpen) && (
         <MyProfilePage
+          key={isPullsOpen ? 'pulls' : 'profile'}
+          mode={isPullsOpen ? 'pulls' : 'profile'}
           stats={stats}
           settings={settings}
           onSettingsChange={handleSettingsChange}
-          onClose={() => setIsProfileOpen(false)}
+          onClose={() => { setIsProfileOpen(false); setIsPullsOpen(false); }}
+          onOpenAchievements={() => { setIsProfileOpen(false); setIsAchievementsOpen(true); }}
+          onOpenSettings={() => { setIsProfileOpen(false); setIsSettingsOpen(true); }}
           onSharePull={(entry, cards) =>
             setShareTarget({
               ref: { setId: entry.setId, setVersion: entry.setVersion, nonce: entry.nonce, publicKeyHex: entry.key },

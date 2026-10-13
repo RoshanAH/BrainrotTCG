@@ -27,10 +27,12 @@ interface ProfileSummaryProps {
   partial?: boolean;
   /** Replaces the built-in pack viewer (your own profile opens the share sheet instead). */
   onOpenPack?: (pack: ProfilePack) => void;
+  /** Keep your own overview small; collection and pulls have dedicated destinations. */
+  compact?: boolean;
 }
 
 /** Level, the numbers that matter, best pulls and collection by era. Same for your profile and someone else's. */
-const ProfileSummary = ({ stats, actions, levelNote, partial = false, onOpenPack }: ProfileSummaryProps) => {
+const ProfileSummary = ({ stats, actions, levelNote, partial = false, onOpenPack, compact: brief = false }: ProfileSummaryProps) => {
   const [open, setOpen] = useState<ProfilePack | null>(null);
   const floor = xpForLevel(stats.level);
   const ceiling = xpForLevel(stats.level + 1);
@@ -81,7 +83,7 @@ const ProfileSummary = ({ stats, actions, levelNote, partial = false, onOpenPack
           <dt>best score{partial && '*'}</dt>
         </div>
       </dl>
-      {hands.length > 0 && (
+      {!brief && hands.length > 0 && (
         <p className="profile-hands">
           {hands.map((h, i) => (
             <span key={h}>
@@ -93,7 +95,7 @@ const ProfileSummary = ({ stats, actions, levelNote, partial = false, onOpenPack
       )}
       {partial && <p className="profile-footnote">* so far, while the rest of the packs are re-opened</p>}
 
-      <section className="profile-collection" aria-label="Collection Brainrot Score">
+      {!brief && <section className="profile-collection" aria-label="Collection Brainrot Score">
         <span className="profile-collection-head">
           <span>
             <span className="profile-collection-label">Collection score{partial && '*'}</span>{' '}
@@ -107,9 +109,9 @@ const ProfileSummary = ({ stats, actions, levelNote, partial = false, onOpenPack
         <span className="progress" aria-hidden="true">
           <span style={{ width: `${nextMilestone ? ((stats.points - milestoneFloor) / (nextMilestone.points - milestoneFloor)) * 100 : 100}%` }} />
         </span>
-      </section>
+      </section>}
 
-      {best.length > 0 && (
+      {!brief && best.length > 0 && (
         <section>
           <h3 className="section-title profile-heading">Best pulls</h3>
           <ul className="pulls-list">
@@ -147,7 +149,7 @@ const ProfileSummary = ({ stats, actions, levelNote, partial = false, onOpenPack
         </section>
       )}
 
-      {sets.length > 0 && (
+      {!brief && sets.length > 0 && (
         <section>
           <h3 className="section-title profile-heading">Collection by era{partial && '*'}</h3>
           <p className="profile-footnote profile-sets-key">

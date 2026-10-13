@@ -16,11 +16,12 @@ import { packImageUrl } from '../../content/art';
 import { getCard } from '../../data/cards';
 import { DEFAULT_SET_ID, getLatestSet, setCode } from '../../content/sets';
 import { byBest, getHistory, isHallOfFameWorthy, type HistoryEntry } from '../../game/history';
-import { HALL_OF_FAME_MIN_SCORE } from '../../engine';
-import { getPlayer } from '../../game/player';
+import { HALL_OF_FAME_MIN_SCORE, MAX_NAME_LENGTH, normalizeName } from '../../engine';
+import { getPlayer, renamePlayer } from '../../game/player';
 import { myProfileInfo, myProfileProof, myStats, profileUrl } from '../../game/profiles';
 import { copyText } from '../../game/shareActions';
 import '../../styles/Pulls.css';
+import '../../styles/Settings.css';
 
 interface LegacyBest {
   highestPackCards?: CardWithMeta[];
@@ -28,10 +29,13 @@ interface LegacyBest {
 }
 
 interface MyProfilePageProps {
+  mode: 'profile' | 'pulls';
   stats: LegacyBest;
   settings: Settings;
   onSettingsChange: (settings: Settings) => void;
   onClose: () => void;
+  onOpenAchievements: () => void;
+  onOpenSettings: () => void;
   onSharePull: (entry: HistoryEntry, cards: CardWithMeta[]) => void;
 }
 
@@ -63,13 +67,18 @@ const cardsOf = (entry: HistoryEntry): CardWithMeta[] | null =>
     .filter((c): c is CardWithMeta => c !== null) ?? null;
 
 /** Your level and stats, a link that proves them, and every pack you've opened (newest first). */
-const MyProfilePage = ({ stats, settings, onSettingsChange, onClose, onSharePull }: MyProfilePageProps) => {
-  const player = getPlayer();
+const MyProfilePage = ({ mode, stats, settings, onSettingsChange, onClose, onSharePull, onOpenAchievements, onOpenSettings }: MyProfilePageProps) => {
+  const personal = mode === 'profile';
+  const [section, setSection] = useState<'overview' | 'rewards'>('overview');
+  const sectionTabsId = useId();
+  const [player, setPlayer] = useState(getPlayer);
+  const [nameDraft, setNameDraft] = useState(player.name);
+  const [nameNote, setNameNote] = useState('Shown on new pulls and profile links you share.');
   const history = useMemo(() => getHistory(), []);
   const summary = useMemo(() => myStats(), []);
   const mine = useMemo(() => myProfileInfo(), []);
   const [shown, setShown] = useState(PAGE);
-  const [view, setView] = useState<PackView>('newest');
+  const [view, setView] = useState<PackView>('best');
   const tabsId = useId();
   const best = useMemo(() => [...history].sort(byBest), [history]);
   const worthy = useMemo(() => best.filter(isHallOfFameWorthy), [best]);
@@ -127,18 +136,46 @@ const MyProfilePage = ({ stats, settings, onSettingsChange, onClose, onSharePull
   return (
     <>
       <Sheet
-        title="Profile"
+        title={personal ? 'Your profile' : 'My pulls'}
         subtitle={
           <>
-            {player.name} <span className="share-fp">#{player.fingerprint}</span>
+            {personal ? <>{player.name} <span className="share-fp">#{player.fingerprint}</span></> : 'Your best pulls and pack history, saved on this device.'}
           </>
         }
         onClose={onClose}
         size="lg"
         className="pulls-page"
       >
-        {mine ? (
+        {personal && <>
+          <p className="pulls-note">No account needed. Your identity and progress are saved on this device. Back up your save in Settings to keep them or move to another device.</p>
+          <div className="profile-shortcuts">
+            <button type="button" className="btn btn--secondary btn--sm" onClick={onOpenAchievements}>Achievements</button>
+            <button type="button" className="btn btn--ghost btn--sm" onClick={onOpenSettings}>Back up or restore</button>
+          </div>
+          <Tabs idBase={sectionTabsId} label="Profile sections" value={section} onChange={setSection} tabs={[{ id: 'overview', label: 'Overview' }, { id: 'rewards', label: 'Cosmetics' }]} />
+        </>}
+        {personal && <div {...tabPanelProps(sectionTabsId, section)}>
+        {section === 'overview' && <form className="profile-name-form" onSubmit={(event) => {
+          event.preventDefault();
+          if (!normalizeName(nameDraft)) { setNameNote('Enter a display name.'); return; }
+          const updated = renamePlayer(nameDraft);
+          setPlayer(updated);
+          setNameDraft(updated.name);
+          setNameNote('Name saved. Existing shared links keep their original name.');
+          setReadyUrl(null);
+          setCardUrl(null);
+          setCopied(false);
+        }}>
+          <label className="settings-field">
+            <span className="settings-label">Display name</span>
+            <input className="settings-input" autoComplete="nickname" value={nameDraft} onChange={(event) => setNameDraft(Array.from(event.target.value).slice(0, MAX_NAME_LENGTH).join(''))} aria-describedby={`${sectionTabsId}-name-note`} />
+          </label>
+          <button type="submit" className="btn btn--secondary btn--sm">Save name</button>
+          <p className="pulls-note" id={`${sectionTabsId}-name-note`} role="status">{nameNote}</p>
+        </form>}
+        {section === 'overview' && (mine ? (
           <ProfileSummary
+            compact
             stats={summary}
             onOpenPack={(pack) => openEntry(history.find((e) => e.nonce === pack.nonce && player.publicKeyHex.startsWith(e.key)))}
             actions={
@@ -148,34 +185,36 @@ const MyProfilePage = ({ stats, settings, onSettingsChange, onClose, onSharePull
                   {preparing ?? (copied ? 'Link copied' : readyUrl ? 'Copy link now' : 'Copy profile link')}
                 </button>
                 <button type="button" className="btn btn--secondary btn--sm" onClick={shareCard} disabled={!!preparing}>
-                  <IdCard aria-hidden="true" /> Player card
+                  <IdCard aria-hidden="true" /> Share profile image
                 </button>
               </>
             }
           />
         ) : (
           <div className="pulls-empty">
-            <p>No packs yet. Your level, stats and best pulls show up here.</p>
+            <p>Open a pack to start earning XP and unlocking cosmetics. Find your pack history in My pulls.</p>
             <button type="button" className="btn btn--primary" onClick={onClose}>
               Open your first pack
             </button>
           </div>
-        )}
+        ))}
 
-        {mine && (
+        {section === 'rewards' && (
           <div className="pulls-rewards">
+            <p className="pulls-note">Unlock titles, card backs and pack finishes as you level up. These change how your cards look, not your odds.</p>
             <RewardsPanel level={summary.level} settings={settings} onSettingsChange={onSettingsChange} packImage={packImageUrl(DEFAULT_SET_ID)} />
           </div>
         )}
+        </div>}
 
-        {mine && mine.filled > 0 && (
+        {personal && mine && mine.filled > 0 && (
           <p className="pulls-note">
             {mine.filled.toLocaleString()} early pack{mine.filled === 1 ? " wasn't" : "s weren't"} recorded on this device. A profile
             can't skip tickets, so yours counts {mine.filled === 1 ? 'it' : 'them'} as whatever those tickets hold.
           </p>
         )}
 
-        {mine && mine.missing > mine.filled && (
+        {personal && mine && mine.missing > mine.filled && (
           <p className="pulls-note">
             {(mine.missing - mine.filled).toLocaleString()} pack{mine.missing - mine.filled === 1 ? " in your history doesn't" : "s in your history don't"} have
             {mine.missing - mine.filled === 1 ? ' its' : ' their'} cards on this device, so the numbers above leave{' '}
@@ -184,34 +223,36 @@ const MyProfilePage = ({ stats, settings, onSettingsChange, onClose, onSharePull
           </p>
         )}
 
-        {stats.highestPackLegacy && stats.highestPackCards?.length ? (
+        {!personal && stats.highestPackLegacy && stats.highestPackCards?.length ? (
           <section className="pulls-legacy">
             <h3 className="section-title pulls-history-title">Best before verifiable pulls</h3>
             <PackCardViewer cards={stats.highestPackCards} displayMode="grid" canShareCards />
           </section>
         ) : null}
 
-        {history.length > 0 && (
+        {!personal && history.length === 0 && <div className="pulls-empty"><p>Your pulls will appear here after you open a pack.</p><button type="button" className="btn btn--primary" onClick={onClose}>Open your first pack</button></div>}
+        {!personal && history.length > 0 && (
           <section aria-labelledby="pulls-history-title" className="pulls-history">
             <h3 id="pulls-history-title" className="section-title pulls-history-title">
-              All packs · {history.length.toLocaleString()}
+              {history.length.toLocaleString()} packs opened
             </h3>
             <Tabs
               idBase={tabsId}
-              label="Sort packs"
+              label="Your pulls"
               value={view}
               onChange={changeView}
               tabs={[
-                { id: 'newest', label: 'Newest' },
-                { id: 'best', label: 'Best' },
-                { id: 'hof', label: <>Hall of Fame · {worthy.length.toLocaleString()}</> },
+                { id: 'best', label: 'Best pulls' },
+                { id: 'newest', label: 'All packs' },
+                { id: 'hof', label: 'Global eligible' },
               ]}
             />
             <div className="pulls-panel" {...tabPanelProps(tabsId, view)}>
+              {view !== 'hof' && <p className="pulls-note">{view === 'best' ? 'Highest scores first. Open a pull to share it.' : 'Newest packs first. Open a pack to view or share it.'}</p>}
               {view === 'hof' && (
                 <p className="pulls-note">
                   {worthy.length
-                    ? 'Good enough for the Hall of Fame. Open one to share it or submit it.'
+                    ? 'These pulls qualify for the global leaderboard. Open one, then share and submit it to compete with everyone.'
                     : `None yet: a Full House or better, or a Brainrot Score of ${HALL_OF_FAME_MIN_SCORE.toLocaleString()}+, gets in.`}
                 </p>
               )}
@@ -240,7 +281,7 @@ const MyProfilePage = ({ stats, settings, onSettingsChange, onClose, onSharePull
                             {isHallOfFameWorthy(entry) && (
                               <>
                                 <Trophy className="pull-row-hof" aria-hidden="true" />
-                                <span className="sr-only">, good enough for the Hall of Fame</span>
+                                <span className="sr-only">, eligible for the global leaderboard</span>
                               </>
                             )}
                           </span>

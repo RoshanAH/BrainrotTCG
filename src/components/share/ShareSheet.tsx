@@ -10,6 +10,7 @@ import { canShare, previewFor, proofFor, pullUrl, type PullRef } from '../../gam
 import { bragText, hallOfFameSubmitUrl, submitToHallOfFame, wasSubmitted } from '../../game/share';
 import { renderPoster } from '../../game/bragImage';
 import Sheet from '../ui/Sheet';
+import PackCardViewer from '../ui/PackCardViewer';
 import SharePreviewSheet from './SharePreviewSheet';
 import '../../styles/Share.css';
 
@@ -57,7 +58,7 @@ const ShareSheet = ({ target, onClose }: ShareSheetProps) => {
 
   return (
     <SharePreviewSheet
-      title="Share your pull"
+      title="Your pack"
       subtitle={
         <>
           {setName} · {target.score.hand.name} · <span className="tabular">{target.score.score.toLocaleString()}</span>
@@ -80,9 +81,14 @@ const ShareSheet = ({ target, onClose }: ShareSheetProps) => {
       text={bragText(target.cards, target.score, setName, link)}
       onClose={onClose}
     >
+      <section className="share-pack-cards" aria-label="Cards in this pack">
+        <h3 className="section-title">Cards in this pack</h3>
+        <p className="share-note">Choose a card to view or share it. The controls above share the whole pack.</p>
+        <PackCardViewer cards={target.cards} displayMode="grid" showValue={false} canShareCards />
+      </section>
       {listed ? (
         <p className="share-note">
-          <Crown aria-hidden="true" /> This pull is in the Hall of Fame.
+          <Crown aria-hidden="true" /> This pull is on the global leaderboard.
         </p>
       ) : (
         joins && <HallOfFameSubmit proof={proof} id={id} githubUrl={hallOfFameSubmitUrl(url, `${target.score.hand.name} in ${setName}`)} />
@@ -118,16 +124,16 @@ const HallOfFameSubmit = ({ proof, id, githubUrl }: { proof: string; id: string;
 
   const note =
     state === 'sent'
-      ? `${detail ? `${detail} ` : ''}It shows in the Hall of Fame now, checked on each visitor's device, and is filed for good within the hour.`
+      ? `${detail ? `${detail} ` : ''}It shows on the global leaderboard now, checked on each visitor's device, and is filed for good within the hour.`
       : state === 'failed'
         ? "Couldn't reach any relay. Try again, or submit on GitHub."
-        : 'No account needed. It shows in the Hall of Fame right away.';
+        : 'No account needed. It shows on the global leaderboard right away.';
 
   return (
     <div className="share-hof">
       <Crown aria-hidden="true" />
       <span>
-        <strong>This makes the Hall of Fame</strong>
+        <strong>Eligible for the global leaderboard</strong>
         <span role="status">{note}</span>
         <a href={githubUrl} target="_blank" rel="noreferrer">
           Or submit on GitHub instead

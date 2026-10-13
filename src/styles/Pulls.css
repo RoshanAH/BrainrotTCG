@@ -147,3 +147,20 @@
     margin-left: -10px;
   }
 }
+.profile-shortcuts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: var(--space-3) 0;
+}
+
+.profile-name-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: var(--space-2);
+  margin: var(--space-3) 0 var(--space-5);
+}
+
+.profile-name-form .settings-field { flex: 1; min-width: 10rem; }
+.profile-name-form .pulls-note { flex-basis: 100%; margin-top: 0; }

@@ -168,16 +168,16 @@ const HallOfFamePage = ({ onClose }: HallOfFamePageProps) => {
   );
 
   return (
-    <Sheet title="Hall of Fame" subtitle={`The top ${HALL_OF_FAME_TOP} pulls, and the first of every hand in each set`} onClose={onClose} size="lg" className="hall-of-fame">
+    <Sheet title="Global leaderboard" subtitle={`Compete with players worldwide. The top ${HALL_OF_FAME_TOP} submitted pulls, ranked by score.`} onClose={onClose} size="lg" className="hall-of-fame">
       <Tabs
         idBase={tabsId}
-        label="Hall of Fame lists"
+        label="Global lists"
         value={tab}
         onChange={setTab}
         tabs={[
-          { id: 'top', label: 'Leaderboard' },
-          { id: 'firsts', label: 'World firsts' },
-          { id: 'legends', label: 'Legends' },
+          { id: 'top', label: 'Top scores' },
+          { id: 'firsts', label: 'First submissions' },
+          { id: 'legends', label: 'Hackathon archive' },
         ]}
       />
 
@@ -199,14 +199,14 @@ const HallOfFamePage = ({ onClose }: HallOfFamePageProps) => {
 
         {tab === 'firsts' && (
           <>
-            <p className="hof-note">The first verified Full House, 4 of a Kind and 5 of a Kind in each set.</p>
+            <p className="hof-note">The earliest verified submission of a Full House, 4 of a Kind or 5 of a Kind in each set. This records who submitted first, not who opened the pack first.</p>
             {firsts.length > 0 ? <ul className="hof-list">{firsts.map((e) => renderEntry(e))}</ul> : empty}
           </>
         )}
 
         {tab === 'legends' && (
           <>
-            <p className="hof-note">The originals, from the hackathon, before pulls were verifiable.</p>
+            <p className="hof-note">Original screenshots from the March 2026 hackathon. These pulls predate verification and are not part of the global rankings.</p>
             <ul className="hof-legends">
               {HACKATHON_LEGENDS.map((entry) => (
                 <li key={entry.name} className="hof-legend">

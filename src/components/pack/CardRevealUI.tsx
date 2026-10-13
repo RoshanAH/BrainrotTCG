@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { motion, AnimatePresence, type PanInfo } from 'framer-motion';
-import { FastForward } from 'lucide-react';
+import { ArrowLeft, FastForward } from 'lucide-react';
 import Card from '../cards/Card';
 import type { CardWithMeta } from '../cards/Card';
 import cardBackImage from '../../assets/images/card_back.webp';
@@ -18,6 +18,7 @@ interface CardRevealUIProps {
   onInteraction: () => void;
   /** Reveal everything and go straight to the summary. */
   onSkip: () => void;
+  onLeave: () => void;
 }
 
 /** How far (px) or how fast (px/s) a flipped card has to be flung to move on. */
@@ -28,7 +29,7 @@ const SWIPE_SPEED = 500;
  * One card at a time off the top of the stack, rarest last. Big pulls light the back's edge before
  * the flip and get a spotlight after it; a flipped card can be swiped away or tapped.
  */
-const CardRevealUI = ({ currentCard, currentIndex, totalCards, hasMovedMouse, onInteraction, onSkip }: CardRevealUIProps) => {
+const CardRevealUI = ({ currentCard, currentIndex, totalCards, hasMovedMouse, onInteraction, onSkip, onLeave }: CardRevealUIProps) => {
   const touch = useCoarsePointer();
   const revealed = currentCard?.isRevealed;
   const remaining = totalCards - currentIndex - 1;
@@ -55,13 +56,14 @@ const CardRevealUI = ({ currentCard, currentIndex, totalCards, hasMovedMouse, on
   return (
     <>
       <div className="reveal-top">
+        <button type="button" className="reveal-skip" onClick={onLeave}><ArrowLeft aria-hidden="true" /> Back to packs</button>
         <div className="reveal-progress" role="progressbar" aria-label="Cards revealed" aria-valuemin={1} aria-valuemax={totalCards} aria-valuenow={currentIndex + 1} aria-valuetext={`Card ${currentIndex + 1} of ${totalCards}`}>
           {Array.from({ length: totalCards }, (_, i) => (
             <span key={i} className={i < currentIndex ? 'done' : i === currentIndex ? 'current' : ''} aria-hidden="true" />
           ))}
         </div>
         <button type="button" className="reveal-skip" onClick={onSkip}>
-          Skip <FastForward aria-hidden="true" />
+          Skip reveal animation <FastForward aria-hidden="true" />
         </button>
       </div>
 
@@ -99,6 +101,7 @@ const CardRevealUI = ({ currentCard, currentIndex, totalCards, hasMovedMouse, on
       </div>
 
       <p className="tip-text">{hint}</p>
+      <p className="reveal-exit-hint">Tap outside the cards to return to packs. Your pull is saved.</p>
       {!touch && <div className={`mouse-hint ${hasMovedMouse ? 'fade-out' : ''}`}>Move the mouse over the card to tilt it</div>}
     </>
   );

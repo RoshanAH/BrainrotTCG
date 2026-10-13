@@ -32,6 +32,8 @@ const PackSummaryUI = ({ openedCards, set, onClose, onShare }: PackSummaryUIProp
     return `${String(i + 1).padStart(3, '0')}/${String(setCards.length).padStart(3, '0')}`;
   };
   const newCount = openedCards.filter((c) => c.isNew).length;
+  const specialCards = openedCards.filter((c) => c.isHolo || c.finish || c.misprint);
+  const specialKinds = [...new Set(specialCards.flatMap((c) => modifierLabel(c).split(' · ')))];
   // What this pack did for your level: shown here so progress isn't hidden away in the profile.
   const progress = useMemo(() => myProgress(), []);
   const into = progress.xp - progress.levelXp;
@@ -39,6 +41,16 @@ const PackSummaryUI = ({ openedCards, set, onClose, onShare }: PackSummaryUIProp
 
   return (
     <Motion.div className="pack-summary" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.22 }}>
+      <div className="summary-actions">
+        {onShare && (
+          <button type="button" className="btn btn--secondary btn--lg" onClick={onShare}>
+            <Share2 aria-hidden="true" /> Share
+          </button>
+        )}
+        <button type="button" className="btn btn--primary btn--lg" onClick={onClose}>
+          <RotateCcw aria-hidden="true" /> Open another pack
+        </button>
+      </div>
       <h2 className="summary-title">{hand.name}</h2>
       <BrainrotScorePanel points={points} multiplier={hand.multiplier} handName={hand.name} score={score} setId={set.id} />
       <div className="summary-xp">
@@ -50,6 +62,7 @@ const PackSummaryUI = ({ openedCards, set, onClose, onShare }: PackSummaryUIProp
         </span>
       </div>
 
+      {specialCards.length > 0 && <p className="summary-special">{specialCards.length} special {specialCards.length === 1 ? 'card' : 'cards'} · {specialKinds.join(', ')}</p>}
       <ul className="summary-cards">
         {openedCards.map((card) => (
           <li key={card.uniqueId}>
@@ -77,16 +90,7 @@ const PackSummaryUI = ({ openedCards, set, onClose, onShare }: PackSummaryUIProp
         </p>
       )}
 
-      <div className="summary-actions">
-        {onShare && (
-          <button type="button" className="btn btn--secondary btn--lg" onClick={onShare}>
-            <Share2 aria-hidden="true" /> Share
-          </button>
-        )}
-        <button type="button" className="btn btn--primary btn--lg" onClick={onClose}>
-          <RotateCcw aria-hidden="true" /> Open another pack
-        </button>
-      </div>
+
 
       {selected && (
         <CardViewerModal

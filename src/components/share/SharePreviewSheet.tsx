@@ -74,16 +74,6 @@ const SharePreviewSheet = ({ title, subtitle, makeImage, imageName, url, text, o
   return (
     <Sheet title={title} subtitle={subtitle} onClose={onClose} size="md" className="share-sheet">
       <div className="share-layout">
-        <figure className="share-preview">
-          {image ? (
-            <img src={image.src} alt="The image you'll share" />
-          ) : (
-            <span className="share-preview-wait" role="status">
-              {failed ? "Couldn't draw the image" : 'Drawing the image…'}
-            </span>
-          )}
-        </figure>
-
         <div className="share-side">
           <div className="share-actions-main">
             {url && (
@@ -117,6 +107,15 @@ const SharePreviewSheet = ({ title, subtitle, makeImage, imageName, url, text, o
 
           {children}
         </div>
+        <figure className="share-preview">
+          {image ? (
+            <img src={image.src} alt="The image you'll share" />
+          ) : (
+            <span className="share-preview-wait" role="status">
+              {failed ? "Couldn't draw the image" : 'Drawing the image…'}
+            </span>
+          )}
+        </figure>
       </div>
     </Sheet>
   );

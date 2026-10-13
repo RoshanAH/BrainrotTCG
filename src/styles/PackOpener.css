@@ -471,12 +471,25 @@
 }
 
 .summary-actions {
+    position: sticky;
+    top: var(--space-2);
+    z-index: 2;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: var(--space-3);
     width: 100%;
-    margin-top: var(--space-5);
+    margin-bottom: var(--space-4);
+    padding: var(--space-2);
+    border-radius: var(--radius-md);
+    background: var(--bg-elevated);
+}
+
+.summary-special {
+    color: var(--text);
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: var(--space-3);
 }
 
 @media (max-width: 480px) {
@@ -488,12 +501,20 @@
 /* ---- Reveal: progress, skip, the stack ---- */
 
 .reveal-top {
+    flex-wrap: wrap;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: var(--space-4);
     width: 100%;
     max-width: 30rem;
+}
+
+.reveal-exit-hint {
+    color: var(--text-muted);
+    font-size: var(--text-sm);
+    text-align: center;
+    padding: var(--space-2);
 }
 
 .reveal-skip {
@@ -712,4 +733,27 @@
         min-height: 46px;
         font-size: var(--text-base);
     }
+}
+.pack-controls {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--gutter);
+}
+
+.pack-controls-hint {
+    flex-basis: 100%;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: var(--text-xs);
+}
+
+.auto-mode-indicator {
+    align-self: center;
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--success);
+    border-radius: var(--radius-pill);
+    color: var(--success);
+    font-weight: 700;
 }

@@ -13,6 +13,7 @@ import { effectsLevel } from '../../utils/settings';
 import PackCuttingUI from './PackCuttingUI';
 import CardRevealUI from './CardRevealUI';
 import PackSummaryUI from './PackSummaryUI';
+import ScoringGuide from '../ui/ScoringGuide';
 import { packImageUrl } from '../../content/art';
 import { isBigPull, markNew, revealOrder } from '../../game/reveal';
 import '../../styles/PackOpener.css';
@@ -39,6 +40,7 @@ interface PackOpenerProps {
 }
 
 const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, settings, isOwned }: PackOpenerProps) => {
+  const [guideOpen, setGuideOpen] = useState(false);
   const [isOpening, setIsOpening] = useState(false);
   const [openedPack, setOpenedPack] = useState<OpenedPack | null>(null);
   const [openError, setOpenError] = useState<string | null>(null);
@@ -142,7 +144,7 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
     isOpening,
     isPackCut,
     volume: effectsVolume,
-    disabled,
+    disabled: disabled || guideOpen,
     onMiss: nudge,
   });
 
@@ -172,6 +174,24 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
     recordedRef.current = true;
     onOpen(pack);
   }, [dealtPack, onOpen]);
+
+  /** Leaving the animation still awards and records the entire already-spent ticket. */
+  const leaveReveal = useCallback(() => {
+    setAutoMode(false);
+    recordPack();
+    finishPack();
+  }, [recordPack, finishPack]);
+
+  useEffect(() => {
+    if (!isOpening || showSummary || disabled) return;
+    const dismiss = (event: MouseEvent) => {
+      const target = event.target;
+      if (!(target instanceof Element) || target.closest('button, a, input, select, textarea, [role="dialog"], .active-card-container, .reveal-top, .app-header')) return;
+      leaveReveal();
+    };
+    document.addEventListener('click', dismiss);
+    return () => document.removeEventListener('click', dismiss);
+  }, [isOpening, showSummary, disabled, leaveReveal]);
 
   const nextCard = useCallback(() => {
     if (currentIndex < openedCards.length - 1) {
@@ -242,7 +262,7 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
   useKeyboardControls({
     isOpening,
     showSummary,
-    disabled,
+    disabled: disabled || guideOpen,
     onCloseSummary: closeSummary,
     onToggleAutoMode: () => setAutoMode(prev => !prev),
     onOpenPack: () => !isPackCut && completeCut(),
@@ -267,9 +287,27 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [isOpening, hasMovedMouse]);
 
+  // Stop immediately on focus loss, before background timers can advance more packs.
+  useEffect(() => {
+    const stop = () => {
+      if (autoIntervalRef.current) {
+        clearInterval(autoIntervalRef.current);
+        autoIntervalRef.current = null;
+      }
+      setAutoMode(false);
+    };
+    const visibility = () => { if (document.hidden) stop(); };
+    window.addEventListener('blur', stop);
+    document.addEventListener('visibilitychange', visibility);
+    return () => {
+      window.removeEventListener('blur', stop);
+      document.removeEventListener('visibilitychange', visibility);
+    };
+  }, []);
+
   // Auto mode effect
   useEffect(() => {
-    if (autoMode && !disabled) {
+    if (autoMode && !disabled && !guideOpen) {
       autoIntervalRef.current = setInterval(() => {
         if (showSummary) {
           closeSummary();
@@ -292,7 +330,7 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
         autoIntervalRef.current = null;
       }
     };
-  }, [autoMode, disabled, showSummary, isOpening, isPackCut, closeSummary, completeCut, handleInteraction]);
+  }, [autoMode, disabled, guideOpen, showSummary, isOpening, isPackCut, closeSummary, completeCut, handleInteraction]);
 
   // Stop auto mode when disabled (adjusting state during render avoids an extra effect pass)
   if (disabled && autoMode) {
@@ -336,6 +374,17 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
 
   return (
     <div className="pack-opener-container">
+      {!isOpening && !isPackCut && <div className="pack-controls">
+        <button type="button" className="btn btn--primary" onClick={completeCut} disabled={disabled}>Open pack</button>
+        <button type="button" className="btn btn--secondary" onClick={() => setGuideOpen(true)} disabled={disabled}>Card guide</button>
+        <button type="button" className="btn btn--secondary" onClick={() => setAutoMode(true)} disabled={disabled}>Auto-open packs</button>
+        <span className="pack-controls-hint">No swipe needed · Enter or Space opens a pack</span>
+      </div>}
+      {autoMode && <div className="pack-controls">
+        <span className="auto-mode-indicator" role="status">Auto-open is on</span>
+        <button type="button" className="btn btn--secondary" onClick={() => setAutoMode(false)}>Stop auto-open</button>
+        <span className="pack-controls-hint">Auto-open stops when you leave this window · A toggles it</span>
+      </div>}
       <AnimatePresence mode="wait">
         {!isOpening ? (
           <Motion.div
@@ -381,6 +430,7 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
                 hasMovedMouse={hasMovedMouse}
                 onInteraction={handleInteraction}
                 onSkip={skipAll}
+                onLeave={leaveReveal}
               />
             ) : (
               <PackSummaryUI
@@ -393,6 +443,7 @@ const PackOpener = ({ onOpen, onShare, onBusyChange, set, disabled = false, sett
           </Motion.div>
         )}
       </AnimatePresence>
+      {guideOpen && <ScoringGuide set={set} onClose={() => setGuideOpen(false)} />}
     </div>
   );
 };

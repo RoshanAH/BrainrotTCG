@@ -1,8 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { Download, History, Upload } from 'lucide-react';
 import { STORAGE_KEYS } from '../../constants';
-import { MAX_NAME_LENGTH } from '../../engine';
-import { exportPlayer, getPlayer, renamePlayer } from '../../game/player';
+import { exportPlayer } from '../../game/player';
 import { canBringOldSave, fetchOldSave, hasProgress, importSave, type MoveResult } from '../../game/move';
 import { CARD_FLIP_SRC } from '../../constants/audio';
 import { effectsLevel } from '../../utils/settings';
@@ -21,15 +20,6 @@ interface SettingsPageProps {
 
 const SettingsPage = ({ settings, onSettingsChange, onClose, onImportSave }: SettingsPageProps) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const [player, setPlayer] = useState(getPlayer);
-    const [nameDraft, setNameDraft] = useState(player.name);
-
-    const saveName = () => {
-        const updated = renamePlayer(nameDraft);
-        setPlayer(updated);
-        setNameDraft(updated.name);
-    };
-
     const handleExportSave = () => {
         const saveData = {
             collection: localStorage.getItem(STORAGE_KEYS.COLLECTION),
@@ -151,27 +141,6 @@ const SettingsPage = ({ settings, onSettingsChange, onClose, onImportSave }: Set
 
     return (
         <Sheet title="Settings" onClose={onClose} size="sm" className="settings">
-            <section className="settings-group">
-                <h3 className="section-title" id="settings-player">Player</h3>
-                <div className="settings-panel">
-                    <label className="settings-field">
-                        <span className="settings-label">Name</span>
-                        <input
-                            className="settings-input"
-                            value={nameDraft}
-                            onChange={(e) => setNameDraft(Array.from(e.target.value).slice(0, MAX_NAME_LENGTH).join(''))}
-                            onBlur={saveName}
-                            onKeyDown={(e) => e.key === 'Enter' && saveName()}
-                            autoComplete="nickname"
-                            spellCheck={false}
-                        />
-                        <span className="settings-desc">
-                            Shown on pulls you share, next to your ID <span className="share-fp">#{player.fingerprint}</span>.
-                        </span>
-                    </label>
-                </div>
-            </section>
-
             <section className="settings-group">
                 <h3 className="section-title">Experience</h3>
                 <div className="settings-panel">
