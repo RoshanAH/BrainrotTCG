@@ -39,11 +39,13 @@ export const useKeyboardControls = (options: UseKeyboardControlsOptions) => {
       // focus is on a control that Space or Enter already activates.
       if (disabled) return;
       if (document.querySelector('[role="dialog"][aria-modal="true"]')) return;
+      // Browser shortcuts such as Ctrl/Cmd+A must not start spending pack tickets.
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
       const target = e.target as HTMLElement | null;
       const isKey = e.code === 'Space' || e.code === 'Enter' || e.code === 'NumpadEnter';
       if (isKey && target?.closest('button, a, input, select, textarea, [contenteditable="true"]')) return;
 
-      // Secret key 'a' - toggle auto mode
+      // Plain A toggles auto mode; the screen also offers visible start/stop controls.
       if (e.code === 'KeyA' && !e.repeat) {
         e.preventDefault();
         onToggleAutoMode();
