@@ -39,43 +39,47 @@ const PackSummaryUI = ({ openedCards, set, onClose, onShare }: PackSummaryUIProp
 
   return (
     <Motion.div className="pack-summary" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.22 }}>
-      <h2 className="summary-title">{hand.name}</h2>
-      <BrainrotScorePanel points={points} multiplier={hand.multiplier} handName={hand.name} score={score} setId={set.id} />
-      <div className="summary-xp">
-        <span className="summary-xp-text tabular">
-          <strong>+{progress.gained.toLocaleString()} XP</strong> · Level {progress.level} · {into.toLocaleString()}/{span.toLocaleString()} to Level {progress.level + 1}
-        </span>
-        <span className="progress" aria-hidden="true">
-          <span style={{ width: `${Math.min(100, (into / span) * 100)}%` }} />
-        </span>
-      </div>
-
-      <ul className="summary-cards">
-        {openedCards.map((card) => (
-          <li key={card.uniqueId}>
-            <button
-              type="button"
-              className={`summary-card ${card.rarity.toLowerCase()} ${card.isHolo ? 'holo' : ''} ${modifierThumb(card).className}`}
-              style={modifierThumb(card).style}
-              onClick={() => setSelected(card)}
-              aria-label={`${card.name}, ${CARD_RARITIES[card.rarity].name}${modifierLabel(card) ? `, ${modifierLabel(card)}` : ''}${card.isNew ? ', new' : ''}`}
-            >
-              <CardImage src={card.image} finish={card.finish} alt="" draggable="false" />
-              {card.isNew && <span className="new-sticker">New</span>}
-              {modifierLabel(card, false) && <span className="mod-label">{modifierLabel(card, false)}</span>}
-            </button>
-            <span className="collection-label tabular" aria-hidden="true">
-              {numberOf(card)}{' '}
-              <span className={`collection-label-rarity ${card.rarity.toLowerCase()}`}>{CARD_RARITIES[card.rarity].symbol}</span>
+      <div className="summary-content">
+        <div className="summary-details">
+          <h2 className="summary-title">{hand.name}</h2>
+          <BrainrotScorePanel points={points} multiplier={hand.multiplier} handName={hand.name} score={score} setId={set.id} />
+          <div className="summary-xp">
+            <span className="summary-xp-text tabular">
+              <strong>+{progress.gained.toLocaleString()} XP</strong> · Level {progress.level} · {into.toLocaleString()}/{span.toLocaleString()} to Level {progress.level + 1}
             </span>
-          </li>
-        ))}
-      </ul>
-      {newCount > 0 && (
-        <p className="summary-new tabular">
-          {newCount} new {newCount === 1 ? 'card' : 'cards'} for your binder
-        </p>
-      )}
+            <span className="progress" aria-hidden="true">
+              <span style={{ width: `${Math.min(100, (into / span) * 100)}%` }} />
+            </span>
+          </div>
+
+          <ul className="summary-cards">
+            {openedCards.map((card) => (
+              <li key={card.uniqueId}>
+                <button
+                  type="button"
+                  className={`summary-card ${card.rarity.toLowerCase()} ${card.isHolo ? 'holo' : ''} ${modifierThumb(card).className}`}
+                  style={modifierThumb(card).style}
+                  onClick={() => setSelected(card)}
+                  aria-label={`${card.name}, ${CARD_RARITIES[card.rarity].name}${modifierLabel(card) ? `, ${modifierLabel(card)}` : ''}${card.isNew ? ', new' : ''}`}
+                >
+                  <CardImage src={card.image} finish={card.finish} alt="" draggable="false" />
+                  {card.isNew && <span className="new-sticker">New</span>}
+                  {modifierLabel(card, false) && <span className="mod-label">{modifierLabel(card, false)}</span>}
+                </button>
+                <span className="collection-label tabular" aria-hidden="true">
+                  {numberOf(card)}{' '}
+                  <span className={`collection-label-rarity ${card.rarity.toLowerCase()}`}>{CARD_RARITIES[card.rarity].symbol}</span>
+                </span>
+              </li>
+            ))}
+          </ul>
+          {newCount > 0 && (
+            <p className="summary-new tabular">
+              {newCount} new {newCount === 1 ? 'card' : 'cards'} for your binder
+            </p>
+          )}
+        </div>
+      </div>
 
       <div className="summary-actions">
         {onShare && (

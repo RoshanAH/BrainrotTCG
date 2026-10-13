@@ -458,14 +458,40 @@
 }
 
 /* Pack summary */
+.card-reveal-area:has(.pack-summary) {
+    overflow: hidden;
+}
+
 .pack-summary {
     display: flex;
+    flex: 1;
     flex-direction: column;
     align-items: center;
     width: 100%;
     max-width: 64rem;
-    margin: auto 0;
-    padding-bottom: var(--space-4);
+    min-height: 0;
+}
+
+/* Only the contents scroll: the next-pack action always has its own visible row. */
+.summary-content {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    width: 100%;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: var(--space-2);
+}
+
+.summary-details {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    /* Center when there's room; auto margins collapse when the contents need to scroll. */
+    margin-block: auto;
 }
 
 .summary-title {
@@ -476,11 +502,12 @@
 
 .summary-actions {
     display: flex;
+    flex: 0 0 auto;
     flex-wrap: wrap;
     justify-content: center;
     gap: var(--space-3);
     width: 100%;
-    margin-top: var(--space-5);
+    margin-top: var(--space-3);
 }
 
 @media (max-width: 480px) {
